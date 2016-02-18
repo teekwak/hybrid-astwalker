@@ -90,6 +90,7 @@ public class Example {
 		}
 		
 		for(int k = 0; k < 10; k++) {
+			double j = Math.sqrt(100);
 			System.out.println(k);
 		}
 		

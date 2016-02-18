@@ -140,7 +140,7 @@ public class ASTWalker {
 			
 			public boolean visit(MethodInvocation node) {
 				SimpleName name = node.getName();
-				System.out.println("MethodInvocation of '" + name + "' at line " + cu.getLineNumber(name.getStartPosition()) + " " + cu.getColumnNumber(name.getStartPosition()));
+				fileModel.methodNames.addMethodInvocation(name.toString(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));				
 				return true;					
 			}
 			
