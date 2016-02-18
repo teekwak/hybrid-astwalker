@@ -30,7 +30,7 @@ public class FileModel {
 	
 	public FileModel parseDeclarations(String fileLocation) throws IOException {
 		ASTWalker astWalker = new ASTWalker();
-		return astWalker.parseFile(fileLocation); hello
+		return astWalker.parseFile(fileLocation);
 	}
 	
 	public void printDeclarationsToFile() {
