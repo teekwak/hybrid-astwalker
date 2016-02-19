@@ -7,10 +7,12 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CatchClause;
+import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ConditionalExpression;
 import org.eclipse.jdt.core.dom.DoStatement;
 import org.eclipse.jdt.core.dom.EnhancedForStatement;
+import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ForStatement;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
@@ -20,13 +22,17 @@ import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
 import org.eclipse.jdt.core.dom.SimpleName;
+import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.SwitchCase;
 import org.eclipse.jdt.core.dom.SwitchStatement;
 import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.jdt.core.dom.TryStatement;
+import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
+import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
 import org.eclipse.jdt.core.dom.WildcardType;
 
@@ -84,11 +90,11 @@ public class ASTWalker {
 		// alphabetical order
 		cu.accept(new ASTVisitor() {
 
-			// not done, does not get type of exception
+			// done
 			public boolean visit(CatchClause node) {
 				SimpleName name = node.getException().getName();
-				fileModel.catchClauseNames.addCatch(name.toString(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
-				return true; // false = do not continue to avoid usage info?				
+				fileModel.catchClauseNames.addCatch(node.getException().getType(), name.toString(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+				return true;			
 			}
 			
 			public boolean visit(ConditionalExpression node){
@@ -96,8 +102,9 @@ public class ASTWalker {
 				return true;		
 			}
 			
+			// done
 			public boolean visit(DoStatement node) {
-				System.out.println("DoStatement of '" + node.getExpression() + "' at line " + cu.getLineNumber(node.getStartPosition()) + " " + cu.getColumnNumber(node.getStartPosition()));
+				fileModel.doStatementExpressions.addDoStatement(node.getExpression().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));				
 				return true;				
 			}
 			
@@ -108,7 +115,7 @@ public class ASTWalker {
 			}
 			
 			public boolean visit(ForStatement node) {
-				System.out.println("ForStatement of '" + node.getExpression() + "' at line " + cu.getLineNumber(node.getStartPosition()) + " " + cu.getColumnNumber(node.getStartPosition()));
+				fileModel.forStatementExpressions.addForStatement(node.getExpression().toString(), cu.getLineNumber(node.getStartPosition()) , cu.getColumnNumber(node.getStartPosition()) );				
 				return true;				
 			}
 			
@@ -154,7 +161,25 @@ public class ASTWalker {
 			// called on parameters of function
 			public boolean visit(SingleVariableDeclaration node) {
 				SimpleName name = node.getName();
-				System.out.println("SingleVariableDeclaration of '" + name + "' of type '" + node.getType() + "' at line " + cu.getLineNumber(name.getStartPosition()) + " " + cu.getColumnNumber(name.getStartPosition()));
+								
+				
+				System.out.println("SVD: " + name.toString() + ": " + node.getType());
+				
+				
+				if(node.getType().isPrimitiveType()) {
+					fileModel.primitiveNames.addPrimitive(name.toString(), node.getType().toString(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+				}
+				else if(node.getType().isParameterizedType()) {
+					fileModel.genericsNames.addGenerics(name.toString(), node.getType().toString(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+				}
+				else if (node.getType().isArrayType()) {					
+					fileModel.arrayNames.addArray(name.toString(), node.getType().toString().replace("[]", ""), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+				}
+				else {
+					// this does get run!
+					System.out.println("Something is missing " + node.getType().toString());
+				}
+				
 				return true;
 			}
 
@@ -206,16 +231,67 @@ public class ASTWalker {
 				return true;				
 			}
 			
+
 			/*
 			// depends on type
 			public boolean visit(VariableDeclarationFragment node) {
-				fileModel.add(node, cu.getLineNumber(node.getName().getStartPosition()), cu.getColumnNumber(node.getName().getStartPosition()));
+				SimpleName name = node.getName();
+				
+				System.out.print("(Fragment: " + node.getName().toString() + ")");
+				
+				if(node.getInitializer() instanceof ClassInstanceCreation) {
+					ClassInstanceCreation instanceCreation = (ClassInstanceCreation)node.getInitializer();
+					if(instanceCreation.getType() instanceof SimpleType) {
+						SimpleType simpleType = (SimpleType)instanceCreation.getType();
+						System.out.println(simpleType.getName().getFullyQualifiedName());
+					}
+				}
+				
+				else {
+					Type varType = null;
+					try {
+						varType = ((FieldDeclaration)node.getParent()).getType();
+					}
+					catch(ClassCastException e) {
+						System.out.println("Error: " + node.getName().toString() + " " + cu.getLineNumber(name.getStartPosition()));
+						e.printStackTrace();
+						System.exit(-1);
+					}
+					
+					System.out.println(varType + " WORKS FINE");
+					
+					if(varType.isPrimitiveType()) {
+						fileModel.primitiveNames.addPrimitive(name.toString(), varType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					}
+					
+					if(varType.isParameterizedType()) {
+						System.out.println("PARAMETERIZED");
+					}
+					
+					//fileModel.add(node, cu.getLineNumber(node.getName().getStartPosition()), cu.getColumnNumber(node.getName().getStartPosition()));
+
+				}
+				
 				return true;
 			}
 			*/
- 
-			public boolean visit(WhileStatement node){				
-				System.out.println("WhileStatement of '" + node.getExpression() + "' at line " + cu.getLineNumber(node.getStartPosition()) + " " + cu.getColumnNumber(node.getStartPosition()));
+			
+			// NOT COMPLETE
+			public boolean visit(VariableDeclarationStatement node) {
+				System.out.println("VDS " + node.getType());
+				return false; // does this stop from going to VariableDeclarationFragment?
+			}
+			
+			// NOT COMPLETE
+			public boolean visit(VariableDeclarationExpression node) {
+				System.out.println("VDE");
+				return false; // does this stop from going to VariableDeclarationFragment?
+			}
+			
+			// done
+			public boolean visit(WhileStatement node){		
+				System.out.println("I AM HERE");
+				fileModel.whileStatementExpressions.addWhileStatement(node.getExpression().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
 				return true;	
 			}	
 			

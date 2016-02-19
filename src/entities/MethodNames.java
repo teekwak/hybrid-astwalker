@@ -44,7 +44,6 @@ class MethodObject {
 	// this function is funky
 	boolean equals(MethodObject original) {
 		if(!this.name.equals(original.name)) {
-			// || this.returnType != original.returnType || this.parameterNames.size() != original.parameterNames.size()
 			return false;
 		}
 		
@@ -96,8 +95,8 @@ public class MethodNames {
 		addMethod(methodInvokedName, "not declared in file", new ArrayList<>() , lineNumber, columnNumber);
 	}
 	
-	public void printMethods() {
-		if(methodObjectList.size() != 0) {
+	public void printAllMethods() {
+		if(methodObjectList.size() > 0) {
 			System.out.println("---Methods---");
 			for(MethodObject m : methodObjectList) {
 				m.printMethod();

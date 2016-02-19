@@ -16,12 +16,17 @@ public class PackageNames {
 		this.packagesMap.put(name, tempMap);
 	}
 	
-	public void printPackages() {
-		if(packagesMap.size() != 0) {
-			System.out.println("---Packages---");
+	public void printAllPackages() {
+		System.out.println("---Packages---");
+
+		if(packagesMap.size() > 0) {
 			for(Map.Entry<String, Map<Integer, Integer>> entry : this.packagesMap.entrySet()) {
 				System.out.println(entry.getKey());
 			}			
+			System.out.println();
+		}
+		else {
+			System.out.println("None\n");
 		}
 	}
 }

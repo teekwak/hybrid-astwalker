@@ -24,8 +24,8 @@ public class InterfaceNames {
 		this.interfacesMap.put(name, tempMap);
 	}
 	
-	public void printInterfaces() {
-		if(interfacesMap.size() != 0) {
+	public void printAllInterfaces() {
+		if(interfacesMap.size() > 0) {
 			System.out.println("---Interfaces---");
 			for(Map.Entry<String, Map<Integer, Integer>> entry : this.interfacesMap.entrySet()) {
 				System.out.println(entry.getKey());
@@ -33,12 +33,17 @@ public class InterfaceNames {
 		}
 	}
 	
-	public void printImplements() {
-		if(implementsList.size() != 0) {
-			System.out.println("---Implements---");
+	public void printAllImplements() {
+		System.out.println("---Implements---");
+
+		if(implementsList.size() > 0) {
 			for(String s : this.implementsList) {
 				System.out.println(s);
 			}			
+			System.out.println();
+		}
+		else {
+			System.out.println("None\n");
 		}
 	}
 }

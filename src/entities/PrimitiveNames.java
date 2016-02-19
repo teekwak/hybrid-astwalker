@@ -3,21 +3,23 @@ package entities;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.core.dom.Type;
+
 class PrimitiveObject {
 	String name;
-	String type;
+	Object type;
 	int lineNumber;
 	int columnNumber;
 	
-	PrimitiveObject(String n, String t, int l, int c) {
+	PrimitiveObject(String n, Object t, int l, int c) {
 		name = n;
 		type = t;
 		lineNumber = l;
 		columnNumber = c;
 	}
 	
-	void printName() {
-		System.out.println(name);
+	void printEntity() {
+		System.out.println(name + " " + type);
 	}
 }
 
@@ -29,15 +31,21 @@ public class PrimitiveNames {
 		this.primitiveObjectList = new ArrayList<>();
 	}
 	
-	public void add(String name, String type, int lineNumber, int columnNumber) {
+	public void addPrimitive(String name, Object type, int lineNumber, int columnNumber) {
 		primitiveObjectList.add(new PrimitiveObject(name, type, lineNumber, columnNumber));
 	}
 	
-	public void printIntegers() {
+	public void printAllPrimitives() {
 		System.out.println("---Primitives---");
-		for(PrimitiveObject p : primitiveObjectList) {
-			p.printName();
+
+		if(primitiveObjectList.size() > 0) {
+			for(PrimitiveObject p : primitiveObjectList) {
+				p.printEntity();
+			}	
+			System.out.println();
+		}
+		else {
+			System.out.println("None\n");
 		}
 	}
-	
 }

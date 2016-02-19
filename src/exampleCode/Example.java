@@ -30,7 +30,7 @@ public class Example {
 		double score = 0;
 	}
 	
-	String name;
+	String name = "";
 	int neighbors;
 	double doubles;
 	float points;
@@ -57,6 +57,9 @@ public class Example {
 	}
 	
 	public static void main(String[] args) {
+		List<String> list = new LinkedList<>();
+		Map<String, Integer> map = new HashMap<String, Integer>();
+
 		Example ex = new Example();
 		ex.neighbors = 5;
 		ex.name = "example_1";
@@ -71,8 +74,7 @@ public class Example {
 			System.out.println("nvm");
 		}
 		
-		List<String> list = new LinkedList<>();
-		Map<String, Integer> map = new HashMap<String, Integer>();
+		
 		HashMap<String, HashMap<String, Integer>> reallyBigMap = new HashMap<>();
 		
 		switch(i) {
@@ -96,10 +98,13 @@ public class Example {
 		
 		
 		int counter = 3;
+		
 		while(counter > 0) {
 			System.out.println(counter);
 			counter--;
 		}
+		
+		ex.print();
 		
 		System.out.println(3 == 4);
 		
@@ -110,5 +115,12 @@ public class Example {
 		} catch (NullPointerException e) {
 			int b = 1;
 		}
+		
+		int asdf = 200;
+		do{
+			System.out.println("hi");
+		}
+		while (asdf < 199);
+		
 	}
 }

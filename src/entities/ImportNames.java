@@ -16,12 +16,17 @@ public class ImportNames {
 		this.importsMap.put(name, tempMap);
 	}
 	
-	public void printImports() {
-		if(importsMap.size() != 0) {
-			System.out.println("---Imports---");
+	public void printAllImports() {
+		System.out.println("---Imports---");
+
+		if(importsMap.size() > 0) {
 			for(Map.Entry<String, Map<Integer, Integer>> entry : this.importsMap.entrySet()) {
 				System.out.println(entry.getKey());
 			}			
+			System.out.println();
+		}
+		else {
+			System.out.println("None\n");
 		}
 	}
 }

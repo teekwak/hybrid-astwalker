@@ -24,21 +24,30 @@ public class ClassNames {
 		extendsList.add(name);
 	}
 	
-	public void printClasses() {
-		if(classesMap.size() != 0) {
-			System.out.println("---Classes---");
+	public void printAllClasses() {
+		System.out.println("---Classes---");
+
+		if(classesMap.size() > 0) {
 			for(Map.Entry<String, Map<Integer, Integer>> entry : this.classesMap.entrySet()) {
 				System.out.println(entry.getKey());
 			}			
 		}
+		else {
+			System.out.println("None\n");
+		}
 	}
 	
-	public void printExtends() {
-		if(extendsList.size() != 0) {
-			System.out.println("---Extends---");
+	public void printAll() {
+		System.out.println("---Extends---");
+
+		if(extendsList.size() > 0) {
 			for(String s : this.extendsList) {
 				System.out.println(s);
-			}				
+			}
+			System.out.println();
 		} 
+		else {
+			System.out.println("None\n");
+		}
 	}
 }
