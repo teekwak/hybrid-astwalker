@@ -25,7 +25,7 @@ public class ClassNames {
 	}
 	
 	public void printAllClasses() {
-		System.out.println("---Classes---");
+		System.out.println("--- Classes ---");
 
 		if(classesMap.size() > 0) {
 			for(Map.Entry<String, Map<Integer, Integer>> entry : this.classesMap.entrySet()) {
@@ -37,8 +37,8 @@ public class ClassNames {
 		}
 	}
 	
-	public void printAll() {
-		System.out.println("---Extends---");
+	public void printAllExtends() {
+		System.out.println("--- Extends ---");
 
 		if(extendsList.size() > 0) {
 			for(String s : this.extendsList) {

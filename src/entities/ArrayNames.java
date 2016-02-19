@@ -36,7 +36,7 @@ public class ArrayNames {
 	}
 	
 	public void printAllArrays() {
-		System.out.println("---Arrays---");
+		System.out.println("--- Arrays ---");
 
 		if(arrayObjectList.size() > 0) {
 			for(ArrayObject a : arrayObjectList) {

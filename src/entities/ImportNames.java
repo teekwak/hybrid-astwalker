@@ -17,7 +17,7 @@ public class ImportNames {
 	}
 	
 	public void printAllImports() {
-		System.out.println("---Imports---");
+		System.out.println("--- Imports ---");
 
 		if(importsMap.size() > 0) {
 			for(Map.Entry<String, Map<Integer, Integer>> entry : this.importsMap.entrySet()) {

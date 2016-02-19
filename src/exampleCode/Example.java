@@ -2,6 +2,7 @@ package exampleCode;
 
 import java.util.List;
 import java.util.Map;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -56,7 +57,7 @@ public class Example {
 		return 4;
 	}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException{
 		List<String> list = new LinkedList<>();
 		Map<String, Integer> map = new HashMap<String, Integer>();
 
@@ -114,6 +115,7 @@ public class Example {
 			int a = 0;
 		} catch (NullPointerException e) {
 			int b = 1;
+			throw new IOException();
 		}
 		
 		int asdf = 200;

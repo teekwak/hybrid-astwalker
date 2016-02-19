@@ -17,7 +17,7 @@ public class PackageNames {
 	}
 	
 	public void printAllPackages() {
-		System.out.println("---Packages---");
+		System.out.println("--- Packages ---");
 
 		if(packagesMap.size() > 0) {
 			for(Map.Entry<String, Map<Integer, Integer>> entry : this.packagesMap.entrySet()) {

@@ -1,14 +1,19 @@
 import entities.ArrayNames;
 import entities.CatchClauseNames;
 import entities.ClassNames;
+import entities.ConditionalExpressionExpressions;
 import entities.DoStatementExpressions;
 import entities.ForStatementExpressions;
 import entities.GenericsNames;
+import entities.IfStatementExpressions;
 import entities.ImportNames;
+import entities.InfixExpressionExpressions;
 import entities.InterfaceNames;
 import entities.MethodNames;
 import entities.PackageNames;
 import entities.PrimitiveNames;
+import entities.ThrowStatementNames;
+import entities.TryStatementNames;
 import entities.WhileStatementExpressions;
 
 import java.io.IOException;
@@ -27,6 +32,11 @@ public class FileModel {
 	WhileStatementExpressions whileStatementExpressions;
 	DoStatementExpressions doStatementExpressions;
 	ForStatementExpressions forStatementExpressions;
+	IfStatementExpressions ifStatementExpressions;
+	InfixExpressionExpressions infixExpressionExpressions;
+	ThrowStatementNames throwStatementNames;
+	TryStatementNames tryStatementNames;
+	ConditionalExpressionExpressions conditionalExpressionExpressions;
 	
 	public FileModel() {
 		this.classNames = new ClassNames();
@@ -41,6 +51,11 @@ public class FileModel {
 		this.whileStatementExpressions = new WhileStatementExpressions();
 		this.doStatementExpressions = new DoStatementExpressions();
 		this.forStatementExpressions = new ForStatementExpressions();
+		this.ifStatementExpressions = new IfStatementExpressions();
+		this.infixExpressionExpressions = new InfixExpressionExpressions();
+		this.throwStatementNames = new ThrowStatementNames();
+		this.tryStatementNames = new TryStatementNames();
+		this.conditionalExpressionExpressions = new ConditionalExpressionExpressions();
 	}
 	
 	public FileModel parseDeclarations(String fileLocation) throws IOException {
@@ -59,8 +74,6 @@ public class FileModel {
 
 		fileModel = fileModel.parseDeclarations(fileLocation);	
 
-		
-		
 		/*
 		
 		fileModel.packageNames.printAllPackages();
@@ -83,10 +96,6 @@ public class FileModel {
 		
 		fileModel.genericsNames.printAllGenerics();
 		
-		*/
-		
-		
-		
 		fileModel.whileStatementExpressions.printAllWhileStatements();
 		
 		fileModel.catchClauseNames.printAllCatchClauses();
@@ -95,5 +104,16 @@ public class FileModel {
 		
 		fileModel.forStatementExpressions.printAllForStatements();
 	
+		fileModel.ifStatementExpressions.printAllIfStatements();
+		
+		fileModel.infixExpressionExpressions.printAllInfixExpressions();
+		
+		fileModel.throwStatementNames.printAllThrowStatements();
+		
+		fileModel.tryStatementNames.printAllTryStatements();
+		
+		*/
+		
+		fileModel.conditionalExpressionExpressions.printAllConditionalExpressions();
 	}
 }

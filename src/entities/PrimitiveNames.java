@@ -36,7 +36,7 @@ public class PrimitiveNames {
 	}
 	
 	public void printAllPrimitives() {
-		System.out.println("---Primitives---");
+		System.out.println("--- Primitives ---");
 
 		if(primitiveObjectList.size() > 0) {
 			for(PrimitiveObject p : primitiveObjectList) {

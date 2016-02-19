@@ -31,7 +31,7 @@ public class WhileStatementExpressions {
 	}
 	
 	public void printAllWhileStatements() {
-		System.out.println("---While Statements---");
+		System.out.println("--- While Statements ---");
 
 		if(whileStatementObjectList.size() > 0) {
 			for(WhileStatementObject obj : whileStatementObjectList) {

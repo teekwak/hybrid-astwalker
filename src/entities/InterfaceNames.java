@@ -26,7 +26,7 @@ public class InterfaceNames {
 	
 	public void printAllInterfaces() {
 		if(interfacesMap.size() > 0) {
-			System.out.println("---Interfaces---");
+			System.out.println("--- Interfaces ---");
 			for(Map.Entry<String, Map<Integer, Integer>> entry : this.interfacesMap.entrySet()) {
 				System.out.println(entry.getKey());
 			}			
@@ -34,7 +34,7 @@ public class InterfaceNames {
 	}
 	
 	public void printAllImplements() {
-		System.out.println("---Implements---");
+		System.out.println("--- Implements ---");
 
 		if(implementsList.size() > 0) {
 			for(String s : this.implementsList) {

@@ -34,7 +34,7 @@ public class GenericsNames {
 	}
 	
 	public void printAllGenerics() {
-		System.out.println("---Generics---");
+		System.out.println("--- Generics ---");
 
 		if(genericsObjectList.size() > 0) {
 			for(GenericsObject p : genericsObjectList) {

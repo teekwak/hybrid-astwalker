@@ -35,7 +35,7 @@ public class CatchClauseNames {
 	}
 	
 	public void printAllCatchClauses() {
-		System.out.println("---Catch Clauses---");
+		System.out.println("--- Catch Clauses ---");
 
 		if(catchClauseObjectList.size() > 0) {
 			for(CatchClauseObject obj : catchClauseObjectList) {

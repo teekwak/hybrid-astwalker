@@ -31,7 +31,7 @@ public class DoStatementExpressions {
 	}
 	
 	public void printAllDoStatements() {
-		System.out.println("---Do Statements---");
+		System.out.println("--- Do Statements ---");
 
 		if(doStatementObjectList.size() > 0) {
 			for(DoStatementObject d : doStatementObjectList) {

@@ -97,8 +97,9 @@ public class ASTWalker {
 				return true;			
 			}
 			
+			// done
 			public boolean visit(ConditionalExpression node){
-				System.out.println("ConditionalExpression of '" + node.getExpression() + "' at line " + cu.getLineNumber(node.getStartPosition()) + " " + cu.getColumnNumber(node.getStartPosition()));
+				fileModel.conditionalExpressionExpressions.addConditionalExpression(node.getExpression().toString(), node.getElseExpression().toString(), node.getThenExpression().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
 				return true;		
 			}
 			
@@ -108,19 +109,22 @@ public class ASTWalker {
 				return true;				
 			}
 			
+			// done
 			public boolean visit(EnhancedForStatement node) {
-				SimpleName name = node.getParameter().getName();
-				System.out.println("EnhancedForStatement of '" + name  + "' at line " + cu.getLineNumber(name.getStartPosition()) + " " + cu.getColumnNumber(name.getStartPosition()));
+				SimpleName name = node.getParameter().getName();			
+				fileModel.forStatementExpressions.addForStatement(name.toString(), true, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 				return true;				
 			}
 			
+			// done - ish. only returns middle conditional part of for statement
 			public boolean visit(ForStatement node) {
-				fileModel.forStatementExpressions.addForStatement(node.getExpression().toString(), cu.getLineNumber(node.getStartPosition()) , cu.getColumnNumber(node.getStartPosition()) );				
+				fileModel.forStatementExpressions.addForStatement(node.getExpression().toString(), false, cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()) );				
 				return true;				
 			}
 			
+			// done
 			public boolean visit(IfStatement node) {
-				System.out.println("IfStatement of '" + node.getExpression() + "' at line " + cu.getLineNumber(node.getStartPosition()) + " " + cu.getColumnNumber(node.getStartPosition()));
+				fileModel.ifStatementExpressions.addIfStatement(node.getExpression().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));				
 				return true;
 			}
 			
@@ -131,9 +135,9 @@ public class ASTWalker {
 				return true;
 			}
 			
+			// done
 			public boolean visit(InfixExpression node){
-				String name = node.getOperator().toString();
-				System.out.println("InfixExpression of '" + name  + "' at line " + cu.getLineNumber(node.getLeftOperand().getStartPosition()) + " " + (cu.getColumnNumber(node.getLeftOperand().getStartPosition()) + cu.getColumnNumber(node.getRightOperand().getStartPosition())) / 2);
+				fileModel.infixExpressionExpressions.addInfixExpression(node.getOperator().toString(), node.getLeftOperand().toString(), node.getRightOperand().toString(), cu.getLineNumber(node.getLeftOperand().getStartPosition()), (cu.getColumnNumber(node.getLeftOperand().getStartPosition()) + cu.getColumnNumber(node.getRightOperand().getStartPosition())) / 2);
 				return true;
 			}
 			
@@ -144,7 +148,6 @@ public class ASTWalker {
 				return true;
 			}
 
-			
 			public boolean visit(MethodInvocation node) {
 				SimpleName name = node.getName();
 				fileModel.methodNames.addMethodInvocation(name.toString(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));				
@@ -198,14 +201,30 @@ public class ASTWalker {
 				return true;
 			}
 			
-			
+			// done
 			public boolean visit(ThrowStatement node) {
-				System.out.println("ThrowStatement of '" + node.getExpression() + "' at line " + cu.getLineNumber(node.getStartPosition()) + " " + cu.getColumnNumber(node.getStartPosition()));
+				fileModel.throwStatementNames.addThrowStatement(node.getExpression().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));				
 				return true;	
 			}
 
+			// done
 			public boolean visit(TryStatement node) {
-				System.out.println("TryStatement at line " + cu.getLineNumber(node.getStartPosition()) + " " + cu.getColumnNumber(node.getStartPosition()));
+				String tryBody = "";
+				String finallyBody = "";
+								
+				try {
+					tryBody = node.getBody().toString();
+				} catch (NullPointerException e1) {
+					tryBody = "";
+				}
+				
+				try {
+					finallyBody = node.getFinally().toString();
+				} catch (NullPointerException e2) {
+					finallyBody = "";
+				}
+				
+				fileModel.tryStatementNames.addTryStatement(tryBody, node.catchClauses(), finallyBody, cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
 				return true;				
 			}
 			
