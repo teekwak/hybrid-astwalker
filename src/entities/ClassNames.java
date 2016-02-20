@@ -5,33 +5,61 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+class SuperClassObject {
+	String name;
+	int lineNumber;
+	
+	SuperClassObject(String n, int l) {
+		name = n;
+		lineNumber = l;
+	}
+	
+	void printEntity() {
+		System.out.println(name + " => " + lineNumber);
+	}
+}
+
+class ClassObject {
+	String name;
+	int lineNumber;
+	int columnNumber;
+	
+	ClassObject(String n, int l, int c) {
+		name = n;
+		lineNumber = l;
+		columnNumber = c;
+	}
+	
+	void printEntity() {
+		System.out.println(name + " => " + lineNumber + " | " + columnNumber);
+	}
+}
+
 public class ClassNames {
 	
-	Map<String, Map<Integer, Integer>> classesMap;
-	List<String> extendsList;
+	List<ClassObject> classObjectList;
+	List<SuperClassObject> superClassList;
 
 	public ClassNames() {
-		classesMap = new HashMap<>();
-		extendsList = new ArrayList<>();
+		classObjectList = new ArrayList<>();
+		superClassList = new ArrayList<>();
 	}
 	
 	public void addClass(String name, int lineNumber, int columnNumber) {
-		Map<Integer, Integer> tempMap = new HashMap<>();
-		tempMap.put(lineNumber, columnNumber);
-		this.classesMap.put(name, tempMap);
+		classObjectList.add(new ClassObject(name, lineNumber, columnNumber));
 	}
 	
-	public void addExtends(String name) {
-		extendsList.add(name);
+	public void addExtends(String name, int lineNumber) {
+		superClassList.add(new SuperClassObject(name, lineNumber));
 	}
 	
 	public void printAllClasses() {
 		System.out.println("--- Classes ---");
 
-		if(classesMap.size() > 0) {
-			for(Map.Entry<String, Map<Integer, Integer>> entry : this.classesMap.entrySet()) {
-				System.out.println(entry.getKey());
-			}			
+		if(classObjectList.size() > 0) {
+			for(ClassObject obj : classObjectList) {
+				obj.printEntity();
+			}
 			System.out.println();
 		}
 		else {
@@ -42,9 +70,9 @@ public class ClassNames {
 	public void printAllExtends() {
 		System.out.println("--- Extends ---");
 
-		if(extendsList.size() > 0) {
-			for(String s : this.extendsList) {
-				System.out.println(s);
+		if(superClassList.size() > 0) {
+			for(SuperClassObject obj : superClassList) {
+				obj.printEntity();
 			}
 			System.out.println();
 		} 

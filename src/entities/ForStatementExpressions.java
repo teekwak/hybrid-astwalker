@@ -17,7 +17,7 @@ class ForStatementObject {
 	}
 	
 	void printEntity() {
-		System.out.println(condition + " (enhanced: " + enhanced + ") "+ " => " + lineNumber + " | " + columnNumber);
+		System.out.println(condition + " (enhanced: " + enhanced + ")"+ " => " + lineNumber + " | " + columnNumber);
 	}
 }
 

@@ -20,7 +20,7 @@ class GenericsObject {
 	}
 
 	void printEntity() {
-		System.out.println(name + " " + type);
+		System.out.println(name + ": " + type + " => " + lineNumber + " | " + columnNumber);
 	}
 }
 

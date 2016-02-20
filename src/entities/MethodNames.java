@@ -102,6 +102,10 @@ public class MethodNames {
 			for(MethodObject m : methodObjectList) {
 				m.printMethod();
 			}			
+			System.out.println();
+		}
+		else {
+			System.out.println("None\n");
 		}
 	}
 }

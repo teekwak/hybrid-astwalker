@@ -5,31 +5,60 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class InterfaceNames {
-	Map<String, Map<Integer, Integer>> interfacesMap;
-	List<String> implementsList;
-
-	public InterfaceNames() {
-		interfacesMap = new HashMap<>();
-		implementsList = new ArrayList<>();
+class InterfaceObject {
+	String name;
+	int lineNumber;
+	int columnNumber;
+	
+	InterfaceObject(String n, int l, int c) {
+		name = n;
+		lineNumber = l;
+		columnNumber = c;
 	}
 	
-	public void addImplements(String name) {
-		implementsList.add(name);
+	void printEntity() {
+		System.out.println(name + " => " + lineNumber + " | " + columnNumber);
+	}
+}
+
+class ImplementsObject {
+	String name;
+	int lineNumber;
+	
+	ImplementsObject(String n, int l) {
+		name = n;
+		lineNumber = l;
+	}
+	
+	void printEntity() {
+		System.out.println(name + " => " + lineNumber);
+	}
+}
+
+public class InterfaceNames {
+	List<InterfaceObject> interfaceObjectList;
+	List<ImplementsObject> implementsObjectList;
+
+	public InterfaceNames() {
+		interfaceObjectList = new ArrayList<>();
+		implementsObjectList = new ArrayList<>();
+	}
+	
+	public void addImplements(String name, int lineNumber) {
+		implementsObjectList.add(new ImplementsObject(name, lineNumber));
 	}
 	
 	public void addInterface(String name, int lineNumber, int columnNumber) {
-		Map<Integer, Integer> tempMap = new HashMap<>();
-		tempMap.put(lineNumber, columnNumber);
-		this.interfacesMap.put(name, tempMap);
+		interfaceObjectList.add(new InterfaceObject(name, lineNumber, columnNumber));
 	}
 	
 	public void printAllInterfaces() {
-		if(interfacesMap.size() > 0) {
+		if(interfaceObjectList.size() > 0) {
 			System.out.println("--- Interfaces ---");
-			for(Map.Entry<String, Map<Integer, Integer>> entry : this.interfacesMap.entrySet()) {
-				System.out.println(entry.getKey());
-			}			
+			for(InterfaceObject obj : interfaceObjectList) {
+				obj.printEntity();
+			}
+			
 			System.out.println();
 		}
 		else {
@@ -40,9 +69,9 @@ public class InterfaceNames {
 	public void printAllImplements() {
 		System.out.println("--- Implements ---");
 
-		if(implementsList.size() > 0) {
-			for(String s : this.implementsList) {
-				System.out.println(s);
+		if(implementsObjectList.size() > 0) {
+			for(ImplementsObject obj : this.implementsObjectList) {
+				obj.printEntity();
 			}			
 			System.out.println();
 		}

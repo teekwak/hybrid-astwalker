@@ -37,11 +37,6 @@ import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
 import org.eclipse.jdt.core.dom.WildcardType;
 
-import entities.ClassNames;
-import entities.InterfaceNames;
-import entities.PackageNames;
-import entities.PrimitiveNames;
-
 /**
  * Walks Java source code and parses constructs
  * 
@@ -253,12 +248,12 @@ public class ASTWalker {
 					fileModel.classNames.addClass(node.getName().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
 					
 					if(node.getSuperclassType() != null) {
-						fileModel.classNames.addExtends(node.getSuperclassType().toString());
+						fileModel.classNames.addExtends(node.getSuperclassType().toString(), cu.getLineNumber(node.getStartPosition()));
 					}
 					
 					if(node.superInterfaceTypes().size() != 0) {
 						for(Object o : node.superInterfaceTypes()) {
-							fileModel.interfaceNames.addImplements(o.toString());
+							fileModel.interfaceNames.addImplements(o.toString(), cu.getLineNumber(node.getStartPosition()));
 						}
 					}
 				} 

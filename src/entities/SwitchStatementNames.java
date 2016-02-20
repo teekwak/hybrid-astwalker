@@ -22,7 +22,7 @@ class SwitchStatementObject {
 		System.out.println("Switch Statement: " + expression + " => " + lineNumber + " | " + columnNumber);
 	
 		for(Map.Entry<String, Map<Integer, Integer>> entry : switchCaseMap.entrySet()) {
-			System.out.println("Switch Case: " + entry.getKey() + " ");
+			System.out.print("Switch Case: " + entry.getKey() + " => ");
 			for(Map.Entry<Integer, Integer> positionEntry : entry.getValue().entrySet()) {
 				System.out.print(positionEntry.getKey() + " | " + positionEntry.getValue());
 			}

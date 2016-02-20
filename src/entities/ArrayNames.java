@@ -19,7 +19,7 @@ class ArrayObject {
 	}
 	
 	void printName() {
-		System.out.println(name + " " + type);
+		System.out.println(name + ": " + type + " => " + lineNumber + " | " + columnNumber);
 	}
 }
 

@@ -21,7 +21,11 @@ public class ImportNames {
 
 		if(importsMap.size() > 0) {
 			for(Map.Entry<String, Map<Integer, Integer>> entry : this.importsMap.entrySet()) {
-				System.out.println(entry.getKey());
+				System.out.print(entry.getKey() + " => ");
+				for(Map.Entry<Integer, Integer> position : entry.getValue().entrySet()) {
+					System.out.print(position.getKey() + " | " + position.getValue());
+				}
+				System.out.println();
 			}			
 			System.out.println();
 		}
