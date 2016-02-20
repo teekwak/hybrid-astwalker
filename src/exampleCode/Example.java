@@ -49,6 +49,12 @@ public class Example {
 	    }
 	}
 	
+	public void printCollection2(Collection<Object> d) {
+		for(Object f : d) {
+			System.out.println(f);
+		}
+	}
+	
 	public int returnSomethingAmazing(int a, double b, boolean c, float d, Map<String, Integer> e, int[][] f) {
 		return 2;
 	}

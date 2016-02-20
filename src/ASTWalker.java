@@ -26,6 +26,7 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
+import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
@@ -192,21 +193,8 @@ public class ASTWalker {
 				
 				return true;
 			}
-
-			// difficult to figure out, need to pair SwitchCase with SwitchStatement
-			/*
-			public boolean visit(SwitchCase node) {
-				try {
-					System.out.println("SwitchCase of '" + node.getExpression() + "' at line " + cu.getLineNumber(node.getStartPosition()) + " " + cu.getColumnNumber(node.getStartPosition()));
-				} catch (NullPointerException e) {
-					// default case
-					System.out.println("SwitchCase of default at line " + cu.getLineNumber(node.getStartPosition()) + " " + cu.getColumnNumber(node.getStartPosition()));
-				}
-				return true;				
-			}
-			*/
 			
-			// this is real bad
+			// done
 			public boolean visit(SwitchStatement node) {				
 				Map<String, Map<Integer, Integer>> switchCaseMap = new HashMap<>();
 				
@@ -338,14 +326,13 @@ public class ASTWalker {
 			
 			// done
 			public boolean visit(WhileStatement node){		
-				System.out.println("I AM HERE");
 				fileModel.whileStatementExpressions.addWhileStatement(node.getExpression().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
 				return true;	
 			}	
 			
-			// weird case. returns Type
-			public boolean visit(WildcardType node) {				
-				System.out.println("WildcardType of " + node.getBound() + " at line " + cu.getLineNumber(node.getStartPosition()) + " " + cu.getColumnNumber(node.getStartPosition()));
+			// done
+			public boolean visit(WildcardType node) {	
+				fileModel.wildCardNames.addWildCard(((ParameterizedType) node.getParent()).getType(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));				
 				return true;
 			}
 			
