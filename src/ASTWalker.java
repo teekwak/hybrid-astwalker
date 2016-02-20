@@ -1,6 +1,10 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -12,6 +16,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ConditionalExpression;
 import org.eclipse.jdt.core.dom.DoStatement;
 import org.eclipse.jdt.core.dom.EnhancedForStatement;
+import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ForStatement;
 import org.eclipse.jdt.core.dom.IfStatement;
@@ -24,6 +29,7 @@ import org.eclipse.jdt.core.dom.PackageDeclaration;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
+import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.SwitchCase;
 import org.eclipse.jdt.core.dom.SwitchStatement;
 import org.eclipse.jdt.core.dom.ThrowStatement;
@@ -94,7 +100,7 @@ public class ASTWalker {
 			public boolean visit(CatchClause node) {
 				SimpleName name = node.getException().getName();
 				fileModel.catchClauseNames.addCatch(node.getException().getType(), name.toString(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
-				return true;			
+				return false;			
 			}
 			
 			// done
@@ -141,13 +147,14 @@ public class ASTWalker {
 				return true;
 			}
 			
-			
+			// NOT COMPLETE
 			public boolean visit(MethodDeclaration node) {
 				SimpleName name = node.getName();
 				fileModel.methodNames.addMethod(name.toString(), node.getReturnType2(), node.parameters(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 				return true;
 			}
 
+			// NOT COMPLETE
 			public boolean visit(MethodInvocation node) {
 				SimpleName name = node.getName();
 				fileModel.methodNames.addMethodInvocation(name.toString(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));				
@@ -186,6 +193,8 @@ public class ASTWalker {
 				return true;
 			}
 
+			// difficult to figure out, need to pair SwitchCase with SwitchStatement
+			/*
 			public boolean visit(SwitchCase node) {
 				try {
 					System.out.println("SwitchCase of '" + node.getExpression() + "' at line " + cu.getLineNumber(node.getStartPosition()) + " " + cu.getColumnNumber(node.getStartPosition()));
@@ -195,9 +204,29 @@ public class ASTWalker {
 				}
 				return true;				
 			}
+			*/
 			
-			public boolean visit(SwitchStatement node) {
-				System.out.println("SwitchStatement of '" + node.getExpression() + "' at line " + cu.getLineNumber(node.getStartPosition()) + " " + cu.getColumnNumber(node.getStartPosition()));
+			// this is real bad
+			public boolean visit(SwitchStatement node) {				
+				Map<String, Map<Integer, Integer>> switchCaseMap = new HashMap<>();
+				
+				for(Object s : node.statements()) {
+					if(s instanceof SwitchCase) {
+						Map<Integer, Integer> position = new HashMap<>();
+						
+						String expression = "";
+						try {
+							expression = ((SwitchCase) s).getExpression().toString();
+						} catch (NullPointerException e) {
+							expression = "Default";
+						}
+						
+						position.put(cu.getLineNumber(((SwitchCase) s).getStartPosition()), cu.getColumnNumber(((SwitchCase)s).getStartPosition()));
+						switchCaseMap.put(expression, position);
+					}
+				}
+				
+				fileModel.switchStatementNames.addSwitchStatement(node.getExpression().toString(), switchCaseMap, cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
 				return true;
 			}
 			

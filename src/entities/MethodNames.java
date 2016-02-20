@@ -97,7 +97,7 @@ public class MethodNames {
 	
 	public void printAllMethods() {
 		if(methodObjectList.size() > 0) {
-			System.out.println("---Methods---");
+			System.out.println("--- Methods ---");
 			for(MethodObject m : methodObjectList) {
 				m.printMethod();
 			}			

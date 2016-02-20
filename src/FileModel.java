@@ -12,6 +12,7 @@ import entities.InterfaceNames;
 import entities.MethodNames;
 import entities.PackageNames;
 import entities.PrimitiveNames;
+import entities.SwitchStatementNames;
 import entities.ThrowStatementNames;
 import entities.TryStatementNames;
 import entities.WhileStatementExpressions;
@@ -37,6 +38,7 @@ public class FileModel {
 	ThrowStatementNames throwStatementNames;
 	TryStatementNames tryStatementNames;
 	ConditionalExpressionExpressions conditionalExpressionExpressions;
+	SwitchStatementNames switchStatementNames;
 	
 	public FileModel() {
 		this.classNames = new ClassNames();
@@ -56,6 +58,7 @@ public class FileModel {
 		this.throwStatementNames = new ThrowStatementNames();
 		this.tryStatementNames = new TryStatementNames();
 		this.conditionalExpressionExpressions = new ConditionalExpressionExpressions();
+		this.switchStatementNames = new SwitchStatementNames();
 	}
 	
 	public FileModel parseDeclarations(String fileLocation) throws IOException {
@@ -88,8 +91,6 @@ public class FileModel {
 		
 		fileModel.interfaceNames.printAllInterfaces();
 		
-		fileModel.methodNames.printAllMethods();
-			
 		fileModel.primitiveNames.printAllPrimitives();
 		
 		fileModel.arrayNames.printAllArrays();
@@ -112,8 +113,14 @@ public class FileModel {
 		
 		fileModel.tryStatementNames.printAllTryStatements();
 		
+		fileModel.conditionalExpressionExpressions.printAllConditionalExpressions();
+
+		
 		*/
 		
-		fileModel.conditionalExpressionExpressions.printAllConditionalExpressions();
+		//fileModel.methodNames.printAllMethods();
+		
+		fileModel.switchStatementNames.printAllSwitchStatements();
+		
 	}
 }
