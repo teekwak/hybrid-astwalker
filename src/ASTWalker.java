@@ -13,6 +13,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ConditionalExpression;
 import org.eclipse.jdt.core.dom.DoStatement;
 import org.eclipse.jdt.core.dom.EnhancedForStatement;
+import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ForStatement;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
@@ -28,6 +29,7 @@ import org.eclipse.jdt.core.dom.SwitchCase;
 import org.eclipse.jdt.core.dom.SwitchStatement;
 import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.jdt.core.dom.TryStatement;
+import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
@@ -93,7 +95,7 @@ public class ASTWalker {
 			public boolean visit(CatchClause node) {
 				SimpleName name = node.getException().getName();
 				fileModel.catchClauseNames.addCatch(node.getException().getType(), name.toString(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
-				return false;			
+				return true;			
 			}
 			
 			// done
@@ -115,7 +117,7 @@ public class ASTWalker {
 				return true;				
 			}
 			
-			// done - ish. only returns middle conditional part of for statement
+			// done-ish. only returns middle conditional part of for statement
 			public boolean visit(ForStatement node) {
 				fileModel.forStatementExpressions.addForStatement(node.getExpression().toString(), false, cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()) );				
 				return true;				
@@ -162,12 +164,10 @@ public class ASTWalker {
 			}			
 			
 			// called on parameters of function
-			// excluded qualifiedType, unionType, wildcardType
+			// done-ish. excluded qualifiedType, unionType, wildcardType
 			public boolean visit(SingleVariableDeclaration node) {
 				SimpleName name = node.getName();
-								
-				System.out.println("SVD: " + name.toString() + ": " + node.getType());
-				
+												
 				if(node.getType().isArrayType()) {					
 					fileModel.arrayNames.addArray(name.toString(), node.getType(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 				}
@@ -269,60 +269,82 @@ public class ASTWalker {
 				return true;				
 			}
 			
-
-			/*
-			// depends on type
-			public boolean visit(VariableDeclarationFragment node) {
+			// done-ish. excluded qualifiedType, unionType, wildcardType
+			public boolean visit(VariableDeclarationFragment node) {				
 				SimpleName name = node.getName();
+				Type nodeType = ((FieldDeclaration) node.getParent()).getType();
 				
-				System.out.print("(Fragment: " + node.getName().toString() + ")");
-				
-				if(node.getInitializer() instanceof ClassInstanceCreation) {
-					ClassInstanceCreation instanceCreation = (ClassInstanceCreation)node.getInitializer();
-					if(instanceCreation.getType() instanceof SimpleType) {
-						SimpleType simpleType = (SimpleType)instanceCreation.getType();
-						System.out.println(simpleType.getName().getFullyQualifiedName());
-					}
+				if(nodeType.isArrayType()) {					
+					fileModel.arrayNames.addArray(name.toString(), nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 				}
-				
+				else if(nodeType.isParameterizedType()) {
+					fileModel.genericsNames.addGenerics(name.toString(), nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+				}
+				else if(nodeType.isPrimitiveType()) {
+					fileModel.primitiveNames.addPrimitive(name.toString(), nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+				}
+				else if(nodeType.isSimpleType()) {
+					fileModel.simpleNames.addSimpleName(name.toString(), nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+				}
 				else {
-					Type varType = null;
-					try {
-						varType = ((FieldDeclaration)node.getParent()).getType();
-					}
-					catch(ClassCastException e) {
-						System.out.println("Error: " + node.getName().toString() + " " + cu.getLineNumber(name.getStartPosition()));
-						e.printStackTrace();
-						System.exit(-1);
-					}
-					
-					System.out.println(varType + " WORKS FINE");
-					
-					if(varType.isPrimitiveType()) {
-						fileModel.primitiveNames.addPrimitive(name.toString(), varType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
-					}
-					
-					if(varType.isParameterizedType()) {
-						System.out.println("PARAMETERIZED");
-					}
-					
-					//fileModel.add(node, cu.getLineNumber(node.getName().getStartPosition()), cu.getColumnNumber(node.getName().getStartPosition()));
-
+					System.out.println("Something is missing " + nodeType);
 				}
 				
 				return true;
 			}
-			*/
 			
-			// NOT COMPLETE
+			// done-ish. excluded qualifiedType, unionType, wildcardType
 			public boolean visit(VariableDeclarationStatement node) {
-				System.out.println("VDS " + node.getType());
+				Type nodeType = node.getType();
+				
+				for(Object v : node.fragments()) {
+					SimpleName name = ((VariableDeclarationFragment) v).getName();
+					
+					if(nodeType.isArrayType()) {					
+						fileModel.arrayNames.addArray(name.toString(), nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					}
+					else if(nodeType.isParameterizedType()) {
+						fileModel.genericsNames.addGenerics(name.toString(), nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					}
+					else if(nodeType.isPrimitiveType()) {
+						fileModel.primitiveNames.addPrimitive(name.toString(), nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					}
+					else if(nodeType.isSimpleType()) {
+						fileModel.simpleNames.addSimpleName(name.toString(), nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					}
+					else {
+						System.out.println("Something is missing " + nodeType);
+					}
+				}
+				
 				return false; // does this stop from going to VariableDeclarationFragment?
 			}
 			
-			// NOT COMPLETE
-			public boolean visit(VariableDeclarationExpression node) {
-				System.out.println("VDE");
+			// exactly the same as visit(VariableDeclarationStatement node)
+			// done-ish. excluded qualifiedType, unionType, wildcardType
+			public boolean visit(VariableDeclarationExpression node) {				
+				Type nodeType = node.getType();
+				
+				for(Object v : node.fragments()) {
+					SimpleName name = ((VariableDeclarationFragment) v).getName();
+					
+					if(nodeType.isArrayType()) {					
+						fileModel.arrayNames.addArray(name.toString(), nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					}
+					else if(nodeType.isParameterizedType()) {
+						fileModel.genericsNames.addGenerics(name.toString(), nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					}
+					else if(nodeType.isPrimitiveType()) {
+						fileModel.primitiveNames.addPrimitive(name.toString(), nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					}
+					else if(nodeType.isSimpleType()) {
+						fileModel.simpleNames.addSimpleName(name.toString(), nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					}
+					else {
+						System.out.println("Something is missing " + nodeType);
+					}
+				}
+				
 				return false; // does this stop from going to VariableDeclarationFragment?
 			}
 			

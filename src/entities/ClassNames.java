@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class ClassNames {
+	
 	Map<String, Map<Integer, Integer>> classesMap;
 	List<String> extendsList;
 
@@ -31,6 +32,7 @@ public class ClassNames {
 			for(Map.Entry<String, Map<Integer, Integer>> entry : this.classesMap.entrySet()) {
 				System.out.println(entry.getKey());
 			}			
+			System.out.println();
 		}
 		else {
 			System.out.println("None\n");

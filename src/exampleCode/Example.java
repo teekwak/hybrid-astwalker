@@ -81,7 +81,6 @@ public class Example {
 			System.out.println("nvm");
 		}
 		
-		
 		HashMap<String, HashMap<String, Integer>> reallyBigMap = new HashMap<>();
 		
 		switch(i) {

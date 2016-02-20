@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 class SwitchStatementObject {
+	
 	String expression;
 	Map<String, Map<Integer, Integer>> switchCaseMap;
 	int lineNumber;

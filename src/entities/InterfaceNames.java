@@ -30,6 +30,10 @@ public class InterfaceNames {
 			for(Map.Entry<String, Map<Integer, Integer>> entry : this.interfacesMap.entrySet()) {
 				System.out.println(entry.getKey());
 			}			
+			System.out.println();
+		}
+		else {
+			System.out.println("None\n");
 		}
 	}
 	

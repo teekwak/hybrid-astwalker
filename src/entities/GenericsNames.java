@@ -6,6 +6,7 @@ import java.util.List;
 import org.eclipse.jdt.core.dom.Type;
 
 class GenericsObject {
+	
 	String name;
 	Type type;
 	int lineNumber;
