@@ -5,12 +5,12 @@ import java.util.List;
 
 import org.eclipse.jdt.core.dom.Type;
 
-class WildCardObject {
+class WildcardObject {
 	Type type;
 	int lineNumber;
 	int columnNumber;
 	
-	WildCardObject(Type t, int l, int c) {
+	WildcardObject(Type t, int l, int c) {
 		type = t;
 		lineNumber = l;
 		columnNumber = c;
@@ -21,23 +21,24 @@ class WildCardObject {
 	}
 }
 
-public class WildCardNames {
-	List<WildCardObject> wildCardObjectList;
+public class WildcardNames {
+	List<WildcardObject> wildcardObjectList;
 	
-	public WildCardNames() {
-		wildCardObjectList = new ArrayList<>();
+	public WildcardNames() {
+		wildcardObjectList = new ArrayList<>();
 	}
 	
-	public void addWildCard(Type type, int lineNumber, int columnNumber) {
-		wildCardObjectList.add(new WildCardObject(type, lineNumber, columnNumber));
+	public void addWildcard(Type type, int lineNumber, int columnNumber) {
+		wildcardObjectList.add(new WildcardObject(type, lineNumber, columnNumber));
 	}
 	
-	public void printAllWildCards() {
+	public void printAllWildcards() {
 		System.out.println("--- Wild Cards ---");
-		if(wildCardObjectList.size() > 0) {
-			for(WildCardObject obj : wildCardObjectList) {
+		if(wildcardObjectList.size() > 0) {
+			for(WildcardObject obj : wildcardObjectList) {
 				obj.printEntity();
 			}
+			System.out.println();
 		}
 		else {
 			System.out.println("None\n");

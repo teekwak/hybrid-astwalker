@@ -12,11 +12,12 @@ import entities.InterfaceNames;
 import entities.MethodNames;
 import entities.PackageNames;
 import entities.PrimitiveNames;
+import entities.SimpleNames;
 import entities.SwitchStatementNames;
 import entities.ThrowStatementNames;
 import entities.TryStatementNames;
 import entities.WhileStatementExpressions;
-import entities.WildCardNames;
+import entities.WildcardNames;
 
 import java.io.IOException;
 
@@ -40,7 +41,8 @@ public class FileModel {
 	TryStatementNames tryStatementNames;
 	ConditionalExpressionExpressions conditionalExpressionExpressions;
 	SwitchStatementNames switchStatementNames;
-	WildCardNames wildCardNames;
+	WildcardNames wildcardNames;
+	SimpleNames simpleNames;
 	
 	public FileModel() {
 		this.classNames = new ClassNames();
@@ -61,7 +63,8 @@ public class FileModel {
 		this.tryStatementNames = new TryStatementNames();
 		this.conditionalExpressionExpressions = new ConditionalExpressionExpressions();
 		this.switchStatementNames = new SwitchStatementNames();
-		this.wildCardNames = new WildCardNames();
+		this.wildcardNames = new WildcardNames();
+		this.simpleNames = new SimpleNames();
 	}
 	
 	public FileModel parseDeclarations(String fileLocation) throws IOException {
@@ -121,10 +124,13 @@ public class FileModel {
 		fileModel.methodNames.printAllMethods();
 		
 		fileModel.switchStatementNames.printAllSwitchStatements();
-		
+
+
 		*/
 		
-		fileModel.wildCardNames.printAllWildCards();
+		fileModel.wildcardNames.printAllWildcards();
+		
+		fileModel.simpleNames.printAllSimpleNames();
 		
 	}
 }

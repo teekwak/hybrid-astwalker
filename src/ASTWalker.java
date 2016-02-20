@@ -1,9 +1,7 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.core.dom.AST;
@@ -11,13 +9,10 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CatchClause;
-import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ConditionalExpression;
 import org.eclipse.jdt.core.dom.DoStatement;
 import org.eclipse.jdt.core.dom.EnhancedForStatement;
-import org.eclipse.jdt.core.dom.ExpressionStatement;
-import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ForStatement;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
@@ -28,14 +23,11 @@ import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
 import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.SimpleName;
-import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
-import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.SwitchCase;
 import org.eclipse.jdt.core.dom.SwitchStatement;
 import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.jdt.core.dom.TryStatement;
-import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
@@ -170,25 +162,35 @@ public class ASTWalker {
 			}			
 			
 			// called on parameters of function
+			// excluded qualifiedType, unionType, wildcardType
 			public boolean visit(SingleVariableDeclaration node) {
 				SimpleName name = node.getName();
 								
-				
 				System.out.println("SVD: " + name.toString() + ": " + node.getType());
 				
-				
-				if(node.getType().isPrimitiveType()) {
-					fileModel.primitiveNames.addPrimitive(name.toString(), node.getType().toString(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+				if(node.getType().isArrayType()) {					
+					fileModel.arrayNames.addArray(name.toString(), node.getType(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 				}
 				else if(node.getType().isParameterizedType()) {
-					fileModel.genericsNames.addGenerics(name.toString(), node.getType().toString(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					fileModel.genericsNames.addGenerics(name.toString(), node.getType(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 				}
-				else if (node.getType().isArrayType()) {					
-					fileModel.arrayNames.addArray(name.toString(), node.getType().toString().replace("[]", ""), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+				else if(node.getType().isPrimitiveType()) {
+					fileModel.primitiveNames.addPrimitive(name.toString(), node.getType(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+				}
+				else if(node.getType().isQualifiedType()) {
+					System.out.println("Qualified?");
+				}
+				else if(node.getType().isSimpleType()) {
+					fileModel.simpleNames.addSimpleName(name.toString(), node.getType(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+				}
+				else if(node.getType().isUnionType()) {
+					System.out.println("Union?");
+				}
+				else if(node.getType().isWildcardType()) {
+					System.out.println("Wild?");
 				}
 				else {
-					// this does get run!
-					System.out.println("Something is missing " + node.getType().toString());
+					System.out.println("Something is missing " + node.getType());
 				}
 				
 				return true;
@@ -332,8 +334,8 @@ public class ASTWalker {
 			
 			// done
 			public boolean visit(WildcardType node) {	
-				fileModel.wildCardNames.addWildCard(((ParameterizedType) node.getParent()).getType(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));				
-				return true;
+				fileModel.wildcardNames.addWildcard(((ParameterizedType) node.getParent()).getType(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));				
+				return false;
 			}
 			
 		});		

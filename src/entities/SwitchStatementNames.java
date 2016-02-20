@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jdt.core.dom.SwitchCase;
-
 class SwitchStatementObject {
 	String expression;
 	Map<String, Map<Integer, Integer>> switchCaseMap;

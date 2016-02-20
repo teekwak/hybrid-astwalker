@@ -7,11 +7,11 @@ import org.eclipse.jdt.core.dom.Type;
 
 class ArrayObject {
 	String name;
-	String type;
+	Type type;
 	int lineNumber;
 	int columnNumber;
 	
-	ArrayObject(String n, String t, int l, int c) {
+	ArrayObject(String n, Type t, int l, int c) {
 		name = n;
 		type = t;
 		lineNumber = l;
@@ -31,7 +31,7 @@ public class ArrayNames {
 		this.arrayObjectList = new ArrayList<>();
 	}
 	
-	public void addArray(String name, String type, int lineNumber, int columnNumber) {
+	public void addArray(String name, Type type, int lineNumber, int columnNumber) {
 		arrayObjectList.add(new ArrayObject(name, type, lineNumber, columnNumber));
 	}
 	

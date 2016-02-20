@@ -7,11 +7,11 @@ import org.eclipse.jdt.core.dom.Type;
 
 class PrimitiveObject {
 	String name;
-	Object type;
+	Type type;
 	int lineNumber;
 	int columnNumber;
 	
-	PrimitiveObject(String n, Object t, int l, int c) {
+	PrimitiveObject(String n, Type t, int l, int c) {
 		name = n;
 		type = t;
 		lineNumber = l;
@@ -31,7 +31,7 @@ public class PrimitiveNames {
 		this.primitiveObjectList = new ArrayList<>();
 	}
 	
-	public void addPrimitive(String name, Object type, int lineNumber, int columnNumber) {
+	public void addPrimitive(String name, Type type, int lineNumber, int columnNumber) {
 		primitiveObjectList.add(new PrimitiveObject(name, type, lineNumber, columnNumber));
 	}
 	

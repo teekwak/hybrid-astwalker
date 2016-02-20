@@ -13,7 +13,7 @@ class MethodObject {
 	List<String> statements;
 	Map<Integer, Integer> invocationPositions;
 	
-	MethodObject(String n, Object r, List p, int l, int c) {
+	MethodObject(String n, Object r, List<Object> p, int l, int c) {
 		name = n;
 		returnType = r;
 		
@@ -70,7 +70,7 @@ public class MethodNames {
 	// what to do if there are same named methods in different classes? for example, void print()?
 	// bodies are different, but .getBody() is deprecated
 	// idk why, but it works now. go with it
-	public void addMethod(String name, Object returnType, List parameters, int lineNumber, int columnNumber) {
+	public void addMethod(String name, Object returnType, List<Object> parameters, int lineNumber, int columnNumber) {
 		MethodObject methodObject = new MethodObject(name, returnType, parameters, lineNumber, columnNumber);
 		
 		// accounts for duplicates versus overloading function

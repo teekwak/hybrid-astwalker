@@ -3,13 +3,15 @@ package entities;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.core.dom.Type;
+
 class GenericsObject {
 	String name;
-	String type;
+	Type type;
 	int lineNumber;
 	int columnNumber;
 	
-	GenericsObject(String n, String t, int l, int c) {
+	GenericsObject(String n, Type t, int l, int c) {
 		name = n;
 		type = t;
 		lineNumber = l;
@@ -29,7 +31,7 @@ public class GenericsNames {
 		this.genericsObjectList = new ArrayList<>();
 	}
 	
-	public void addGenerics(String name, String type, int lineNumber, int columnNumber) {
+	public void addGenerics(String name, Type type, int lineNumber, int columnNumber) {
 		genericsObjectList.add(new GenericsObject(name, type, lineNumber, columnNumber));
 	}
 	
