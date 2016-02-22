@@ -19,10 +19,10 @@ class IfStatementObject {
 	}
 }
 
-public class IfStatementExpressions {
+public class IfStatement__ {
 	public List<IfStatementObject> ifStatementObjectList;
 	
-	public IfStatementExpressions() {
+	public IfStatement__() {
 		this.ifStatementObjectList = new ArrayList<>();
 	}
 	

@@ -19,10 +19,10 @@ class ThrowStatementObject {
 	}
 }
 
-public class ThrowStatementNames {
+public class ThrowStatement__ {
 	List<ThrowStatementObject> ThrowStatementObjectList;
 	
-	public ThrowStatementNames() {
+	public ThrowStatement__() {
 		ThrowStatementObjectList = new ArrayList<>();
 	}
 	

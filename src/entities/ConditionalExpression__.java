@@ -23,10 +23,10 @@ class ConditionalExpressionObject {
 	}
 }
 
-public class ConditionalExpressionExpressions {
+public class ConditionalExpression__ {
 	public List<ConditionalExpressionObject> conditionalExpressionObjectList;
 	
-	public ConditionalExpressionExpressions() {
+	public ConditionalExpression__() {
 		this.conditionalExpressionObjectList = new ArrayList<>();
 	}
 	

@@ -21,10 +21,10 @@ class ForStatementObject {
 	}
 }
 
-public class ForStatementExpressions {
+public class ForStatement__ {
 	List<ForStatementObject> forStatementObjectList;
 	
-	public ForStatementExpressions() {
+	public ForStatement__() {
 		this.forStatementObjectList = new ArrayList<>();
 	}
 	

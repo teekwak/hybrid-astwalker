@@ -24,11 +24,11 @@ class GenericsObject {
 	}
 }
 
-public class GenericsNames {
+public class Generics__ {
 	// name, type, lineNumber, columnNumber
 	List<GenericsObject> genericsObjectList;
 
-	public GenericsNames() {
+	public Generics__() {
 		this.genericsObjectList = new ArrayList<>();
 	}
 	

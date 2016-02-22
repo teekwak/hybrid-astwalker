@@ -26,10 +26,10 @@ class SimpleNameObject {
 	}
 }
 
-public class SimpleNames {
+public class SimpleName__ {
 	List<SimpleNameObject> simpleNameObjectList;
 	
-	public SimpleNames() {
+	public SimpleName__() {
 		this.simpleNameObjectList = new ArrayList<>();
 	}
 	

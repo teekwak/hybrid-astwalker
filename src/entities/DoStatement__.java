@@ -19,10 +19,10 @@ class DoStatementObject {
 	}
 }
 
-public class DoStatementExpressions {
+public class DoStatement__ {
 	List<DoStatementObject> doStatementObjectList;
 	
-	public DoStatementExpressions() {
+	public DoStatement__() {
 		this.doStatementObjectList = new ArrayList<>();
 	}
 	

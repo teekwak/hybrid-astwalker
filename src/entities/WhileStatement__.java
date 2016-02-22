@@ -19,10 +19,10 @@ class WhileStatementObject {
 	}
 }
 
-public class WhileStatementExpressions {
+public class WhileStatement__ {
 	public List<WhileStatementObject> whileStatementObjectList;
 	
-	public WhileStatementExpressions() {
+	public WhileStatement__() {
 		this.whileStatementObjectList = new ArrayList<>();
 	}
 	

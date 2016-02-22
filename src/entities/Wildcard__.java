@@ -21,10 +21,10 @@ class WildcardObject {
 	}
 }
 
-public class WildcardNames {
+public class Wildcard__ {
 	List<WildcardObject> wildcardObjectList;
 	
-	public WildcardNames() {
+	public Wildcard__() {
 		wildcardObjectList = new ArrayList<>();
 	}
 	

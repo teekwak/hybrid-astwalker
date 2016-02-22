@@ -33,12 +33,12 @@ class ClassObject {
 	}
 }
 
-public class ClassNames {
+public class Class__ {
 	
 	List<ClassObject> classObjectList;
 	List<SuperClassObject> superClassList;
 
-	public ClassNames() {
+	public Class__() {
 		classObjectList = new ArrayList<>();
 		superClassList = new ArrayList<>();
 	}

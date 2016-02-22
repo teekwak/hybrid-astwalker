@@ -23,10 +23,10 @@ class ArrayObject {
 	}
 }
 
-public class ArrayNames {
+public class Array__ {
 	List<ArrayObject> arrayObjectList;
 
-	public ArrayNames() {
+	public Array__() {
 		this.arrayObjectList = new ArrayList<>();
 	}
 	

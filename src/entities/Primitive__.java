@@ -24,11 +24,11 @@ class PrimitiveObject {
 	}
 }
 
-public class PrimitiveNames {
+public class Primitive__ {
 	// name, type, lineNumber, columnNumber
 	List<PrimitiveObject> primitiveObjectList;
 
-	public PrimitiveNames() {
+	public Primitive__() {
 		this.primitiveObjectList = new ArrayList<>();
 	}
 	

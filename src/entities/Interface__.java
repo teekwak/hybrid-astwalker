@@ -33,11 +33,11 @@ class ImplementsObject {
 	}
 }
 
-public class InterfaceNames {
+public class Interface__ {
 	List<InterfaceObject> interfaceObjectList;
 	List<ImplementsObject> implementsObjectList;
 
-	public InterfaceNames() {
+	public Interface__() {
 		interfaceObjectList = new ArrayList<>();
 		implementsObjectList = new ArrayList<>();
 	}

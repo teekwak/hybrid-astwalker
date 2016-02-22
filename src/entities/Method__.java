@@ -61,10 +61,10 @@ class MethodObject {
 	}
 }
 
-public class MethodNames {
+public class Method__ {
 	List<MethodObject> methodObjectList;
 	
-	public MethodNames() {
+	public Method__() {
 		methodObjectList = new ArrayList<>();
 	}
 	

@@ -19,10 +19,10 @@ class ImportObject {
 	}
 }
 
-public class ImportNames {
+public class Import__ {
 	List<ImportObject> importObjectList;
 	
-	public ImportNames() {
+	public Import__() {
 		importObjectList = new ArrayList<>();
 	}
 	

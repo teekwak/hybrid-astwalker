@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CatchClause;
@@ -14,6 +16,9 @@ import org.eclipse.jdt.core.dom.DoStatement;
 import org.eclipse.jdt.core.dom.EnhancedForStatement;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ForStatement;
+import org.eclipse.jdt.core.dom.IBinding;
+import org.eclipse.jdt.core.dom.IMethodBinding;
+import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.InfixExpression;
@@ -88,72 +93,72 @@ public class ASTWalker {
 			// done
 			public boolean visit(CatchClause node) {
 				SimpleName name = node.getException().getName();
-				fileModel.catchClauseNames.addCatch(node.getException().getType(), name.toString(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+				fileModel.catchClause__.addCatch(node.getException().getType(), name.toString(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 				return true;			
 			}
 			
 			// done
 			public boolean visit(ConditionalExpression node){
-				fileModel.conditionalExpressionExpressions.addConditionalExpression(node.getExpression().toString(), node.getElseExpression().toString(), node.getThenExpression().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
+				fileModel.conditionalExpression__.addConditionalExpression(node.getExpression().toString(), node.getElseExpression().toString(), node.getThenExpression().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
 				return true;		
 			}
 			
 			// done
 			public boolean visit(DoStatement node) {
-				fileModel.doStatementExpressions.addDoStatement(node.getExpression().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));				
+				fileModel.doStatement__.addDoStatement(node.getExpression().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));				
 				return true;				
 			}
 			
 			// done
 			public boolean visit(EnhancedForStatement node) {
 				SimpleName name = node.getParameter().getName();			
-				fileModel.forStatementExpressions.addForStatement(name.toString(), true, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+				fileModel.forStatement__.addForStatement(name.toString(), true, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 				return true;				
 			}
 			
 			// done-ish. only returns middle conditional part of for statement
 			public boolean visit(ForStatement node) {
-				fileModel.forStatementExpressions.addForStatement(node.getExpression().toString(), false, cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()) );				
+				fileModel.forStatement__.addForStatement(node.getExpression().toString(), false, cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()) );				
 				return true;				
 			}
 			
 			// done
 			public boolean visit(IfStatement node) {
-				fileModel.ifStatementExpressions.addIfStatement(node.getExpression().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));				
+				fileModel.ifStatement__.addIfStatement(node.getExpression().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));				
 				return true;
 			}
 			
 			// done
 			public boolean visit(ImportDeclaration node){
 				Name name = node.getName();
-				fileModel.importNames.addImport(name.toString(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));				
+				fileModel.import__.addImport(name.toString(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));				
 				return true;
 			}
 			
 			// done
 			public boolean visit(InfixExpression node){
-				fileModel.infixExpressionExpressions.addInfixExpression(node.getOperator().toString(), node.getLeftOperand().toString(), node.getRightOperand().toString(), cu.getLineNumber(node.getLeftOperand().getStartPosition()), (cu.getColumnNumber(node.getLeftOperand().getStartPosition()) + cu.getColumnNumber(node.getRightOperand().getStartPosition())) / 2);
+				fileModel.infixExpression__.addInfixExpression(node.getOperator().toString(), node.getLeftOperand().toString(), node.getRightOperand().toString(), cu.getLineNumber(node.getLeftOperand().getStartPosition()), (cu.getColumnNumber(node.getLeftOperand().getStartPosition()) + cu.getColumnNumber(node.getRightOperand().getStartPosition())) / 2);
 				return true;
 			}
 			
 			// NOT COMPLETE
 			public boolean visit(MethodDeclaration node) {
 				SimpleName name = node.getName();
-				fileModel.methodNames.addMethod(name.toString(), node.getReturnType2(), node.parameters(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+				fileModel.method__.addMethod(name.toString(), node.getReturnType2(), node.parameters(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 				return true;
 			}
 
 			// NOT COMPLETE
 			public boolean visit(MethodInvocation node) {
 				SimpleName name = node.getName();
-				fileModel.methodNames.addMethodInvocation(name.toString(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));				
+				fileModel.method__.addMethodInvocation(name.toString(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));				
 				return true;					
 			}
 			
 			// done
 			public boolean visit(PackageDeclaration node){
 				Name name = node.getName();
-				fileModel.packageNames.addPackage(name.toString(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));				
+				fileModel.package__.addPackage(name.toString(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));				
 				return true;
 			}			
 			
@@ -163,25 +168,16 @@ public class ASTWalker {
 				SimpleName name = node.getName();
 												
 				if(node.getType().isArrayType()) {					
-					fileModel.arrayNames.addArray(name.toString(), node.getType(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					fileModel.array__.addArray(name.toString(), node.getType(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 				}
 				else if(node.getType().isParameterizedType()) {
-					fileModel.genericsNames.addGenerics(name.toString(), node.getType(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					fileModel.generics__.addGenerics(name.toString(), node.getType(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 				}
 				else if(node.getType().isPrimitiveType()) {
-					fileModel.primitiveNames.addPrimitive(name.toString(), node.getType(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
-				}
-				else if(node.getType().isQualifiedType()) {
-					System.out.println("Qualified?");
+					fileModel.primitive__.addPrimitive(name.toString(), node.getType(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 				}
 				else if(node.getType().isSimpleType()) {
-					fileModel.simpleNames.addSimpleName(name.toString(), node.getType(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
-				}
-				else if(node.getType().isUnionType()) {
-					System.out.println("Union?");
-				}
-				else if(node.getType().isWildcardType()) {
-					System.out.println("Wild?");
+					fileModel.simpleName__.addSimpleName(name.toString(), node.getType(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 				}
 				else {
 					System.out.println("Something is missing " + node.getType());
@@ -210,13 +206,13 @@ public class ASTWalker {
 					}
 				}
 				
-				fileModel.switchStatementNames.addSwitchStatement(node.getExpression().toString(), switchCaseMap, cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
+				fileModel.switchStatement__.addSwitchStatement(node.getExpression().toString(), switchCaseMap, cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
 				return true;
 			}
 			
 			// done
 			public boolean visit(ThrowStatement node) {
-				fileModel.throwStatementNames.addThrowStatement(node.getExpression().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));				
+				fileModel.throwStatement__.addThrowStatement(node.getExpression().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));				
 				return true;	
 			}
 
@@ -237,27 +233,27 @@ public class ASTWalker {
 					finallyBody = "";
 				}
 				
-				fileModel.tryStatementNames.addTryStatement(tryBody, node.catchClauses(), finallyBody, cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
+				fileModel.tryStatement__.addTryStatement(tryBody, node.catchClauses(), finallyBody, cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
 				return true;				
 			}
 			
 			// done
 			public boolean visit(TypeDeclaration node) {
 				if(!node.isInterface()) {
-					fileModel.classNames.addClass(node.getName().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
+					fileModel.class__.addClass(node.getName().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
 					
 					if(node.getSuperclassType() != null) {
-						fileModel.classNames.addExtends(node.getSuperclassType().toString(), cu.getLineNumber(node.getStartPosition()));
+						fileModel.class__.addExtends(node.getSuperclassType().toString(), cu.getLineNumber(node.getStartPosition()));
 					}
 					
 					if(node.superInterfaceTypes().size() != 0) {
 						for(Object o : node.superInterfaceTypes()) {
-							fileModel.interfaceNames.addImplements(o.toString(), cu.getLineNumber(node.getStartPosition()));
+							fileModel.interface__.addImplements(o.toString(), cu.getLineNumber(node.getStartPosition()));
 						}
 					}
 				} 
 				else {
-					fileModel.interfaceNames.addInterface(node.getName().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
+					fileModel.interface__.addInterface(node.getName().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
 				}
 				
 				return true;				
@@ -269,16 +265,16 @@ public class ASTWalker {
 				Type nodeType = ((FieldDeclaration) node.getParent()).getType();
 				
 				if(nodeType.isArrayType()) {					
-					fileModel.arrayNames.addArray(name.toString(), nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					fileModel.array__.addArray(name.toString(), nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 				}
 				else if(nodeType.isParameterizedType()) {
-					fileModel.genericsNames.addGenerics(name.toString(), nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					fileModel.generics__.addGenerics(name.toString(), nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 				}
 				else if(nodeType.isPrimitiveType()) {
-					fileModel.primitiveNames.addPrimitive(name.toString(), nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					fileModel.primitive__.addPrimitive(name.toString(), nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 				}
 				else if(nodeType.isSimpleType()) {
-					fileModel.simpleNames.addSimpleName(name.toString(), nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					fileModel.simpleName__.addSimpleName(name.toString(), nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 				}
 				else {
 					System.out.println("Something is missing " + nodeType);
@@ -295,16 +291,16 @@ public class ASTWalker {
 					SimpleName name = ((VariableDeclarationFragment) v).getName();
 					
 					if(nodeType.isArrayType()) {					
-						fileModel.arrayNames.addArray(name.toString(), nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+						fileModel.array__.addArray(name.toString(), nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 					}
 					else if(nodeType.isParameterizedType()) {
-						fileModel.genericsNames.addGenerics(name.toString(), nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+						fileModel.generics__.addGenerics(name.toString(), nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 					}
 					else if(nodeType.isPrimitiveType()) {
-						fileModel.primitiveNames.addPrimitive(name.toString(), nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+						fileModel.primitive__.addPrimitive(name.toString(), nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 					}
 					else if(nodeType.isSimpleType()) {
-						fileModel.simpleNames.addSimpleName(name.toString(), nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+						fileModel.simpleName__.addSimpleName(name.toString(), nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 					}
 					else {
 						System.out.println("Something is missing " + nodeType);
@@ -323,16 +319,16 @@ public class ASTWalker {
 					SimpleName name = ((VariableDeclarationFragment) v).getName();
 					
 					if(nodeType.isArrayType()) {					
-						fileModel.arrayNames.addArray(name.toString(), nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+						fileModel.array__.addArray(name.toString(), nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 					}
 					else if(nodeType.isParameterizedType()) {
-						fileModel.genericsNames.addGenerics(name.toString(), nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+						fileModel.generics__.addGenerics(name.toString(), nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 					}
 					else if(nodeType.isPrimitiveType()) {
-						fileModel.primitiveNames.addPrimitive(name.toString(), nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+						fileModel.primitive__.addPrimitive(name.toString(), nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 					}
 					else if(nodeType.isSimpleType()) {
-						fileModel.simpleNames.addSimpleName(name.toString(), nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+						fileModel.simpleName__.addSimpleName(name.toString(), nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 					}
 					else {
 						System.out.println("Something is missing " + nodeType);
@@ -344,13 +340,13 @@ public class ASTWalker {
 			
 			// done
 			public boolean visit(WhileStatement node){		
-				fileModel.whileStatementExpressions.addWhileStatement(node.getExpression().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
+				fileModel.whileStatement__.addWhileStatement(node.getExpression().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
 				return true;	
 			}	
 			
 			// done
 			public boolean visit(WildcardType node) {	
-				fileModel.wildcardNames.addWildcard(((ParameterizedType) node.getParent()).getType(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));				
+				fileModel.wildcard__.addWildcard(((ParameterizedType) node.getParent()).getType(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));				
 				return false;
 			}
 			

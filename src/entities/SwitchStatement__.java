@@ -31,10 +31,10 @@ class SwitchStatementObject {
 	}
 }
 
-public class SwitchStatementNames {	
+public class SwitchStatement__ {	
 	public List<SwitchStatementObject> switchStatementObjectList;
 	
-	public SwitchStatementNames() {
+	public SwitchStatement__() {
 		this.switchStatementObjectList = new ArrayList<>();
 	}
 	

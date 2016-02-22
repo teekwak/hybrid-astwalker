@@ -19,10 +19,10 @@ class PackageObject {
 	}
 }
 
-public class PackageNames {
+public class Package__ {
 	List<PackageObject> packageObjectList;
 
-	public PackageNames() {
+	public Package__() {
 		packageObjectList = new ArrayList<>();
 	}
 	

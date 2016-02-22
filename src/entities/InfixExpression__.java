@@ -24,10 +24,10 @@ class InfixExpressionObject {
 	}
 }
 
-public class InfixExpressionExpressions {
+public class InfixExpression__ {
 	public List<InfixExpressionObject> infixExpressionObjectList;
 	
-	public InfixExpressionExpressions() {
+	public InfixExpression__() {
 		this.infixExpressionObjectList = new ArrayList<>();
 	}
 	

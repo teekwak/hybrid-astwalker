@@ -1,70 +1,70 @@
-import entities.ArrayNames;
-import entities.CatchClauseNames;
-import entities.ClassNames;
-import entities.ConditionalExpressionExpressions;
-import entities.DoStatementExpressions;
-import entities.ForStatementExpressions;
-import entities.GenericsNames;
-import entities.IfStatementExpressions;
-import entities.ImportNames;
-import entities.InfixExpressionExpressions;
-import entities.InterfaceNames;
-import entities.MethodNames;
-import entities.PackageNames;
-import entities.PrimitiveNames;
-import entities.SimpleNames;
-import entities.SwitchStatementNames;
-import entities.ThrowStatementNames;
-import entities.TryStatementNames;
-import entities.WhileStatementExpressions;
-import entities.WildcardNames;
+import entities.Array__;
+import entities.CatchClause__;
+import entities.Class__;
+import entities.ConditionalExpression__;
+import entities.DoStatement__;
+import entities.ForStatement__;
+import entities.Generics__;
+import entities.IfStatement__;
+import entities.Import__;
+import entities.InfixExpression__;
+import entities.Interface__;
+import entities.Method__;
+import entities.Package__;
+import entities.Primitive__;
+import entities.SimpleName__;
+import entities.SwitchStatement__;
+import entities.ThrowStatement__;
+import entities.TryStatement__;
+import entities.WhileStatement__;
+import entities.Wildcard__;
 
 import java.io.IOException;
 
 public class FileModel {
 	
-	ArrayNames arrayNames;
-	CatchClauseNames catchClauseNames;
-	ClassNames classNames;
-	ConditionalExpressionExpressions conditionalExpressionExpressions;
-	DoStatementExpressions doStatementExpressions;
-	ForStatementExpressions forStatementExpressions;
-	GenericsNames genericsNames;
-	IfStatementExpressions ifStatementExpressions;
-	ImportNames importNames;
-	InfixExpressionExpressions infixExpressionExpressions;
-	InterfaceNames interfaceNames;
-	MethodNames methodNames;
-	PackageNames packageNames;
-	PrimitiveNames primitiveNames;
-	ThrowStatementNames throwStatementNames;
-	TryStatementNames tryStatementNames;
-	SimpleNames simpleNames;
-	SwitchStatementNames switchStatementNames;
-	WhileStatementExpressions whileStatementExpressions;
-	WildcardNames wildcardNames;
+	Array__ array__;
+	CatchClause__ catchClause__;
+	Class__ class__;
+	ConditionalExpression__ conditionalExpression__;
+	DoStatement__ doStatement__;
+	ForStatement__ forStatement__;
+	Generics__ generics__;
+	IfStatement__ ifStatement__;
+	Import__ import__;
+	InfixExpression__ infixExpression__;
+	Interface__ interface__;
+	Method__ method__;
+	Package__ package__;
+	Primitive__ primitive__;
+	ThrowStatement__ throwStatement__;
+	TryStatement__ tryStatement__;
+	SimpleName__ simpleName__;
+	SwitchStatement__ switchStatement__;
+	WhileStatement__ whileStatement__;
+	Wildcard__ wildcard__;
 	
 	public FileModel() {
-		this.arrayNames = new ArrayNames();
-		this.catchClauseNames = new CatchClauseNames();
-		this.classNames = new ClassNames();
-		this.conditionalExpressionExpressions = new ConditionalExpressionExpressions();
-		this.doStatementExpressions = new DoStatementExpressions();
-		this.forStatementExpressions = new ForStatementExpressions();
-		this.genericsNames = new GenericsNames();
-		this.ifStatementExpressions = new IfStatementExpressions();
-		this.infixExpressionExpressions = new InfixExpressionExpressions();
-		this.interfaceNames = new InterfaceNames();
-		this.importNames = new ImportNames();
-		this.methodNames = new MethodNames();
-		this.packageNames = new PackageNames();
-		this.primitiveNames = new PrimitiveNames();
-		this.simpleNames = new SimpleNames();
-		this.switchStatementNames = new SwitchStatementNames();
-		this.throwStatementNames = new ThrowStatementNames();
-		this.tryStatementNames = new TryStatementNames();
-		this.whileStatementExpressions = new WhileStatementExpressions();
-		this.wildcardNames = new WildcardNames();
+		this.array__ = new Array__();
+		this.catchClause__ = new CatchClause__();
+		this.class__ = new Class__();
+		this.conditionalExpression__ = new ConditionalExpression__();
+		this.doStatement__ = new DoStatement__();
+		this.forStatement__ = new ForStatement__();
+		this.generics__ = new Generics__();
+		this.ifStatement__ = new IfStatement__();
+		this.infixExpression__ = new InfixExpression__();
+		this.interface__ = new Interface__();
+		this.import__ = new Import__();
+		this.method__ = new Method__();
+		this.package__ = new Package__();
+		this.primitive__ = new Primitive__();
+		this.simpleName__ = new SimpleName__();
+		this.switchStatement__ = new SwitchStatement__();
+		this.throwStatement__ = new ThrowStatement__();
+		this.tryStatement__ = new TryStatement__();
+		this.whileStatement__ = new WhileStatement__();
+		this.wildcard__ = new Wildcard__();
 	}
 	
 	public FileModel parseDeclarations(String fileLocation) throws IOException {
@@ -73,28 +73,28 @@ public class FileModel {
 	}
 	
 	public void printEverything() {
-		this.arrayNames.printAllArrays();
-		this.catchClauseNames.printAllCatchClauses();
-		this.classNames.printAllClasses();
-		this.classNames.printAllExtends();
-		this.conditionalExpressionExpressions.printAllConditionalExpressions();
-		this.doStatementExpressions.printAllDoStatements();
-		this.forStatementExpressions.printAllForStatements();
-		this.genericsNames.printAllGenerics();
-		this.importNames.printAllImports();
-		this.ifStatementExpressions.printAllIfStatements();
-		this.infixExpressionExpressions.printAllInfixExpressions();
-		this.interfaceNames.printAllImplements();	
-		this.interfaceNames.printAllInterfaces();
-		this.methodNames.printAllMethods();
-		this.packageNames.printAllPackages();
-		this.primitiveNames.printAllPrimitives();
-		this.simpleNames.printAllSimpleNames();	
-		this.switchStatementNames.printAllSwitchStatements();
-		this.throwStatementNames.printAllThrowStatements();
-		this.tryStatementNames.printAllTryStatements();		
-		this.whileStatementExpressions.printAllWhileStatements();
-		this.wildcardNames.printAllWildcards();	
+		this.array__.printAllArrays();
+		this.catchClause__.printAllCatchClauses();
+		this.class__.printAllClasses();
+		this.class__.printAllExtends();
+		this.conditionalExpression__.printAllConditionalExpressions();
+		this.doStatement__.printAllDoStatements();
+		this.forStatement__.printAllForStatements();
+		this.generics__.printAllGenerics();
+		this.import__.printAllImports();
+		this.ifStatement__.printAllIfStatements();
+		this.infixExpression__.printAllInfixExpressions();
+		this.interface__.printAllImplements();	
+		this.interface__.printAllInterfaces();
+		this.method__.printAllMethods();
+		this.package__.printAllPackages();
+		this.primitive__.printAllPrimitives();
+		this.simpleName__.printAllSimpleNames();	
+		this.switchStatement__.printAllSwitchStatements();
+		this.throwStatement__.printAllThrowStatements();
+		this.tryStatement__.printAllTryStatements();		
+		this.whileStatement__.printAllWhileStatements();
+		this.wildcard__.printAllWildcards();	
 	}
 	
 	public void printToFile() {
@@ -108,6 +108,7 @@ public class FileModel {
 
 		fileModel = fileModel.parseDeclarations(fileLocation);	
 
-		fileModel.printEverything();
+		System.out.println("I reached the end");
+		
 	}
 }

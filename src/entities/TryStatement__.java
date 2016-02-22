@@ -25,10 +25,10 @@ class TryStatementObject {
 	}
 }
 
-public class TryStatementNames {
+public class TryStatement__ {
 	List<TryStatementObject> tryStatementObjectList;
 	
-	public TryStatementNames() {
+	public TryStatement__() {
 		tryStatementObjectList = new ArrayList<>();
 	}
 	

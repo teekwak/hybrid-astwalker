@@ -23,10 +23,10 @@ class CatchClauseObject {
 	}
 }
 
-public class CatchClauseNames {
+public class CatchClause__ {
 	List<CatchClauseObject> catchClauseObjectList;
 	
-	public CatchClauseNames() {
+	public CatchClause__() {
 		catchClauseObjectList = new ArrayList<>();
 	}
 	
