@@ -97,7 +97,7 @@ public class FileModel {
 		this.wildcardNames.printAllWildcards();	
 	}
 	
-	public void printDeclarationsToFile() {
+	public void printToFile() {
 
 	}
 	

@@ -1,34 +1,44 @@
 package entities;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
+
+class PackageObject {
+	String name;
+	int lineNumber;
+	int columnNumber;
+
+	PackageName(String n, int l, int c) {
+		name = n;
+		lineNumber = l;
+		columnNumber = c;
+	}
+
+	void printEntity() {
+		System.out.println(name + " => " + lineNumber + " | " + columnNumber);
+	}
+}
 
 public class PackageNames {
-	Map<String, Map<Integer, Integer>> packagesMap;
-	
+	List<PackageObject> packageObjectList;
+
 	public PackageNames() {
-		packagesMap = new HashMap<>();
+		packageObjectList = new ArrayList<>();
 	}
 	
 	public void addPackage(String name, int lineNumber, int columnNumber) {
-		Map<Integer, Integer> tempMap = new HashMap<>();
-		tempMap.put(lineNumber, columnNumber);
-		this.packagesMap.put(name, tempMap);
+		packageObjectList.add(new PackageObject(name, lineNumber, columnNumber));
 	}
-	
+
 	public void printAllPackages() {
 		System.out.println("--- Packages ---");
 
-		if(packagesMap.size() > 0) {
-			for(Map.Entry<String, Map<Integer, Integer>> entry : this.packagesMap.entrySet()) {
-				System.out.print(entry.getKey() + " => ");
-				for(Map.Entry<Integer, Integer> position : entry.getValue().entrySet()) {
-					System.out.print(position.getKey() + " | " + position.getValue());
-				}
-				System.out.println();
-			}			
+		if(packageObjectList.size() > 0) {
+			for(PackageObject obj : packageObjectList) {
+				obj.printEntity();
+			}
 			System.out.println();
-		}
+		}	
 		else {
 			System.out.println("None\n");
 		}

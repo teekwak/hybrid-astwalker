@@ -1,34 +1,44 @@
 package entities;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
+
+class ImportObject {
+	String name;
+	int lineNumber;
+	int columnNumber;
+
+	ImportObject(String n, int l, int c) {
+		name = n;
+		lineNumber = l;
+		columnNumber = c;
+	}
+
+	void printEntity() {
+		System.out.println(name + " => " + lineNumber + " | " + columnNumber);
+	}
+}
 
 public class ImportNames {
-	Map<String, Map<Integer, Integer>> importsMap;
+	List<ImportOject> importObjectList;
 	
 	public ImportNames() {
-		importsMap = new HashMap<>();
+		importObjectList = new ArrayList();
 	}
 	
 	public void addImport(String name, int lineNumber, int columnNumber) {
-		Map<Integer, Integer> tempMap = new HashMap<>();
-		tempMap.put(lineNumber, columnNumber);
-		this.importsMap.put(name, tempMap);
+		importObjectList.add(new ImportObject(name, lineNumber, columnNumber));
 	}
-	
+
 	public void printAllImports() {
 		System.out.println("--- Imports ---");
 
-		if(importsMap.size() > 0) {
-			for(Map.Entry<String, Map<Integer, Integer>> entry : this.importsMap.entrySet()) {
-				System.out.print(entry.getKey() + " => ");
-				for(Map.Entry<Integer, Integer> position : entry.getValue().entrySet()) {
-					System.out.print(position.getKey() + " | " + position.getValue());
-				}
-				System.out.println();
-			}			
+		if(importObjectList.size() > 0) {
+			for(ImportObject obj : importObjectList) {
+				obj.printEntity();
+			}
 			System.out.println();
-		}
+		}	
 		else {
 			System.out.println("None\n");
 		}

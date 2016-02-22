@@ -31,7 +31,7 @@ class MethodObject {
 		invocationPositions.put(l, c);
 	}
 	
-	void printMethod() {
+	void printEntity() {
 		System.out.println(name + ": " + returnType);
 		for(int i = 0; i < parameterNames.size(); i++) {
 			System.out.println("\t" + parameterNames.get(i) + ": " + parameterTypes.get(i));
@@ -100,7 +100,7 @@ public class MethodNames {
 		if(methodObjectList.size() > 0) {
 			System.out.println("--- Methods ---");
 			for(MethodObject m : methodObjectList) {
-				m.printMethod();
+				m.printEntity();
 			}			
 			System.out.println();
 		}

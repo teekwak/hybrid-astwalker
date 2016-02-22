@@ -18,13 +18,12 @@ class ArrayObject {
 		columnNumber = c;
 	}
 	
-	void printName() {
+	void printEntity() {
 		System.out.println(name + ": " + type + " => " + lineNumber + " | " + columnNumber);
 	}
 }
 
 public class ArrayNames {
-	// name, type, lineNumber, columnNumber
 	List<ArrayObject> arrayObjectList;
 
 	public ArrayNames() {
@@ -39,8 +38,8 @@ public class ArrayNames {
 		System.out.println("--- Arrays ---");
 
 		if(arrayObjectList.size() > 0) {
-			for(ArrayObject a : arrayObjectList) {
-				a.printName();
+			for(ArrayObject obj : arrayObjectList) {
+				obj.printEntity();
 			}
 			System.out.println();
 		}	
