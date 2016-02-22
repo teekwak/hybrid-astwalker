@@ -8,7 +8,7 @@ class PackageObject {
 	int lineNumber;
 	int columnNumber;
 
-	PackageName(String n, int l, int c) {
+	PackageObject(String n, int l, int c) {
 		name = n;
 		lineNumber = l;
 		columnNumber = c;

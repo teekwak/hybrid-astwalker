@@ -20,10 +20,10 @@ class ImportObject {
 }
 
 public class ImportNames {
-	List<ImportOject> importObjectList;
+	List<ImportObject> importObjectList;
 	
 	public ImportNames() {
-		importObjectList = new ArrayList();
+		importObjectList = new ArrayList<>();
 	}
 	
 	public void addImport(String name, int lineNumber, int columnNumber) {
