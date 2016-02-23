@@ -10,6 +10,9 @@ import java.util.LinkedList;
 class Blah implements SomethingElse {
 	void print() {
 		System.out.println("this is blah");
+		if(1 == 2) {
+			System.out.println("never happens");
+		}
 	}
 	
 	void print(int a) {

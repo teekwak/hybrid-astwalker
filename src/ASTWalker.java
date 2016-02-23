@@ -52,6 +52,8 @@ import org.eclipse.jdt.core.dom.WildcardType;
 public class ASTWalker {
 	
 	public FileModel fileModel;
+	public String currentClass;
+	public String currentMethod;
 	
 	/**
 	 * Reads code file 
@@ -148,6 +150,9 @@ public class ASTWalker {
 			
 			// NOT COMPLETE
 			public boolean visit(MethodDeclaration node) {
+				currentMethod = node.getName().toString();
+				System.out.println("entered method " + currentMethod);
+				
 				SimpleName name = node.getName();
 				
 				IMethodBinding binding = node.resolveBinding();
@@ -157,6 +162,12 @@ public class ASTWalker {
 				return true;
 			}
 
+			// holy shit there is an endVisit method
+			public void endVisit(MethodDeclaration node) {
+				System.out.println("left method " + currentMethod);
+				currentMethod = "";
+			}
+			
 			// NOT COMPLETE
 			public boolean visit(MethodInvocation node) {
 				SimpleName name = node.getName();
@@ -253,6 +264,9 @@ public class ASTWalker {
 			
 			// done
 			public boolean visit(TypeDeclaration node) {
+				currentClass = node.getName().toString();
+				System.out.println("Entered class " + currentClass);
+						
 				if(!node.isInterface()) {
 					fileModel.class__.addClass(node.getName().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
 					
@@ -271,6 +285,11 @@ public class ASTWalker {
 				}
 				
 				return true;				
+			}
+			
+			public void endVisit(TypeDeclaration node) {
+				System.out.println("Exited class " + currentClass);
+				currentClass = "";
 			}
 			
 			// done-ish. excluded qualifiedType, unionType, wildcardType
