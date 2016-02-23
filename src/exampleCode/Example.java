@@ -8,7 +8,17 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 class Blah implements SomethingElse {
+	void print() {
+		System.out.println("this is blah");
+	}
 	
+	void print(int a) {
+		System.out.println(a);
+	}
+	
+	void print(int a, int b) {
+		System.out.println(a + b);
+	}
 }
 
 class Node extends LinkedList implements Junk1, Junk2{
@@ -80,6 +90,11 @@ public class Example {
 		else {
 			System.out.println("nvm");
 		}
+		
+		Blah blah = new Blah();
+		blah.print();
+		blah.print(1);
+		blah.print(3, 4);
 		
 		HashMap<String, HashMap<String, Integer>> reallyBigMap = new HashMap<>();
 		

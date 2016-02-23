@@ -9,7 +9,8 @@ import entities.IfStatement__;
 import entities.Import__;
 import entities.InfixExpression__;
 import entities.Interface__;
-import entities.Method__;
+import entities.MethodDeclaration__;
+import entities.MethodInvocation__;
 import entities.Package__;
 import entities.Primitive__;
 import entities.SimpleName__;
@@ -20,6 +21,8 @@ import entities.WhileStatement__;
 import entities.Wildcard__;
 
 import java.io.IOException;
+
+import org.eclipse.core.runtime.CoreException;
 
 public class FileModel {
 	
@@ -34,7 +37,8 @@ public class FileModel {
 	Import__ import__;
 	InfixExpression__ infixExpression__;
 	Interface__ interface__;
-	Method__ method__;
+	MethodDeclaration__ methodDeclaration__;
+	MethodInvocation__ methodInvocation__;
 	Package__ package__;
 	Primitive__ primitive__;
 	ThrowStatement__ throwStatement__;
@@ -56,7 +60,8 @@ public class FileModel {
 		this.infixExpression__ = new InfixExpression__();
 		this.interface__ = new Interface__();
 		this.import__ = new Import__();
-		this.method__ = new Method__();
+		this.methodDeclaration__ = new MethodDeclaration__();
+		this.methodInvocation__ = new MethodInvocation__();
 		this.package__ = new Package__();
 		this.primitive__ = new Primitive__();
 		this.simpleName__ = new SimpleName__();
@@ -67,7 +72,7 @@ public class FileModel {
 		this.wildcard__ = new Wildcard__();
 	}
 	
-	public FileModel parseDeclarations(String fileLocation) throws IOException {
+	public FileModel parseDeclarations(String fileLocation) throws IOException, CoreException {
 		ASTWalker astWalker = new ASTWalker();
 		return astWalker.parseFile(fileLocation);
 	}
@@ -86,7 +91,8 @@ public class FileModel {
 		this.infixExpression__.printAllInfixExpressions();
 		this.interface__.printAllImplements();	
 		this.interface__.printAllInterfaces();
-		this.method__.printAllMethods();
+		this.methodDeclaration__.printAllMethodDeclarations();
+		this.methodInvocation__.printAllMethodInvocations();
 		this.package__.printAllPackages();
 		this.primitive__.printAllPrimitives();
 		this.simpleName__.printAllSimpleNames();	
@@ -101,14 +107,15 @@ public class FileModel {
 
 	}
 	
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, CoreException {
 		String fileLocation = "/Users/Kwak/Documents/workspace/ASTTest/src/exampleCode/Example.java";
 		
 		FileModel fileModel = new FileModel();		
 
 		fileModel = fileModel.parseDeclarations(fileLocation);	
 
-		System.out.println("I reached the end");
-		
+		//fileModel.methodDeclaration__.printAllMethodDeclarations();
+					
+		fileModel.methodInvocation__.printAllMethodInvocations();
 	}
 }

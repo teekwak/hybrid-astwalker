@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -14,6 +15,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ConditionalExpression;
 import org.eclipse.jdt.core.dom.DoStatement;
 import org.eclipse.jdt.core.dom.EnhancedForStatement;
+import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ForStatement;
 import org.eclipse.jdt.core.dom.IBinding;
@@ -29,6 +31,7 @@ import org.eclipse.jdt.core.dom.PackageDeclaration;
 import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
+import org.eclipse.jdt.core.dom.StructuralPropertyDescriptor;
 import org.eclipse.jdt.core.dom.SwitchCase;
 import org.eclipse.jdt.core.dom.SwitchStatement;
 import org.eclipse.jdt.core.dom.ThrowStatement;
@@ -74,19 +77,21 @@ public class ASTWalker {
 		return fileData.toString().toCharArray();	
 	}
 	
-	public FileModel parseFile(String fileLocation) throws IOException {
+	public FileModel parseFile(String fileLocation) throws IOException, CoreException {
 		this.fileModel = new FileModel();
 		
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
 
+		parser.setUnitName(fileLocation);
+		parser.setEnvironment(null, null, null, true);
 		parser.setSource(readFileToCharArray(fileLocation));
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		parser.setResolveBindings(true);
 		parser.setBindingsRecovery(true);
 		parser.setStatementsRecovery(true);
-
+		
 		final CompilationUnit cu = (CompilationUnit) parser.createAST(null);
-		 
+		
 		// alphabetical order
 		cu.accept(new ASTVisitor() {
 
@@ -118,7 +123,7 @@ public class ASTWalker {
 			
 			// done-ish. only returns middle conditional part of for statement
 			public boolean visit(ForStatement node) {
-				fileModel.forStatement__.addForStatement(node.getExpression().toString(), false, cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()) );				
+				fileModel.forStatement__.addForStatement(node.getExpression().toString(), false, cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));				
 				return true;				
 			}
 			
@@ -144,14 +149,23 @@ public class ASTWalker {
 			// NOT COMPLETE
 			public boolean visit(MethodDeclaration node) {
 				SimpleName name = node.getName();
-				fileModel.method__.addMethod(name.toString(), node.getReturnType2(), node.parameters(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+				
+				IMethodBinding binding = node.resolveBinding();
+				ITypeBinding className = binding.getDeclaringClass();
+				
+				fileModel.methodDeclaration__.addMethodDeclaration(name.toString(), className.getName(), node.getReturnType2(), node.parameters(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 				return true;
 			}
 
 			// NOT COMPLETE
 			public boolean visit(MethodInvocation node) {
 				SimpleName name = node.getName();
-				fileModel.method__.addMethodInvocation(name.toString(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));				
+								
+				IMethodBinding binding = node.resolveMethodBinding();
+				ITypeBinding type = binding.getDeclaringClass();
+				
+				fileModel.methodInvocation__.addMethodInvocation(name.toString(), type.getName(), "CLASS WHERE INVOKED", node.arguments(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+				
 				return true;					
 			}
 			
