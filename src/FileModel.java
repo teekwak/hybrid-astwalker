@@ -25,7 +25,7 @@ import java.io.IOException;
 import org.eclipse.core.runtime.CoreException;
 
 public class FileModel {
-	
+
 	Array__ array__;
 	CatchClause__ catchClause__;
 	Class__ class__;
@@ -47,7 +47,7 @@ public class FileModel {
 	SwitchStatement__ switchStatement__;
 	WhileStatement__ whileStatement__;
 	Wildcard__ wildcard__;
-	
+
 	public FileModel() {
 		this.array__ = new Array__();
 		this.catchClause__ = new CatchClause__();
@@ -71,12 +71,12 @@ public class FileModel {
 		this.whileStatement__ = new WhileStatement__();
 		this.wildcard__ = new Wildcard__();
 	}
-	
+
 	public FileModel parseDeclarations(String fileLocation) throws IOException, CoreException {
 		ASTWalker astWalker = new ASTWalker();
 		return astWalker.parseFile(fileLocation);
 	}
-	
+
 	public void printEverything() {
 		this.array__.printAllArrays();
 		this.catchClause__.printAllCatchClauses();
@@ -89,33 +89,32 @@ public class FileModel {
 		this.import__.printAllImports();
 		this.ifStatement__.printAllIfStatements();
 		this.infixExpression__.printAllInfixExpressions();
-		this.interface__.printAllImplements();	
+		this.interface__.printAllImplements();
 		this.interface__.printAllInterfaces();
 		this.methodDeclaration__.printAllMethodDeclarations();
 		this.methodInvocation__.printAllMethodInvocations();
 		this.package__.printAllPackages();
 		this.primitive__.printAllPrimitives();
-		this.simpleName__.printAllSimpleNames();	
+		this.simpleName__.printAllSimpleNames();
 		this.switchStatement__.printAllSwitchStatements();
 		this.throwStatement__.printAllThrowStatements();
-		this.tryStatement__.printAllTryStatements();		
+		this.tryStatement__.printAllTryStatements();
 		this.whileStatement__.printAllWhileStatements();
-		this.wildcard__.printAllWildcards();	
+		this.wildcard__.printAllWildcards();
 	}
-	
+
 	public void printToFile() {
 
 	}
-	
+
 	public static void main(String[] args) throws IOException, CoreException {
 		String fileLocation = "/Users/Kwak/Documents/workspace/ASTTest/src/exampleCode/Example.java";
-		
-		FileModel fileModel = new FileModel();		
 
-		fileModel = fileModel.parseDeclarations(fileLocation);	
+		FileModel fileModel = new FileModel();
 
-		//fileModel.methodDeclaration__.printAllMethodDeclarations();
-					
-		fileModel.methodInvocation__.printAllMethodInvocations();
+		fileModel = fileModel.parseDeclarations(fileLocation);
+
+		fileModel.printEverything();
+	
 	}
 }

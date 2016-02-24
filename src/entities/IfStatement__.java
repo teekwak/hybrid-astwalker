@@ -5,31 +5,35 @@ import java.util.List;
 
 class IfStatementObject {
 	String expression;
+	String className;
+	String methodName;
 	int lineNumber;
 	int columnNumber;
 
-	IfStatementObject(String e, int l, int c) {
+	IfStatementObject(String e, String cn, String mn, int l, int c) {
 		expression = e;
+		className = cn;
+		methodName = mn;
 		lineNumber = l;
 		columnNumber = c;
 	}
 
 	void printEntity() {
-		System.out.println(expression + " => " + lineNumber + " | " + columnNumber); 
+		System.out.println(expression + " => " + lineNumber + " | " + columnNumber);
 	}
 }
 
 public class IfStatement__ {
 	public List<IfStatementObject> ifStatementObjectList;
-	
+
 	public IfStatement__() {
 		this.ifStatementObjectList = new ArrayList<>();
 	}
-	
-	public void addIfStatement(String expression, int lineNumber, int columnNumber) {		
-		ifStatementObjectList.add(new IfStatementObject(expression, lineNumber, columnNumber));
+
+	public void addIfStatement(String expression, String className, String methodName, int lineNumber, int columnNumber) {
+		ifStatementObjectList.add(new IfStatementObject(expression, className, methodName, lineNumber, columnNumber));
 	}
-	
+
 	public void printAllIfStatements() {
 		System.out.println("--- If Statements ---");
 

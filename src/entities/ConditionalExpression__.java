@@ -7,33 +7,39 @@ class ConditionalExpressionObject {
 	String expression;
 	String elseExpression;
 	String thenExpression;
+	String className;
+	String methodName;
 	int lineNumber;
 	int columnNumber;
-	
-	ConditionalExpressionObject(String e, String eE, String tE, int l, int c) {
+
+	ConditionalExpressionObject(String e, String eE, String tE, String cn, String mn, int l, int c) {
 		expression = e;
 		elseExpression = eE;
 		thenExpression = tE;
+		className = cn;
+		methodName = mn;
 		lineNumber = l;
 		columnNumber = c;
 	}
-	
+
 	void printEntity() {
 		System.out.println(expression + " => " + lineNumber + " | " + columnNumber);
+		System.out.println("\tClass:\t" + className);
+		System.out.println("\tMethod:\t" + methodName);
 	}
 }
 
 public class ConditionalExpression__ {
 	public List<ConditionalExpressionObject> conditionalExpressionObjectList;
-	
+
 	public ConditionalExpression__() {
 		this.conditionalExpressionObjectList = new ArrayList<>();
 	}
-	
-	public void addConditionalExpression(String expression, String elseExpression, String thenExpression, int lineNumber, int columnNumber) {
-		conditionalExpressionObjectList.add(new ConditionalExpressionObject(expression, elseExpression, thenExpression, lineNumber, columnNumber));
+
+	public void addConditionalExpression(String expression, String elseExpression, String thenExpression, String className, String methodName, int lineNumber, int columnNumber) {
+		conditionalExpressionObjectList.add(new ConditionalExpressionObject(expression, elseExpression, thenExpression, className, methodName, lineNumber, columnNumber));
 	}
-	
+
 	public void printAllConditionalExpressions() {
 		System.out.println("--- Conditional Expressions ---");
 

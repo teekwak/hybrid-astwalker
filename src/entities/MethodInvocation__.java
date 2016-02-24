@@ -11,7 +11,7 @@ class MethodInvocationObject {
 	String parentClass;
 	List<Object> parameters;
 	Map<String, Map<Integer, Integer>> invocationClassAndPositions;
-	
+
 	MethodInvocationObject(String n, String p, String classWhereMethodInvoked, List<Object> param, int l, int c) {
 		name = n;
 		parentClass = p;
@@ -19,13 +19,13 @@ class MethodInvocationObject {
 		position.put(l, c);
 		invocationClassAndPositions = new HashMap<>();
 		invocationClassAndPositions.put(classWhereMethodInvoked, position);
-		
+
 		parameters = new ArrayList<>();
 		for(Object obj : param) {
 			parameters.add(obj.getClass().getSimpleName());
 		}
 	}
-	
+
 	// same name, parent class, and parameters
 	// different parameters => different MethodInvocationObjects
 	boolean equals(MethodInvocationObject obj) {
@@ -37,10 +37,10 @@ class MethodInvocationObject {
 			}
 			return true;
 		}
-		
+
 		return false;
 	}
-	
+
 	void printEntity() {
 		System.out.println(name + " (" + parentClass + ")");
 		System.out.print("\t");
@@ -52,7 +52,7 @@ class MethodInvocationObject {
 		}
 		System.out.println();
 		for(Map.Entry<String, Map<Integer, Integer>> entry : invocationClassAndPositions.entrySet()) {
-			System.out.println("\t" + entry.getKey());
+			System.out.println("\tClass: " + entry.getKey());
 			for(Map.Entry<Integer, Integer> position : entry.getValue().entrySet()) {
 				System.out.println("\t\t" + position.getKey() + " | " + position.getValue());
 			}
@@ -62,31 +62,38 @@ class MethodInvocationObject {
 
 public class MethodInvocation__ {
 	List<MethodInvocationObject> methodInvocationObjectList;
-	
+
 	public MethodInvocation__() {
 		methodInvocationObjectList = new ArrayList<>();
 	}
-	
+
 	public void addMethodInvocation(String name, String parentClass, String classWhereMethodInvoked, List<Object> parameters, int lineNumber, int columnNumber) {
 		MethodInvocationObject temp = new MethodInvocationObject(name, parentClass, classWhereMethodInvoked, parameters, lineNumber, columnNumber);
-		
+
 		for(MethodInvocationObject obj : methodInvocationObjectList) {
 			if(temp.equals(obj)) {
-				obj.invocationClassAndPositions.get(classWhereMethodInvoked).put(lineNumber, columnNumber);
+				try {
+					obj.invocationClassAndPositions.get(classWhereMethodInvoked).put(lineNumber, columnNumber);
+				}
+				catch (NullPointerException e) {
+					Map<Integer, Integer> tempMap = new HashMap<>();
+					obj.invocationClassAndPositions.put(classWhereMethodInvoked, tempMap);
+				}
 				return;
 			}
 		}
-		
+
 		methodInvocationObjectList.add(temp);
 	}
-	
+
 	public void printAllMethodInvocations() {
 		System.out.println("--- Method Invocations ---");
-		
+
 		if(methodInvocationObjectList.size() > 0) {
 			for(MethodInvocationObject obj : methodInvocationObjectList) {
 				obj.printEntity();
-			}			
+			}
+			System.out.println();
 		}
 		else {
 			System.out.println("None\n");

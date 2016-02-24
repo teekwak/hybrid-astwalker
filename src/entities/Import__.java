@@ -21,11 +21,11 @@ class ImportObject {
 
 public class Import__ {
 	List<ImportObject> importObjectList;
-	
+
 	public Import__() {
 		importObjectList = new ArrayList<>();
 	}
-	
+
 	public void addImport(String name, int lineNumber, int columnNumber) {
 		importObjectList.add(new ImportObject(name, lineNumber, columnNumber));
 	}
@@ -38,7 +38,7 @@ public class Import__ {
 				obj.printEntity();
 			}
 			System.out.println();
-		}	
+		}
 		else {
 			System.out.println("None\n");
 		}

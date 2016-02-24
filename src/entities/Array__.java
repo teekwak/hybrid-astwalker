@@ -7,19 +7,25 @@ import org.eclipse.jdt.core.dom.Type;
 
 class ArrayObject {
 	String name;
+	String className;
+	String methodName;
 	Type type;
 	int lineNumber;
 	int columnNumber;
-	
-	ArrayObject(String n, Type t, int l, int c) {
+
+	ArrayObject(String n, String cn, String mn, Type t, int l, int c) {
 		name = n;
 		type = t;
+		className = cn;
+		methodName = mn;
 		lineNumber = l;
 		columnNumber = c;
 	}
-	
+
 	void printEntity() {
 		System.out.println(name + ": " + type + " => " + lineNumber + " | " + columnNumber);
+		System.out.println("\tClass:\t" + className);
+		System.out.println("\tMethod:\t" + methodName);
 	}
 }
 
@@ -29,11 +35,11 @@ public class Array__ {
 	public Array__() {
 		this.arrayObjectList = new ArrayList<>();
 	}
-	
-	public void addArray(String name, Type type, int lineNumber, int columnNumber) {
-		arrayObjectList.add(new ArrayObject(name, type, lineNumber, columnNumber));
+
+	public void addArray(String name, String className, String methodName, Type type, int lineNumber, int columnNumber) {
+		arrayObjectList.add(new ArrayObject(name, className, methodName, type, lineNumber, columnNumber));
 	}
-	
+
 	public void printAllArrays() {
 		System.out.println("--- Arrays ---");
 
@@ -42,7 +48,7 @@ public class Array__ {
 				obj.printEntity();
 			}
 			System.out.println();
-		}	
+		}
 		else {
 			System.out.println("None\n");
 		}

@@ -5,31 +5,37 @@ import java.util.List;
 
 class ThrowStatementObject {
 	String expression;
+	String className; 
+	String methodName;
 	int lineNumber;
 	int columnNumber;
 
-	ThrowStatementObject(String e, int l, int c) {
+	ThrowStatementObject(String e, String cn, String mn, int l, int c) {
 		expression = e;
+		className = cn;
+		methodName = mn;
 		lineNumber = l;
 		columnNumber = c;
 	}
-	
+
 	void printEntity() {
 		System.out.println(expression + " => " + lineNumber + " | " + columnNumber);
+		System.out.println("\tClass:\t" + className);
+		System.out.println("\tMethod:\t" + methodName);
 	}
 }
 
 public class ThrowStatement__ {
 	List<ThrowStatementObject> ThrowStatementObjectList;
-	
+
 	public ThrowStatement__() {
 		ThrowStatementObjectList = new ArrayList<>();
 	}
-	
-	public void addThrowStatement(String expression, int lineNumber, int columnNumber) {
-		ThrowStatementObjectList.add(new ThrowStatementObject(expression, lineNumber, columnNumber));
+
+	public void addThrowStatement(String expression, String className, String methodName, int lineNumber, int columnNumber) {
+		ThrowStatementObjectList.add(new ThrowStatementObject(expression, className, methodName, lineNumber, columnNumber));
 	}
-	
+
 	public void printAllThrowStatements() {
 		System.out.println("--- Throw Statements ---");
 

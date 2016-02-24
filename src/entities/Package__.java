@@ -25,7 +25,7 @@ public class Package__ {
 	public Package__() {
 		packageObjectList = new ArrayList<>();
 	}
-	
+
 	public void addPackage(String name, int lineNumber, int columnNumber) {
 		packageObjectList.add(new PackageObject(name, lineNumber, columnNumber));
 	}
@@ -38,7 +38,7 @@ public class Package__ {
 				obj.printEntity();
 			}
 			System.out.println();
-		}	
+		}
 		else {
 			System.out.println("None\n");
 		}

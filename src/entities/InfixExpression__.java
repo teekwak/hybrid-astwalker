@@ -7,18 +7,23 @@ class InfixExpressionObject {
 	String operator;
 	String leftOperand;
 	String rightOperand;
-
+	
+	String className;
+	String methodName;
+	
 	int lineNumber;
 	int columnNumber;
-	
-	InfixExpressionObject(String o, String left, String right, int l, int c) {
+
+	InfixExpressionObject(String o, String left, String right, String cn, String mn, int l, int c) {
 		operator = o;
 		leftOperand = left;
 		rightOperand = right;
+		className = cn;
+		methodName = mn;
 		lineNumber = l;
 		columnNumber = c;
 	}
-	
+
 	void printEntity() {
 		System.out.println(leftOperand + " " + operator + " " + rightOperand + " => " + lineNumber + " | " + columnNumber);
 	}
@@ -26,15 +31,15 @@ class InfixExpressionObject {
 
 public class InfixExpression__ {
 	public List<InfixExpressionObject> infixExpressionObjectList;
-	
+
 	public InfixExpression__() {
 		this.infixExpressionObjectList = new ArrayList<>();
 	}
-	
-	public void addInfixExpression(String operator, String leftOperand, String rightOperand, int lineNumber, int columnNumber) {		
-		infixExpressionObjectList.add(new InfixExpressionObject(operator, leftOperand, rightOperand, lineNumber, columnNumber));
+
+	public void addInfixExpression(String operator, String leftOperand, String rightOperand, String className, String methodName, int lineNumber, int columnNumber) {
+		infixExpressionObjectList.add(new InfixExpressionObject(operator, leftOperand, rightOperand, className, methodName, lineNumber, columnNumber));
 	}
-	
+
 	public void printAllInfixExpressions() {
 		System.out.println("--- Infix Expressions ---");
 
