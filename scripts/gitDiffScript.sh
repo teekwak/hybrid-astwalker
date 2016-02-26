@@ -1,4 +1,4 @@
-#~/bin/bash
+#!/bin/bash
 
 # takes in two hash codes of commits and outputs comparison
 # if first commit, then compare against nothing
