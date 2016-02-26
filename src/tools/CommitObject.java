@@ -6,7 +6,7 @@ public class CommitObject {
 	String hashCode;
 	String commitMessage;
 	String date;
-		
+	
 	public CommitObject(String a, String ae, String hc, String cm, String d) {
 		author = a;
 		authorEmail = ae;

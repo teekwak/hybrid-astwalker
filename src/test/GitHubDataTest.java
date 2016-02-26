@@ -54,6 +54,8 @@ public class GitHubDataTest {
 		return dateFormat.format(date);
 	}
 	
+	
+	
 	@Test
 	// at the time of writing, there are 10 commits
 	public void checkNumberOfCommits() throws NoHeadException, GitAPIException, IOException {
@@ -103,7 +105,36 @@ public class GitHubDataTest {
 		assertEquals(count, 9);
 	}
 	
+	@Test
 	// check actual commit messages
+	// apparently commit messages keep \n at the end
+	public void checkCommitMessages() throws IOException, NoHeadException, GitAPIException {
+		String[] actualCommitMessages = {"added file\n", "modified text\n", "add and modify\n", "added text3\n", "modified text3.txt\n", "modified text2, deleted text3\n", "deleted and added line back\n", "90% same\n", "", "modified text3.txt\n"};
+	
+		String directoryLocation = "/home/kwak/Desktop/jgit-test/";
+		
+		GitHubData gitHubData = new GitHubData();
+		
+		Git git = Git.open( new File (directoryLocation + ".git") );
+	
+		List<String> commitMessages = new ArrayList<>();
+		for(RevCommit commit : git.log().call()) {
+			commitMessages.add(commit.getFullMessage());
+		}
+		Collections.reverse(commitMessages);
+		
+		boolean same = true;
+		
+		for(int i = 0; i < actualCommitMessages.length; i++) {
+			if(!actualCommitMessages[i].equals(commitMessages.get(i))) {
+				
+				same = false;
+			}	
+		}
+		
+		assertTrue(same);
+	}
+	
 	
 	// check dates of commits
 	
