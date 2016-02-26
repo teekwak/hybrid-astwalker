@@ -49,8 +49,8 @@ public class GitHubDataTest {
 	}
 	
 	public static String formatDate(Date date) {
-		// mm-dd-yyyy hh:mm:ss
-		DateFormat dateFormat = new SimpleDateFormat("MM dd yyyy hh:mm:ss");
+		// Dec 25, 1993
+		DateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy");
 		return dateFormat.format(date);
 	}
 	
@@ -112,9 +112,7 @@ public class GitHubDataTest {
 		String[] actualCommitMessages = {"added file\n", "modified text\n", "add and modify\n", "added text3\n", "modified text3.txt\n", "modified text2, deleted text3\n", "deleted and added line back\n", "90% same\n", "", "modified text3.txt\n"};
 	
 		String directoryLocation = "/home/kwak/Desktop/jgit-test/";
-		
-		GitHubData gitHubData = new GitHubData();
-		
+				
 		Git git = Git.open( new File (directoryLocation + ".git") );
 	
 		List<String> commitMessages = new ArrayList<>();
@@ -122,6 +120,8 @@ public class GitHubDataTest {
 			commitMessages.add(commit.getFullMessage());
 		}
 		Collections.reverse(commitMessages);
+		
+		assertEquals(actualCommitMessages.length, commitMessages.size());
 		
 		boolean same = true;
 		
@@ -135,8 +135,33 @@ public class GitHubDataTest {
 		assertTrue(same);
 	}
 	
-	
+	@Test
 	// check dates of commits
+	public void checkCalendarDate() throws IOException, NoHeadException, GitAPIException {
+		String[] actualDates = {"Feb 24, 2016", "Feb 24, 2016", "Feb 24, 2016", "Feb 25, 2016", "Feb 25, 2016", "Feb 25, 2016", "Feb 25, 2016", "Feb 25, 2016", "Feb 25, 2016", "Feb 25, 2016"};
+		
+		String directoryLocation = "/home/kwak/Desktop/jgit-test/";
+		
+		Git git = Git.open( new File (directoryLocation + ".git") );
+	
+		List<String> commitDates = new ArrayList<>();
+		for(RevCommit commit : git.log().call()) {
+			commitDates.add(formatDate(commit.getAuthorIdent().getWhen()));
+		}
+		Collections.reverse(commitDates);
+		
+		assertEquals(actualDates.length, commitDates.size());
+		
+		boolean same = true;
+		
+		for(int i = 0; i < actualDates.length; i++ ){
+			if(!actualDates[i].equals(commitDates.get(i))) {
+				same = false;
+			}
+		}
+		
+		assertTrue(same);
+	}
 	
 	// check hashcode of each commit
 	
