@@ -1,3 +1,4 @@
+package tools;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -27,28 +28,12 @@ import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.EmptyTreeIterator;
 
-class CommitObject {
-	String author;
-	String authorEmail;
-	String hashCode;
-	String commitMessage;
-	String date;
-	
-	CommitObject(String a, String ae, String hc, String cm, String d) {
-		author = a;
-		authorEmail = ae;
-		commitMessage = cm;
-		hashCode = hc;
-		date = d;
-	}
-}
-
 public class GitHubData {
 	
 	List<CommitObject> commitObjectList;	// stores author name, email, commit message, date of commit
 	Map<String, String> hashCodePairs;		// stores pairs of commit hash codes
 	
-	GitHubData() {
+	public GitHubData() {
 		commitObjectList = new ArrayList<>();
 		hashCodePairs = new LinkedHashMap<>();
 	}
@@ -75,11 +60,21 @@ public class GitHubData {
 	public static String getHashCodeOfCommit(RevCommit commit) {
 		return commit.name();
 	}
-	
 	public static String formatDate(Date date) {
-		// mm-dd-yyyy hh:mm:ss
 		DateFormat dateFormat = new SimpleDateFormat("MM dd yyyy hh:mm:ss");
-		return dateFormat.format(date);
+		return dateFormat.format(date);		
+	}
+
+	public void addToList(CommitObject obj) {
+		commitObjectList.add(obj);
+	}
+	
+	public List<CommitObject> getCommitObjectList() {
+		return commitObjectList;
+	}
+	
+	public Map getHashCodePairs() {
+		return hashCodePairs;
 	}
 	
 	// prints all change types for each commit in a repository
@@ -200,16 +195,6 @@ public class GitHubData {
 			commitHistory.add(commit);
 		}
 		Collections.reverse(commitHistory); // all commits from earliest to latest
-		
-
-		
-		/*
-		for(CommitObject c : gitHubData.commitObjectList) {
-			System.out.println(formatDate(c.date));
-		}
-		*/
-		
-		// after reversed
 		
 		for(RevCommit commit : commitHistory) {
 			gitHubData.commitObjectList.add(new CommitObject(getAuthorOfCommit(commit), getAuthorEmailOfCommit(commit), getHashCodeOfCommit(commit), getCommitMessage(commit), formatDate(getDateOfCommit(commit))));

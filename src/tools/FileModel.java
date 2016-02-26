@@ -1,3 +1,4 @@
+package tools;
 import entities.Array__;
 import entities.CatchClause__;
 import entities.Class__;
