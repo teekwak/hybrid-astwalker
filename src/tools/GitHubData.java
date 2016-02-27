@@ -29,10 +29,10 @@ import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.EmptyTreeIterator;
 
 public class GitHubData {
-	
+
 	List<CommitObject> commitObjectList;	// stores author name, email, commit message, date of commit
 	Map<String, String> hashCodePairs;		// stores pairs of commit hash codes
-	
+
 	public GitHubData() {
 		commitObjectList = new ArrayList<>();
 		hashCodePairs = new LinkedHashMap<>();
@@ -155,7 +155,7 @@ public class GitHubData {
 	// gets number of additions and deletions between two commits for each file using bash script
 	public void runBashScript(String directoryLocation, Map<String, String> hashCodePairs) throws IOException {
 		File script = new File("scripts/gitDiffScript.sh"); // need script to be in scripts folder
-		
+
 		for(Map.Entry<String, String> entry : hashCodePairs.entrySet()) {
 			
 			Process proc = Runtime.getRuntime().exec(script.getAbsolutePath() + " " + directoryLocation + " " + entry.getKey() + " " + entry.getValue());

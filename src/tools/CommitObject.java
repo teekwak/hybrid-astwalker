@@ -10,8 +10,8 @@ public class CommitObject {
 	public CommitObject(String a, String ae, String hc, String cm, String d) {
 		author = a;
 		authorEmail = ae;
-		commitMessage = cm;
 		hashCode = hc;
+		commitMessage = cm;
 		date = d;
 	}
 	
