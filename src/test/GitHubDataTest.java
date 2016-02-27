@@ -26,7 +26,7 @@ import tools.CommitObject;
 
 public class GitHubDataTest {
 	
-	// testing with https://github.com/teekwak/jgit-test.git
+	// testing with https://github.com/Thomas Kwak/jgit-test.git
 	
 	List<CommitObject> commitObjectList;
 	Map<String, String> hashCodePairs;
@@ -157,13 +157,13 @@ public class GitHubDataTest {
 	
 	@Test
 	// at the time of writing, there are 10 commits
-	public void checkNumberOfCommits() throws NoHeadException, GitAPIException, IOException {		
+	public void checkNumberOfCommits() {		
 		assertEquals(10, this.getCommitObjectList().size());
 	}
 
 	@Test
 	// there is 1 empty commit message
-	public void checkNumberOfMessages() throws IOException, NoHeadException, GitAPIException {
+	public void checkNumberOfMessages() {
 			
 		int count = 0;
 		for(CommitObject c : this.getCommitObjectList()) {
@@ -175,12 +175,10 @@ public class GitHubDataTest {
 		assertEquals(9, count);
 	}
 	
-
-	
 	@Test
 	// check actual commit messages
 	// apparently commit messages keep \n at the end
-	public void checkCommitMessages() throws IOException, NoHeadException, GitAPIException {
+	public void checkCommitMessages() {
 		String[] actualCommitMessages = {"added file\n", "modified text\n", "add and modify\n", "added text3\n", "modified text3.txt\n", "modified text2, deleted text3\n", "deleted and added line back\n", "90% same\n", "", "modified text3.txt\n"};
 				
 		// count commit messages
@@ -203,11 +201,59 @@ public class GitHubDataTest {
 		assertTrue(same);
 	}
 	
+	@Test
+	// check authors of each commit
+	public void checkAuthor() {
+		String[] actualAuthors = {"Thomas Kwak", "Thomas Kwak", "Thomas Kwak", "Thomas Kwak", "Thomas Kwak", "Thomas Kwak", "Thomas Kwak", "Thomas Kwak", "Thomas Kwak", "Thomas Kwak"};
 	
+		// count number of authors
+		int authorCount = 0;
+		for(CommitObject c : this.getCommitObjectList()) {
+			if(c.getAuthor() != null) {
+				authorCount++;
+			}
+		}
+		assertEquals(actualAuthors.length, authorCount);
+		
+		// check if authors are the same
+		boolean same = true;
+		for(int i = 0; i < actualAuthors.length; i++) {
+			if(!this.getCommitObjectList().get(i).getAuthor().equals(actualAuthors[i])) {
+				same = false;
+				break;
+			}
+		}
+		assertTrue(same);
+	}
+	
+	@Test
+	// check emails of each commit
+	public void checkEmail() {
+		String[] actualEmails = {"teekwak@gmail.com", "teekwak@gmail.com", "teekwak@gmail.com", "teekwak@gmail.com", "teekwak@gmail.com", "teekwak@gmail.com", "teekwak@gmail.com", "teekwak@gmail.com", "teekwak@gmail.com", "teekwak@gmail.com"};
+	
+		// count number of emails
+		int emailCount = 0;
+		for(CommitObject c : this.getCommitObjectList()) {
+			if(c.getAuthorEmail() != null) {
+				emailCount++;
+			}
+		}
+		assertEquals(actualEmails.length, emailCount);
+	
+		// check if emails are the same
+		boolean same = true;
+		for(int i = 0; i < actualEmails.length; i++ ){
+			if(!actualEmails[i].equals(this.getCommitObjectList().get(i).getAuthorEmail())) {
+				same = false;
+				break;
+			}
+		}
+		assertTrue(same);
+	}
 	
 	@Test
 	// check dates of commits
-	public void checkCalendarDate() throws IOException, NoHeadException, GitAPIException {
+	public void checkCalendarDate() {
 		String[] actualDates = {"Feb 24, 2016", "Feb 24, 2016", "Feb 24, 2016", "Feb 25, 2016", "Feb 25, 2016", "Feb 25, 2016", "Feb 25, 2016", "Feb 25, 2016", "Feb 25, 2016", "Feb 25, 2016"};
 				
 		// count number of dates
@@ -233,7 +279,7 @@ public class GitHubDataTest {
 	
 	@Test
 	// check hash code of each commit
-	public void checkHashCode() throws IOException, NoHeadException, GitAPIException {
+	public void checkHashCode() { 
 		String[] actualHashCodes = {"ba1854c33cbe8ea4f678f94f12c70e9f19cb54ec", "513238f0ce9e2eda3baa1c76c5e92b6f5ae275be", "b785c3f61a8ba941e3bf01f15892e5e239db419a", "d6eb886344ae23038a712e26d3f92a0f510bd2f7", "33efe94d02406c403835bcf220029b54989e306e", "0fe93bd443793e332fb89b94e04ce7ee3682dcaa", "ccc242b959b9ceebedb3ca8dd29d1479ca0c45ee", "46eece892de3fb570db9889884104e821b1c690d", "7e57cbaec3f02b3dd736dd782ec050bcc711f103", "29a195cc72705752904416803ea888ee717fa0f4"};
 				
 		// count number of hash codes
@@ -258,7 +304,7 @@ public class GitHubDataTest {
 	
 	@Test
 	// check number of differences between commits
-	public void checkInsertionsAndDeletionsBetweenCommits() throws NoHeadException, IOException, GitAPIException {
+	public void checkInsertionsAndDeletionsBetweenCommits() {
 		List<String[]> hashCodeList = new ArrayList<>();
 		List<int[]> insertionDeletionList = new ArrayList<>();
 		
