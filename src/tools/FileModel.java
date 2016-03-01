@@ -109,13 +109,15 @@ public class FileModel {
 	}
 
 	public static void main(String[] args) throws IOException, CoreException {
-		String fileLocation = "/Users/Kwak/Documents/workspace/ASTTest/src/exampleCode/Example.java";
 
-		FileModel fileModel = new FileModel();
+		String fileLocation = "src/exampleCode/Example.java";
+				
+		if(fileLocation.substring(fileLocation.lastIndexOf(".")+1).equals("java")) {
+			FileModel fileModel = new FileModel();
 
-		fileModel = fileModel.parseDeclarations(fileLocation);
+			fileModel = fileModel.parseDeclarations(fileLocation);
 
-		fileModel.printEverything();
-	
+			fileModel.printEverything();
+		}
 	}
 }
