@@ -48,7 +48,7 @@ public class FileModel {
 	SwitchStatement__ switchStatement__;
 	WhileStatement__ whileStatement__;
 	Wildcard__ wildcard__;
-
+	
 	public FileModel() {
 		this.array__ = new Array__();
 		this.catchClause__ = new CatchClause__();
@@ -73,6 +73,18 @@ public class FileModel {
 		this.wildcard__ = new Wildcard__();
 	}
 
+	public Package__ getPackages() {
+		return this.package__;
+	}
+	
+	public Import__ getImports() {
+		return this.import__;
+	}
+	
+	public Class__ getClasses() {
+		return this.class__;
+	}
+	
 	public FileModel parseDeclarations(String fileLocation) throws IOException, CoreException {
 		ASTWalker astWalker = new ASTWalker();
 		return astWalker.parseFile(fileLocation);

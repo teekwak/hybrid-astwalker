@@ -30,6 +30,10 @@ public class Package__ {
 		packageObjectList.add(new PackageObject(name, lineNumber, columnNumber));
 	}
 
+	public List<PackageObject> getPackageObjectList() {
+		return packageObjectList;
+	}
+	
 	public void printAllPackages() {
 		System.out.println("--- Packages ---");
 

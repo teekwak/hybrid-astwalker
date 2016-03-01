@@ -1,3 +1,11 @@
+/*
+ * List of things in this code
+ * 
+ * 1 package
+ * 6 imports
+ * 
+ */
+
 package exampleCode;
 
 import java.util.List;
@@ -6,6 +14,39 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
+
+public class Example {
+	class firstInnerClass {
+		
+	}
+	
+	class secondInnerClass {
+		
+	}
+	
+	class thirdInnerClass {
+		
+	}
+}
+
+class firstOuterClass {
+	
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
 
 class Blah implements SomethingElse {
 	void print() {
@@ -149,3 +190,4 @@ public class Example {
 		
 	}
 }
+*/

@@ -36,11 +36,11 @@ class ClassObject {
 public class Class__ {
 
 	List<ClassObject> classObjectList;
-	List<SuperClassObject> superClassList;
+	List<SuperClassObject> superClassObjectList;
 
 	public Class__() {
 		classObjectList = new ArrayList<>();
-		superClassList = new ArrayList<>();
+		superClassObjectList = new ArrayList<>();
 	}
 
 	public void addClass(String name, int lineNumber, int columnNumber) {
@@ -48,9 +48,17 @@ public class Class__ {
 	}
 
 	public void addExtends(String name, int lineNumber) {
-		superClassList.add(new SuperClassObject(name, lineNumber));
+		superClassObjectList.add(new SuperClassObject(name, lineNumber));
 	}
 
+	public List<ClassObject> getClassObjectList() {
+		return this.classObjectList;
+	}
+	
+	public List<SuperClassObject> getSuperClassObjectList() {
+		return this.superClassObjectList;
+	}
+	
 	public void printAllClasses() {
 		System.out.println("--- Classes ---");
 
@@ -68,8 +76,8 @@ public class Class__ {
 	public void printAllExtends() {
 		System.out.println("--- Extends ---");
 
-		if(superClassList.size() > 0) {
-			for(SuperClassObject obj : superClassList) {
+		if(superClassObjectList.size() > 0) {
+			for(SuperClassObject obj : superClassObjectList) {
 				obj.printEntity();
 			}
 			System.out.println();

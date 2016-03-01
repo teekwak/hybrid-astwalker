@@ -30,6 +30,10 @@ public class Import__ {
 		importObjectList.add(new ImportObject(name, lineNumber, columnNumber));
 	}
 
+	public List<ImportObject> getImportObjectList() {
+		return this.importObjectList;
+	}
+	
 	public void printAllImports() {
 		System.out.println("--- Imports ---");
 
