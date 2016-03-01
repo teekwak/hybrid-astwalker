@@ -50,6 +50,14 @@ public class Interface__ {
 		interfaceObjectList.add(new InterfaceObject(name, lineNumber, columnNumber));
 	}
 
+	public List<InterfaceObject> getInterfaceObjectList() {
+		return this.interfaceObjectList;
+	}
+	
+	public List<ImplementsObject> getImplementsObjectList() {
+		return this.implementsObjectList;
+	}
+	
 	public void printAllInterfaces() {
 		if(interfaceObjectList.size() > 0) {
 			System.out.println("--- Interfaces ---");

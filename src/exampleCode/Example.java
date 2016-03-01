@@ -3,6 +3,9 @@
  * 
  * 1 package
  * 6 imports
+ * 5 regular classes
+ * 2 super classes
+ * 2 interfaces
  * 
  */
 
@@ -15,21 +18,41 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-public class Example {
-	class firstInnerClass {
+interface someInterface {
+	public double abstractAction();
+}
+
+public class Example extends SuperDuperClass {
+	class firstInnerClass implements Junk1, Junk2 {
+		public void printSomething() {
+			
+		}
 		
+		public int returnInt() {
+			return 1;
+		}
 	}
 	
 	class secondInnerClass {
+		public void printSomethingElse() {
+			
+		}
 		
+		public double[][] printDoubleArray() {
+			return new double[][] {};
+		}
 	}
 	
 	class thirdInnerClass {
+
+	}
+	
+	public static void main(String[] args) {
 		
 	}
 }
 
-class firstOuterClass {
+class firstOuterClass extends SomethingElse {
 	
 }
 

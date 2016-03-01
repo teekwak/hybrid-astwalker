@@ -1,5 +1,5 @@
 package exampleCode;
 
-public interface SomethingElse {
+public class SomethingElse {
 
 }

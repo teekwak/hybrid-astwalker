@@ -58,9 +58,9 @@ public class FileModel {
 		this.forStatement__ = new ForStatement__();
 		this.generics__ = new Generics__();
 		this.ifStatement__ = new IfStatement__();
+		this.import__ = new Import__();
 		this.infixExpression__ = new InfixExpression__();
 		this.interface__ = new Interface__();
-		this.import__ = new Import__();
 		this.methodDeclaration__ = new MethodDeclaration__();
 		this.methodInvocation__ = new MethodInvocation__();
 		this.package__ = new Package__();
@@ -73,23 +73,91 @@ public class FileModel {
 		this.wildcard__ = new Wildcard__();
 	}
 
-	public Package__ getPackages() {
-		return this.package__;
+	public Array__ getArrays() {
+		return this.array__;
+	}
+	
+	public CatchClause__ getCatchClauses() {
+		return this.catchClause__;
+	}
+
+	public Class__ getClasses() {
+		return this.class__;
+	}	
+	
+	public ConditionalExpression__ getConditionalExpressions() {
+		return this.conditionalExpression__;
+	}
+	
+	public DoStatement__ getDoStatements() {
+		return this.doStatement__;
+	}
+	
+	public Generics__ getGenerics() {
+		return this.generics__;
+	}
+	
+	public IfStatement__ getIfStatements() {
+		return this.ifStatement__;
 	}
 	
 	public Import__ getImports() {
 		return this.import__;
 	}
 	
-	public Class__ getClasses() {
-		return this.class__;
+	public InfixExpression__ getInfixExpressions() {
+		return this.infixExpression__;
+	} 
+	
+	public Interface__ getInterfaces() {
+		return this.interface__;
 	}
 	
+	public MethodDeclaration__ getMethodDeclarations() {
+		return this.methodDeclaration__;
+	}
+	
+	public MethodInvocation__ getMethodInvocations() {
+		return this.methodInvocation__;
+	}
+	
+	public Package__ getPackages() {
+		return this.package__;
+	}
+	
+	public Primitive__ getPrimitives() {
+		return this.primitive__;
+	}
+	
+	public SimpleName__ getSimpleNames() {
+		return this.simpleName__;
+	}
+	
+	public SwitchStatement__ getSwitchStatements() {
+		return this.switchStatement__;
+	}
+
+	public ThrowStatement__ getThrowStatements() {
+		return this.throwStatement__;
+	}
+	
+	public TryStatement__ getTryStatements() {
+		return this.tryStatement__;
+	}
+	
+	public WhileStatement__ getWhileStatements() {
+		return this.whileStatement__;
+	}
+	
+	public Wildcard__ getWildcards() {
+		return this.wildcard__;
+	}
+
 	public FileModel parseDeclarations(String fileLocation) throws IOException, CoreException {
 		ASTWalker astWalker = new ASTWalker();
 		return astWalker.parseFile(fileLocation);
 	}
-
+	
 	public void printEverything() {
 		this.array__.printAllArrays();
 		this.catchClause__.printAllCatchClauses();
