@@ -38,6 +38,10 @@ public class ForStatement__ {
 		forStatementObjectList.add(new ForStatementObject(condition, className, methodName, enhanced, lineNumber, columnNumber));
 	}
 
+	public List<ForStatementObject> getForStatementObjectList() {
+		return this.forStatementObjectList;
+	}
+	
 	public void printAllForStatements() {
 		System.out.println("--- For Statements ---");
 

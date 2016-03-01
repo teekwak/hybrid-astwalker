@@ -40,6 +40,10 @@ public class InfixExpression__ {
 		infixExpressionObjectList.add(new InfixExpressionObject(operator, leftOperand, rightOperand, className, methodName, lineNumber, columnNumber));
 	}
 
+	public List<InfixExpressionObject> getInfixExpressionObjectList() {
+		return this.infixExpressionObjectList;
+	}
+	
 	public void printAllInfixExpressions() {
 		System.out.println("--- Infix Expressions ---");
 

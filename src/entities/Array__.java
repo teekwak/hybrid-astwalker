@@ -40,6 +40,10 @@ public class Array__ {
 		arrayObjectList.add(new ArrayObject(name, className, methodName, type, lineNumber, columnNumber));
 	}
 
+	public List<ArrayObject> getArrayObjectList() {
+		return this.arrayObjectList;
+	}
+	
 	public void printAllArrays() {
 		System.out.println("--- Arrays ---");
 

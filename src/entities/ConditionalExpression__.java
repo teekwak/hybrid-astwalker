@@ -40,6 +40,10 @@ public class ConditionalExpression__ {
 		conditionalExpressionObjectList.add(new ConditionalExpressionObject(expression, elseExpression, thenExpression, className, methodName, lineNumber, columnNumber));
 	}
 
+	public List<ConditionalExpressionObject> getConditionalExpressionObjectList() {
+		return this.conditionalExpressionObjectList;
+	}
+	
 	public void printAllConditionalExpressions() {
 		System.out.println("--- Conditional Expressions ---");
 

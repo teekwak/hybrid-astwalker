@@ -38,6 +38,10 @@ public class Wildcard__ {
 		wildcardObjectList.add(new WildcardObject(className, methodName, type, lineNumber, columnNumber));
 	}
 
+	public List<WildcardObject> getWildcardObjectList() {
+		return this.wildcardObjectList;
+	}
+	
 	public void printAllWildcards() {
 		System.out.println("--- Wild Cards ---");
 		if(wildcardObjectList.size() > 0) {

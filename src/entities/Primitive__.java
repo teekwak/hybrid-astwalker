@@ -42,6 +42,10 @@ public class Primitive__ {
 		primitiveObjectList.add(new PrimitiveObject(name, className, methodName, type, lineNumber, columnNumber));
 	}
 
+	public List<PrimitiveObject> getPrimitiveObjectList() {
+		return this.primitiveObjectList;
+	}
+	
 	public void printAllPrimitives() {
 		System.out.println("--- Primitives ---");
 

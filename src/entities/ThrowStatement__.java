@@ -26,21 +26,25 @@ class ThrowStatementObject {
 }
 
 public class ThrowStatement__ {
-	List<ThrowStatementObject> ThrowStatementObjectList;
+	List<ThrowStatementObject> throwStatementObjectList;
 
 	public ThrowStatement__() {
-		ThrowStatementObjectList = new ArrayList<>();
+		throwStatementObjectList = new ArrayList<>();
 	}
 
 	public void addThrowStatement(String expression, String className, String methodName, int lineNumber, int columnNumber) {
-		ThrowStatementObjectList.add(new ThrowStatementObject(expression, className, methodName, lineNumber, columnNumber));
+		throwStatementObjectList.add(new ThrowStatementObject(expression, className, methodName, lineNumber, columnNumber));
 	}
 
+	public List<ThrowStatementObject> getThrowStatementObjectList() {
+		return this.throwStatementObjectList;
+	}
+	
 	public void printAllThrowStatements() {
 		System.out.println("--- Throw Statements ---");
 
-		if(ThrowStatementObjectList.size() > 0) {
-			for(ThrowStatementObject obj : ThrowStatementObjectList) {
+		if(throwStatementObjectList.size() > 0) {
+			for(ThrowStatementObject obj : throwStatementObjectList) {
 				obj.printEntity();
 			}
 			System.out.println();

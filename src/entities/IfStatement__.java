@@ -34,6 +34,10 @@ public class IfStatement__ {
 		ifStatementObjectList.add(new IfStatementObject(expression, className, methodName, lineNumber, columnNumber));
 	}
 
+	public List<IfStatementObject> getIfStatementObjectList() {
+		return this.ifStatementObjectList;
+	}
+	
 	public void printAllIfStatements() {
 		System.out.println("--- If Statements ---");
 

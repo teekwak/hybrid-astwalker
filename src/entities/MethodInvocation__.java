@@ -86,6 +86,10 @@ public class MethodInvocation__ {
 		methodInvocationObjectList.add(temp);
 	}
 
+	public List<MethodInvocationObject> getMethodInvocationObjectList() {
+		return this.methodInvocationObjectList;
+	}
+	
 	public void printAllMethodInvocations() {
 		System.out.println("--- Method Invocations ---");
 

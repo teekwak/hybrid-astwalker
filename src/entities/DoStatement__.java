@@ -36,6 +36,10 @@ public class DoStatement__ {
 		doStatementObjectList.add(new DoStatementObject(condition, className, methodName, lineNumber, columnNumber));
 	}
 
+	public List<DoStatementObject> getDoStatementObjectList() {
+		return this.doStatementObjectList;
+	}
+	
 	public void printAllDoStatements() {
 		System.out.println("--- Do Statements ---");
 

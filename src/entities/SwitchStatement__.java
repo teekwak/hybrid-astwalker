@@ -48,6 +48,10 @@ public class SwitchStatement__ {
 		switchStatementObjectList.add(new SwitchStatementObject(expression, className, methodName, switchCaseMap, lineNumber, columnNumber));
 	}
 
+	public List<SwitchStatementObject> getSwitchStatementObjectList() {
+		return this.switchStatementObjectList;
+	}
+	
 	public void printAllSwitchStatements() {
 		System.out.println("--- Switch Statements ---");
 

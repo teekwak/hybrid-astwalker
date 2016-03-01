@@ -43,6 +43,10 @@ public class SimpleName__ {
 		simpleNameObjectList.add(new SimpleNameObject(variableName, className, methodName, type, lineNumber, columnNumber));
 	}
 
+	public List<SimpleNameObject> getSimpleNameObjectList() {
+		return this.simpleNameObjectList;
+	}
+	
 	public void printAllSimpleNames() {
 		System.out.println("--- Simple Names ---");
 		if(simpleNameObjectList.size() > 0) {

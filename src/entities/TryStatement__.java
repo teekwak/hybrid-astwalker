@@ -42,6 +42,10 @@ public class TryStatement__ {
 		tryStatementObjectList.add(new TryStatementObject(tryBody, className, methodName, catchClauseList, finallyBody, lineNumber, columnNumber));
 	}
 
+	public List<TryStatementObject> getTryStatementObjectList() {
+		return this.tryStatementObjectList;
+	}
+	
 	public void printAllTryStatements() {
 		System.out.println("--- Try Statements ---");
 

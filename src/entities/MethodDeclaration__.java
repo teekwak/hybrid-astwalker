@@ -49,6 +49,10 @@ public class MethodDeclaration__ {
 		methodDeclarationObjectList.add(new MethodDeclarationObject(name, className, returnType, parameters, lineNumber, columnNumber));
 	}
 
+	public List<MethodDeclarationObject> getMethodDeclarationObjectList() {
+		return this.methodDeclarationObjectList;
+	}
+	
 	public void printAllMethodDeclarations() {
 		if(methodDeclarationObjectList.size() > 0) {
 			System.out.println("--- Methods Declarations ---");

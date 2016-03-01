@@ -41,6 +41,10 @@ public class Generics__ {
 		genericsObjectList.add(new GenericsObject(name, className, methodName, type, lineNumber, columnNumber));
 	}
 
+	public List<GenericsObject> getGenericsObjectList() {
+		return this.genericsObjectList;
+	}
+	
 	public void printAllGenerics() {
 		System.out.println("--- Generics ---");
 

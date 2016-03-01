@@ -40,6 +40,10 @@ public class CatchClause__ {
 		catchClauseObjectList.add(new CatchClauseObject(exception, variableName, className, methodName, lineNumber, columnNumber));
 	}
 
+	public List<CatchClauseObject> getCatchClauseObjectList() {
+		return this.catchClauseObjectList;
+	}
+	
 	public void printAllCatchClauses() {
 		System.out.println("--- Catch Clauses ---");
 
