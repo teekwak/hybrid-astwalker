@@ -23,6 +23,10 @@ interface someInterface {
 }
 
 public class Example extends SuperDuperClass {
+	Example() {
+		// this is a constructor
+	}
+	
 	class firstInnerClass implements Junk1, Junk2 {
 		public void printSomething() {
 			
@@ -44,7 +48,9 @@ public class Example extends SuperDuperClass {
 	}
 	
 	class thirdInnerClass {
-
+		thirdInnerClass() {
+			// this is a constructor
+		}
 	}
 	
 	public static void main(String[] args) {

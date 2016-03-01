@@ -110,8 +110,9 @@ public class ASTWalkerTest {
 	}
 	
 	@Test
+	// checks number of method declarations (includes constructors)
 	public void methodDeclarationCount() {
-		
+		assertEquals(8, fileModel.getMethodDeclarations().getMethodDeclarationObjectList().size());
 	}
 	
 	@Test
