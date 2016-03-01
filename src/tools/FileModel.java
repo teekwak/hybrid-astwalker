@@ -93,6 +93,10 @@ public class FileModel {
 		return this.doStatement__;
 	}
 	
+	public ForStatement__ getForStatements() {
+		return this.forStatement__;
+	}
+	
 	public Generics__ getGenerics() {
 		return this.generics__;
 	}

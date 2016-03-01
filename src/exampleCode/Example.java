@@ -14,6 +14,7 @@ package exampleCode;
 import java.util.List;
 import java.util.Map;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -23,38 +24,47 @@ interface someInterface {
 }
 
 public class Example extends SuperDuperClass {
+	int[] classArray;
+	List<String> listOfStrings;
+	
 	Example() {
 		// this is a constructor
+		classArray = new int[] {1, 2, 3};
+		listOfStrings = new ArrayList<String>();
 	}
 	
-	class firstInnerClass implements Junk1, Junk2 {
-		public void printSomething() {
+	class innerClass implements Junk1, Junk2 {
+		public void forLoopMethod() {
+			for(int i = 0; i < 10; i++) {
+				// do something
+			}
 			
+			for(int i : new int[]{1, 2, 3, 4}) {
+				// do something
+			}
 		}
 		
-		public int returnInt() {
-			return 1;
-		}
-	}
-	
-	class secondInnerClass {
-		public void printSomethingElse() {
-			
+		public void whileLoopMethod() {
+			int i = 0;
+			while(i > 2) {
+				// do something
+			}
 		}
 		
-		public double[][] printDoubleArray() {
-			return new double[][] {};
-		}
-	}
-	
-	class thirdInnerClass {
-		thirdInnerClass() {
-			// this is a constructor
+		public void doLoopMethod() {
+			do {
+				// do something
+			}
+			while(1 == 2);
 		}
 	}
 	
 	public static void main(String[] args) {
-		
+		try {
+			
+		} catch (NullPointerException e) {
+			System.out.println(1 == 2 ? true : false);
+		}
 	}
 }
 

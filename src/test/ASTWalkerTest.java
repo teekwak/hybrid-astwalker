@@ -46,7 +46,7 @@ public class ASTWalkerTest {
 	@Test
 	// check number of imports
 	public void importCount() {
-		assertEquals(6, fileModel.getImports().getImportObjectList().size());
+		assertEquals(7, fileModel.getImports().getImportObjectList().size());
 	}
 	
 	@Test
@@ -55,7 +55,7 @@ public class ASTWalkerTest {
 		int normalClassCount = fileModel.getClasses().getClassObjectList().size();
 		int superClassCount = fileModel.getClasses().getSuperClassObjectList().size();
 		
-		assertEquals(5, normalClassCount);
+		assertEquals(3, normalClassCount);
 		assertEquals(2, superClassCount);
 	}
 	
@@ -71,88 +71,91 @@ public class ASTWalkerTest {
 
 	@Test
 	public void arrayCount() {
-		
+		assertEquals(2, fileModel.getArrays().getArrayObjectList().size());
 	}
 	
 	@Test
 	public void catchClauseCount() {
-		
+		assertEquals(1, fileModel.getCatchClauses().getCatchClauseObjectList().size());
 	}
 	
 	@Test
 	public void conditionalExpressionCount() {
-		
+		assertEquals(1, fileModel.getConditionalExpressions().getConditionalExpressionObjectList().size());
 	}
 	
 	@Test
 	public void doStatementCount() {
-		
+		assertEquals(1, fileModel.getDoStatements().getDoStatementObjectList().size());
 	}
 	
 	@Test
-	public void forStatementCount() {
-		
+	// check number of for statements
+	public void forStatementCount() {		
+		assertEquals(2, fileModel.getForStatements().getForStatementObjectList().size());
 	}
 	
 	@Test
+	// check number of generics
+	// CHECK THIS AGAIN
 	public void genericsCount() {
-		
+		assertEquals(1, fileModel.getGenerics().getGenericsObjectList().size());
 	}
 	
 	@Test
 	public void ifStatementCount() {
-		
+		//assertEquals(1, fileModel.getIfStatements().getIfStatementObjectList().size());
 	}
 	
 	@Test
 	public void infixExpressionCount() {
-		
+		//assertEquals(1, fileModel.getInfixExpressions().getInfixExpressionObjectList().size());
 	}
 	
 	@Test
 	// checks number of method declarations (includes constructors)
 	public void methodDeclarationCount() {
-		assertEquals(8, fileModel.getMethodDeclarations().getMethodDeclarationObjectList().size());
+		//assertEquals(1, fileModel.getMethodDeclarations().getMethodDeclarationObjectList().size());
 	}
 	
 	@Test
 	public void methodInvocationCount() {
-		
+		//assertEquals(1, fileModel.getMethodInvocations().getMethodInvocationObjectList().size());
 	}
 	
 	@Test
 	public void primitiveCount() {
-		
+		//assertEquals(1, fileModel.getPrimitives().getPrimitiveObjectList().size());
 	}
 	
 	@Test
 	public void throwStatementCount() {
-		
+		//assertEquals(1, fileModel.getThrowStatements().getThrowStatementObjectList().size());
 	}
 	
 	@Test
 	public void tryStatementCount() {
-		
+		//assertEquals(1, fileModel.getTryStatements().getTryStatementObjectList().size());
 	}
 	
 	@Test
 	public void simpleNameCount() {
-		
+		//assertEquals(1, fileModel.getSimpleNames().getSimpleNameObjectList().size());
 	}
 	
 	@Test
 	public void switchStatementCount() {
-		
+		//assertEquals(1, fileModel.getSwitchStatements().getSwitchStatementObjectList().size());
 	}
 	
 	@Test
 	public void whileStatementCount() {
-		
+		assertEquals(1, fileModel.getWhileStatements().getWhileStatementObjectList().size());
 	}
 	
 	@Test
 	public void wildcardCount() {
-		
+		//assertEquals(1, fileModel.getWildcards().getWildcardObjectList().size());
 	}
 	
 }
