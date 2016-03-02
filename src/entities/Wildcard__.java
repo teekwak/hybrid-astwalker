@@ -53,6 +53,13 @@ public class Wildcard__ {
 		else {
 			System.out.println("None\n");
 		}
-
 	}
+	
+	/*
+	 * start testing
+	 */
+	
+	/*
+	 * end testing
+	 */
 }

@@ -65,4 +65,12 @@ public class SwitchStatement__ {
 			System.out.println("None\n");
 		}
 	}
+	
+	/*
+	 * start testing
+	 */
+	
+	/*
+	 * end testing
+	 */
 }

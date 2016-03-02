@@ -33,6 +33,22 @@ public class Import__ {
 	public List<ImportObject> getImportObjectList() {
 		return this.importObjectList;
 	}
+
+	public List<Integer> getLineNumbers() {
+		List<Integer> list = new ArrayList<>();
+		for(ImportObject obj : importObjectList) {
+			list.add(obj.lineNumber);
+		}
+		return list;
+	}
+
+	public List<Integer> getColumnNumbers() {
+		List<Integer> list = new ArrayList<>();
+		for(ImportObject obj : importObjectList) {
+			list.add(obj.columnNumber);
+		}
+		return list;
+	}
 	
 	public void printAllImports() {
 		System.out.println("--- Imports ---");
@@ -47,4 +63,12 @@ public class Import__ {
 			System.out.println("None\n");
 		}
 	}
+	
+	/*
+	 * start testing
+	 */
+	
+	/*
+	 * end testing
+	 */
 }

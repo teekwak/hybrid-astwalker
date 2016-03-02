@@ -53,4 +53,12 @@ public class ThrowStatement__ {
 			System.out.println("None\n");
 		}
 	}
+	
+	/*
+	 * start testing
+	 */
+	
+	/*
+	 * end testing
+	 */
 }

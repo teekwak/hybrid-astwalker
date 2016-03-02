@@ -104,4 +104,12 @@ public class MethodInvocation__ {
 		}
 
 	}
+	
+	/*
+	 * start testing
+	 */
+	
+	/*
+	 * end testing
+	 */
 }

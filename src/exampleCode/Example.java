@@ -1,19 +1,19 @@
 /*
  * List of things in this code (line numbers)
  * 
- * 1 package (29)
- * 7 imports (31, 32, 33, 34, 35, 36, 37)
- * 4 regular classes (48, 68, 77, 79)
- * 2 super classes (48, 68)
- * 3 interfaces (39, 43, 49) 
+ * 1 package (30)
+ * 7 imports (32, 33, 34, 35, 36, 37, 38)
+ * 4 regular classes (49, 69, 78, 80)
+ * 2 super classes (49, 69)
+ * 3 interfaces (40, 44, 50) 
  * 2 implements (69, 69)
- * 4 arrays (51, 108, 112, 116)
+ * 4 arrays (108, 112, 116, 156)
  * 1 catch clause (189)
  * 1 conditional expression (181)
  * 2 do statements (185, 198)
  * 4 for statements (97, 103, 157, 161)
- * 8 generics
- * 3 if statements
+ * 8 generics (96, 102, 108, 112, 117, 118, 119, 144)
+ * 3 if statements (55, 132, 191)
  * 10 infix expressions
  * 14 method declarations
  * 13 method invocations
@@ -202,9 +202,3 @@ public class Example {
 		
 	}
 }
-
-
-
-
-
-

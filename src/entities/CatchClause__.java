@@ -39,10 +39,6 @@ public class CatchClause__ {
 	public void addCatch(Type exception, String variableName, String className, String methodName, int lineNumber, int columnNumber) {
 		catchClauseObjectList.add(new CatchClauseObject(exception, variableName, className, methodName, lineNumber, columnNumber));
 	}
-
-	public List<CatchClauseObject> getCatchClauseObjectList() {
-		return this.catchClauseObjectList;
-	}
 	
 	public void printAllCatchClauses() {
 		System.out.println("--- Catch Clauses ---");
@@ -57,4 +53,32 @@ public class CatchClause__ {
 			System.out.println("None\n");
 		}
 	}
+	
+	/*
+	 * start testing
+	 */
+	
+	public List<CatchClauseObject> getCatchClauseObjectList() {
+		return this.catchClauseObjectList;
+	}
+	
+	public List<Integer> getLineNumbers() {
+		List<Integer> list = new ArrayList<>();
+		for(CatchClauseObject obj : catchClauseObjectList) {
+			list.add(obj.lineNumber);
+		}
+		return list;
+	}
+
+	public List<Integer> getColumnNumbers() {
+		List<Integer> list = new ArrayList<>();
+		for(CatchClauseObject obj : catchClauseObjectList) {
+			list.add(obj.columnNumber);
+		}
+		return list;
+	}
+	
+	/*
+	 * end testing
+	 */
 }

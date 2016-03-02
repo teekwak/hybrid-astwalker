@@ -51,14 +51,6 @@ public class Class__ {
 		superClassObjectList.add(new SuperClassObject(name, lineNumber));
 	}
 
-	public List<ClassObject> getClassObjectList() {
-		return this.classObjectList;
-	}
-	
-	public List<SuperClassObject> getSuperClassObjectList() {
-		return this.superClassObjectList;
-	}
-	
 	public void printAllClasses() {
 		System.out.println("--- Classes ---");
 
@@ -72,7 +64,7 @@ public class Class__ {
 			System.out.println("None\n");
 		}
 	}
-
+	
 	public void printAllExtends() {
 		System.out.println("--- Extends ---");
 
@@ -86,4 +78,44 @@ public class Class__ {
 			System.out.println("None\n");
 		}
 	}
+	
+	/*
+	 * start testing
+	 */
+	
+	public List<ClassObject> getClassObjectList() {
+		return this.classObjectList;
+	}
+	
+	public List<Integer> getLineNumbers() {
+		List<Integer> list = new ArrayList<>();
+		for(ClassObject obj : classObjectList) {
+			list.add(obj.lineNumber);
+		}
+		return list;
+	}
+
+	public List<Integer> getColumnNumbers() {
+		List<Integer> list = new ArrayList<>();
+		for(ClassObject obj : classObjectList) {
+			list.add(obj.columnNumber);
+		}
+		return list;
+	}
+	
+	public List<Integer> getSuperClassLineNumbers() {
+		List<Integer> list = new ArrayList<>();
+		for(SuperClassObject obj : superClassObjectList) {
+			list.add(obj.lineNumber);
+		}
+		return list;
+	}
+	
+	public List<SuperClassObject> getSuperClassObjectList() {
+		return this.superClassObjectList;
+	}
+	
+	/*
+	 * end testing
+	 */
 }

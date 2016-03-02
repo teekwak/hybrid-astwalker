@@ -40,10 +40,6 @@ public class Array__ {
 		arrayObjectList.add(new ArrayObject(name, className, methodName, type, lineNumber, columnNumber));
 	}
 
-	public List<ArrayObject> getArrayObjectList() {
-		return this.arrayObjectList;
-	}
-	
 	public void printAllArrays() {
 		System.out.println("--- Arrays ---");
 
@@ -57,4 +53,32 @@ public class Array__ {
 			System.out.println("None\n");
 		}
 	}
+	
+	/*
+	 * for testing
+	 */
+	
+	public List<ArrayObject> getArrayObjectList() {
+		return this.arrayObjectList;
+	}
+	
+	public List<Integer> getLineNumbers() {
+		List<Integer> list = new ArrayList<>();
+		for(ArrayObject obj : arrayObjectList) {
+			list.add(obj.lineNumber);
+		}
+		return list;
+	}
+
+	public List<Integer> getColumnNumbers() {
+		List<Integer> list = new ArrayList<>();
+		for(ArrayObject obj : arrayObjectList) {
+			list.add(obj.columnNumber);
+		}
+		return list;
+	}
+	
+	/*
+	 * end testing
+	 */
 }

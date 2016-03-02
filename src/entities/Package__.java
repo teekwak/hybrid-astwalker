@@ -33,6 +33,22 @@ public class Package__ {
 	public List<PackageObject> getPackageObjectList() {
 		return packageObjectList;
 	}
+
+	public List<Integer> getLineNumbers() {
+		List<Integer> list = new ArrayList<>();
+		for(PackageObject obj : packageObjectList) {
+			list.add(obj.lineNumber);
+		}
+		return list;
+	}
+	
+	public List<Integer> getColumnNumbers() {
+		List<Integer> list = new ArrayList<>();
+		for(PackageObject obj : packageObjectList) {
+			list.add(obj.columnNumber);
+		}
+		return list;
+	}
 	
 	public void printAllPackages() {
 		System.out.println("--- Packages ---");
@@ -47,4 +63,12 @@ public class Package__ {
 			System.out.println("None\n");
 		}
 	}
+	
+	/*
+	 * start testing
+	 */
+	
+	/*
+	 * end testing
+	 */
 }
