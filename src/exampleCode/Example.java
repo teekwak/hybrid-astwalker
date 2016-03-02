@@ -1,11 +1,29 @@
 /*
- * List of things in this code
+ * List of things in this code (line numbers)
  * 
- * 1 package
- * 6 imports
- * 5 regular classes
- * 2 super classes
- * 2 interfaces
+ * 1 package (29)
+ * 7 imports (31, 32, 33, 34, 35, 36, 37)
+ * 4 regular classes (48, 68, 77, 79)
+ * 2 super classes (48, 68)
+ * 3 interfaces (39, 43, 49) 
+ * 2 implements (69, 69)
+ * 4 arrays (51, 108, 112, 116)
+ * 1 catch clause (189)
+ * 1 conditional expression (181)
+ * 2 do statements (185, 198)
+ * 4 for statements (97, 103, 157, 161)
+ * 8 generics
+ * 3 if statements
+ * 10 infix expressions
+ * 14 method declarations
+ * 13 method invocations
+ * 27 primitives
+ * 1 throw statement
+ * 1 try statement
+ * 8 simple names
+ * 1 switch statement
+ * 1 while statement
+ * 1 wildcard
  * 
  */
 
@@ -23,75 +41,19 @@ interface someInterface {
 	public double abstractAction();
 }
 
-public class Example extends SuperDuperClass {
-	int[] classArray;
-	List<String> listOfStrings;
-	
-	Example() {
-		// this is a constructor
-		classArray = new int[] {1, 2, 3};
-		listOfStrings = new ArrayList<String>();
-	}
-	
-	class innerClass implements Junk1, Junk2 {
-		public void forLoopMethod() {
-			for(int i = 0; i < 10; i++) {
-				// do something
-			}
-			
-			for(int i : new int[]{1, 2, 3, 4}) {
-				// do something
-			}
-		}
-		
-		public void whileLoopMethod() {
-			int i = 0;
-			while(i > 2) {
-				// do something
-			}
-		}
-		
-		public void doLoopMethod() {
-			do {
-				// do something
-			}
-			while(1 == 2);
-		}
-	}
-	
-	public static void main(String[] args) {
-		try {
-			
-		} catch (NullPointerException e) {
-			System.out.println(1 == 2 ? true : false);
-		}
-	}
+interface ThisIsAnInterface {
+	void print();
+	int getSize();
 }
 
-class firstOuterClass extends SomethingElse {
+class OuterClass1 extends SomethingElse {
+	interface InnerInterface {
+		abstract double[][] abstractFunction();
+	}
 	
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-
-class Blah implements SomethingElse {
 	void print() {
-		System.out.println("this is blah");
-		if(1 == 2) {
-			System.out.println("never happens");
+		if(1 < 2) {
+			System.out.println("always happens");
 		}
 	}
 	
@@ -104,18 +66,13 @@ class Blah implements SomethingElse {
 	}
 }
 
-class Node extends LinkedList implements Junk1, Junk2{
-	Node next;
+class OuterClass2 extends SomethingElse implements Junk1, Junk2{
+	OuterClass2 next;
 	int data;
 	
-	Node(int data) {
+	OuterClass2(int data) {
 		this.data = data;
 	}
-}
-
-interface Ni {
-	void print();
-	int getSize();
 }
 
 public class Example {
@@ -158,8 +115,13 @@ public class Example {
 	
 	public static void main(String[] args) throws IOException{
 		List<String> list = new LinkedList<>();
+		List<Object> anotherList = new ArrayList<>();
 		Map<String, Integer> map = new HashMap<String, Integer>();
 
+		list.add("this");
+		anotherList.add(1);
+		map.put("hello", 2);
+		
 		Example ex = new Example();
 		ex.neighbors = 5;
 		ex.name = "example_1";
@@ -174,12 +136,13 @@ public class Example {
 			System.out.println("nvm");
 		}
 		
-		Blah blah = new Blah();
+		OuterClass1 blah = new OuterClass1();
 		blah.print();
 		blah.print(1);
 		blah.print(3, 4);
 		
 		HashMap<String, HashMap<String, Integer>> reallyBigMap = new HashMap<>();
+		reallyBigMap.put("s", new HashMap<>());
 		
 		switch(i) {
 			case 1: System.out.println("1");
@@ -197,6 +160,7 @@ public class Example {
 		
 		for(int k = 0; k < 10; k++) {
 			double j = Math.sqrt(100);
+			System.out.println(j);
 			System.out.println(k);
 		}
 		
@@ -212,12 +176,21 @@ public class Example {
 		
 		System.out.println(3 == 4);
 		
-		System.out.println(1 == 2 ? "yes" : "no");
+		
+		int condVar = 0;
+		System.out.println(condVar < 2 ? "yes" : "no");
 		
 		try {
 			int a = 0;
+			do{
+				a += 1;
+			}
+			while (a < -1);
 		} catch (NullPointerException e) {
 			int b = 1;
+			if(b < 2) {
+				// do something
+			}
 			throw new IOException();
 		}
 		
@@ -229,4 +202,9 @@ public class Example {
 		
 	}
 }
-*/
+
+
+
+
+
+

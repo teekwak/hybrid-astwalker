@@ -55,7 +55,7 @@ public class ASTWalkerTest {
 		int normalClassCount = fileModel.getClasses().getClassObjectList().size();
 		int superClassCount = fileModel.getClasses().getSuperClassObjectList().size();
 		
-		assertEquals(3, normalClassCount);
+		assertEquals(4, normalClassCount);
 		assertEquals(2, superClassCount);
 	}
 	
@@ -65,13 +65,13 @@ public class ASTWalkerTest {
 		int interfaceCount = fileModel.getInterfaces().getInterfaceObjectList().size();
 		int implementsCount = fileModel.getInterfaces().getImplementsObjectList().size();
 		
-		assertEquals(1, interfaceCount);
+		assertEquals(3, interfaceCount);
 		assertEquals(2, implementsCount);
 	}
 
 	@Test
 	public void arrayCount() {
-		assertEquals(2, fileModel.getArrays().getArrayObjectList().size());
+		assertEquals(4, fileModel.getArrays().getArrayObjectList().size());
 	}
 	
 	@Test
@@ -86,66 +86,69 @@ public class ASTWalkerTest {
 	
 	@Test
 	public void doStatementCount() {
-		assertEquals(1, fileModel.getDoStatements().getDoStatementObjectList().size());
+		assertEquals(2, fileModel.getDoStatements().getDoStatementObjectList().size());
 	}
 	
 	@Test
 	// check number of for statements
 	public void forStatementCount() {		
-		assertEquals(2, fileModel.getForStatements().getForStatementObjectList().size());
+		assertEquals(4, fileModel.getForStatements().getForStatementObjectList().size());
 	}
 	
 	@Test
 	// check number of generics
 	// CHECK THIS AGAIN
 	public void genericsCount() {
-		assertEquals(1, fileModel.getGenerics().getGenericsObjectList().size());
+		assertEquals(8, fileModel.getGenerics().getGenericsObjectList().size());
 	}
 	
 	@Test
+	// check number of if statements
+	// every time the word IF shows up, +1 count
 	public void ifStatementCount() {
-		//assertEquals(1, fileModel.getIfStatements().getIfStatementObjectList().size());
+		assertEquals(3, fileModel.getIfStatements().getIfStatementObjectList().size());
 	}
 	
 	@Test
 	public void infixExpressionCount() {
-		//assertEquals(1, fileModel.getInfixExpressions().getInfixExpressionObjectList().size());
+		assertEquals(10, fileModel.getInfixExpressions().getInfixExpressionObjectList().size());
 	}
 	
 	@Test
 	// checks number of method declarations (includes constructors)
 	public void methodDeclarationCount() {
-		//assertEquals(1, fileModel.getMethodDeclarations().getMethodDeclarationObjectList().size());
+		assertEquals(14, fileModel.getMethodDeclarations().getMethodDeclarationObjectList().size());
 	}
 	
 	@Test
 	public void methodInvocationCount() {
-		//assertEquals(1, fileModel.getMethodInvocations().getMethodInvocationObjectList().size());
+		assertEquals(13, fileModel.getMethodInvocations().getMethodInvocationObjectList().size());
 	}
 	
 	@Test
 	public void primitiveCount() {
-		//assertEquals(1, fileModel.getPrimitives().getPrimitiveObjectList().size());
+		assertEquals(27, fileModel.getPrimitives().getPrimitiveObjectList().size());
 	}
 	
 	@Test
+	// specifically looking for the word THROW, not THROWS
 	public void throwStatementCount() {
-		//assertEquals(1, fileModel.getThrowStatements().getThrowStatementObjectList().size());
+		assertEquals(1, fileModel.getThrowStatements().getThrowStatementObjectList().size());
 	}
 	
 	@Test
 	public void tryStatementCount() {
-		//assertEquals(1, fileModel.getTryStatements().getTryStatementObjectList().size());
+		assertEquals(1, fileModel.getTryStatements().getTryStatementObjectList().size());
 	}
 	
 	@Test
 	public void simpleNameCount() {
-		//assertEquals(1, fileModel.getSimpleNames().getSimpleNameObjectList().size());
+		assertEquals(8, fileModel.getSimpleNames().getSimpleNameObjectList().size());
 	}
 	
 	@Test
 	public void switchStatementCount() {
-		//assertEquals(1, fileModel.getSwitchStatements().getSwitchStatementObjectList().size());
+		assertEquals(1, fileModel.getSwitchStatements().getSwitchStatementObjectList().size());
 	}
 	
 	@Test
@@ -154,8 +157,9 @@ public class ASTWalkerTest {
 	}
 	
 	@Test
+	// only found in field declarations
 	public void wildcardCount() {
-		//assertEquals(1, fileModel.getWildcards().getWildcardObjectList().size());
+		assertEquals(1, fileModel.getWildcards().getWildcardObjectList().size());
 	}
 	
 }
