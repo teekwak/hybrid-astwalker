@@ -41,10 +41,6 @@ public class TryStatement__ {
 	public void addTryStatement(String tryBody, String className, String methodName, List<CatchClause> catchClauseList, String finallyBody, int lineNumber, int columnNumber) {
 		tryStatementObjectList.add(new TryStatementObject(tryBody, className, methodName, catchClauseList, finallyBody, lineNumber, columnNumber));
 	}
-
-	public List<TryStatementObject> getTryStatementObjectList() {
-		return this.tryStatementObjectList;
-	}
 	
 	public void printAllTryStatements() {
 		System.out.println("--- Try Statements ---");
@@ -63,6 +59,26 @@ public class TryStatement__ {
 	/*
 	 * start testing
 	 */
+	
+	public List<TryStatementObject> getTryStatementObjectList() {
+		return this.tryStatementObjectList;
+	}
+	
+	public List<Integer> getLineNumbers() {
+		List<Integer> list = new ArrayList<>();
+		for(TryStatementObject obj : tryStatementObjectList) {
+			list.add(obj.lineNumber);
+		}
+		return list;
+	}
+
+	public List<Integer> getColumnNumbers() {
+		List<Integer> list = new ArrayList<>();
+		for(TryStatementObject obj : tryStatementObjectList) {
+			list.add(obj.columnNumber);
+		}
+		return list;
+	}
 	
 	/*
 	 * end testing

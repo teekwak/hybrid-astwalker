@@ -42,10 +42,6 @@ public class SimpleName__ {
 	public void addSimpleName(String variableName, String className, String methodName, Type type, int lineNumber, int columnNumber) {
 		simpleNameObjectList.add(new SimpleNameObject(variableName, className, methodName, type, lineNumber, columnNumber));
 	}
-
-	public List<SimpleNameObject> getSimpleNameObjectList() {
-		return this.simpleNameObjectList;
-	}
 	
 	public void printAllSimpleNames() {
 		System.out.println("--- Simple Names ---");
@@ -63,6 +59,26 @@ public class SimpleName__ {
 	/*
 	 * start testing
 	 */
+	
+	public List<SimpleNameObject> getSimpleNameObjectList() {
+		return this.simpleNameObjectList;
+	}
+	
+	public List<Integer> getLineNumbers() {
+		List<Integer> list = new ArrayList<>();
+		for(SimpleNameObject obj : simpleNameObjectList) {
+			list.add(obj.lineNumber);
+		}
+		return list;
+	}
+
+	public List<Integer> getColumnNumbers() {
+		List<Integer> list = new ArrayList<>();
+		for(SimpleNameObject obj : simpleNameObjectList) {
+			list.add(obj.columnNumber);
+		}
+		return list;
+	}
 	
 	/*
 	 * end testing

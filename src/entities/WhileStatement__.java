@@ -58,6 +58,22 @@ public class WhileStatement__ {
 		return this.whileStatementObjectList;
 	}
 	
+	public List<Integer> getLineNumbers() {
+		List<Integer> list = new ArrayList<>();
+		for(WhileStatementObject obj : whileStatementObjectList) {
+			list.add(obj.lineNumber);
+		}
+		return list;
+	}
+
+	public List<Integer> getColumnNumbers() {
+		List<Integer> list = new ArrayList<>();
+		for(WhileStatementObject obj : whileStatementObjectList) {
+			list.add(obj.columnNumber);
+		}
+		return list;
+	}
+	
 	/*
 	 * end testing
 	 */

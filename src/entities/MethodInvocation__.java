@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 class MethodInvocationObject {
 	String name;
@@ -17,7 +17,7 @@ class MethodInvocationObject {
 		parentClass = p;
 		Map<Integer, Integer> position = new TreeMap<>();
 		position.put(l, c);
-		invocationClassAndPositions = new HashMap<>();
+		invocationClassAndPositions = new LinkedHashMap<>();
 		invocationClassAndPositions.put(classWhereMethodInvoked, position);
 
 		parameters = new ArrayList<>();
@@ -76,7 +76,7 @@ public class MethodInvocation__ {
 					obj.invocationClassAndPositions.get(classWhereMethodInvoked).put(lineNumber, columnNumber);
 				}
 				catch (NullPointerException e) {
-					Map<Integer, Integer> tempMap = new HashMap<>();
+					Map<Integer, Integer> tempMap = new LinkedHashMap<>();
 					obj.invocationClassAndPositions.put(classWhereMethodInvoked, tempMap);
 				}
 				return;
@@ -108,6 +108,14 @@ public class MethodInvocation__ {
 	public List<MethodInvocationObject> getMethodInvocationObjectList() {
 		return this.methodInvocationObjectList;
 	}	
+	
+	public List<Map<String, Map<Integer, Integer>>> getInvocationClassAndPositionsMaps() {
+		List<Map<String, Map<Integer, Integer>>> list = new ArrayList<>();
+		for(MethodInvocationObject obj : methodInvocationObjectList) {
+			list.add(obj.invocationClassAndPositions);
+		}
+		return list;
+	}
 	
 	/*
 	 * end testing

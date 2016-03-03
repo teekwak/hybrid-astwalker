@@ -201,7 +201,9 @@ public class FileModel {
 
 			fileModel = fileModel.parseDeclarations(fileLocation);
 
-			fileModel.printEverything();
+			//fileModel.printEverything();
+			
+			fileModel.getMethodInvocations().printAllMethodInvocations();
 		}
 	}
 }

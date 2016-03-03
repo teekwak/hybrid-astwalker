@@ -5,6 +5,8 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.eclipse.core.runtime.CoreException;
 import org.junit.Test;
@@ -106,29 +108,6 @@ public class ASTWalkerTest {
 		assertTrue(compareTwoSets(correctColumnList, columnList));
 		assertTrue(compareTwoSets(correctSuperClassLineList, superClassLineList));
 	}
-	
-	@Test
-	public void interfaceCheck() {
-		// number of interfaces (interfaces + implements interface)
-		int interfaceCount = fileModel.getInterfaces().getInterfaceObjectList().size();
-		int implementsCount = fileModel.getInterfaces().getImplementsObjectList().size();
-		
-		assertEquals(3, interfaceCount);
-		assertEquals(2, implementsCount);
-		
-		// position of interfaces (starts at "interface")
-		List<Integer> lineList = fileModel.getInterfaces().getLineNumbers();
-		List<Integer> columnList = fileModel.getInterfaces().getColumnNumbers();
-		List<Integer> implementsLineList = fileModel.getInterfaces().getImplementsLineNumbers();
-		
-		int[] correctLineList = {40, 44, 50};
-		int[] correctColumnList = {0, 0, 1};
-		int[] correctImplementsLineList = {69, 69};
-		
-		assertTrue(compareTwoSets(correctLineList, lineList));
-		assertTrue(compareTwoSets(correctColumnList, columnList));
-		assertTrue(compareTwoSets(correctImplementsLineList, implementsLineList));
-	}
 
 	@Test
 	public void arrayCheck() {
@@ -211,10 +190,19 @@ public class ASTWalkerTest {
 	}
 	
 	@Test
-	// check number of generics
-	// CHECK THIS AGAIN
 	public void genericsCheck() {
+		// number of generics
 		assertEquals(8, fileModel.getGenerics().getGenericsObjectList().size());
+		
+		// position of generics (everywhere)
+		List<Integer> lineList = fileModel.getGenerics().getLineNumbers();
+		List<Integer> columnList = fileModel.getGenerics().getColumnNumbers();
+		
+		int[] correctLineList = {96, 102, 108, 112, 117, 118, 119, 144};
+		int[] correctColumnList = {43, 49, 93, 93, 15, 15, 23, 44};
+				
+		assertTrue(compareTwoSets(correctLineList, lineList));
+		assertTrue(compareTwoSets(correctColumnList, columnList));
 	}
 	
 	@Test
@@ -250,53 +238,168 @@ public class ASTWalkerTest {
 	}
 	
 	@Test
+	public void interfaceCheck() {
+		// number of interfaces (interfaces + implements interface)
+		int interfaceCount = fileModel.getInterfaces().getInterfaceObjectList().size();
+		int implementsCount = fileModel.getInterfaces().getImplementsObjectList().size();
+		
+		assertEquals(3, interfaceCount);
+		assertEquals(2, implementsCount);
+		
+		// position of interfaces (starts at "interface")
+		List<Integer> lineList = fileModel.getInterfaces().getLineNumbers();
+		List<Integer> columnList = fileModel.getInterfaces().getColumnNumbers();
+		List<Integer> implementsLineList = fileModel.getInterfaces().getImplementsLineNumbers();
+		
+		int[] correctLineList = {40, 44, 50};
+		int[] correctColumnList = {0, 0, 1};
+		int[] correctImplementsLineList = {69, 69};
+		
+		assertTrue(compareTwoSets(correctLineList, lineList));
+		assertTrue(compareTwoSets(correctColumnList, columnList));
+		assertTrue(compareTwoSets(correctImplementsLineList, implementsLineList));
+	}
+	
+	@Test
 	public void methodDeclarationCheck() {
 		// number of method declarations (including constructors)
 		assertEquals(14, fileModel.getMethodDeclarations().getMethodDeclarationObjectList().size());
 		
+		// position of method declarations (begins at method name)
+		List<Integer> lineList = fileModel.getMethodDeclarations().getLineNumbers();
+		List<Integer> columnList = fileModel.getMethodDeclarations().getColumnNumbers();
 		
+		int[] correctLineList = {41, 45, 46, 51, 54, 60, 64, 73, 91, 96, 102, 108, 112, 116};
+		int[] correctColumnList = {15, 6, 5, 22, 6, 6, 6, 1, 13, 13, 13, 12, 12, 20};
+		
+		assertTrue(compareTwoSets(correctLineList, lineList));
+		assertTrue(compareTwoSets(correctColumnList, columnList));	
 	}
 	
 	@Test
 	public void methodInvocationCheck() {
-		// number of method invocations
+		// number of unique method invocations
 		assertEquals(13, fileModel.getMethodInvocations().getMethodInvocationObjectList().size());
+		
+		// position of method invocations (where the actual name of the method starts)
+		List<Map<String, Map<Integer, Integer>>> listOfMaps = fileModel.getMethodInvocations().getInvocationClassAndPositionsMaps();
+		
+		List<Integer> lineList = new ArrayList<>();
+		List<Integer> columnList = new ArrayList<>();
+		Map<Integer, Integer> allPositions = new TreeMap<>();
+		
+		for(Map<String, Map<Integer, Integer>> bigMap : listOfMaps) {
+			for(Map.Entry<String, Map<Integer, Integer>> smallMap : bigMap.entrySet()) {
+				for(Map.Entry<Integer, Integer> tinyMap : smallMap.getValue().entrySet()) {
+					allPositions.put(tinyMap.getKey(), tinyMap.getValue());
+				}
+			}
+		}
+		
+		// number of ALL method invocations
+		assertEquals(25, allPositions.size());
+		
+		int[] correctLineList = {56, 61, 65, 92, 93, 104, 121, 122, 123, 129, 136, 140, 141, 142, 145, 148, 150, 152, 158, 163, 164, 171, 175, 181, 199};
+		int[] correctColumnList = {14, 13, 13, 13, 13, 14, 7, 14, 6, 5, 14, 7, 7, 7, 15, 22, 22, 23, 14, 14, 14, 14, 5, 13, 14};
+	
+		assertTrue(compareTwoSets(correctLineList, lineList));
+		assertTrue(compareTwoSets(correctColumnList, columnList));
 	}
 	
 	@Test
 	public void primitiveCheck() {
 		// number of primitives
 		assertEquals(27, fileModel.getPrimitives().getPrimitiveObjectList().size());
+		
+		// position of primitives (variable names found everywhere)
+		List<Integer> lineList = fileModel.getPrimitives().getLineNumbers();
+		List<Integer> columnList = fileModel.getPrimitives().getColumnNumbers();
+		
+		int[] correctLineList = {60, 64, 64, 71, 73, 81, 85, 86, 87, 88, 108, 108, 108, 108, 112, 112, 112, 112, 131, 157, 161, 162, 168, 180, 184, 190, 197};
+		int[] correctColumnList = {16, 16, 23, 5, 17, 9, 5, 8, 7, 9, 39, 49, 60, 69, 39, 49, 60, 69, 6, 10, 10, 10, 6, 6, 7, 7, 6};
+		
+		assertTrue(compareTwoSets(correctLineList, lineList));
+		assertTrue(compareTwoSets(correctColumnList, columnList));
 	}
 	
 	@Test
 	public void throwStatementCheck() {
 		// number of throw statements (not throws)
 		assertEquals(1, fileModel.getThrowStatements().getThrowStatementObjectList().size());
+		
+		// position of throw statements (position of the word "throw")
+		List<Integer> lineList = fileModel.getThrowStatements().getLineNumbers();
+		List<Integer> columnList = fileModel.getThrowStatements().getColumnNumbers();
+		
+		int[] correctLineList = {194};
+		int[] correctColumnList = {3};
+		
+		assertTrue(compareTwoSets(correctLineList, lineList));
+		assertTrue(compareTwoSets(correctColumnList, columnList));
 	}
 	
 	@Test
 	public void tryStatementCheck() {
 		// number of try statements
 		assertEquals(1, fileModel.getTryStatements().getTryStatementObjectList().size());
+		
+		// position of try statements (position of the word "try")
+		List<Integer> lineList = fileModel.getTryStatements().getLineNumbers();
+		List<Integer> columnList = fileModel.getTryStatements().getColumnNumbers();
+		
+		int[] correctLineList = {183};
+		int[] correctColumnList = {2};
+		
+		assertTrue(compareTwoSets(correctLineList, lineList));
+		assertTrue(compareTwoSets(correctColumnList, columnList));
 	}
 	
 	@Test
 	public void simpleNameCheck() {
 		// number of simple names
 		assertEquals(8, fileModel.getSimpleNames().getSimpleNameObjectList().size());
+		
+		// position of simple names (variable name of everything that is not primitive)
+		List<Integer> lineList = fileModel.getSimpleNames().getLineNumbers();
+		List<Integer> columnList = fileModel.getSimpleNames().getColumnNumbers();
+		
+		int[] correctLineList = {70, 84, 89, 97, 103, 125, 139, 189};
+		int[] correctColumnList = {13, 8, 9, 13, 13, 10, 14, 32};
+		
+		assertTrue(compareTwoSets(correctLineList, lineList));
+		assertTrue(compareTwoSets(correctColumnList, columnList));
 	}
 	
 	@Test
 	public void switchStatementCheck() {
 		// number of switch statements
 		assertEquals(1, fileModel.getSwitchStatements().getSwitchStatementObjectList().size());
+	
+		// position of switch statements (position of "switch")
+		List<Integer> lineList = fileModel.getSwitchStatements().getLineNumbers();
+		List<Integer> columnList = fileModel.getSwitchStatements().getColumnNumbers();
+		
+		int[] correctLineList = {147};
+		int[] correctColumnList = {2};
+		
+		assertTrue(compareTwoSets(correctLineList, lineList));
+		assertTrue(compareTwoSets(correctColumnList, columnList));
 	}
 	
 	@Test
 	public void whileStatementCheck() {
 		// number of while statements
 		assertEquals(1, fileModel.getWhileStatements().getWhileStatementObjectList().size());
+		
+		// position of while statements (position of "while", excludes do-while)
+		List<Integer> lineList = fileModel.getWhileStatements().getLineNumbers();
+		List<Integer> columnList = fileModel.getWhileStatements().getColumnNumbers();
+		
+		int[] correctLineList = {170};
+		int[] correctColumnList = {2};
+		
+		assertTrue(compareTwoSets(correctLineList, lineList));
+		assertTrue(compareTwoSets(correctColumnList, columnList));
 	}
 	
 	@Test

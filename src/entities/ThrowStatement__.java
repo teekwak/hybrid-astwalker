@@ -58,6 +58,22 @@ public class ThrowStatement__ {
 		return this.throwStatementObjectList;
 	}	
 	
+	public List<Integer> getLineNumbers() {
+		List<Integer> list = new ArrayList<>();
+		for(ThrowStatementObject obj : throwStatementObjectList) {
+			list.add(obj.lineNumber);
+		}
+		return list;
+	}
+
+	public List<Integer> getColumnNumbers() {
+		List<Integer> list = new ArrayList<>();
+		for(ThrowStatementObject obj : throwStatementObjectList) {
+			list.add(obj.columnNumber);
+		}
+		return list;
+	}
+	
 	/*
 	 * end testing
 	 */

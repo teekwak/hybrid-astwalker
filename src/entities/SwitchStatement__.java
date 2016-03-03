@@ -47,10 +47,6 @@ public class SwitchStatement__ {
 	public void addSwitchStatement(String expression, String className, String methodName, Map<String, Map<Integer, Integer>> switchCaseMap, int lineNumber, int columnNumber) {
 		switchStatementObjectList.add(new SwitchStatementObject(expression, className, methodName, switchCaseMap, lineNumber, columnNumber));
 	}
-
-	public List<SwitchStatementObject> getSwitchStatementObjectList() {
-		return this.switchStatementObjectList;
-	}
 	
 	public void printAllSwitchStatements() {
 		System.out.println("--- Switch Statements ---");
@@ -69,6 +65,26 @@ public class SwitchStatement__ {
 	/*
 	 * start testing
 	 */
+	
+	public List<SwitchStatementObject> getSwitchStatementObjectList() {
+		return this.switchStatementObjectList;
+	}	
+	
+	public List<Integer> getLineNumbers() {
+		List<Integer> list = new ArrayList<>();
+		for(SwitchStatementObject obj : switchStatementObjectList) {
+			list.add(obj.lineNumber);
+		}
+		return list;
+	}
+
+	public List<Integer> getColumnNumbers() {
+		List<Integer> list = new ArrayList<>();
+		for(SwitchStatementObject obj : switchStatementObjectList) {
+			list.add(obj.columnNumber);
+		}
+		return list;
+	}
 	
 	/*
 	 * end testing

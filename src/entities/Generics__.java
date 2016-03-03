@@ -63,6 +63,22 @@ public class Generics__ {
 		return this.genericsObjectList;
 	}	
 	
+	public List<Integer> getLineNumbers() {
+		List<Integer> list = new ArrayList<>();
+		for(GenericsObject obj : genericsObjectList) {
+			list.add(obj.lineNumber);
+		}
+		return list;
+	}
+
+	public List<Integer> getColumnNumbers() {
+		List<Integer> list = new ArrayList<>();
+		for(GenericsObject obj : genericsObjectList) {
+			list.add(obj.columnNumber);
+		}
+		return list;
+	}
+	
 	/*
 	 * end testing
 	 */

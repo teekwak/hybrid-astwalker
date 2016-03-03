@@ -42,10 +42,6 @@ public class Primitive__ {
 		primitiveObjectList.add(new PrimitiveObject(name, className, methodName, type, lineNumber, columnNumber));
 	}
 
-	public List<PrimitiveObject> getPrimitiveObjectList() {
-		return this.primitiveObjectList;
-	}
-	
 	public void printAllPrimitives() {
 		System.out.println("--- Primitives ---");
 
@@ -63,6 +59,26 @@ public class Primitive__ {
 	/*
 	 * start testing
 	 */
+
+	public List<PrimitiveObject> getPrimitiveObjectList() {
+		return this.primitiveObjectList;
+	}
+	
+	public List<Integer> getLineNumbers() {
+		List<Integer> list = new ArrayList<>();
+		for(PrimitiveObject obj : primitiveObjectList) {
+			list.add(obj.lineNumber);
+		}
+		return list;
+	}
+
+	public List<Integer> getColumnNumbers() {
+		List<Integer> list = new ArrayList<>();
+		for(PrimitiveObject obj : primitiveObjectList) {
+			list.add(obj.columnNumber);
+		}
+		return list;
+	}
 	
 	/*
 	 * end testing

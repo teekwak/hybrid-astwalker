@@ -70,6 +70,22 @@ public class MethodDeclaration__ {
 		return this.methodDeclarationObjectList;
 	}	
 	
+	public List<Integer> getLineNumbers() {
+		List<Integer> list = new ArrayList<>();
+		for(MethodDeclarationObject obj : methodDeclarationObjectList) {
+			list.add(obj.lineNumber);
+		}
+		return list;
+	}
+
+	public List<Integer> getColumnNumbers() {
+		List<Integer> list = new ArrayList<>();
+		for(MethodDeclarationObject obj : methodDeclarationObjectList) {
+			list.add(obj.columnNumber);
+		}
+		return list;
+	}
+	
 	/*
 	 * end testing
 	 */
