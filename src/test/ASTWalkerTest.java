@@ -119,31 +119,37 @@ public class ASTWalkerTest {
 		assertTrue(compareTwoSets(correctNameList, nameList));
 	}
 	
-	/*
-	
 	@Test
 	public void classCheck() {
 		// number of classes (regular + extends super)
 		int normalClassCount = fileModel.getClasses().getClassObjectList().size();
 		int superClassCount = fileModel.getClasses().getSuperClassObjectList().size();
 		
-		assertEquals(4, normalClassCount);
-		assertEquals(2, superClassCount);
+		assertEquals(2, normalClassCount);
+		assertEquals(1, superClassCount);
 	
 		// position of classes (starts at "class" or "public class")
 		List<Integer> lineList = fileModel.getClasses().getLineNumbers();
 		List<Integer> columnList = fileModel.getClasses().getColumnNumbers();
 		List<Integer> superClassLineList = fileModel.getClasses().getSuperClassLineNumbers();
+		List<String> nameList = fileModel.getClasses().getNames();
+		List<String> superClassNameList = fileModel.getClasses().getSuperClassNames();
 		
-		int[] correctLineList = {49, 69, 78, 80};
-		int[] correctColumnList = {0, 0, 0, 1};
-		int[] correctSuperClassLineList = {49, 69};
+		int[] correctLineList = {18, 67};
+		int[] correctColumnList = {0, 4};
+		int[] correctSuperClassLineList = {18};
+		String[] correctNameList = {"GMailSender", "ByteArrayDataSource"};
+		String[] correctSuperClassNameList = {"javax.mail.Authenticator"};
 		
 		assertTrue(compareTwoSets(correctLineList, lineList));
 		assertTrue(compareTwoSets(correctColumnList, columnList));
 		assertTrue(compareTwoSets(correctSuperClassLineList, superClassLineList));
+		assertTrue(compareTwoSets(correctNameList, nameList));
+		assertTrue(compareTwoSets(correctSuperClassNameList, superClassNameList));
 	}
 
+	/*
+	
 	@Test
 	public void arrayCheck() {
 		// number of arrays

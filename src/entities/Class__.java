@@ -103,6 +103,14 @@ public class Class__ {
 		return list;
 	}
 	
+	public List<String> getNames() {
+		List<String> list = new ArrayList<>();
+		for(ClassObject obj : classObjectList) {
+			list.add(obj.name);
+		}
+		return list;
+	}
+	
 	public List<Integer> getSuperClassLineNumbers() {
 		List<Integer> list = new ArrayList<>();
 		for(SuperClassObject obj : superClassObjectList) {
@@ -113,6 +121,14 @@ public class Class__ {
 	
 	public List<SuperClassObject> getSuperClassObjectList() {
 		return this.superClassObjectList;
+	}
+	
+	public List<String> getSuperClassNames() {
+		List<String> list = new ArrayList<>();
+		for(SuperClassObject obj : superClassObjectList) {
+			list.add(obj.name);
+		}
+		return list;
 	}
 	
 	/*
