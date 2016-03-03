@@ -200,7 +200,7 @@ public class FileModel {
 	public static void traverseUntilJava(File parentNode) throws IOException, CoreException {
 		if(parentNode.isDirectory()) {
 			File childNodes[] = parentNode.listFiles();
-			
+						
 			for(File c : childNodes) {
 				if(!c.getName().startsWith(".")) {
 					traverseUntilJava(c);
@@ -208,12 +208,15 @@ public class FileModel {
 			}
 		}
 		else {
-			if(parentNode.getName().endsWith(".java")) {				
+			if(parentNode.getName().endsWith(".java")) {		
+				System.out.println(parentNode.getName());
+				
 				FileModel fileModel = new FileModel();
 				
 				fileModel = fileModel.parseDeclarations(parentNode.getAbsolutePath());
 				
-				fileModel.printEverything();
+				fileModel.methodInvocation__.printAllMethodInvocations();
+				
 			}
 		}
 	}
@@ -222,6 +225,8 @@ public class FileModel {
 
 		//File inputFolder = new File(args[0]);
 		
-		traverseUntilJava(new File("/home/kwak/Desktop/jgit-test"));
+		File inputFolder = new File("/home/kwak/Desktop/ReSender/src/com/gilevich/resender/GMailSender.java");
+		
+		traverseUntilJava(inputFolder);
 	}
 }

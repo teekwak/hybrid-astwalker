@@ -32,11 +32,13 @@ public class ASTWalkerTest {
 	private static FileModel fileModel;
 
 	public ASTWalkerTest() throws IOException, CoreException {		
-		String fileLocation = "src/exampleCode/Example.java";
+		String fileLocation = "/home/kwak/Desktop/ReSender/src/com/gilevich/resender/GMailSender.java";
+		
+		//String fileLocation = "/home/kwak/Documents/workspace/ASTWalker/src/exampleCode/Example.java";
 		
 		fileModel = new FileModel();
 		
-		if(fileLocation.substring(fileLocation.lastIndexOf(".")+1).equals("java")) {
+		if(fileLocation.endsWith("java")) {
 			fileModel = fileModel.parseDeclarations(fileLocation);
 		}
 	}
@@ -53,6 +55,18 @@ public class ASTWalkerTest {
 		return same;
 	}
 	
+	public static boolean compareTwoSets(String[] correct, List<String> test) {
+		boolean same = true;
+		
+		for(int i = 0; i < test.size(); i++) {
+			if(!correct[i].equals(test.get(i))) {
+				same = false;
+			}
+		}
+		
+		return same;
+	}
+	
 	@Test
 	public void packageCheck() {
 		// number of packages
@@ -61,30 +75,51 @@ public class ASTWalkerTest {
 		// position of packages (starts after "package ")
 		List<Integer> lineList = fileModel.getPackages().getLineNumbers();
 		List<Integer> columnList = fileModel.getPackages().getColumnNumbers();
+		List<String> nameList = fileModel.getPackages().getNames();
 		
-		int[] correctLineList = {30};
+		int[] correctLineList = {1};
 		int[] correctColumnList = {8};
+		String[] correctNameList = {"com.gilevich.resender"};
 		
 		assertTrue(compareTwoSets(correctLineList, lineList));
 		assertTrue(compareTwoSets(correctColumnList, columnList));
+		assertTrue(compareTwoSets(correctNameList, nameList));
 	}
 
 	@Test
 	public void importCheck() {
-		// number of imports (starts after "import ")
-		assertEquals(7, fileModel.getImports().getImportObjectList().size());
+		// number of imports
+		assertEquals(14, fileModel.getImports().getImportObjectList().size());
 		
-		// position of imports
+		// position of imports (begins after "import ")
 		List<Integer> lineList = fileModel.getImports().getLineNumbers();
 		List<Integer> columnList = fileModel.getImports().getColumnNumbers();
+		List<String> nameList = fileModel.getImports().getNames();
 		
-		int[] correctLineList = {32, 33, 34, 35, 36, 37, 38};
-		int[] correctColumnList = {7, 7, 7, 7, 7, 7, 7};
+		int[] correctLineList = {3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+		int[] correctColumnList = {7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7};
+		String[] correctNameList = {"javax.activation.DataHandler", 
+									"javax.activation.DataSource", 
+									"javax.mail.Message",
+									"javax.mail.PasswordAuthentication",
+									"javax.mail.Session",
+									"javax.mail.Transport",
+									"javax.mail.internet.InternetAddress",
+									"javax.mail.internet.MimeMessage",	
+									"java.io.ByteArrayInputStream",
+									"java.io.IOException",
+									"java.io.InputStream",
+									"java.io.OutputStream",
+									"java.security.Security",
+									"java.util.Properties"
+		};
 		
 		assertTrue(compareTwoSets(correctLineList, lineList));
 		assertTrue(compareTwoSets(correctColumnList, columnList));
-		
+		assertTrue(compareTwoSets(correctNameList, nameList));
 	}
+	
+	/*
 	
 	@Test
 	public void classCheck() {
@@ -417,5 +452,5 @@ public class ASTWalkerTest {
 		assertTrue(compareTwoSets(correctLineList, lineList));
 		assertTrue(compareTwoSets(correctColumnList, columnList));
 	}
-	
+*/	
 }

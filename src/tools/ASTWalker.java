@@ -193,9 +193,16 @@ public class ASTWalker {
 					SimpleName name = node.getName();
 
 					IMethodBinding binding = node.resolveMethodBinding();
-					ITypeBinding type = binding.getDeclaringClass();
-
-					fileModel.methodInvocation__.addMethodInvocation(name.toString(), type.getName(), currentClassStack.peek(), node.arguments(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					
+					String parentClass;
+					
+					try {
+						parentClass = binding.getDeclaringClass().getName();
+					} catch (NullPointerException e) {
+						parentClass = "";
+					}
+					
+					fileModel.methodInvocation__.addMethodInvocation(name.toString(), parentClass, currentClassStack.peek(), node.arguments(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 				}
 
 				return true;

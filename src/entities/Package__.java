@@ -68,6 +68,14 @@ public class Package__ {
 		return list;
 	}	
 	
+	public List<String> getNames() {
+		List<String> list = new ArrayList<>();
+		for(PackageObject obj : packageObjectList) {
+			list.add(obj.name);
+		}
+		return list;
+	}
+	
 	/*
 	 * end testing
 	 */
