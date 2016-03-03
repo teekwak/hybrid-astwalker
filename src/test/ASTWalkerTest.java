@@ -376,6 +376,7 @@ public class ASTWalkerTest {
 		
 		List<Integer> lineList = new ArrayList<>();
 		List<Integer> columnList = new ArrayList<>();
+		List<String> nameList = fileModel.getMethodInvocations().getNames();
 		
 		for(Map.Entry<Integer, List<Integer>> entry : allPositions.entrySet()) {
 			for(Integer i : entry.getValue()) {
@@ -387,12 +388,15 @@ public class ASTWalkerTest {
 		// number of ALL method invocations
 		assertEquals(17, lineList.size());
 		assertEquals(17, columnList.size());
+		assertEquals(12, nameList.size());
 		
 		int[] correctLineList = 	{33, 34, 35, 36, 37, 38, 40, 41, 43, 54, 55, 56, 57, 58, 58, 60, 61};
 		int[] correctColumnList = 	{14, 14, 14, 14, 14, 14, 14, 14, 26, 16, 16, 16, 23, 20, 76, 20, 18};
-	
+		String[] correctNameList = 	{"setProperty", "setProperty", "put", "getDefaultInstance", "setSender", "setSubject", "setDataHandler", "indexOf", "setRecipients", "parse", "setRecipient", "send"};
+		
 		assertTrue(compareTwoSets(correctLineList, lineList));
 		assertTrue(compareTwoSets(correctColumnList, columnList));
+		assertTrue(compareTwoSets(correctNameList, nameList));
 	}
 
 	@Test
