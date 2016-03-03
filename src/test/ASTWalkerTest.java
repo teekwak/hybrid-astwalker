@@ -147,23 +147,24 @@ public class ASTWalkerTest {
 		assertTrue(compareTwoSets(correctNameList, nameList));
 		assertTrue(compareTwoSets(correctSuperClassNameList, superClassNameList));
 	}
-
-	/*
 	
 	@Test
 	public void arrayCheck() {
 		// number of arrays
-		assertEquals(4, fileModel.getArrays().getArrayObjectList().size());
+		assertEquals(3, fileModel.getArrays().getArrayObjectList().size());
 		
-		// position of arrays (ignores arrays if return type)
+		// position of arrays (where variable name is, ignores arrays if return type)
 		List<Integer> lineList = fileModel.getArrays().getLineNumbers();
 		List<Integer> columnList = fileModel.getArrays().getColumnNumbers();
+		List<String> nameList = fileModel.getArrays().getNames();
 				
-		int[] correctLineList = {108, 112, 116, 156};
-		int[] correctColumnList = {104, 107, 34, 8};
+		int[] correctLineList = {68, 71, 77};
+		int[] correctColumnList = {23, 42, 42};
+		String[] correctNameList = {"data", "data", "data"};
 		
 		assertTrue(compareTwoSets(correctLineList, lineList));
 		assertTrue(compareTwoSets(correctColumnList, columnList));
+		assertTrue(compareTwoSets(correctNameList, nameList));
 	}
 	
 	@Test
@@ -174,93 +175,114 @@ public class ASTWalkerTest {
 		// position of catch clauses (where the exception variable is)
 		List<Integer> lineList = fileModel.getCatchClauses().getLineNumbers();
 		List<Integer> columnList = fileModel.getCatchClauses().getColumnNumbers();
+		List<String> nameList = fileModel.getCatchClauses().getNames();
 		
-		int[] correctLineList = {189};
-		int[] correctColumnList = {32};
-				
+		int[] correctLineList = {62};
+		int[] correctColumnList = {25};
+		String[] correctNameList = {"e"};		
+		
 		assertTrue(compareTwoSets(correctLineList, lineList));
 		assertTrue(compareTwoSets(correctColumnList, columnList));
+		assertTrue(compareTwoSets(correctNameList, nameList));
 	}
+	
 	
 	@Test
 	public void conditionalExpressionCheck() {
 		// number of conditional expressions
-		assertEquals(1, fileModel.getConditionalExpressions().getConditionalExpressionObjectList().size());
+		assertEquals(0, fileModel.getConditionalExpressions().getConditionalExpressionObjectList().size());
 		
 		// position of conditional expression (beginning of expression)
 		List<Integer> lineList = fileModel.getConditionalExpressions().getLineNumbers();
 		List<Integer> columnList = fileModel.getConditionalExpressions().getColumnNumbers();
+		List<String> expressionList = fileModel.getConditionalExpressions().getExpressions();
 		
-		int[] correctLineList = {181};
-		int[] correctColumnList = {21};
+		int[] correctLineList = {};
+		int[] correctColumnList = {};
+		String[] correctExpressionList = {};
 		
 		assertTrue(compareTwoSets(correctLineList, lineList));
 		assertTrue(compareTwoSets(correctColumnList, columnList));
+		assertTrue(compareTwoSets(correctExpressionList, expressionList));
 	}
 	
 	@Test
 	public void doStatementCheck() {
 		// number of do statements
-		assertEquals(2, fileModel.getDoStatements().getDoStatementObjectList().size());
+		assertEquals(0, fileModel.getDoStatements().getDoStatementObjectList().size());
 		
 		// position of each do statement (where the word "do" is)
 		List<Integer> lineList = fileModel.getDoStatements().getLineNumbers();
 		List<Integer> columnList = fileModel.getDoStatements().getColumnNumbers();
+		List<String> expressionList = fileModel.getDoStatements().getExpressions();
 		
-		int[] correctLineList = {185, 198};
-		int[] correctColumnList = {3, 2};
+		int[] correctLineList = {};
+		int[] correctColumnList = {};
+		String[] correctExpressionList = {};
 		
 		assertTrue(compareTwoSets(correctLineList, lineList));
 		assertTrue(compareTwoSets(correctColumnList, columnList));		
+		assertTrue(compareTwoSets(correctExpressionList, expressionList));
 	}
 	
 	@Test
 	public void forStatementCheck() {	
 		// number of for statements
-		assertEquals(4, fileModel.getForStatements().getForStatementObjectList().size());
+		assertEquals(0, fileModel.getForStatements().getForStatementObjectList().size());
 		
 		// position of for statements (where variable in enhanced, where the word "for" is for not)
 		List<Integer> lineList = fileModel.getForStatements().getLineNumbers();
 		List<Integer> columnList = fileModel.getForStatements().getColumnNumbers();
+		List<String> expressionList = fileModel.getForStatements().getExpressions();
 		
-		int[] correctLineList = {97, 103, 157, 161};
-		int[] correctColumnList = {13, 13, 10, 2};
+		int[] correctLineList = {};
+		int[] correctColumnList = {};
+		String[] correctExpressionList = {};
 				
 		assertTrue(compareTwoSets(correctLineList, lineList));
 		assertTrue(compareTwoSets(correctColumnList, columnList));
+		assertTrue(compareTwoSets(correctExpressionList, expressionList));
 	}
 	
 	@Test
 	public void genericsCheck() {
 		// number of generics
-		assertEquals(8, fileModel.getGenerics().getGenericsObjectList().size());
+		assertEquals(0, fileModel.getGenerics().getGenericsObjectList().size());
 		
 		// position of generics (everywhere)
 		List<Integer> lineList = fileModel.getGenerics().getLineNumbers();
 		List<Integer> columnList = fileModel.getGenerics().getColumnNumbers();
+		List<String> nameList = fileModel.getGenerics().getNames();
 		
-		int[] correctLineList = {96, 102, 108, 112, 117, 118, 119, 144};
-		int[] correctColumnList = {43, 49, 93, 93, 15, 15, 23, 44};
-				
+		int[] correctLineList = {};
+		int[] correctColumnList = {};
+		String[] correctNameList = {};		
+		
 		assertTrue(compareTwoSets(correctLineList, lineList));
 		assertTrue(compareTwoSets(correctColumnList, columnList));
+		assertTrue(compareTwoSets(correctNameList, nameList));
 	}
 	
 	@Test
 	public void ifStatementCheck() {
 		// number of if statements (even in "else if")
-		assertEquals(3, fileModel.getIfStatements().getIfStatementObjectList().size());
+		assertEquals(2, fileModel.getIfStatements().getIfStatementObjectList().size());
 		
 		// position of if statements (starts at "if")
 		List<Integer> lineList = fileModel.getIfStatements().getLineNumbers();
 		List<Integer> columnList = fileModel.getIfStatements().getColumnNumbers();
+		List<String> expressionList = fileModel.getIfStatements().getExpressions();
 				
-		int[] correctLineList = {55, 132, 191};
-		int[] correctColumnList = {2, 2, 3};
+		int[] correctLineList = {57, 87};
+		int[] correctColumnList = {8, 12};
+		String[] correctExpressionList = {"recipients.indexOf(',') > 0", "type == null"};
 		
 		assertTrue(compareTwoSets(correctLineList, lineList));
 		assertTrue(compareTwoSets(correctColumnList, columnList));
+		assertTrue(compareTwoSets(correctExpressionList, expressionList));
 	}
+	
+	/*
 	
 	@Test
 	public void infixExpressionCheck() {

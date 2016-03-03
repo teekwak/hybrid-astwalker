@@ -4,15 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 class ForStatementObject {
-	String condition;
+	String expression;
 	String className;
 	String methodName;
 	boolean enhanced;
 	int lineNumber;
 	int columnNumber;
 
-	ForStatementObject(String cond, String cn, String mn, boolean e, int l, int c) {
-		condition = cond;
+	ForStatementObject(String ex, String cn, String mn, boolean e, int l, int c) {
+		expression = ex;
 		className = cn;
 		methodName = mn;
 		enhanced = e;
@@ -21,7 +21,7 @@ class ForStatementObject {
 	}
 
 	void printEntity() {
-		System.out.println(condition + " (enhanced: " + enhanced + ")"+ " => " + lineNumber + " | " + columnNumber);
+		System.out.println(expression + " (enhanced: " + enhanced + ")"+ " => " + lineNumber + " | " + columnNumber);
 		System.out.println("\tClass:\t" + className);
 		System.out.println("\tMethod:\t" + methodName);
 	}
@@ -34,8 +34,8 @@ public class ForStatement__ {
 		this.forStatementObjectList = new ArrayList<>();
 	}
 
-	public void addForStatement(String condition, String className, String methodName, boolean enhanced, int lineNumber, int columnNumber) {
-		forStatementObjectList.add(new ForStatementObject(condition, className, methodName, enhanced, lineNumber, columnNumber));
+	public void addForStatement(String expression, String className, String methodName, boolean enhanced, int lineNumber, int columnNumber) {
+		forStatementObjectList.add(new ForStatementObject(expression, className, methodName, enhanced, lineNumber, columnNumber));
 	}
 	
 	public void printAllForStatements() {
@@ -72,6 +72,14 @@ public class ForStatement__ {
 		List<Integer> list = new ArrayList<>();
 		for(ForStatementObject obj : forStatementObjectList) {
 			list.add(obj.columnNumber);
+		}
+		return list;
+	}
+	
+	public List<String> getExpressions() {
+		List<String> list = new ArrayList<>();
+		for(ForStatementObject obj : forStatementObjectList) {
+			list.add(obj.expression);
 		}
 		return list;
 	}

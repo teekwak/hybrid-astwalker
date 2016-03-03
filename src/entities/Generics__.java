@@ -79,6 +79,14 @@ public class Generics__ {
 		return list;
 	}
 	
+	public List<String> getNames() {
+		List<String> list = new ArrayList<>();
+		for(GenericsObject obj : genericsObjectList) {
+			list.add(obj.name);
+		}
+		return list;
+	}
+	
 	/*
 	 * end testing
 	 */

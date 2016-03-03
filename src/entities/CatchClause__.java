@@ -78,6 +78,14 @@ public class CatchClause__ {
 		return list;
 	}
 	
+	public List<String> getNames() {
+		List<String> list = new ArrayList<>();
+		for(CatchClauseObject obj : catchClauseObjectList) {
+			list.add(obj.variableName);
+		}
+		return list;
+	}
+	
 	/*
 	 * end testing
 	 */

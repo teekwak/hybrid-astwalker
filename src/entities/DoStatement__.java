@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 class DoStatementObject {
-	String condition;
+	String expression;
 	String className;
 	String methodName;
 	int lineNumber;
 	int columnNumber;
 
-	DoStatementObject(String cond, String cn, String mn, int l, int c) {
-		condition = cond;
+	DoStatementObject(String ex, String cn, String mn, int l, int c) {
+		expression = ex;
 		className = cn;
 		methodName = mn;
 		lineNumber = l;
@@ -19,7 +19,7 @@ class DoStatementObject {
 	}
 
 	void printEntity() {
-		System.out.println(condition + " => " + lineNumber + " | " + columnNumber);
+		System.out.println(expression + " => " + lineNumber + " | " + columnNumber);
 		System.out.println("\tClass:\t" + className);
 		System.out.println("\tMethod:\t" + methodName);
 	}
@@ -32,8 +32,8 @@ public class DoStatement__ {
 		this.doStatementObjectList = new ArrayList<>();
 	}
 
-	public void addDoStatement(String condition, String className, String methodName, int lineNumber, int columnNumber) {
-		doStatementObjectList.add(new DoStatementObject(condition, className, methodName, lineNumber, columnNumber));
+	public void addDoStatement(String expression, String className, String methodName, int lineNumber, int columnNumber) {
+		doStatementObjectList.add(new DoStatementObject(expression, className, methodName, lineNumber, columnNumber));
 	}
 	
 	public void printAllDoStatements() {
@@ -70,6 +70,14 @@ public class DoStatement__ {
 		List<Integer> list = new ArrayList<>();
 		for(DoStatementObject obj : doStatementObjectList) {
 			list.add(obj.columnNumber);
+		}
+		return list;
+	}
+	
+	public List<String> getExpressions() {
+		List<String> list = new ArrayList<>();
+		for(DoStatementObject obj : doStatementObjectList) {
+			list.add(obj.expression);
 		}
 		return list;
 	}

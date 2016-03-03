@@ -72,6 +72,14 @@ public class IfStatement__ {
 		return list;
 	}
 	
+	public List<String> getExpressions() {
+		List<String> list = new ArrayList<>();
+		for(IfStatementObject obj : ifStatementObjectList) {
+			list.add(obj.expression);
+		}
+		return list;
+	}
+	
 	/*
 	 * end testing
 	 */

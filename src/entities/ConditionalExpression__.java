@@ -78,6 +78,14 @@ public class ConditionalExpression__ {
 		return list;
 	}
 	
+	public List<String> getExpressions() {
+		List<String> list = new ArrayList<>();
+		for(ConditionalExpressionObject obj : conditionalExpressionObjectList) {
+			list.add(obj.expression);
+		}
+		return list;
+	}
+	
 	/*
 	 * end testing
 	 */

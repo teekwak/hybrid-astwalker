@@ -78,6 +78,14 @@ public class Array__ {
 		return list;
 	}
 	
+	public List<String> getNames() {
+		List<String> list = new ArrayList<>();
+		for(ArrayObject obj : arrayObjectList) {
+			list.add(obj.name);
+		}
+		return list;
+	}
+	
 	/*
 	 * end testing
 	 */
