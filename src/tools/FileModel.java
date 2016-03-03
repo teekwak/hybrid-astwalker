@@ -21,6 +21,7 @@ import entities.TryStatement__;
 import entities.WhileStatement__;
 import entities.Wildcard__;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.eclipse.core.runtime.CoreException;
@@ -158,6 +159,10 @@ public class FileModel {
 	}
 
 	public FileModel parseDeclarations(String fileLocation) throws IOException, CoreException {
+		System.out.println("----------------------------------------------------------");
+		System.out.println(fileLocation);
+		System.out.println("----------------------------------------------------------");
+		
 		ASTWalker astWalker = new ASTWalker();
 		return astWalker.parseFile(fileLocation);
 	}
@@ -192,18 +197,31 @@ public class FileModel {
 
 	}
 
-	public static void main(String[] args) throws IOException, CoreException {
-
-		String fileLocation = "src/exampleCode/Example.java";
-				
-		if(fileLocation.substring(fileLocation.lastIndexOf(".")+1).equals("java")) {
-			FileModel fileModel = new FileModel();
-
-			fileModel = fileModel.parseDeclarations(fileLocation);
-
-			//fileModel.printEverything();
+	public static void traverseUntilJava(File parentNode) throws IOException, CoreException {
+		if(parentNode.isDirectory()) {
+			File childNodes[] = parentNode.listFiles();
 			
-			fileModel.getMethodInvocations().printAllMethodInvocations();
+			for(File c : childNodes) {
+				if(!c.getName().startsWith(".")) {
+					traverseUntilJava(c);
+				}
+			}
 		}
+		else {
+			if(parentNode.getName().endsWith(".java")) {				
+				FileModel fileModel = new FileModel();
+				
+				fileModel = fileModel.parseDeclarations(parentNode.getAbsolutePath());
+				
+				fileModel.printEverything();
+			}
+		}
+	}
+	
+	public static void main(String[] args) throws IOException, CoreException{
+
+		//File inputFolder = new File(args[0]);
+		
+		traverseUntilJava(new File("/home/kwak/Desktop/jgit-test"));
 	}
 }
