@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 class WhileStatementObject {
-	String condition;
+	String expression;
 	String className;
 	String methodName;
 	int lineNumber;
 	int columnNumber;
 
-	WhileStatementObject(String cond, String cn, String mn, int l, int c) {
-		condition = cond;
+	WhileStatementObject(String ex, String cn, String mn, int l, int c) {
+		expression = ex;
 		className = cn;
 		methodName = mn;
 		lineNumber = l;
@@ -19,7 +19,7 @@ class WhileStatementObject {
 	}
 
 	void printEntity() {
-		System.out.println(condition + " => " + lineNumber + " | " + columnNumber);
+		System.out.println(expression + " => " + lineNumber + " | " + columnNumber);
 		System.out.println("\tClass:\t" + className);
 		System.out.println("\tMethod:\t" + methodName);
 	}
@@ -32,8 +32,8 @@ public class WhileStatement__ {
 		this.whileStatementObjectList = new ArrayList<>();
 	}
 
-	public void addWhileStatement(String condition, String className, String methodName, int lineNumber, int columnNumber) {
-		whileStatementObjectList.add(new WhileStatementObject(condition, className, methodName, lineNumber, columnNumber));
+	public void addWhileStatement(String expression, String className, String methodName, int lineNumber, int columnNumber) {
+		whileStatementObjectList.add(new WhileStatementObject(expression, className, methodName, lineNumber, columnNumber));
 	}
 
 	public void printAllWhileStatements() {
@@ -70,6 +70,14 @@ public class WhileStatement__ {
 		List<Integer> list = new ArrayList<>();
 		for(WhileStatementObject obj : whileStatementObjectList) {
 			list.add(obj.columnNumber);
+		}
+		return list;
+	}
+	
+	public List<String> getExpressions() {
+		List<String> list = new ArrayList<>();
+		for(WhileStatementObject obj : whileStatementObjectList) {
+			list.add(obj.expression);
 		}
 		return list;
 	}

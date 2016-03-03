@@ -300,31 +300,37 @@ public class ASTWalkerTest {
 		assertTrue(compareTwoSets(correctColumnList, columnList));		
 		assertTrue(compareTwoSets(correctOperatorList, operatorList));
 	}
-	
-	/*
-	
+
 	@Test
 	public void interfaceCheck() {
 		// number of interfaces (interfaces + implements interface)
 		int interfaceCount = fileModel.getInterfaces().getInterfaceObjectList().size();
 		int implementsCount = fileModel.getInterfaces().getImplementsObjectList().size();
 		
-		assertEquals(3, interfaceCount);
-		assertEquals(2, implementsCount);
+		assertEquals(0, interfaceCount);
+		assertEquals(1, implementsCount);
 		
 		// position of interfaces (starts at "interface")
 		List<Integer> lineList = fileModel.getInterfaces().getLineNumbers();
 		List<Integer> columnList = fileModel.getInterfaces().getColumnNumbers();
 		List<Integer> implementsLineList = fileModel.getInterfaces().getImplementsLineNumbers();
+		List<String> nameList = fileModel.getInterfaces().getNames();
+		List<String> implementsNameList = fileModel.getInterfaces().getImplementsNames();
 		
-		int[] correctLineList = {40, 44, 50};
-		int[] correctColumnList = {0, 0, 1};
-		int[] correctImplementsLineList = {69, 69};
+		int[] correctLineList = {};
+		int[] correctColumnList = {};
+		int[] correctImplementsLineList = {67};
+		String[] correctNameList = {};
+		String[] correctImplementsNameList = {"DataSource"};
 		
 		assertTrue(compareTwoSets(correctLineList, lineList));
 		assertTrue(compareTwoSets(correctColumnList, columnList));
 		assertTrue(compareTwoSets(correctImplementsLineList, implementsLineList));
+		assertTrue(compareTwoSets(correctNameList, nameList));
+		assertTrue(compareTwoSets(correctImplementsNameList, implementsNameList));
 	}
+	
+	/*
 	
 	@Test
 	public void methodDeclarationCheck() {
@@ -420,17 +426,19 @@ public class ASTWalkerTest {
 		assertTrue(compareTwoSets(correctColumnList, columnList));
 	}
 	
+	*/
+	
 	@Test
 	public void simpleNameCheck() {
 		// number of simple names
-		assertEquals(8, fileModel.getSimpleNames().getSimpleNameObjectList().size());
+		assertEquals(17, fileModel.getSimpleNames().getSimpleNameObjectList().size());
 		
 		// position of simple names (variable name of everything that is not primitive)
 		List<Integer> lineList = fileModel.getSimpleNames().getLineNumbers();
 		List<Integer> columnList = fileModel.getSimpleNames().getColumnNumbers();
 		
-		int[] correctLineList = {70, 84, 89, 97, 103, 125, 139, 189};
-		int[] correctColumnList = {13, 8, 9, 13, 13, 10, 14, 32};
+		int[] correctLineList = 	{19, 20, 21, 22, 28, 28, 32, 50, 50, 50, 50, 52, 53, 62, 69, 71, 82};
+		int[] correctColumnList = 	{19, 19, 19, 20, 30, 43, 19, 45, 61, 74, 89, 20, 20, 25, 23, 55, 35};
 		
 		assertTrue(compareTwoSets(correctLineList, lineList));
 		assertTrue(compareTwoSets(correctColumnList, columnList));
@@ -439,49 +447,56 @@ public class ASTWalkerTest {
 	@Test
 	public void switchStatementCheck() {
 		// number of switch statements
-		assertEquals(1, fileModel.getSwitchStatements().getSwitchStatementObjectList().size());
+		assertEquals(0, fileModel.getSwitchStatements().getSwitchStatementObjectList().size());
 	
 		// position of switch statements (position of "switch")
 		List<Integer> lineList = fileModel.getSwitchStatements().getLineNumbers();
 		List<Integer> columnList = fileModel.getSwitchStatements().getColumnNumbers();
+		List<String> expressionList = fileModel.getSwitchStatements().getExpressions();
 		
-		int[] correctLineList = {147};
-		int[] correctColumnList = {2};
+		int[] correctLineList = {};
+		int[] correctColumnList = {};
+		String[] correctExpressionList = {};
 		
 		assertTrue(compareTwoSets(correctLineList, lineList));
 		assertTrue(compareTwoSets(correctColumnList, columnList));
+		assertTrue(compareTwoSets(correctExpressionList, expressionList));
 	}
+	
+	
 	
 	@Test
 	public void whileStatementCheck() {
 		// number of while statements
-		assertEquals(1, fileModel.getWhileStatements().getWhileStatementObjectList().size());
+		assertEquals(0, fileModel.getWhileStatements().getWhileStatementObjectList().size());
 		
 		// position of while statements (position of "while", excludes do-while)
 		List<Integer> lineList = fileModel.getWhileStatements().getLineNumbers();
 		List<Integer> columnList = fileModel.getWhileStatements().getColumnNumbers();
+		List<String> expressionList = fileModel.getWhileStatements().getExpressions();
 		
-		int[] correctLineList = {170};
-		int[] correctColumnList = {2};
+		int[] correctLineList = {};
+		int[] correctColumnList = {};
+		String[] correctExpressionList = {};
 		
 		assertTrue(compareTwoSets(correctLineList, lineList));
 		assertTrue(compareTwoSets(correctColumnList, columnList));
+		assertTrue(compareTwoSets(correctExpressionList, expressionList));
 	}
 	
 	@Test
 	public void wildcardCheck() {
 		// number of wildcards (only in field declarations)
-		assertEquals(1, fileModel.getWildcards().getWildcardObjectList().size());
+		assertEquals(0, fileModel.getWildcards().getWildcardObjectList().size());
 		
 		// position of wildcards (position of question mark)
 		List<Integer> lineList = fileModel.getWildcards().getLineNumbers();
 		List<Integer> columnList = fileModel.getWildcards().getColumnNumbers();
 				
-		int[] correctLineList = {96};
-		int[] correctColumnList = {40};
+		int[] correctLineList = {};
+		int[] correctColumnList = {};
 		
 		assertTrue(compareTwoSets(correctLineList, lineList));
 		assertTrue(compareTwoSets(correctColumnList, columnList));
-	}
-*/	
+	}	
 }

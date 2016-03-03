@@ -86,6 +86,14 @@ public class SwitchStatement__ {
 		return list;
 	}
 	
+	public List<String> getExpressions() {
+		List<String> list = new ArrayList<>();
+		for(SwitchStatementObject obj : switchStatementObjectList) {
+			list.add(obj.expression);
+		}
+		return list;
+	}
+	
 	/*
 	 * end testing
 	 */
