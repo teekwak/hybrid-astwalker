@@ -29,6 +29,24 @@ public class Import__ {
 	public void addImport(String name, int lineNumber, int columnNumber) {
 		importObjectList.add(new ImportObject(name, lineNumber, columnNumber));
 	}
+	
+	public void printAllImports() {
+		System.out.println("--- Imports ---");
+
+		if(importObjectList.size() > 0) {
+			for(ImportObject obj : importObjectList) {
+				obj.printEntity();
+			}
+			System.out.println();
+		}
+		else {
+			System.out.println("None\n");
+		}
+	}
+	
+	/*
+	 * start testing
+	 */
 
 	public List<ImportObject> getImportObjectList() {
 		return this.importObjectList;
@@ -48,25 +66,7 @@ public class Import__ {
 			list.add(obj.columnNumber);
 		}
 		return list;
-	}
-	
-	public void printAllImports() {
-		System.out.println("--- Imports ---");
-
-		if(importObjectList.size() > 0) {
-			for(ImportObject obj : importObjectList) {
-				obj.printEntity();
-			}
-			System.out.println();
-		}
-		else {
-			System.out.println("None\n");
-		}
-	}
-	
-	/*
-	 * start testing
-	 */
+	}	
 	
 	/*
 	 * end testing

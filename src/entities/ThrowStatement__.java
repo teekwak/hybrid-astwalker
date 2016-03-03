@@ -35,10 +35,6 @@ public class ThrowStatement__ {
 	public void addThrowStatement(String expression, String className, String methodName, int lineNumber, int columnNumber) {
 		throwStatementObjectList.add(new ThrowStatementObject(expression, className, methodName, lineNumber, columnNumber));
 	}
-
-	public List<ThrowStatementObject> getThrowStatementObjectList() {
-		return this.throwStatementObjectList;
-	}
 	
 	public void printAllThrowStatements() {
 		System.out.println("--- Throw Statements ---");
@@ -57,6 +53,10 @@ public class ThrowStatement__ {
 	/*
 	 * start testing
 	 */
+
+	public List<ThrowStatementObject> getThrowStatementObjectList() {
+		return this.throwStatementObjectList;
+	}	
 	
 	/*
 	 * end testing

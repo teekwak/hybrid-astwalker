@@ -35,10 +35,6 @@ public class DoStatement__ {
 	public void addDoStatement(String condition, String className, String methodName, int lineNumber, int columnNumber) {
 		doStatementObjectList.add(new DoStatementObject(condition, className, methodName, lineNumber, columnNumber));
 	}
-
-	public List<DoStatementObject> getDoStatementObjectList() {
-		return this.doStatementObjectList;
-	}
 	
 	public void printAllDoStatements() {
 		System.out.println("--- Do Statements ---");
@@ -57,6 +53,26 @@ public class DoStatement__ {
 	/*
 	 * start testing
 	 */
+	
+	public List<DoStatementObject> getDoStatementObjectList() {
+		return this.doStatementObjectList;
+	}	
+	
+	public List<Integer> getLineNumbers() {
+		List<Integer> list = new ArrayList<>();
+		for(DoStatementObject obj : doStatementObjectList) {
+			list.add(obj.lineNumber);
+		}
+		return list;
+	}
+
+	public List<Integer> getColumnNumbers() {
+		List<Integer> list = new ArrayList<>();
+		for(DoStatementObject obj : doStatementObjectList) {
+			list.add(obj.columnNumber);
+		}
+		return list;
+	}
 	
 	/*
 	 * end testing

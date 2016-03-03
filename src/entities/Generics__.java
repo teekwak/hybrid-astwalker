@@ -40,10 +40,6 @@ public class Generics__ {
 	public void addGenerics(String name, String className, String methodName, Type type, int lineNumber, int columnNumber) {
 		genericsObjectList.add(new GenericsObject(name, className, methodName, type, lineNumber, columnNumber));
 	}
-
-	public List<GenericsObject> getGenericsObjectList() {
-		return this.genericsObjectList;
-	}
 	
 	public void printAllGenerics() {
 		System.out.println("--- Generics ---");
@@ -62,6 +58,10 @@ public class Generics__ {
 	/*
 	 * start testing
 	 */
+
+	public List<GenericsObject> getGenericsObjectList() {
+		return this.genericsObjectList;
+	}	
 	
 	/*
 	 * end testing

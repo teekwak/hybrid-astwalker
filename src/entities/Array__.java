@@ -55,7 +55,7 @@ public class Array__ {
 	}
 	
 	/*
-	 * for testing
+	 * start testing
 	 */
 	
 	public List<ArrayObject> getArrayObjectList() {

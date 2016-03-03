@@ -37,10 +37,6 @@ public class Wildcard__ {
 	public void addWildcard(String className, String methodName, Type type, int lineNumber, int columnNumber) {
 		wildcardObjectList.add(new WildcardObject(className, methodName, type, lineNumber, columnNumber));
 	}
-
-	public List<WildcardObject> getWildcardObjectList() {
-		return this.wildcardObjectList;
-	}
 	
 	public void printAllWildcards() {
 		System.out.println("--- Wild Cards ---");
@@ -58,6 +54,26 @@ public class Wildcard__ {
 	/*
 	 * start testing
 	 */
+	
+	public List<WildcardObject> getWildcardObjectList() {
+		return this.wildcardObjectList;
+	}
+	
+	public List<Integer> getLineNumbers() {
+		List<Integer> list = new ArrayList<>();
+		for(WildcardObject obj : wildcardObjectList) {
+			list.add(obj.lineNumber);
+		}
+		return list;
+	}
+
+	public List<Integer> getColumnNumbers() {
+		List<Integer> list = new ArrayList<>();
+		for(WildcardObject obj : wildcardObjectList) {
+			list.add(obj.columnNumber);
+		}
+		return list;
+	}
 	
 	/*
 	 * end testing

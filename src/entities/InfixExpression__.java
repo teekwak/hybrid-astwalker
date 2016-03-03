@@ -39,10 +39,6 @@ public class InfixExpression__ {
 	public void addInfixExpression(String operator, String leftOperand, String rightOperand, String className, String methodName, int lineNumber, int columnNumber) {
 		infixExpressionObjectList.add(new InfixExpressionObject(operator, leftOperand, rightOperand, className, methodName, lineNumber, columnNumber));
 	}
-
-	public List<InfixExpressionObject> getInfixExpressionObjectList() {
-		return this.infixExpressionObjectList;
-	}
 	
 	public void printAllInfixExpressions() {
 		System.out.println("--- Infix Expressions ---");
@@ -61,6 +57,26 @@ public class InfixExpression__ {
 	/*
 	 * start testing
 	 */
+
+	public List<InfixExpressionObject> getInfixExpressionObjectList() {
+		return this.infixExpressionObjectList;
+	}	
+	
+	public List<Integer> getLineNumbers() {
+		List<Integer> list = new ArrayList<>();
+		for(InfixExpressionObject obj : infixExpressionObjectList) {
+			list.add(obj.lineNumber);
+		}
+		return list;
+	}
+
+	public List<Integer> getColumnNumbers() {
+		List<Integer> list = new ArrayList<>();
+		for(InfixExpressionObject obj : infixExpressionObjectList) {
+			list.add(obj.columnNumber);
+		}
+		return list;
+	}
 	
 	/*
 	 * end testing

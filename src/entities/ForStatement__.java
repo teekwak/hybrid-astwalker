@@ -37,10 +37,6 @@ public class ForStatement__ {
 	public void addForStatement(String condition, String className, String methodName, boolean enhanced, int lineNumber, int columnNumber) {
 		forStatementObjectList.add(new ForStatementObject(condition, className, methodName, enhanced, lineNumber, columnNumber));
 	}
-
-	public List<ForStatementObject> getForStatementObjectList() {
-		return this.forStatementObjectList;
-	}
 	
 	public void printAllForStatements() {
 		System.out.println("--- For Statements ---");
@@ -59,6 +55,26 @@ public class ForStatement__ {
 	/*
 	 * start testing
 	 */
+	
+	public List<ForStatementObject> getForStatementObjectList() {
+		return this.forStatementObjectList;
+	}	
+	
+	public List<Integer> getLineNumbers() {
+		List<Integer> list = new ArrayList<>();
+		for(ForStatementObject obj : forStatementObjectList) {
+			list.add(obj.lineNumber);
+		}
+		return list;
+	}
+
+	public List<Integer> getColumnNumbers() {
+		List<Integer> list = new ArrayList<>();
+		for(ForStatementObject obj : forStatementObjectList) {
+			list.add(obj.columnNumber);
+		}
+		return list;
+	}
 	
 	/*
 	 * end testing

@@ -14,16 +14,16 @@
  * 4 for statements (97, 103, 157, 161)
  * 8 generics (96, 102, 108, 112, 117, 118, 119, 144)
  * 3 if statements (55, 132, 191)
- * 10 infix expressions
- * 14 method declarations
- * 13 method invocations
- * 27 primitives
- * 1 throw statement
- * 1 try statement
- * 8 simple names
- * 1 switch statement
- * 1 while statement
- * 1 wildcard
+ * 10 infix expressions ()
+ * 14 method declarations ()
+ * 13 method invocations ()
+ * 27 primitives ()
+ * 1 throw statement ()
+ * 1 try statement ()
+ * 8 simple names ()
+ * 1 switch statement ()
+ * 1 while statement ()
+ * 1 wildcard (96)
  * 
  */
 
@@ -94,7 +94,7 @@ public class Example {
 	}
 	
 	public void printCollection(Collection<?> c) {
-	    for (Object e : c) {
+		for(Object e : c) {
 	        System.out.println(e);
 	    }
 	}

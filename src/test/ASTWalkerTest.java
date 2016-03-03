@@ -56,7 +56,7 @@ public class ASTWalkerTest {
 		// number of packages
 		assertEquals(1, fileModel.getPackages().getPackageObjectList().size());
 		
-		// position of packages
+		// position of packages (starts after "package ")
 		List<Integer> lineList = fileModel.getPackages().getLineNumbers();
 		List<Integer> columnList = fileModel.getPackages().getColumnNumbers();
 		
@@ -69,7 +69,7 @@ public class ASTWalkerTest {
 
 	@Test
 	public void importCheck() {
-		// number of imports
+		// number of imports (starts after "import ")
 		assertEquals(7, fileModel.getImports().getImportObjectList().size());
 		
 		// position of imports
@@ -135,7 +135,7 @@ public class ASTWalkerTest {
 		// number of arrays
 		assertEquals(4, fileModel.getArrays().getArrayObjectList().size());
 		
-		// position of arrays, ignores arrays if return type
+		// position of arrays (ignores arrays if return type)
 		List<Integer> lineList = fileModel.getArrays().getLineNumbers();
 		List<Integer> columnList = fileModel.getArrays().getColumnNumbers();
 				
@@ -148,23 +148,66 @@ public class ASTWalkerTest {
 	
 	@Test
 	public void catchClauseCheck() {
+		// number of catch clauses
 		assertEquals(1, fileModel.getCatchClauses().getCatchClauseObjectList().size());
+		
+		// position of catch clauses (where the exception variable is)
+		List<Integer> lineList = fileModel.getCatchClauses().getLineNumbers();
+		List<Integer> columnList = fileModel.getCatchClauses().getColumnNumbers();
+		
+		int[] correctLineList = {189};
+		int[] correctColumnList = {32};
+				
+		assertTrue(compareTwoSets(correctLineList, lineList));
+		assertTrue(compareTwoSets(correctColumnList, columnList));
 	}
 	
 	@Test
 	public void conditionalExpressionCheck() {
+		// number of conditional expressions
 		assertEquals(1, fileModel.getConditionalExpressions().getConditionalExpressionObjectList().size());
+		
+		// position of conditional expression (beginning of expression)
+		List<Integer> lineList = fileModel.getConditionalExpressions().getLineNumbers();
+		List<Integer> columnList = fileModel.getConditionalExpressions().getColumnNumbers();
+		
+		int[] correctLineList = {181};
+		int[] correctColumnList = {21};
+		
+		assertTrue(compareTwoSets(correctLineList, lineList));
+		assertTrue(compareTwoSets(correctColumnList, columnList));
 	}
 	
 	@Test
 	public void doStatementCheck() {
+		// number of do statements
 		assertEquals(2, fileModel.getDoStatements().getDoStatementObjectList().size());
+		
+		// position of each do statement (where the word "do" is)
+		List<Integer> lineList = fileModel.getDoStatements().getLineNumbers();
+		List<Integer> columnList = fileModel.getDoStatements().getColumnNumbers();
+		
+		int[] correctLineList = {185, 198};
+		int[] correctColumnList = {3, 2};
+		
+		assertTrue(compareTwoSets(correctLineList, lineList));
+		assertTrue(compareTwoSets(correctColumnList, columnList));		
 	}
 	
 	@Test
-	// check number of for statements
-	public void forStatementCheck() {		
+	public void forStatementCheck() {	
+		// number of for statements
 		assertEquals(4, fileModel.getForStatements().getForStatementObjectList().size());
+		
+		// position of for statements (where variable in enhanced, where the word "for" is for not)
+		List<Integer> lineList = fileModel.getForStatements().getLineNumbers();
+		List<Integer> columnList = fileModel.getForStatements().getColumnNumbers();
+		
+		int[] correctLineList = {97, 103, 157, 161};
+		int[] correctColumnList = {13, 13, 10, 2};
+				
+		assertTrue(compareTwoSets(correctLineList, lineList));
+		assertTrue(compareTwoSets(correctColumnList, columnList));
 	}
 	
 	@Test
@@ -175,63 +218,101 @@ public class ASTWalkerTest {
 	}
 	
 	@Test
-	// check number of if statements
-	// every time the word IF shows up, +1 count
 	public void ifStatementCheck() {
+		// number of if statements (even in "else if")
 		assertEquals(3, fileModel.getIfStatements().getIfStatementObjectList().size());
+		
+		// position of if statements (starts at "if")
+		List<Integer> lineList = fileModel.getIfStatements().getLineNumbers();
+		List<Integer> columnList = fileModel.getIfStatements().getColumnNumbers();
+				
+		int[] correctLineList = {55, 132, 191};
+		int[] correctColumnList = {2, 2, 3};
+		
+		assertTrue(compareTwoSets(correctLineList, lineList));
+		assertTrue(compareTwoSets(correctColumnList, columnList));
 	}
 	
 	@Test
 	public void infixExpressionCheck() {
+		// number of infix expressions
 		assertEquals(10, fileModel.getInfixExpressions().getInfixExpressionObjectList().size());
+		
+		// position of infix expression (position of operator)
+		List<Integer> lineList = fileModel.getInfixExpressions().getLineNumbers();
+		List<Integer> columnList = fileModel.getInfixExpressions().getColumnNumbers();
+		
+		int[] correctLineList = {55, 65, 132, 161, 170, 177, 181, 188, 191, 201};
+		int[] correctColumnList = {7, 23, 7, 19, 13, 23, 26, 12, 8, 12};
+		
+		assertTrue(compareTwoSets(correctLineList, lineList));
+		assertTrue(compareTwoSets(correctColumnList, columnList));		
 	}
 	
 	@Test
-	// checks number of method declarations (includes constructors)
 	public void methodDeclarationCheck() {
+		// number of method declarations (including constructors)
 		assertEquals(14, fileModel.getMethodDeclarations().getMethodDeclarationObjectList().size());
+		
+		
 	}
 	
 	@Test
 	public void methodInvocationCheck() {
+		// number of method invocations
 		assertEquals(13, fileModel.getMethodInvocations().getMethodInvocationObjectList().size());
 	}
 	
 	@Test
 	public void primitiveCheck() {
+		// number of primitives
 		assertEquals(27, fileModel.getPrimitives().getPrimitiveObjectList().size());
 	}
 	
 	@Test
-	// specifically looking for the word THROW, not THROWS
 	public void throwStatementCheck() {
+		// number of throw statements (not throws)
 		assertEquals(1, fileModel.getThrowStatements().getThrowStatementObjectList().size());
 	}
 	
 	@Test
 	public void tryStatementCheck() {
+		// number of try statements
 		assertEquals(1, fileModel.getTryStatements().getTryStatementObjectList().size());
 	}
 	
 	@Test
 	public void simpleNameCheck() {
+		// number of simple names
 		assertEquals(8, fileModel.getSimpleNames().getSimpleNameObjectList().size());
 	}
 	
 	@Test
 	public void switchStatementCheck() {
+		// number of switch statements
 		assertEquals(1, fileModel.getSwitchStatements().getSwitchStatementObjectList().size());
 	}
 	
 	@Test
 	public void whileStatementCheck() {
+		// number of while statements
 		assertEquals(1, fileModel.getWhileStatements().getWhileStatementObjectList().size());
 	}
 	
 	@Test
-	// only found in field declarations
 	public void wildcardCheck() {
+		// number of wildcards (only in field declarations)
 		assertEquals(1, fileModel.getWildcards().getWildcardObjectList().size());
+		
+		// position of wildcards (position of question mark)
+		List<Integer> lineList = fileModel.getWildcards().getLineNumbers();
+		List<Integer> columnList = fileModel.getWildcards().getColumnNumbers();
+				
+		int[] correctLineList = {96};
+		int[] correctColumnList = {40};
+		
+		assertTrue(compareTwoSets(correctLineList, lineList));
+		assertTrue(compareTwoSets(correctColumnList, columnList));
 	}
 	
 }

@@ -39,10 +39,6 @@ public class ConditionalExpression__ {
 	public void addConditionalExpression(String expression, String elseExpression, String thenExpression, String className, String methodName, int lineNumber, int columnNumber) {
 		conditionalExpressionObjectList.add(new ConditionalExpressionObject(expression, elseExpression, thenExpression, className, methodName, lineNumber, columnNumber));
 	}
-
-	public List<ConditionalExpressionObject> getConditionalExpressionObjectList() {
-		return this.conditionalExpressionObjectList;
-	}
 	
 	public void printAllConditionalExpressions() {
 		System.out.println("--- Conditional Expressions ---");
@@ -61,6 +57,26 @@ public class ConditionalExpression__ {
 	/*
 	 * start testing
 	 */
+	
+	public List<ConditionalExpressionObject> getConditionalExpressionObjectList() {
+		return this.conditionalExpressionObjectList;
+	}
+	
+	public List<Integer> getLineNumbers() {
+		List<Integer> list = new ArrayList<>();
+		for(ConditionalExpressionObject obj : conditionalExpressionObjectList) {
+			list.add(obj.lineNumber);
+		}
+		return list;
+	}
+
+	public List<Integer> getColumnNumbers() {
+		List<Integer> list = new ArrayList<>();
+		for(ConditionalExpressionObject obj : conditionalExpressionObjectList) {
+			list.add(obj.columnNumber);
+		}
+		return list;
+	}
 	
 	/*
 	 * end testing

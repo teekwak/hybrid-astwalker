@@ -48,10 +48,6 @@ public class MethodDeclaration__ {
 	public void addMethodDeclaration(String name, String className, Type returnType, List<Object> parameters, int lineNumber, int columnNumber) {
 		methodDeclarationObjectList.add(new MethodDeclarationObject(name, className, returnType, parameters, lineNumber, columnNumber));
 	}
-
-	public List<MethodDeclarationObject> getMethodDeclarationObjectList() {
-		return this.methodDeclarationObjectList;
-	}
 	
 	public void printAllMethodDeclarations() {
 		if(methodDeclarationObjectList.size() > 0) {
@@ -69,6 +65,10 @@ public class MethodDeclaration__ {
 	/*
 	 * start testing
 	 */
+
+	public List<MethodDeclarationObject> getMethodDeclarationObjectList() {
+		return this.methodDeclarationObjectList;
+	}	
 	
 	/*
 	 * end testing

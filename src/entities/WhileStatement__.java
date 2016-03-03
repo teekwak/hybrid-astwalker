@@ -36,10 +36,6 @@ public class WhileStatement__ {
 		whileStatementObjectList.add(new WhileStatementObject(condition, className, methodName, lineNumber, columnNumber));
 	}
 
-	public List<WhileStatementObject> getWhileStatementObjectList() {
-		return this.whileStatementObjectList;
-	}
-	
 	public void printAllWhileStatements() {
 		System.out.println("--- While Statements ---");
 
@@ -57,6 +53,10 @@ public class WhileStatement__ {
 	/*
 	 * start testing
 	 */
+	
+	public List<WhileStatementObject> getWhileStatementObjectList() {
+		return this.whileStatementObjectList;
+	}
 	
 	/*
 	 * end testing

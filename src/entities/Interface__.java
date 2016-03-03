@@ -54,34 +54,6 @@ public class Interface__ {
 		return this.interfaceObjectList;
 	}
 	
-	public List<ImplementsObject> getImplementsObjectList() {
-		return this.implementsObjectList;
-	}
-	
-	public List<Integer> getLineNumbers() {
-		List<Integer> list = new ArrayList<>();
-		for(InterfaceObject obj : interfaceObjectList) {
-			list.add(obj.lineNumber);
-		}
-		return list;
-	}
-
-	public List<Integer> getColumnNumbers() {
-		List<Integer> list = new ArrayList<>();
-		for(InterfaceObject obj : interfaceObjectList) {
-			list.add(obj.columnNumber);
-		}
-		return list;
-	}
-	
-	public List<Integer> getImplementsLineNumbers() {
-		List<Integer> list = new ArrayList<>();
-		for(ImplementsObject obj : implementsObjectList) {
-			list.add(obj.lineNumber);
-		}
-		return list;
-	}
-	
 	public void printAllInterfaces() {
 		if(interfaceObjectList.size() > 0) {
 			System.out.println("--- Interfaces ---");
@@ -113,6 +85,34 @@ public class Interface__ {
 	/*
 	 * start testing
 	 */
+	
+	public List<ImplementsObject> getImplementsObjectList() {
+		return this.implementsObjectList;
+	}
+	
+	public List<Integer> getLineNumbers() {
+		List<Integer> list = new ArrayList<>();
+		for(InterfaceObject obj : interfaceObjectList) {
+			list.add(obj.lineNumber);
+		}
+		return list;
+	}
+
+	public List<Integer> getColumnNumbers() {
+		List<Integer> list = new ArrayList<>();
+		for(InterfaceObject obj : interfaceObjectList) {
+			list.add(obj.columnNumber);
+		}
+		return list;
+	}
+	
+	public List<Integer> getImplementsLineNumbers() {
+		List<Integer> list = new ArrayList<>();
+		for(ImplementsObject obj : implementsObjectList) {
+			list.add(obj.lineNumber);
+		}
+		return list;
+	}	
 	
 	/*
 	 * end testing

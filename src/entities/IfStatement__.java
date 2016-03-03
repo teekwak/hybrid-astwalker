@@ -33,10 +33,6 @@ public class IfStatement__ {
 	public void addIfStatement(String expression, String className, String methodName, int lineNumber, int columnNumber) {
 		ifStatementObjectList.add(new IfStatementObject(expression, className, methodName, lineNumber, columnNumber));
 	}
-
-	public List<IfStatementObject> getIfStatementObjectList() {
-		return this.ifStatementObjectList;
-	}
 	
 	public void printAllIfStatements() {
 		System.out.println("--- If Statements ---");
@@ -55,6 +51,26 @@ public class IfStatement__ {
 	/*
 	 * start testing
 	 */
+	
+	public List<IfStatementObject> getIfStatementObjectList() {
+		return this.ifStatementObjectList;
+	}
+	
+	public List<Integer> getLineNumbers() {
+		List<Integer> list = new ArrayList<>();
+		for(IfStatementObject obj : ifStatementObjectList) {
+			list.add(obj.lineNumber);
+		}
+		return list;
+	}
+
+	public List<Integer> getColumnNumbers() {
+		List<Integer> list = new ArrayList<>();
+		for(IfStatementObject obj : ifStatementObjectList) {
+			list.add(obj.columnNumber);
+		}
+		return list;
+	}
 	
 	/*
 	 * end testing
