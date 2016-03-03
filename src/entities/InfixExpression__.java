@@ -78,6 +78,14 @@ public class InfixExpression__ {
 		return list;
 	}
 	
+	public List<String> getOperator() {
+		List<String> list = new ArrayList<>();
+		for(InfixExpressionObject obj : infixExpressionObjectList) {
+			list.add(obj.operator);
+		}
+		return list;
+	}
+	
 	/*
 	 * end testing
 	 */

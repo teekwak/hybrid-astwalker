@@ -159,10 +159,6 @@ public class FileModel {
 	}
 
 	public FileModel parseDeclarations(String fileLocation) throws IOException, CoreException {
-		System.out.println("----------------------------------------------------------");
-		System.out.println(fileLocation);
-		System.out.println("----------------------------------------------------------");
-		
 		ASTWalker astWalker = new ASTWalker();
 		return astWalker.parseFile(fileLocation);
 	}

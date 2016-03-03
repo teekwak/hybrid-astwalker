@@ -282,23 +282,26 @@ public class ASTWalkerTest {
 		assertTrue(compareTwoSets(correctExpressionList, expressionList));
 	}
 	
-	/*
-	
 	@Test
 	public void infixExpressionCheck() {
 		// number of infix expressions
-		assertEquals(10, fileModel.getInfixExpressions().getInfixExpressionObjectList().size());
+		assertEquals(2, fileModel.getInfixExpressions().getInfixExpressionObjectList().size());
 		
-		// position of infix expression (position of operator)
+		// position of infix expression (position of left operand)
 		List<Integer> lineList = fileModel.getInfixExpressions().getLineNumbers();
 		List<Integer> columnList = fileModel.getInfixExpressions().getColumnNumbers();
+		List<String> operatorList = fileModel.getInfixExpressions().getOperator();
 		
-		int[] correctLineList = {55, 65, 132, 161, 170, 177, 181, 188, 191, 201};
-		int[] correctColumnList = {7, 23, 7, 19, 13, 23, 26, 12, 8, 12};
+		int[] correctLineList = {57, 87};
+		int[] correctColumnList = {12, 16};
+		String[] correctOperatorList = {">", "=="};
 		
 		assertTrue(compareTwoSets(correctLineList, lineList));
 		assertTrue(compareTwoSets(correctColumnList, columnList));		
+		assertTrue(compareTwoSets(correctOperatorList, operatorList));
 	}
+	
+	/*
 	
 	@Test
 	public void interfaceCheck() {
