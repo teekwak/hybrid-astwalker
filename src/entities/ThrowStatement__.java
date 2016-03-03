@@ -74,6 +74,14 @@ public class ThrowStatement__ {
 		return list;
 	}
 	
+	public List<String> getExpressions() {
+		List<String> list = new ArrayList<>();
+		for(ThrowStatementObject obj : throwStatementObjectList) {
+			list.add(obj.expression);
+		}
+		return list;
+	}
+	
 	/*
 	 * end testing
 	 */

@@ -86,6 +86,14 @@ public class MethodDeclaration__ {
 		return list;
 	}
 	
+	public List<String> getNames() {
+		List<String> list = new ArrayList<>();
+		for(MethodDeclarationObject obj : methodDeclarationObjectList) {
+			list.add(obj.name);
+		}
+		return list;
+	}
+	
 	/*
 	 * end testing
 	 */

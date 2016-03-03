@@ -330,68 +330,88 @@ public class ASTWalkerTest {
 		assertTrue(compareTwoSets(correctImplementsNameList, implementsNameList));
 	}
 	
-	/*
-	
 	@Test
 	public void methodDeclarationCheck() {
 		// number of method declarations (including constructors)
-		assertEquals(14, fileModel.getMethodDeclarations().getMethodDeclarationObjectList().size());
+		assertEquals(10, fileModel.getMethodDeclarations().getMethodDeclarationObjectList().size());
 		
 		// position of method declarations (begins at method name)
 		List<Integer> lineList = fileModel.getMethodDeclarations().getLineNumbers();
 		List<Integer> columnList = fileModel.getMethodDeclarations().getColumnNumbers();
+		List<String> nameList = fileModel.getMethodDeclarations().getNames();
 		
-		int[] correctLineList = {41, 45, 46, 51, 54, 60, 64, 73, 91, 96, 102, 108, 112, 116};
-		int[] correctColumnList = {15, 6, 5, 22, 6, 6, 6, 1, 13, 13, 13, 12, 12, 20};
+		int[] correctLineList = 	{28, 46, 50, 71, 77, 82, 86, 93, 97, 101};
+		int[] correctColumnList = 	{11, 37, 29, 15, 15, 20, 22, 27, 22, 28};
+		String[] correctNameList = 	{"GMailSender", "getPasswordAuthentication", "sendMail", "ByteArrayDataSource", "ByteArrayDataSource", "setType", "getContentType", "getInputStream", "getName", "getOutputStream"};
 		
 		assertTrue(compareTwoSets(correctLineList, lineList));
 		assertTrue(compareTwoSets(correctColumnList, columnList));	
+		assertTrue(compareTwoSets(correctNameList, nameList));
 	}
 	
 	@Test
 	public void methodInvocationCheck() {
-		// number of unique method invocations
-		assertEquals(13, fileModel.getMethodInvocations().getMethodInvocationObjectList().size());
+		// number of UNIQUE method invocations
+		assertEquals(12, fileModel.getMethodInvocations().getMethodInvocationObjectList().size());
 		
 		// position of method invocations (where the actual name of the method starts)
 		List<Map<String, Map<Integer, Integer>>> listOfMaps = fileModel.getMethodInvocations().getInvocationClassAndPositionsMaps();
-		
-		List<Integer> lineList = new ArrayList<>();
-		List<Integer> columnList = new ArrayList<>();
-		Map<Integer, Integer> allPositions = new TreeMap<>();
+	
+		Map<Integer, List<Integer>> allPositions = new TreeMap<>();
 		
 		for(Map<String, Map<Integer, Integer>> bigMap : listOfMaps) {
 			for(Map.Entry<String, Map<Integer, Integer>> smallMap : bigMap.entrySet()) {
 				for(Map.Entry<Integer, Integer> tinyMap : smallMap.getValue().entrySet()) {
-					allPositions.put(tinyMap.getKey(), tinyMap.getValue());
+					if(allPositions.get(tinyMap.getKey()) != null) {
+						allPositions.get(tinyMap.getKey()).add(tinyMap.getValue());
+					}
+					else {
+						List<Integer> list = new ArrayList<>();
+						list.add(tinyMap.getValue());
+						allPositions.put(tinyMap.getKey(), list);
+					}
 				}
 			}
 		}
 		
-		// number of ALL method invocations
-		assertEquals(25, allPositions.size());
+		List<Integer> lineList = new ArrayList<>();
+		List<Integer> columnList = new ArrayList<>();
 		
-		int[] correctLineList = {56, 61, 65, 92, 93, 104, 121, 122, 123, 129, 136, 140, 141, 142, 145, 148, 150, 152, 158, 163, 164, 171, 175, 181, 199};
-		int[] correctColumnList = {14, 13, 13, 13, 13, 14, 7, 14, 6, 5, 14, 7, 7, 7, 15, 22, 22, 23, 14, 14, 14, 14, 5, 13, 14};
+		for(Map.Entry<Integer, List<Integer>> entry : allPositions.entrySet()) {
+			for(Integer i : entry.getValue()) {
+				lineList.add(entry.getKey());
+				columnList.add(i);
+			}
+		}
+		
+		// number of ALL method invocations
+		assertEquals(17, lineList.size());
+		assertEquals(17, columnList.size());
+		
+		int[] correctLineList = 	{33, 34, 35, 36, 37, 38, 40, 41, 43, 54, 55, 56, 57, 58, 58, 60, 61};
+		int[] correctColumnList = 	{14, 14, 14, 14, 14, 14, 14, 14, 26, 16, 16, 16, 23, 20, 76, 20, 18};
 	
 		assertTrue(compareTwoSets(correctLineList, lineList));
 		assertTrue(compareTwoSets(correctColumnList, columnList));
 	}
-	
+
 	@Test
 	public void primitiveCheck() {
 		// number of primitives
-		assertEquals(27, fileModel.getPrimitives().getPrimitiveObjectList().size());
+		assertEquals(0, fileModel.getPrimitives().getPrimitiveObjectList().size());
 		
 		// position of primitives (variable names found everywhere)
 		List<Integer> lineList = fileModel.getPrimitives().getLineNumbers();
 		List<Integer> columnList = fileModel.getPrimitives().getColumnNumbers();
+		List<String> nameList = fileModel.getPrimitives().getNames();
 		
-		int[] correctLineList = {60, 64, 64, 71, 73, 81, 85, 86, 87, 88, 108, 108, 108, 108, 112, 112, 112, 112, 131, 157, 161, 162, 168, 180, 184, 190, 197};
-		int[] correctColumnList = {16, 16, 23, 5, 17, 9, 5, 8, 7, 9, 39, 49, 60, 69, 39, 49, 60, 69, 6, 10, 10, 10, 6, 6, 7, 7, 6};
+		int[] correctLineList = {};
+		int[] correctColumnList = {};
+		String[] correctNameList = {};
 		
 		assertTrue(compareTwoSets(correctLineList, lineList));
 		assertTrue(compareTwoSets(correctColumnList, columnList));
+		assertTrue(compareTwoSets(correctNameList, nameList));
 	}
 	
 	@Test
@@ -402,12 +422,15 @@ public class ASTWalkerTest {
 		// position of throw statements (position of the word "throw")
 		List<Integer> lineList = fileModel.getThrowStatements().getLineNumbers();
 		List<Integer> columnList = fileModel.getThrowStatements().getColumnNumbers();
+		List<String> expressionList = fileModel.getThrowStatements().getExpressions();
 		
-		int[] correctLineList = {194};
-		int[] correctColumnList = {3};
-		
+		int[] correctLineList = {102};
+		int[] correctColumnList = {12};
+		String[] correctExpressionList = {"new IOException(\"Not Supported\")"};
+
 		assertTrue(compareTwoSets(correctLineList, lineList));
 		assertTrue(compareTwoSets(correctColumnList, columnList));
+		assertTrue(compareTwoSets(correctExpressionList, expressionList));
 	}
 	
 	@Test
@@ -419,14 +442,12 @@ public class ASTWalkerTest {
 		List<Integer> lineList = fileModel.getTryStatements().getLineNumbers();
 		List<Integer> columnList = fileModel.getTryStatements().getColumnNumbers();
 		
-		int[] correctLineList = {183};
-		int[] correctColumnList = {2};
+		int[] correctLineList = {51};
+		int[] correctColumnList = {8};
 		
 		assertTrue(compareTwoSets(correctLineList, lineList));
 		assertTrue(compareTwoSets(correctColumnList, columnList));
 	}
-	
-	*/
 	
 	@Test
 	public void simpleNameCheck() {
@@ -436,12 +457,15 @@ public class ASTWalkerTest {
 		// position of simple names (variable name of everything that is not primitive)
 		List<Integer> lineList = fileModel.getSimpleNames().getLineNumbers();
 		List<Integer> columnList = fileModel.getSimpleNames().getColumnNumbers();
+		List<String> nameList = fileModel.getSimpleNames().getNames();
 		
 		int[] correctLineList = 	{19, 20, 21, 22, 28, 28, 32, 50, 50, 50, 50, 52, 53, 62, 69, 71, 82};
 		int[] correctColumnList = 	{19, 19, 19, 20, 30, 43, 19, 45, 61, 74, 89, 20, 20, 25, 23, 55, 35};
+		String[] correctNameList = 	{"mailhost", "user", "password", "session", "user", "password", "props", "subject", "body", "sender", "recipients", "message", "handler", "e", "type", "type", "type"};
 		
 		assertTrue(compareTwoSets(correctLineList, lineList));
 		assertTrue(compareTwoSets(correctColumnList, columnList));
+		assertTrue(compareTwoSets(correctNameList, nameList));
 	}
 	
 	@Test

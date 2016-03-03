@@ -80,6 +80,14 @@ public class Primitive__ {
 		return list;
 	}
 	
+	public List<String> getNames() {
+		List<String> list = new ArrayList<>();
+		for(PrimitiveObject obj : primitiveObjectList) {
+			list.add(obj.name);
+		}
+		return list;
+	}
+	
 	/*
 	 * end testing
 	 */

@@ -80,6 +80,14 @@ public class SimpleName__ {
 		return list;
 	}
 	
+	public List<String> getNames() {
+		List<String> list = new ArrayList<>();
+		for(SimpleNameObject obj : simpleNameObjectList) {
+			list.add(obj.variableName);
+		}
+		return list;
+	}
+	
 	/*
 	 * end testing
 	 */
