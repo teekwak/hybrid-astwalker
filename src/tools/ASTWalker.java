@@ -96,6 +96,7 @@ public class ASTWalker {
 		// alphabetical order
 		cu.accept(new ASTVisitor() {
 
+			@SuppressWarnings("unchecked")
 			public void addEntityToCounter(String entity) {
 				if(!currentMethodStack.isEmpty()) {
 					fileModel.methodDeclaration__.addOneToCounter(currentMethodStack.peek().getName().toString(), currentMethodStack.peek().parameters(), entity);					
@@ -185,6 +186,7 @@ public class ASTWalker {
 			}
 
 			// done
+			@SuppressWarnings("unchecked")
 			public boolean visit(MethodDeclaration node) {
 				currentMethodStack.push(node);
 				inMethod = true;
@@ -207,6 +209,7 @@ public class ASTWalker {
 			}
 
 			// done
+			@SuppressWarnings("unchecked")
 			public boolean visit(MethodInvocation node) {
 				
 				if(inMethod) {					
@@ -309,6 +312,7 @@ public class ASTWalker {
 			}
 
 			// done
+			@SuppressWarnings("unchecked")
 			public boolean visit(TryStatement node) {
 				if(inMethod) {
 					String tryBody = "";
