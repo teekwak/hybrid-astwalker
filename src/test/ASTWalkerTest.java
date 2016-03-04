@@ -11,12 +11,6 @@ import java.util.TreeMap;
 import org.eclipse.core.runtime.CoreException;
 import org.junit.Test;
 
-import entities.SimpleName__;
-import entities.SwitchStatement__;
-import entities.ThrowStatement__;
-import entities.TryStatement__;
-import entities.WhileStatement__;
-import entities.Wildcard__;
 import tools.FileModel;
 
 /**

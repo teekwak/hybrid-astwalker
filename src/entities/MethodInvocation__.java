@@ -94,7 +94,6 @@ public class MethodInvocation__ {
 			for(MethodInvocationObject obj : methodInvocationObjectList) {
 				obj.printEntity();
 			}
-			System.out.println();
 		}
 		else {
 			System.out.println("None\n");

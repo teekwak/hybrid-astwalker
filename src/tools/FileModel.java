@@ -188,11 +188,7 @@ public class FileModel {
 		this.whileStatement__.printAllWhileStatements();
 		this.wildcard__.printAllWildcards();
 	}
-
-	public void printToFile() {
-
-	}
-
+	
 	public static void traverseUntilJava(File parentNode) throws IOException, CoreException {
 		if(parentNode.isDirectory()) {
 			File childNodes[] = parentNode.listFiles();
@@ -204,15 +200,12 @@ public class FileModel {
 			}
 		}
 		else {
-			if(parentNode.getName().endsWith(".java")) {		
-				System.out.println(parentNode.getName());
-				
+			if(parentNode.getName().endsWith(".java")) {						
 				FileModel fileModel = new FileModel();
 				
 				fileModel = fileModel.parseDeclarations(parentNode.getAbsolutePath());
 				
-				fileModel.methodInvocation__.printAllMethodInvocations();
-				
+				fileModel.class__.printAllClasses();
 			}
 		}
 	}
@@ -220,6 +213,8 @@ public class FileModel {
 	public static void main(String[] args) throws IOException, CoreException{
 
 		//File inputFolder = new File(args[0]);
+		
+		//File inputFolder = new File("/home/kwak/Desktop/ReSender");
 		
 		File inputFolder = new File("/home/kwak/Desktop/ReSender/src/com/gilevich/resender/GMailSender.java");
 		

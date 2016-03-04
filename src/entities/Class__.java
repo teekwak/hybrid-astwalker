@@ -19,6 +19,7 @@ class SuperClassObject {
 
 class ClassObject {
 	String name;
+	List<String> methodDeclarations;
 	int lineNumber;
 	int columnNumber;
 
@@ -26,10 +27,22 @@ class ClassObject {
 		name = n;
 		lineNumber = l;
 		columnNumber = c;
+		methodDeclarations = new ArrayList<>();
 	}
 
 	void printEntity() {
 		System.out.println(name + " => " + lineNumber + " | " + columnNumber);
+		System.out.println("\tMethod declarations in class");
+		
+		if(methodDeclarations.size() > 0) {
+			for(String s : methodDeclarations) {
+				System.out.println("\t\t" + s);
+			}			
+		}
+		else {
+			System.out.println("\t\tNone");
+		}
+		System.out.println();
 	}
 }
 
@@ -46,11 +59,20 @@ public class Class__ {
 	public void addClass(String name, int lineNumber, int columnNumber) {
 		classObjectList.add(new ClassObject(name, lineNumber, columnNumber));
 	}
-
+	
 	public void addExtends(String name, int lineNumber) {
 		superClassObjectList.add(new SuperClassObject(name, lineNumber));
 	}
 
+	public void addMethodDeclarationToClass(String className, String methodDeclaration) {
+		for(ClassObject obj : classObjectList) {
+			if(obj.name.equals(className)) {
+				obj.methodDeclarations.add(methodDeclaration);
+				break;
+			}
+		}
+	}
+	
 	public void printAllClasses() {
 		System.out.println("--- Classes ---");
 

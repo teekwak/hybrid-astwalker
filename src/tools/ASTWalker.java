@@ -179,6 +179,7 @@ public class ASTWalker {
 				ITypeBinding className = binding.getDeclaringClass();
 
 				fileModel.methodDeclaration__.addMethodDeclaration(name.toString(), className.getName(), node.getReturnType2(), node.parameters(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+				fileModel.class__.addMethodDeclarationToClass(className.getName(), name.toString());
 				return true;
 			}
 
