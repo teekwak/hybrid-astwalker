@@ -11,6 +11,9 @@ class MethodDeclarationObject {
 	String name;
 	String className;
 	Type returnType;
+	boolean isVarargs;
+	boolean isConstructor;
+	boolean isStatic;
 	int lineNumber;
 	int columnNumber;
 	List<String> parameterNames;
@@ -19,11 +22,14 @@ class MethodDeclarationObject {
 	
 	Map<String, Integer> entitiesInsideMethod;
 
-	MethodDeclarationObject(String n, String cn, Type t, List<Object> p, int l, int c) {
+	MethodDeclarationObject(String n, String cn, Type t, boolean b, boolean constr, boolean stat, List<Object> p, int l, int c) {
 		// if t == null, then probably constructor
 		name = n;
 		className = cn;
 		returnType = t;
+		isVarargs = b;
+		isConstructor = constr;
+		isStatic = stat;
 		lineNumber = l;
 		columnNumber = c;
 
@@ -44,6 +50,7 @@ class MethodDeclarationObject {
 		for(Map.Entry<String, Integer> entry : entitiesInsideMethod.entrySet()) {
 			System.out.println("\t" + entry.getKey() + ": " + entry.getValue());
 		}
+		System.out.println("\t\t" + isStatic);
 	}
 	
 	boolean has(String name, List<Object> pT) {
@@ -71,8 +78,8 @@ public class MethodDeclaration__ {
 	}
 
 	// check that the class names and parameters are all different
-	public void addMethodDeclaration(String name, String className, Type returnType, List<Object> parameters, int lineNumber, int columnNumber) {
-		methodDeclarationObjectList.add(new MethodDeclarationObject(name, className, returnType, parameters, lineNumber, columnNumber));
+	public void addMethodDeclaration(String name, String className, Type returnType, boolean isVarargs, boolean isConstructor, boolean isStatic, List<Object> parameters, int lineNumber, int columnNumber) {
+		methodDeclarationObjectList.add(new MethodDeclarationObject(name, className, returnType, isVarargs, isConstructor, isStatic, parameters, lineNumber, columnNumber));
 	}
 	
 	public void printAllMethodDeclarations() {

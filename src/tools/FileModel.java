@@ -207,8 +207,7 @@ public class FileModel {
 				
 				//fileModel.class__.printAllClasses();
 				
-				fileModel.methodDeclaration__.printAllMethodDeclarations();
-				
+				fileModel.methodDeclaration__.printAllMethodDeclarations();	
 			}
 		}
 	}

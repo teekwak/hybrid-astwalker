@@ -194,7 +194,9 @@ public class ASTWalker {
 				IMethodBinding binding = node.resolveBinding();
 				ITypeBinding className = binding.getDeclaringClass();
 
-				fileModel.methodDeclaration__.addMethodDeclaration(name.toString(), className.getName(), node.getReturnType2(), node.parameters(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+				boolean isStatic = false;
+				
+				fileModel.methodDeclaration__.addMethodDeclaration(name.toString(), className.getName(), node.getReturnType2(), node.isVarargs(), node.isConstructor(), isStatic, node.parameters(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 				fileModel.class__.addMethodDeclarationToClass(className.getName(), name.toString());
 				return true;
 			}
