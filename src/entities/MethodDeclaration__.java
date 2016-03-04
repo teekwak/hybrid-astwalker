@@ -1,7 +1,9 @@
 package entities;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.core.dom.Type;
 
@@ -14,8 +16,11 @@ class MethodDeclarationObject {
 	List<String> parameterNames;
 	List<String> parameterTypes;
 	List<String> statements;
+	
+	Map<String, Integer> entitiesInsideMethod;
 
 	MethodDeclarationObject(String n, String cn, Type t, List<Object> p, int l, int c) {
+		// if t == null, then probably constructor
 		name = n;
 		className = cn;
 		returnType = t;
@@ -30,10 +35,31 @@ class MethodDeclarationObject {
 			parameterNames.add(parts[1]);
 			parameterTypes.add(parts[0]);
 		}
+		
+		entitiesInsideMethod = new HashMap<>();
 	}
 
 	void printEntity() {
 		System.out.println(name + " (" + className + ") " + returnType + " => " + lineNumber + " | " + columnNumber);
+		for(Map.Entry<String, Integer> entry : entitiesInsideMethod.entrySet()) {
+			System.out.println("\t" + entry.getKey() + ": " + entry.getValue());
+		}
+	}
+	
+	boolean has(String name, List<Object> pT) {
+		if(!this.name.equals(name)) {
+			return false;
+		}
+		
+		for(int i = 0; i < pT.size(); i++) {
+			String[] parts = pT.get(i).toString().split(" ");
+
+			if(!this.parameterTypes.get(i).equals(parts[0])) {
+				return false;
+			}
+		}
+		
+		return true;
 	}
 }
 
@@ -59,6 +85,20 @@ public class MethodDeclaration__ {
 		}
 		else {
 			System.out.println("None\n");
+		}
+	}
+	
+	public void addOneToCounter(String name, List<Object> parameterTypes, String entity) {		
+		for(MethodDeclarationObject m : methodDeclarationObjectList) {
+			if(m.has(name, parameterTypes)) {
+				if(m.entitiesInsideMethod.get(entity) != null) {
+					m.entitiesInsideMethod.put(entity, m.entitiesInsideMethod.get(entity) + 1);
+				}
+				else {
+					m.entitiesInsideMethod.put(entity, 1);	
+				}
+				return;
+			}
 		}
 	}
 	

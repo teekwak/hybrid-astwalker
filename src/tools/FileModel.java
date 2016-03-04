@@ -205,7 +205,10 @@ public class FileModel {
 				
 				fileModel = fileModel.parseDeclarations(parentNode.getAbsolutePath());
 				
-				fileModel.class__.printAllClasses();
+				//fileModel.class__.printAllClasses();
+				
+				fileModel.methodDeclaration__.printAllMethodDeclarations();
+				
 			}
 		}
 	}

@@ -50,8 +50,8 @@ import org.eclipse.jdt.core.dom.WildcardType;
 public class ASTWalker {
 
 	public FileModel fileModel;
-	public Stack<String> currentClassStack = new Stack<>();
-	public Stack<String> currentMethodStack = new Stack<>();
+	public Stack<TypeDeclaration> currentClassStack = new Stack<>();
+	public Stack<MethodDeclaration> currentMethodStack = new Stack<>();
 	public boolean inMethod = false;
 
 	/**
@@ -96,11 +96,21 @@ public class ASTWalker {
 		// alphabetical order
 		cu.accept(new ASTVisitor() {
 
+			public void addEntityToCounter(String entity) {
+				if(!currentMethodStack.isEmpty()) {
+					fileModel.methodDeclaration__.addOneToCounter(currentMethodStack.peek().getName().toString(), currentMethodStack.peek().parameters(), entity);					
+				}
+				else {
+					fileModel.class__.addOneToCounter(currentClassStack.peek().getName().toString(), entity);
+				}
+			}
+			
 			// done
 			public boolean visit(CatchClause node) {
 				if(inMethod) {
 					SimpleName name = node.getException().getName();
-					fileModel.catchClause__.addCatch(node.getException().getType(), name.toString(), currentClassStack.peek(), currentMethodStack.peek(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					fileModel.catchClause__.addCatch(node.getException().getType(), name.toString(), currentClassStack.peek().getName().toString(), currentMethodStack.peek().getName().toString(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					addEntityToCounter("CatchClause");
 				}
 
 				return true;
@@ -109,7 +119,8 @@ public class ASTWalker {
 			// done
 			public boolean visit(ConditionalExpression node){
 				if(inMethod) {
-					fileModel.conditionalExpression__.addConditionalExpression(node.getExpression().toString(), node.getElseExpression().toString(), node.getThenExpression().toString(), currentClassStack.peek(), currentMethodStack.peek(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
+					fileModel.conditionalExpression__.addConditionalExpression(node.getExpression().toString(), node.getElseExpression().toString(), node.getThenExpression().toString(), currentClassStack.peek().getName().toString(), currentMethodStack.peek().getName().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
+					addEntityToCounter("ConditionalExpression");
 				}
 
 				return true;
@@ -118,7 +129,8 @@ public class ASTWalker {
 			// done
 			public boolean visit(DoStatement node) {
 				if(inMethod) {
-					fileModel.doStatement__.addDoStatement(node.getExpression().toString(), currentClassStack.peek(), currentMethodStack.peek(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
+					fileModel.doStatement__.addDoStatement(node.getExpression().toString(), currentClassStack.peek().getName().toString(), currentMethodStack.peek().getName().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
+					addEntityToCounter("DoStatement");
 				}
 
 				return true;
@@ -128,16 +140,18 @@ public class ASTWalker {
 			public boolean visit(EnhancedForStatement node) {
 				if(inMethod) {
 					SimpleName name = node.getParameter().getName();
-					fileModel.forStatement__.addForStatement(name.toString(), currentClassStack.peek(), currentMethodStack.peek(), true, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					fileModel.forStatement__.addForStatement(name.toString(), currentClassStack.peek().getName().toString(), currentMethodStack.peek().getName().toString(), true, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					addEntityToCounter("EnhancedForStatement");
 				}
 
 				return true;
 			}
 
-			// done-ish. only returns middle conditional part of for statement
+			// done 
 			public boolean visit(ForStatement node) {
 				if(inMethod) {
-					fileModel.forStatement__.addForStatement(node.getExpression().toString(), currentClassStack.peek(), currentMethodStack.peek(), false, cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
+					fileModel.forStatement__.addForStatement(node.getExpression().toString(), currentClassStack.peek().getName().toString(), currentMethodStack.peek().getName().toString(), false, cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
+					addEntityToCounter("ForStatement");
 				}
 
 				return true;
@@ -146,7 +160,8 @@ public class ASTWalker {
 			// done
 			public boolean visit(IfStatement node) {
 				if(inMethod) {
-					fileModel.ifStatement__.addIfStatement(node.getExpression().toString(), currentClassStack.peek(), currentMethodStack.peek(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
+					fileModel.ifStatement__.addIfStatement(node.getExpression().toString(), currentClassStack.peek().getName().toString(), currentMethodStack.peek().getName().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
+					addEntityToCounter("IfStatement");
 				}
 
 				return true;
@@ -162,15 +177,16 @@ public class ASTWalker {
 			// done
 			public boolean visit(InfixExpression node){
 				if(inMethod) {
-					fileModel.infixExpression__.addInfixExpression(node.getOperator().toString(), node.getLeftOperand().toString(), node.getRightOperand().toString(), currentClassStack.peek(), currentMethodStack.peek(), cu.getLineNumber(node.getLeftOperand().getStartPosition()), (cu.getColumnNumber(node.getLeftOperand().getStartPosition())));
+					fileModel.infixExpression__.addInfixExpression(node.getOperator().toString(), node.getLeftOperand().toString(), node.getRightOperand().toString(), currentClassStack.peek().getName().toString(), currentMethodStack.peek().getName().toString(), cu.getLineNumber(node.getLeftOperand().getStartPosition()), (cu.getColumnNumber(node.getLeftOperand().getStartPosition())));
+					addEntityToCounter("InfixExpression");
 				}
 
 				return true;
 			}
 
-			// NOT COMPLETE
+			// done
 			public boolean visit(MethodDeclaration node) {
-				currentMethodStack.push(node.getName().toString());
+				currentMethodStack.push(node);
 				inMethod = true;
 
 				SimpleName name = node.getName();
@@ -188,9 +204,10 @@ public class ASTWalker {
 				currentMethodStack.pop();
 			}
 
-			// NOT COMPLETE
+			// done
 			public boolean visit(MethodInvocation node) {
-				if(inMethod) {
+				
+				if(inMethod) {					
 					SimpleName name = node.getName();
 
 					IMethodBinding binding = node.resolveMethodBinding();
@@ -203,7 +220,8 @@ public class ASTWalker {
 						parentClass = "";
 					}
 					
-					fileModel.methodInvocation__.addMethodInvocation(name.toString(), parentClass, currentClassStack.peek(), node.arguments(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					fileModel.methodInvocation__.addMethodInvocation(name.toString(), parentClass, currentClassStack.peek().getName().toString(), node.arguments(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));	
+					addEntityToCounter("MethodInvocation");
 				}
 
 				return true;
@@ -223,27 +241,31 @@ public class ASTWalker {
 				String currentMethod;
 				
 				try {
-					currentMethod = currentMethodStack.peek();
+					currentMethod = currentMethodStack.peek().getName().toString();
 				} catch (EmptyStackException e) {
 					currentMethod = "N/A";
 				}
 				
 				if(node.getType().isArrayType()) {
-					fileModel.array__.addArray(name.toString(), currentClassStack.peek(), currentMethod, node.getType(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					fileModel.array__.addArray(name.toString(), currentClassStack.peek().getName().toString(), currentMethod, node.getType(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					addEntityToCounter("Array");
 				}
 				else if(node.getType().isParameterizedType()) {
-					fileModel.generics__.addGenerics(name.toString(), currentClassStack.peek(), currentMethod, node.getType(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					fileModel.generics__.addGenerics(name.toString(), currentClassStack.peek().getName().toString(), currentMethod, node.getType(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					addEntityToCounter("Generics");
 				}
 				else if(node.getType().isPrimitiveType()) {
-					fileModel.primitive__.addPrimitive(name.toString(), currentClassStack.peek(), currentMethod, node.getType(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					fileModel.primitive__.addPrimitive(name.toString(), currentClassStack.peek().getName().toString(), currentMethod, node.getType(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					addEntityToCounter("Primitive");
 				}
 				else if(node.getType().isSimpleType()) {
-					fileModel.simpleName__.addSimpleName(name.toString(), currentClassStack.peek(), currentMethod, node.getType(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					fileModel.simpleName__.addSimpleName(name.toString(), currentClassStack.peek().getName().toString(), currentMethod, node.getType(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					addEntityToCounter("SimpleName");
 				}
 				else {
 					System.out.println("Something is missing " + node.getType());
 				}
-
+				
 				return true;
 			}
 
@@ -268,7 +290,8 @@ public class ASTWalker {
 						}
 					}
 
-					fileModel.switchStatement__.addSwitchStatement(node.getExpression().toString(), currentClassStack.peek(), currentMethodStack.peek(), switchCaseMap, cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
+					fileModel.switchStatement__.addSwitchStatement(node.getExpression().toString(), currentClassStack.peek().getName().toString(), currentMethodStack.peek().getName().toString(), switchCaseMap, cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
+					addEntityToCounter("SwitchStatement");
 				}
 
 				return true;
@@ -277,7 +300,8 @@ public class ASTWalker {
 			// done
 			public boolean visit(ThrowStatement node) {
 				if(inMethod) {
-					fileModel.throwStatement__.addThrowStatement(node.getExpression().toString(), currentClassStack.peek(), currentMethodStack.peek(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
+					fileModel.throwStatement__.addThrowStatement(node.getExpression().toString(), currentClassStack.peek().getName().toString(), currentMethodStack.peek().getName().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
+					addEntityToCounter("ThrowStatement");
 				}
 				return true;
 			}
@@ -300,7 +324,8 @@ public class ASTWalker {
 						finallyBody = "";
 					}
 
-					fileModel.tryStatement__.addTryStatement(tryBody, currentClassStack.peek(), currentMethodStack.peek(), node.catchClauses(), finallyBody, cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
+					fileModel.tryStatement__.addTryStatement(tryBody, currentClassStack.peek().getName().toString(), currentMethodStack.peek().getName().toString(), node.catchClauses(), finallyBody, cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
+					addEntityToCounter("TryStatement");
 				}
 
 				return true;
@@ -308,7 +333,7 @@ public class ASTWalker {
 
 			// done
 			public boolean visit(TypeDeclaration node) {
-				currentClassStack.push(node.getName().toString());
+				currentClassStack.push(node);
 
 				if(!node.isInterface()) {
 					fileModel.class__.addClass(node.getName().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
@@ -341,22 +366,26 @@ public class ASTWalker {
 				String currentMethod;
 				
 				try {
-					currentMethod = currentMethodStack.peek();
+					currentMethod = currentMethodStack.peek().getName().toString();
 				} catch (EmptyStackException e) {
 					currentMethod = "N/A";
 				}
 				
 				if(nodeType.isArrayType()) {
-					fileModel.array__.addArray(name.toString(), currentClassStack.peek(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					fileModel.array__.addArray(name.toString(), currentClassStack.peek().getName().toString(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					addEntityToCounter("Array");
 				}
 				else if(nodeType.isParameterizedType()) {
-					fileModel.generics__.addGenerics(name.toString(), currentClassStack.peek(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					fileModel.generics__.addGenerics(name.toString(), currentClassStack.peek().getName().toString(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					addEntityToCounter("Generics");
 				}
 				else if(nodeType.isPrimitiveType()) {
-					fileModel.primitive__.addPrimitive(name.toString(), currentClassStack.peek(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					fileModel.primitive__.addPrimitive(name.toString(), currentClassStack.peek().getName().toString(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					addEntityToCounter("Primitive");
 				}
 				else if(nodeType.isSimpleType()) {
-					fileModel.simpleName__.addSimpleName(name.toString(), currentClassStack.peek(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					fileModel.simpleName__.addSimpleName(name.toString(), currentClassStack.peek().getName().toString(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					addEntityToCounter("SimpleName");
 				}
 				else {
 					System.out.println("Something is missing " + nodeType);
@@ -374,7 +403,7 @@ public class ASTWalker {
 				String currentMethod;
 				
 				try {
-					currentMethod = currentMethodStack.peek();
+					currentMethod = currentMethodStack.peek().getName().toString();
 				} catch (EmptyStackException e) {
 					currentMethod = "N/A";
 				}
@@ -384,16 +413,20 @@ public class ASTWalker {
 					SimpleName name = ((VariableDeclarationFragment) v).getName();
 					
 					if(nodeType.isArrayType()) {
-						fileModel.array__.addArray(name.toString(), currentClassStack.peek(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+						fileModel.array__.addArray(name.toString(), currentClassStack.peek().getName().toString(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+						addEntityToCounter("Array");
 					}
 					else if(nodeType.isParameterizedType()) {
-						fileModel.generics__.addGenerics(name.toString(), currentClassStack.peek(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+						fileModel.generics__.addGenerics(name.toString(), currentClassStack.peek().getName().toString(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+						addEntityToCounter("Generics");
 					}
 					else if(nodeType.isPrimitiveType()) {
-						fileModel.primitive__.addPrimitive(name.toString(), currentClassStack.peek(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+						fileModel.primitive__.addPrimitive(name.toString(), currentClassStack.peek().getName().toString(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+						addEntityToCounter("Primitive");
 					}
 					else if(nodeType.isSimpleType()) {
-						fileModel.simpleName__.addSimpleName(name.toString(), currentClassStack.peek(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+						fileModel.simpleName__.addSimpleName(name.toString(), currentClassStack.peek().getName().toString(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+						addEntityToCounter("SimpleName");
 					}
 					else {
 						System.out.println("Something is missing " + nodeType);
@@ -407,13 +440,12 @@ public class ASTWalker {
 			// exactly the same as visit(VariableDeclarationStatement node)
 			// done-ish. excluded qualifiedType, unionType, wildcardType
 			public boolean visit(VariableDeclarationExpression node) {
-				if(inMethod) {
 					Type nodeType = node.getType();
 
 					String currentMethod;
 					
 					try {
-						currentMethod = currentMethodStack.peek();
+						currentMethod = currentMethodStack.peek().getName().toString();
 					} catch (EmptyStackException e) {
 						currentMethod = "N/A";
 					}
@@ -422,22 +454,26 @@ public class ASTWalker {
 						SimpleName name = ((VariableDeclarationFragment) v).getName();
 
 						if(nodeType.isArrayType()) {
-							fileModel.array__.addArray(name.toString(), currentClassStack.peek(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+							fileModel.array__.addArray(name.toString(), currentClassStack.peek().getName().toString(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+							addEntityToCounter("Array");
 						}
 						else if(nodeType.isParameterizedType()) {
-							fileModel.generics__.addGenerics(name.toString(), currentClassStack.peek(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+							fileModel.generics__.addGenerics(name.toString(), currentClassStack.peek().getName().toString(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+							addEntityToCounter("Generics");
 						}
 						else if(nodeType.isPrimitiveType()) {
-							fileModel.primitive__.addPrimitive(name.toString(), currentClassStack.peek(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+							fileModel.primitive__.addPrimitive(name.toString(), currentClassStack.peek().getName().toString(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+							addEntityToCounter("Primitive");
 						}
 						else if(nodeType.isSimpleType()) {
-							fileModel.simpleName__.addSimpleName(name.toString(), currentClassStack.peek(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+							fileModel.simpleName__.addSimpleName(name.toString(), currentClassStack.peek().getName().toString(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+							addEntityToCounter("SimpleName");
 						}
 						else {
 							System.out.println("Something is missing " + nodeType);
 						}
 					}
-				}
+				
 
 				return false; // does this stop from going to VariableDeclarationFragment?
 			}
@@ -445,7 +481,8 @@ public class ASTWalker {
 			// done
 			public boolean visit(WhileStatement node){
 				if(inMethod) {
-					fileModel.whileStatement__.addWhileStatement(node.getExpression().toString(), currentClassStack.peek(), currentMethodStack.peek(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
+					fileModel.whileStatement__.addWhileStatement(node.getExpression().toString(), currentClassStack.peek().getName().toString(), currentMethodStack.peek().getName().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
+					addEntityToCounter("WhileStatement");
 				}
 				return true;
 			}
@@ -453,7 +490,8 @@ public class ASTWalker {
 			// done
 			public boolean visit(WildcardType node) {
 				if(inMethod) {
-					fileModel.wildcard__.addWildcard(currentClassStack.peek(), currentMethodStack.peek(), ((ParameterizedType) node.getParent()).getType(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
+					fileModel.wildcard__.addWildcard(currentClassStack.peek().getName().toString(), currentMethodStack.peek().getName().toString(), ((ParameterizedType) node.getParent()).getType(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
+					addEntityToCounter("Wildcard");
 				}
 				return false;
 			}

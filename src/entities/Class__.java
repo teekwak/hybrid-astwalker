@@ -1,7 +1,9 @@
 package entities;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 class SuperClassObject {
 	String name;
@@ -22,18 +24,29 @@ class ClassObject {
 	List<String> methodDeclarations;
 	int lineNumber;
 	int columnNumber;
+	Map<String, Integer> entitiesInsideClass;
 
 	ClassObject(String n, int l, int c) {
 		name = n;
 		lineNumber = l;
 		columnNumber = c;
 		methodDeclarations = new ArrayList<>();
+		entitiesInsideClass = new HashMap<>();
 	}
 
 	void printEntity() {
 		System.out.println(name + " => " + lineNumber + " | " + columnNumber);
-		System.out.println("\tMethod declarations in class");
+		System.out.println("\tMember variables in class");
+		if(entitiesInsideClass.size() > 0) {
+			for(Map.Entry<String, Integer> entry : entitiesInsideClass.entrySet()) {
+				System.out.println("\t\t" + entry.getKey() + ": " + entry.getValue());
+			}
+		}
+		else {
+			System.out.println("\tNone");
+		}
 		
+		System.out.println("\tMethod declarations in class");
 		if(methodDeclarations.size() > 0) {
 			for(String s : methodDeclarations) {
 				System.out.println("\t\t" + s);
@@ -98,6 +111,19 @@ public class Class__ {
 		}
 		else {
 			System.out.println("None\n");
+		}
+	}
+	
+	public void addOneToCounter(String className, String entity) {
+		for(ClassObject c : classObjectList) {
+			if(c.name.equals(className)) {
+				if(c.entitiesInsideClass.get(entity) != null) {
+					c.entitiesInsideClass.put(entity, c.entitiesInsideClass.get(entity) + 1);
+				}
+				else {
+					c.entitiesInsideClass.put(entity, 1);	
+				}
+			}
 		}
 	}
 	
