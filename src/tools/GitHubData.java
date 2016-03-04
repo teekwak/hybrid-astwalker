@@ -159,10 +159,9 @@ public class GitHubData {
 		for(Map.Entry<String, String> entry : hashCodePairs.entrySet()) {
 			
 			Process proc = Runtime.getRuntime().exec(script.getAbsolutePath() + " " + directoryLocation + " " + entry.getKey() + " " + entry.getValue());
-			BufferedReader br = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-			
-			System.out.println(entry.getKey() + " " + entry.getValue());
-			
+			InputStreamReader isr = new InputStreamReader(proc.getInputStream());
+			BufferedReader br = new BufferedReader(isr);
+						
 			String s = null;
 			
 			while((s = br.readLine()) != null) {
@@ -172,19 +171,18 @@ public class GitHubData {
 					System.out.println(parts[2] + "\nLines inserted:\t" + parts[0] + "\nLines deleted:\t" + parts[1]);	
 				}
 			}
-			
-			System.out.println();
-			
+						
 			br.close();
+			isr.close();
 		}
 	}
 	
 	
 
 	
-	public static void main(String[] args) throws IOException, NoWorkTreeException, GitAPIException {
+	public static void main(String[] args) throws IOException, NoWorkTreeException, GitAPIException {	
 		String directoryLocation = "/home/kwak/Desktop/jgit-test/";
-		
+			
 		Git git = Git.open( new File (directoryLocation + ".git") );
 
 		GitHubData gitHubData = new GitHubData();
@@ -195,14 +193,15 @@ public class GitHubData {
 			commitHistory.add(commit);
 		}
 		Collections.reverse(commitHistory); // all commits from earliest to latest
-		
+			
 		for(RevCommit commit : commitHistory) {
 			gitHubData.commitObjectList.add(new CommitObject(getAuthorOfCommit(commit), getAuthorEmailOfCommit(commit), getHashCodeOfCommit(commit), getCommitMessage(commit), formatDate(getDateOfCommit(commit))));
 		}
-		
+			
 		gitHubData.addHashCodePairsToMap(commitHistory);
 		gitHubData.runBashScript(directoryLocation, gitHubData.hashCodePairs);	
+			
+		git.getRepository().close();			
 		
-		git.getRepository().close();
 	}
 }
