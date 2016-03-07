@@ -4,6 +4,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.EmptyStackException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
@@ -25,6 +26,7 @@ import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.InfixExpression;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
 import org.eclipse.jdt.core.dom.ParameterizedType;
@@ -196,9 +198,20 @@ public class ASTWalker {
 				IMethodBinding binding = node.resolveBinding();
 				ITypeBinding className = binding.getDeclaringClass();
 
+				// is static and is abstract
 				boolean isStatic = false;
+				boolean isAbstract = false;
 				
-				fileModel.methodDeclaration__.addMethodDeclaration(name.toString(), className.getName(), node.getReturnType2(), node.isVarargs(), node.isConstructor(), isStatic, node.parameters(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+				int mod = node.getModifiers();
+				if(Modifier.isAbstract(mod)) {
+					isAbstract = true;
+				}
+				
+				if(Modifier.isStatic(mod)) {
+					isStatic = true;
+				}
+				
+				fileModel.methodDeclaration__.addMethodDeclaration(name.toString(), className.getName(), node.getReturnType2(), node.isVarargs(), node.isConstructor(), isStatic, isAbstract, (List<Object>)node.parameters(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 				fileModel.class__.addMethodDeclarationToClass(className.getName(), name.toString());
 				return true;
 			}

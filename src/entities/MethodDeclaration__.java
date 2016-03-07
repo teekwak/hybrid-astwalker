@@ -14,6 +14,7 @@ class MethodDeclarationObject {
 	boolean isVarargs;
 	boolean isConstructor;
 	boolean isStatic;
+	boolean isAbstract;
 	int lineNumber;
 	int columnNumber;
 	List<String> parameterNames;
@@ -22,7 +23,7 @@ class MethodDeclarationObject {
 	
 	Map<String, Integer> entitiesInsideMethod;
 
-	MethodDeclarationObject(String n, String cn, Type t, boolean b, boolean constr, boolean stat, List<Object> p, int l, int c) {
+	MethodDeclarationObject(String n, String cn, Type t, boolean b, boolean constr, boolean stat, boolean abst, List<Object> p, int l, int c) {
 		// if t == null, then probably constructor
 		name = n;
 		className = cn;
@@ -30,6 +31,7 @@ class MethodDeclarationObject {
 		isVarargs = b;
 		isConstructor = constr;
 		isStatic = stat;
+		isAbstract = abst;
 		lineNumber = l;
 		columnNumber = c;
 
@@ -46,7 +48,7 @@ class MethodDeclarationObject {
 	}
 
 	void printEntity() {
-		System.out.println(name + " (" + className + ") " + returnType + " => " + lineNumber + " | " + columnNumber);
+		System.out.println(name + " (" + className + ") " + returnType + " " + isStatic + " " + " => " + lineNumber + " | " + columnNumber);
 		for(Map.Entry<String, Integer> entry : entitiesInsideMethod.entrySet()) {
 			System.out.println("\t" + entry.getKey() + ": " + entry.getValue());
 		}
@@ -78,8 +80,8 @@ public class MethodDeclaration__ {
 	}
 
 	// check that the class names and parameters are all different
-	public void addMethodDeclaration(String name, String className, Type returnType, boolean isVarargs, boolean isConstructor, boolean isStatic, List<Object> parameters, int lineNumber, int columnNumber) {
-		methodDeclarationObjectList.add(new MethodDeclarationObject(name, className, returnType, isVarargs, isConstructor, isStatic, parameters, lineNumber, columnNumber));
+	public void addMethodDeclaration(String name, String className, Type returnType, boolean isVarargs, boolean isConstructor, boolean isStatic, boolean isAbstract, List<Object> parameters, int lineNumber, int columnNumber) {
+		methodDeclarationObjectList.add(new MethodDeclarationObject(name, className, returnType, isVarargs, isConstructor, isStatic, isAbstract, parameters, lineNumber, columnNumber));
 	}
 	
 	public void printAllMethodDeclarations() {
