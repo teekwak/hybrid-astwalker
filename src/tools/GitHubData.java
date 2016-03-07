@@ -181,7 +181,7 @@ public class GitHubData {
 	
 	public static void main(String[] args) throws IOException, NoWorkTreeException, GitAPIException {	
 		String directoryLocation = "/home/kwak/Desktop/jgit-test/";
-			
+
 		Git git = Git.open( new File (directoryLocation + ".git") );
 
 		GitHubData gitHubData = new GitHubData();
@@ -200,7 +200,7 @@ public class GitHubData {
 		gitHubData.addHashCodePairsToMap(commitHistory);
 		gitHubData.runBashScript(directoryLocation, gitHubData.hashCodePairs);	
 			
-		git.getRepository().close();			
+		git.close();
 		
 	}
 }
