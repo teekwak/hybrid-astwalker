@@ -135,14 +135,26 @@ public class MethodDeclaration__ {
 		if(methodDeclarationObjectList.size() > 0) {
 			System.out.println("--- Methods Declarations ---");
 			for(MethodDeclarationObject m : methodDeclarationObjectList) {
-				//m.printEntity();
-				m.printComplexity();
+				m.printEntity();
 			}
 			System.out.println();
 		}
 		else {
 			System.out.println("None\n");
 		}
+	}
+	
+	public void printAllMethodDeclarationComplexities() {
+		if(methodDeclarationObjectList.size() > 0) {
+			System.out.println("--- Methods Declaration Complexities ---");
+			for(MethodDeclarationObject m : methodDeclarationObjectList) {
+				m.printComplexity();
+			}
+			System.out.println();
+		}
+		else {
+			System.out.println("None\n");
+		}		
 	}
 	
 	public void addOneToCounter(String name, List<Object> parameterTypes, String entity) {		
