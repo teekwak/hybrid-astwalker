@@ -172,6 +172,7 @@ public class GitHubData {
 						
 			br.close();
 			isr.close();
+			proc.destroy();
 		}
 	}
 	
