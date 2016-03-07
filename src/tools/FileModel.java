@@ -216,6 +216,7 @@ public class FileModel {
 				//fileModel.class__.printAllClasses();
 				
 				fileModel.methodDeclaration__.printAllMethodDeclarations();	
+								
 			}
 		}
 	}
@@ -226,9 +227,9 @@ public class FileModel {
 		
 		//File inputFolder = new File("/home/kwak/Desktop/ReSender");
 		
-		File inputFolder = new File("/home/kwak/Desktop/ReSender/src/com/gilevich/resender/GMailSender.java");
+		//File inputFolder = new File("/home/kwak/Desktop/ReSender/src/com/gilevich/resender/GMailSender.java");
 		
-		//File inputFolder = new File("/home/kwak/Documents/workspace/ASTWalker/src/exampleCode/Example.java");
+		File inputFolder = new File("/home/kwak/Documents/workspace/ASTWalker/src/exampleCode/Example.java");
 		
 		traverseUntilJava(inputFolder);
 	}

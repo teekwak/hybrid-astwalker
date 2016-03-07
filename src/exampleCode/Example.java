@@ -39,19 +39,8 @@ import java.util.LinkedList;
 
 public class Example {
 	public static void main(String[] args) {
-		int i = 0;
-		if(i == 0) {
-			System.out.println("if");
-		}
-		else if(i == 1) {
-			System.out.println("else if");
-			return;
-		}
-		else {
-			System.out.println("else");
-			return;
-		}
-		return;
+		System.out.println(true && true);
+		System.out.println(1 > 0);
 	}
 
 	public int returnOne() {

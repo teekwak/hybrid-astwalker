@@ -75,15 +75,48 @@ class MethodDeclarationObject {
 
 	public int getComplexity() {
 		int complexity = 1;
-	
+		
 		for(Map.Entry<String, Integer> entry : entitiesInsideMethod.entrySet()) {
-			if(entry.getKey().equals("IfStatement")) {
-				complexity++;
+			switch(entry.getKey()) {
+				case "CatchClause":							
+					complexity += entry.getValue();
+					break;	
+				case "ConditionalExpression":				
+					complexity += entry.getValue();
+					break;
+				case "DoStatement":							
+					complexity += entry.getValue();
+					break;	
+				case "EnhancedForStatement":				
+					complexity += entry.getValue();
+					break;
+				case "ForStatement":						
+					complexity += entry.getValue();
+					break;
+				case "IfStatement":							
+					complexity += entry.getValue();
+					break;
+				case "InfixAndOr":							
+					complexity += entry.getValue();
+					break;
+				case "SwitchCase":							
+					complexity += entry.getValue();
+					break;
+				case "WhileStatement":						
+					complexity += entry.getValue();
+					break;
 			}
 		}
 		
-		return complexity;
+		// account for ending return statement
+		
+		return complexity > 0 ? complexity : 0;
 	}
+	
+	public void printComplexity() {
+		System.out.println(this.name + " | " + this.getComplexity());
+	}
+	
 }
 
 public class MethodDeclaration__ {
@@ -102,7 +135,8 @@ public class MethodDeclaration__ {
 		if(methodDeclarationObjectList.size() > 0) {
 			System.out.println("--- Methods Declarations ---");
 			for(MethodDeclarationObject m : methodDeclarationObjectList) {
-				m.printEntity();
+				//m.printEntity();
+				m.printComplexity();
 			}
 			System.out.println();
 		}

@@ -12,6 +12,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.BreakStatement;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ConditionalExpression;
@@ -188,6 +189,10 @@ public class ASTWalker {
 				if(inMethod) {
 					fileModel.infixExpression__.addInfixExpression(node.getOperator().toString(), node.getLeftOperand().toString(), node.getRightOperand().toString(), currentClassStack.peek().getName().toString(), currentMethodStack.peek().getName().toString(), cu.getLineNumber(node.getLeftOperand().getStartPosition()), (cu.getColumnNumber(node.getLeftOperand().getStartPosition())));
 					addEntityToCounter("InfixExpression");
+					
+					if(node.getOperator().toString().equals("&&") || node.getOperator().toString().equals("||")) {
+						addEntityToCounter("InfixAndOr");
+					}
 				}
 
 				return true;
@@ -343,7 +348,8 @@ public class ASTWalker {
 							}
 
 							position.put(cu.getLineNumber(((SwitchCase) s).getStartPosition()), cu.getColumnNumber(((SwitchCase)s).getStartPosition()));
-							switchCaseMap.put(expression, position);
+							switchCaseMap.put(expression, position);							
+							addEntityToCounter("SwitchCase");
 						}
 					}
 
