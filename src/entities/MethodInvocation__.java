@@ -8,12 +8,14 @@ import java.util.LinkedHashMap;
 
 class MethodInvocationObject {
 	String name;
+	String fullyQualifiedName;
 	String parentClass;
 	List<Object> parameters;
 	Map<String, Map<Integer, Integer>> invocationClassAndPositions;
 
-	MethodInvocationObject(String n, String p, String classWhereMethodInvoked, List<Object> param, int l, int c) {
+	MethodInvocationObject(String n, String fqn, String p, String classWhereMethodInvoked, List<Object> param, int l, int c) {
 		name = n;
+		fullyQualifiedName = fqn;
 		parentClass = p;
 		Map<Integer, Integer> position = new TreeMap<>();
 		position.put(l, c);
@@ -67,8 +69,8 @@ public class MethodInvocation__ {
 		methodInvocationObjectList = new ArrayList<>();
 	}
 
-	public void addMethodInvocation(String name, String parentClass, String classWhereMethodInvoked, List<Object> parameters, int lineNumber, int columnNumber) {
-		MethodInvocationObject temp = new MethodInvocationObject(name, parentClass, classWhereMethodInvoked, parameters, lineNumber, columnNumber);
+	public void addMethodInvocation(String name, String fullyQualifiedName, String parentClass, String classWhereMethodInvoked, List<Object> parameters, int lineNumber, int columnNumber) {
+		MethodInvocationObject temp = new MethodInvocationObject(name, fullyQualifiedName, parentClass, classWhereMethodInvoked, parameters, lineNumber, columnNumber);
 
 		for(MethodInvocationObject obj : methodInvocationObjectList) {
 			if(temp.equals(obj)) {

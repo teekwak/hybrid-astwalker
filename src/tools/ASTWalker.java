@@ -109,7 +109,6 @@ public class ASTWalker {
 				}
 			}
 			
-			// done
 			public boolean visit(CatchClause node) {
 				if(inMethod) {
 					SimpleName name = node.getException().getName();
@@ -120,7 +119,6 @@ public class ASTWalker {
 				return true;
 			}
 
-			// done
 			public boolean visit(ConditionalExpression node){
 				if(inMethod) {
 					fileModel.conditionalExpression__.addConditionalExpression(node.getExpression().toString(), node.getElseExpression().toString(), node.getThenExpression().toString(), currentClassStack.peek().getName().toString(), currentMethodStack.peek().getName().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
@@ -130,7 +128,6 @@ public class ASTWalker {
 				return true;
 			}
 
-			// done
 			public boolean visit(DoStatement node) {
 				if(inMethod) {
 					fileModel.doStatement__.addDoStatement(node.getExpression().toString(), currentClassStack.peek().getName().toString(), currentMethodStack.peek().getName().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
@@ -140,7 +137,6 @@ public class ASTWalker {
 				return true;
 			}
 
-			// done
 			public boolean visit(EnhancedForStatement node) {
 				if(inMethod) {
 					SimpleName name = node.getParameter().getName();
@@ -151,7 +147,6 @@ public class ASTWalker {
 				return true;
 			}
 
-			// done 
 			public boolean visit(ForStatement node) {
 				if(inMethod) {
 					fileModel.forStatement__.addForStatement(node.getExpression().toString(), currentClassStack.peek().getName().toString(), currentMethodStack.peek().getName().toString(), false, cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
@@ -161,7 +156,6 @@ public class ASTWalker {
 				return true;
 			}
 
-			// done
 			public boolean visit(IfStatement node) {
 				if(inMethod) {
 					fileModel.ifStatement__.addIfStatement(node.getExpression().toString(), currentClassStack.peek().getName().toString(), currentMethodStack.peek().getName().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
@@ -176,14 +170,20 @@ public class ASTWalker {
 				return true;
 			}
 
-			// done
 			public boolean visit(ImportDeclaration node){
-				Name name = node.getName();				
-				fileModel.import__.addImport(name.toString(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+				Name name = node.getName();			
+				
+				String fullyQualifiedName;
+				try {
+					fullyQualifiedName = name.getFullyQualifiedName();
+				} catch (NullPointerException e) {
+					fullyQualifiedName = "";
+				}
+				
+				fileModel.import__.addImport(name.toString(), fullyQualifiedName, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 				return true;
 			}
 
-			// done
 			public boolean visit(InfixExpression node){
 				if(inMethod) {
 					fileModel.infixExpression__.addInfixExpression(node.getOperator().toString(), node.getLeftOperand().toString(), node.getRightOperand().toString(), currentClassStack.peek().getName().toString(), currentMethodStack.peek().getName().toString(), cu.getLineNumber(node.getLeftOperand().getStartPosition()), (cu.getColumnNumber(node.getLeftOperand().getStartPosition())));
@@ -193,18 +193,16 @@ public class ASTWalker {
 				return true;
 			}
 
-			// done
 			@SuppressWarnings("unchecked")
 			public boolean visit(MethodDeclaration node) {
 				currentMethodStack.push(node);
 				inMethod = true;
 
 				SimpleName name = node.getName();
-
+				
 				IMethodBinding binding = node.resolveBinding();
 				ITypeBinding className = binding.getDeclaringClass();
 
-				// is static and is abstract
 				boolean isStatic = false;
 				boolean isAbstract = false;
 				
@@ -217,7 +215,7 @@ public class ASTWalker {
 					isStatic = true;
 				}
 				
-				fileModel.methodDeclaration__.addMethodDeclaration(name.toString(), className.getName(), node.getReturnType2(), node.isVarargs(), node.isConstructor(), isStatic, isAbstract, (List<Object>)node.parameters(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+				fileModel.methodDeclaration__.addMethodDeclaration(name.toString(), name.getFullyQualifiedName().toString(), className.getName(), node.getReturnType2(), node.isVarargs(), node.isConstructor(), isStatic, isAbstract, (List<Object>)node.parameters(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 				fileModel.class__.addMethodDeclarationToClass(className.getName(), name.toString());
 				return true;
 			}
@@ -227,13 +225,19 @@ public class ASTWalker {
 				currentMethodStack.pop();
 			}
 
-			// done
 			@SuppressWarnings("unchecked")
 			public boolean visit(MethodInvocation node) {
 				
 				if(inMethod) {					
 					SimpleName name = node.getName();
-
+					String fullyQualifiedName;
+					
+					try {
+						fullyQualifiedName = name.getFullyQualifiedName();
+					} catch (NullPointerException e) {
+						fullyQualifiedName = "";
+					}
+					
 					IMethodBinding binding = node.resolveMethodBinding();
 					
 					String parentClass;
@@ -244,23 +248,40 @@ public class ASTWalker {
 						parentClass = "";
 					}
 					
-					fileModel.methodInvocation__.addMethodInvocation(name.toString(), parentClass, currentClassStack.peek().getName().toString(), node.arguments(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));	
+					fileModel.methodInvocation__.addMethodInvocation(name.toString(), fullyQualifiedName, parentClass, currentClassStack.peek().getName().toString(), node.arguments(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));	
 					addEntityToCounter("MethodInvocation");
 				}
 
 				return true;
 			}
 
-			// done
 			public boolean visit(PackageDeclaration node){
 				Name name = node.getName();
-				fileModel.package__.addPackage(name.toString(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+				
+				String fullyQualifiedName;
+				try {
+					fullyQualifiedName = name.getFullyQualifiedName();
+				} catch (NullPointerException e) {
+					fullyQualifiedName = "";
+				}
+				
+				fileModel.package__.addPackage(name.toString(), fullyQualifiedName, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 				return true;
 			}
 
 			public boolean visit(ReturnStatement node) {
-				String expression = node.getExpression().toString();
-				fileModel.returnStatement__.addReturnStatement(expression, currentClassStack.peek().getName().toString(), currentMethodStack.peek().getName().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
+				if(inMethod) {
+					String expression;
+					
+					try {
+						expression = node.getExpression().toString();
+					} catch (NullPointerException e) {
+						expression = "";
+					}
+					
+					fileModel.returnStatement__.addReturnStatement(expression, currentClassStack.peek().getName().toString(), currentMethodStack.peek().getName().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));					
+					addEntityToCounter("ReturnStatement");
+				}
 				return true;
 			}
 			
@@ -268,6 +289,13 @@ public class ASTWalker {
 			// done-ish. excluded qualifiedType, unionType, wildcardType
 			public boolean visit(SingleVariableDeclaration node) {				
 				SimpleName name = node.getName();
+				String fullyQualifiedName;
+				try {
+					fullyQualifiedName = name.getFullyQualifiedName();
+				} catch (NullPointerException e) {
+					fullyQualifiedName = "";
+				}
+				
 				String currentMethod;
 				
 				try {
@@ -277,19 +305,19 @@ public class ASTWalker {
 				}
 				
 				if(node.getType().isArrayType()) {
-					fileModel.array__.addArray(name.toString(), currentClassStack.peek().getName().toString(), currentMethod, node.getType(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					fileModel.array__.addArray(name.toString(), fullyQualifiedName, currentClassStack.peek().getName().toString(), currentMethod, node.getType(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 					addEntityToCounter("Array");
 				}
 				else if(node.getType().isParameterizedType()) {
-					fileModel.generics__.addGenerics(name.toString(), currentClassStack.peek().getName().toString(), currentMethod, node.getType(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					fileModel.generics__.addGenerics(name.toString(), fullyQualifiedName, currentClassStack.peek().getName().toString(), currentMethod, node.getType(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 					addEntityToCounter("Generics");
 				}
 				else if(node.getType().isPrimitiveType()) {
-					fileModel.primitive__.addPrimitive(name.toString(), currentClassStack.peek().getName().toString(), currentMethod, node.getType(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					fileModel.primitive__.addPrimitive(name.toString(), fullyQualifiedName, currentClassStack.peek().getName().toString(), currentMethod, node.getType(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 					addEntityToCounter("Primitive");
 				}
 				else if(node.getType().isSimpleType()) {
-					fileModel.simpleName__.addSimpleName(name.toString(), currentClassStack.peek().getName().toString(), currentMethod, node.getType(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					fileModel.simpleName__.addSimpleName(name.toString(), fullyQualifiedName, currentClassStack.peek().getName().toString(), currentMethod, node.getType(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 					addEntityToCounter("SimpleName");
 				}
 				else {
@@ -299,7 +327,6 @@ public class ASTWalker {
 				return true;
 			}
 
-			// done
 			public boolean visit(SwitchStatement node) {
 				if(inMethod) {
 					Map<String, Map<Integer, Integer>> switchCaseMap = new HashMap<>();
@@ -327,7 +354,6 @@ public class ASTWalker {
 				return true;
 			}
 
-			// done
 			public boolean visit(ThrowStatement node) {
 				if(inMethod) {
 					fileModel.throwStatement__.addThrowStatement(node.getExpression().toString(), currentClassStack.peek().getName().toString(), currentMethodStack.peek().getName().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
@@ -336,7 +362,6 @@ public class ASTWalker {
 				return true;
 			}
 
-			// done
 			@SuppressWarnings("unchecked")
 			public boolean visit(TryStatement node) {
 				if(inMethod) {
@@ -362,7 +387,6 @@ public class ASTWalker {
 				return true;
 			}
 
-			// done
 			public boolean visit(TypeDeclaration node) {
 				currentClassStack.push(node);
 
@@ -393,6 +417,13 @@ public class ASTWalker {
 			// done-ish. excluded qualifiedType, unionType, wildcardType
 			public boolean visit(VariableDeclarationFragment node) {
 				SimpleName name = node.getName();
+				String fullyQualifiedName;
+				try {
+					fullyQualifiedName = name.getFullyQualifiedName();
+				} catch (NullPointerException e) {
+					fullyQualifiedName = "";
+				}
+				
 				Type nodeType = ((FieldDeclaration) node.getParent()).getType();
 				String currentMethod;
 				
@@ -403,19 +434,19 @@ public class ASTWalker {
 				}
 				
 				if(nodeType.isArrayType()) {
-					fileModel.array__.addArray(name.toString(), currentClassStack.peek().getName().toString(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					fileModel.array__.addArray(name.toString(), fullyQualifiedName, currentClassStack.peek().getName().toString(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 					addEntityToCounter("Array");
 				}
 				else if(nodeType.isParameterizedType()) {
-					fileModel.generics__.addGenerics(name.toString(), currentClassStack.peek().getName().toString(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					fileModel.generics__.addGenerics(name.toString(), fullyQualifiedName, currentClassStack.peek().getName().toString(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 					addEntityToCounter("Generics");
 				}
 				else if(nodeType.isPrimitiveType()) {
-					fileModel.primitive__.addPrimitive(name.toString(), currentClassStack.peek().getName().toString(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					fileModel.primitive__.addPrimitive(name.toString(), fullyQualifiedName, currentClassStack.peek().getName().toString(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 					addEntityToCounter("Primitive");
 				}
 				else if(nodeType.isSimpleType()) {
-					fileModel.simpleName__.addSimpleName(name.toString(), currentClassStack.peek().getName().toString(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					fileModel.simpleName__.addSimpleName(name.toString(), fullyQualifiedName, currentClassStack.peek().getName().toString(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 					addEntityToCounter("SimpleName");
 				}
 				else {
@@ -428,7 +459,7 @@ public class ASTWalker {
 
 			// done-ish. excluded qualifiedType, unionType, wildcardType
 			public boolean visit(VariableDeclarationStatement node) {
-			
+				
 				Type nodeType = node.getType();
 
 				String currentMethod;
@@ -444,19 +475,19 @@ public class ASTWalker {
 					SimpleName name = ((VariableDeclarationFragment) v).getName();
 					
 					if(nodeType.isArrayType()) {
-						fileModel.array__.addArray(name.toString(), currentClassStack.peek().getName().toString(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+						fileModel.array__.addArray(name.toString(), "", currentClassStack.peek().getName().toString(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 						addEntityToCounter("Array");
 					}
 					else if(nodeType.isParameterizedType()) {
-						fileModel.generics__.addGenerics(name.toString(), currentClassStack.peek().getName().toString(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+						fileModel.generics__.addGenerics(name.toString(), "", currentClassStack.peek().getName().toString(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 						addEntityToCounter("Generics");
 					}
 					else if(nodeType.isPrimitiveType()) {
-						fileModel.primitive__.addPrimitive(name.toString(), currentClassStack.peek().getName().toString(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+						fileModel.primitive__.addPrimitive(name.toString(), "", currentClassStack.peek().getName().toString(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 						addEntityToCounter("Primitive");
 					}
 					else if(nodeType.isSimpleType()) {
-						fileModel.simpleName__.addSimpleName(name.toString(), currentClassStack.peek().getName().toString(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+						fileModel.simpleName__.addSimpleName(name.toString(), "", currentClassStack.peek().getName().toString(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 						addEntityToCounter("SimpleName");
 					}
 					else {
@@ -485,19 +516,19 @@ public class ASTWalker {
 						SimpleName name = ((VariableDeclarationFragment) v).getName();
 
 						if(nodeType.isArrayType()) {
-							fileModel.array__.addArray(name.toString(), currentClassStack.peek().getName().toString(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+							fileModel.array__.addArray(name.toString(), "", currentClassStack.peek().getName().toString(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 							addEntityToCounter("Array");
 						}
 						else if(nodeType.isParameterizedType()) {
-							fileModel.generics__.addGenerics(name.toString(), currentClassStack.peek().getName().toString(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+							fileModel.generics__.addGenerics(name.toString(), "", currentClassStack.peek().getName().toString(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 							addEntityToCounter("Generics");
 						}
 						else if(nodeType.isPrimitiveType()) {
-							fileModel.primitive__.addPrimitive(name.toString(), currentClassStack.peek().getName().toString(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+							fileModel.primitive__.addPrimitive(name.toString(), "", currentClassStack.peek().getName().toString(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 							addEntityToCounter("Primitive");
 						}
 						else if(nodeType.isSimpleType()) {
-							fileModel.simpleName__.addSimpleName(name.toString(), currentClassStack.peek().getName().toString(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+							fileModel.simpleName__.addSimpleName(name.toString(), "", currentClassStack.peek().getName().toString(), currentMethod, nodeType, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 							addEntityToCounter("SimpleName");
 						}
 						else {
@@ -509,7 +540,6 @@ public class ASTWalker {
 				return false; // does this stop from going to VariableDeclarationFragment?
 			}
 
-			// done
 			public boolean visit(WhileStatement node){
 				if(inMethod) {
 					fileModel.whileStatement__.addWhileStatement(node.getExpression().toString(), currentClassStack.peek().getName().toString(), currentMethodStack.peek().getName().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
@@ -518,7 +548,6 @@ public class ASTWalker {
 				return true;
 			}
 
-			// done
 			public boolean visit(WildcardType node) {
 				if(inMethod) {
 					fileModel.wildcard__.addWildcard(currentClassStack.peek().getName().toString(), currentMethodStack.peek().getName().toString(), ((ParameterizedType) node.getParent()).getType(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));

@@ -45,10 +45,17 @@ public class Example {
 		}
 		else if(i == 1) {
 			System.out.println("else if");
+			return;
 		}
 		else {
 			System.out.println("else");
+			return;
 		}
+		return;
+	}
+
+	public int returnOne() {
+		return 1;
 	}
 }
 

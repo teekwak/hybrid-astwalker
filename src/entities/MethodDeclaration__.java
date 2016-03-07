@@ -9,6 +9,7 @@ import org.eclipse.jdt.core.dom.Type;
 
 class MethodDeclarationObject {
 	String name;
+	String fullyQualifiedName;
 	String className;
 	Type returnType;
 	boolean isVarargs;
@@ -23,9 +24,10 @@ class MethodDeclarationObject {
 	
 	Map<String, Integer> entitiesInsideMethod;
 
-	MethodDeclarationObject(String n, String cn, Type t, boolean b, boolean constr, boolean stat, boolean abst, List<Object> p, int l, int c) {
+	MethodDeclarationObject(String n, String fqn, String cn, Type t, boolean b, boolean constr, boolean stat, boolean abst, List<Object> p, int l, int c) {
 		// if t == null, then probably constructor
 		name = n;
+		fullyQualifiedName = fqn;
 		className = cn;
 		returnType = t;
 		isVarargs = b;
@@ -92,8 +94,8 @@ public class MethodDeclaration__ {
 	}
 
 	// check that the class names and parameters are all different
-	public void addMethodDeclaration(String name, String className, Type returnType, boolean isVarargs, boolean isConstructor, boolean isStatic, boolean isAbstract, List<Object> parameters, int lineNumber, int columnNumber) {
-		methodDeclarationObjectList.add(new MethodDeclarationObject(name, className, returnType, isVarargs, isConstructor, isStatic, isAbstract, parameters, lineNumber, columnNumber));
+	public void addMethodDeclaration(String name, String fullyQualifiedName, String className, Type returnType, boolean isVarargs, boolean isConstructor, boolean isStatic, boolean isAbstract, List<Object> parameters, int lineNumber, int columnNumber) {
+		methodDeclarationObjectList.add(new MethodDeclarationObject(name, fullyQualifiedName, className, returnType, isVarargs, isConstructor, isStatic, isAbstract, parameters, lineNumber, columnNumber));
 	}
 	
 	public void printAllMethodDeclarations() {

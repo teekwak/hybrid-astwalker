@@ -7,14 +7,16 @@ import org.eclipse.jdt.core.dom.Type;
 
 class GenericsObject {
 	String name;
+	String fullyQualifiedName;
 	String className;
 	String methodName;
 	Type type;
 	int lineNumber;
 	int columnNumber;
 
-	GenericsObject(String n, String cn, String mn, Type t, int l, int c) {
+	GenericsObject(String n, String fqn, String cn, String mn, Type t, int l, int c) {
 		name = n;
+		fullyQualifiedName = fqn;
 		className = cn;
 		methodName = mn;
 		type = t;
@@ -37,8 +39,8 @@ public class Generics__ {
 		this.genericsObjectList = new ArrayList<>();
 	}
 
-	public void addGenerics(String name, String className, String methodName, Type type, int lineNumber, int columnNumber) {
-		genericsObjectList.add(new GenericsObject(name, className, methodName, type, lineNumber, columnNumber));
+	public void addGenerics(String name, String fullyQualifiedName, String className, String methodName, Type type, int lineNumber, int columnNumber) {
+		genericsObjectList.add(new GenericsObject(name, fullyQualifiedName, className, methodName, type, lineNumber, columnNumber));
 	}
 	
 	public void printAllGenerics() {

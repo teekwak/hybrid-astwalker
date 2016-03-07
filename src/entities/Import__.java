@@ -5,11 +5,13 @@ import java.util.ArrayList;
 
 class ImportObject {
 	String name;
+	String fullyQualifiedName;
 	int lineNumber;
 	int columnNumber;
 
-	ImportObject(String n, int l, int c) {
+	ImportObject(String n, String fqn, int l, int c) {
 		name = n;
+		fullyQualifiedName = fqn;
 		lineNumber = l;
 		columnNumber = c;
 	}
@@ -26,8 +28,8 @@ public class Import__ {
 		importObjectList = new ArrayList<>();
 	}
 
-	public void addImport(String name, int lineNumber, int columnNumber) {
-		importObjectList.add(new ImportObject(name, lineNumber, columnNumber));
+	public void addImport(String name, String fullyQualifiedName, int lineNumber, int columnNumber) {
+		importObjectList.add(new ImportObject(name, fullyQualifiedName, lineNumber, columnNumber));
 	}
 	
 	public void printAllImports() {

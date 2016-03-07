@@ -5,11 +5,13 @@ import java.util.ArrayList;
 
 class PackageObject {
 	String name;
+	String fullyQualifiedName;
 	int lineNumber;
 	int columnNumber;
 
-	PackageObject(String n, int l, int c) {
+	PackageObject(String n, String fqn, int l, int c) {
 		name = n;
+		fullyQualifiedName = fqn;
 		lineNumber = l;
 		columnNumber = c;
 	}
@@ -26,8 +28,8 @@ public class Package__ {
 		packageObjectList = new ArrayList<>();
 	}
 
-	public void addPackage(String name, int lineNumber, int columnNumber) {
-		packageObjectList.add(new PackageObject(name, lineNumber, columnNumber));
+	public void addPackage(String name, String fullyQualifiedName, int lineNumber, int columnNumber) {
+		packageObjectList.add(new PackageObject(name, fullyQualifiedName, lineNumber, columnNumber));
 	}
 	
 	public void printAllPackages() {

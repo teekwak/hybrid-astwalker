@@ -7,14 +7,16 @@ import org.eclipse.jdt.core.dom.Type;
 
 class ArrayObject {
 	String name;
+	String fullyQualifiedName;
 	String className;
 	String methodName;
 	Type type;
 	int lineNumber;
 	int columnNumber;
 
-	ArrayObject(String n, String cn, String mn, Type t, int l, int c) {
+	ArrayObject(String n, String fqn, String cn, String mn, Type t, int l, int c) {
 		name = n;
+		fullyQualifiedName = fqn;
 		type = t;
 		className = cn;
 		methodName = mn;
@@ -36,8 +38,8 @@ public class Array__ {
 		this.arrayObjectList = new ArrayList<>();
 	}
 
-	public void addArray(String name, String className, String methodName, Type type, int lineNumber, int columnNumber) {
-		arrayObjectList.add(new ArrayObject(name, className, methodName, type, lineNumber, columnNumber));
+	public void addArray(String name, String fullyQualifiedName, String className, String methodName, Type type, int lineNumber, int columnNumber) {
+		arrayObjectList.add(new ArrayObject(name, fullyQualifiedName, className, methodName, type, lineNumber, columnNumber));
 	}
 
 	public void printAllArrays() {

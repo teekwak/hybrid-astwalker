@@ -8,14 +8,16 @@ import org.eclipse.jdt.core.dom.Type;
 class PrimitiveObject {
 
 	String name;
+	String fullyQualifiedName;
 	String className;
 	String methodName;
 	Type type;
 	int lineNumber;
 	int columnNumber;
 
-	PrimitiveObject(String n, String cn, String mn, Type t, int l, int c) {
+	PrimitiveObject(String n, String fqn, String cn, String mn, Type t, int l, int c) {
 		name = n;
+		fullyQualifiedName = fqn;
 		className = cn;
 		methodName = mn;
 		type = t;
@@ -38,8 +40,8 @@ public class Primitive__ {
 		this.primitiveObjectList = new ArrayList<>();
 	}
 
-	public void addPrimitive(String name, String className, String methodName, Type type, int lineNumber, int columnNumber) {
-		primitiveObjectList.add(new PrimitiveObject(name, className, methodName, type, lineNumber, columnNumber));
+	public void addPrimitive(String name, String fullyQualifiedName, String className, String methodName, Type type, int lineNumber, int columnNumber) {
+		primitiveObjectList.add(new PrimitiveObject(name, fullyQualifiedName, className, methodName, type, lineNumber, columnNumber));
 	}
 
 	public void printAllPrimitives() {

@@ -10,14 +10,16 @@ import org.eclipse.jdt.core.dom.Type;
 
 class SimpleNameObject {
 	String variableName;
+	String fullyQualifiedName;
 	String className;
 	String methodName;
 	Type type;
 	int lineNumber;
 	int columnNumber;
 
-	SimpleNameObject(String v, String cn, String mn, Type t, int l, int c) {
+	SimpleNameObject(String v, String fqn, String cn, String mn, Type t, int l, int c) {
 		variableName = v;
+		fullyQualifiedName = fqn;
 		className = cn;
 		methodName = mn;
 		type = t;
@@ -39,8 +41,8 @@ public class SimpleName__ {
 		this.simpleNameObjectList = new ArrayList<>();
 	}
 
-	public void addSimpleName(String variableName, String className, String methodName, Type type, int lineNumber, int columnNumber) {
-		simpleNameObjectList.add(new SimpleNameObject(variableName, className, methodName, type, lineNumber, columnNumber));
+	public void addSimpleName(String variableName, String fullyQualifiedName, String className, String methodName, Type type, int lineNumber, int columnNumber) {
+		simpleNameObjectList.add(new SimpleNameObject(variableName, fullyQualifiedName, className, methodName, type, lineNumber, columnNumber));
 	}
 	
 	public void printAllSimpleNames() {
