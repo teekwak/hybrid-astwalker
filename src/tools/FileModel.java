@@ -14,6 +14,7 @@ import entities.MethodDeclaration__;
 import entities.MethodInvocation__;
 import entities.Package__;
 import entities.Primitive__;
+import entities.ReturnStatement__;
 import entities.SimpleName__;
 import entities.SwitchStatement__;
 import entities.ThrowStatement__;
@@ -43,6 +44,7 @@ public class FileModel {
 	MethodInvocation__ methodInvocation__;
 	Package__ package__;
 	Primitive__ primitive__;
+	ReturnStatement__ returnStatement__;
 	ThrowStatement__ throwStatement__;
 	TryStatement__ tryStatement__;
 	SimpleName__ simpleName__;
@@ -66,6 +68,7 @@ public class FileModel {
 		this.methodInvocation__ = new MethodInvocation__();
 		this.package__ = new Package__();
 		this.primitive__ = new Primitive__();
+		this.returnStatement__ = new ReturnStatement__();
 		this.simpleName__ = new SimpleName__();
 		this.switchStatement__ = new SwitchStatement__();
 		this.throwStatement__ = new ThrowStatement__();
@@ -134,6 +137,10 @@ public class FileModel {
 		return this.primitive__;
 	}
 	
+	public ReturnStatement__ getReturnStatements() {
+		return this.returnStatement__;
+	}
+	
 	public SimpleName__ getSimpleNames() {
 		return this.simpleName__;
 	}
@@ -181,6 +188,7 @@ public class FileModel {
 		this.methodInvocation__.printAllMethodInvocations();
 		this.package__.printAllPackages();
 		this.primitive__.printAllPrimitives();
+		this.returnStatement__.printAllReturnStatements();
 		this.simpleName__.printAllSimpleNames();
 		this.switchStatement__.printAllSwitchStatements();
 		this.throwStatement__.printAllThrowStatements();
@@ -218,7 +226,9 @@ public class FileModel {
 		
 		//File inputFolder = new File("/home/kwak/Desktop/ReSender");
 		
-		File inputFolder = new File("/home/kwak/Desktop/ReSender/src/com/gilevich/resender/GMailSender.java");
+		//File inputFolder = new File("/home/kwak/Desktop/ReSender/src/com/gilevich/resender/GMailSender.java");
+		
+		File inputFolder = new File("/home/kwak/Documents/workspace/ASTWalker/src/exampleCode/Example.java");
 		
 		traverseUntilJava(inputFolder);
 	}

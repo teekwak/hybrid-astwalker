@@ -30,6 +30,7 @@ import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
 import org.eclipse.jdt.core.dom.ParameterizedType;
+import org.eclipse.jdt.core.dom.ReturnStatement;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.SwitchCase;
@@ -165,6 +166,11 @@ public class ASTWalker {
 				if(inMethod) {
 					fileModel.ifStatement__.addIfStatement(node.getExpression().toString(), currentClassStack.peek().getName().toString(), currentMethodStack.peek().getName().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
 					addEntityToCounter("IfStatement");
+				
+					// +1 to complexity for else statement
+					if(node.getElseStatement() != null) {
+						//addEntityToCounter("IfStatement");
+					}
 				}
 
 				return true;
@@ -252,6 +258,12 @@ public class ASTWalker {
 				return true;
 			}
 
+			public boolean visit(ReturnStatement node) {
+				String expression = node.getExpression().toString();
+				fileModel.returnStatement__.addReturnStatement(expression, currentClassStack.peek().getName().toString(), currentMethodStack.peek().getName().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
+				return true;
+			}
+			
 			// called on parameters of function
 			// done-ish. excluded qualifiedType, unionType, wildcardType
 			public boolean visit(SingleVariableDeclaration node) {				

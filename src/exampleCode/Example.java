@@ -37,6 +37,23 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+public class Example {
+	public static void main(String[] args) {
+		int i = 0;
+		if(i == 0) {
+			System.out.println("if");
+		}
+		else if(i == 1) {
+			System.out.println("else if");
+		}
+		else {
+			System.out.println("else");
+		}
+	}
+}
+
+/*
+
 interface someInterface {
 	public double abstractAction();
 }
@@ -202,3 +219,5 @@ public class Example {
 		
 	}
 }
+
+*/

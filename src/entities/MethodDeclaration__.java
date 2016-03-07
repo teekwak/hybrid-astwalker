@@ -70,6 +70,18 @@ class MethodDeclarationObject {
 		
 		return true;
 	}
+
+	public int getComplexity() {
+		int complexity = 1;
+	
+		for(Map.Entry<String, Integer> entry : entitiesInsideMethod.entrySet()) {
+			if(entry.getKey().equals("IfStatement")) {
+				complexity++;
+			}
+		}
+		
+		return complexity;
+	}
 }
 
 public class MethodDeclaration__ {
