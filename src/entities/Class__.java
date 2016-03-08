@@ -25,6 +25,7 @@ class ClassObject {
 	int lineNumber;
 	int columnNumber;
 	Map<String, Integer> entitiesInsideClass;
+	Map<String, Integer> entitiesInsideMethod;
 
 	ClassObject(String n, int l, int c) {
 		name = n;
@@ -32,6 +33,7 @@ class ClassObject {
 		columnNumber = c;
 		methodDeclarations = new ArrayList<>();
 		entitiesInsideClass = new HashMap<>();
+		entitiesInsideMethod = new HashMap<>();
 	}
 
 	void printEntity() {
@@ -56,6 +58,54 @@ class ClassObject {
 			System.out.println("\t\tNone");
 		}
 		System.out.println();
+	}
+	
+	int getComplexity() {
+		int complexity = 0;
+		
+		try {
+			complexity += entitiesInsideClass.get("MethodDeclaration");
+		} catch (NullPointerException e) {
+			
+		}
+		
+		for(Map.Entry<String, Integer> entry : entitiesInsideMethod.entrySet()) {			
+			switch(entry.getKey()) {
+				case "CatchClause":							
+					complexity += entry.getValue();
+					break;	
+				case "ConditionalExpression":				
+					complexity += entry.getValue();
+					break;
+				case "DoStatement":							
+					complexity += entry.getValue();
+					break;	
+				case "EnhancedForStatement":				
+					complexity += entry.getValue();
+					break;
+				case "ForStatement":						
+					complexity += entry.getValue();
+					break;
+				case "IfStatement":							
+					complexity += entry.getValue();
+					break;
+				case "InfixAndOr":							
+					complexity += entry.getValue();
+					break;
+				case "SwitchCase":							
+					complexity += entry.getValue();
+					break;
+				case "WhileStatement":						
+					complexity += entry.getValue();
+					break;
+			}
+		}
+		
+		return complexity;
+	}
+	
+	void printComplexity() {
+		System.out.println(this.name + " | " + this.getComplexity());
 	}
 }
 
@@ -100,6 +150,20 @@ public class Class__ {
 		}
 	}
 	
+	public void printAllClassComplexities() {
+		System.out.println("--- Class Complexities ---");
+
+		if(classObjectList.size() > 0) {
+			for(ClassObject obj : classObjectList) {
+				obj.printComplexity();
+			}
+			System.out.println();
+		}
+		else {
+			System.out.println("None\n");
+		}
+	}
+	
 	public void printAllExtends() {
 		System.out.println("--- Extends ---");
 
@@ -114,6 +178,7 @@ public class Class__ {
 		}
 	}
 	
+	// adds variables outside of methods
 	public void addOneToCounter(String className, String entity) {
 		for(ClassObject c : classObjectList) {
 			if(c.name.equals(className)) {
@@ -122,6 +187,20 @@ public class Class__ {
 				}
 				else {
 					c.entitiesInsideClass.put(entity, 1);	
+				}
+			}
+		}
+	}
+	
+	// adds variables inside of methods
+	public void addOneToMethodCounter(String className, String entity) {
+		for(ClassObject c : classObjectList) {
+			if(c.name.equals(className)) {
+				if(c.entitiesInsideMethod.get(entity) != null) {
+					c.entitiesInsideMethod.put(entity, c.entitiesInsideMethod.get(entity) + 1);
+				}
+				else {
+					c.entitiesInsideMethod.put(entity, 1);	
 				}
 			}
 		}

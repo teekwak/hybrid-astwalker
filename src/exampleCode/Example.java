@@ -46,6 +46,16 @@ public class Example {
 	public int returnOne() {
 		return 1;
 	}
+	
+	public void printLine() {
+		return;
+	}
+
+	class Another {
+		public double num() {
+			return 1.2;
+		}
+	}
 }
 
 /*

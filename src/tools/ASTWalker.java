@@ -12,7 +12,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTVisitor;
-import org.eclipse.jdt.core.dom.BreakStatement;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ConditionalExpression;
@@ -104,6 +103,7 @@ public class ASTWalker {
 			public void addEntityToCounter(String entity) {
 				if(!currentMethodStack.isEmpty()) {
 					fileModel.methodDeclaration__.addOneToCounter(currentMethodStack.peek().getName().toString(), currentMethodStack.peek().parameters(), entity);					
+					fileModel.class__.addOneToMethodCounter(currentClassStack.peek().getName().toString(), entity);
 				}
 				else {
 					fileModel.class__.addOneToCounter(currentClassStack.peek().getName().toString(), entity);
@@ -200,6 +200,7 @@ public class ASTWalker {
 
 			@SuppressWarnings("unchecked")
 			public boolean visit(MethodDeclaration node) {
+				addEntityToCounter("MethodDeclaration");
 				currentMethodStack.push(node);
 				inMethod = true;
 

@@ -215,6 +215,8 @@ public class FileModel {
 				
 				//fileModel.class__.printAllClasses();
 				
+				fileModel.class__.printAllClassComplexities();
+				
 				fileModel.methodDeclaration__.printAllMethodDeclarationComplexities();	
 								
 			}
