@@ -4,6 +4,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.EmptyStackException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -106,7 +107,9 @@ public class ASTWalker {
 					fileModel.class__.addOneToMethodCounter(currentClassStack.peek().getName().toString(), entity);
 				}
 				else {
-					fileModel.class__.addOneToCounter(currentClassStack.peek().getName().toString(), entity);
+					for(TypeDeclaration t : currentClassStack) {
+						fileModel.class__.addOneToCounter(t.getName().toString(), entity);
+					}
 				}
 			}
 			
