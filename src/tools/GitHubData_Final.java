@@ -1,7 +1,6 @@
 package tools;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -95,7 +94,6 @@ public class GitHubData_Final {
 		String directoryLocation = args[0];
 		
 		Git git = Git.open( new File (directoryLocation + ".git") );
-
 		GitHubData gitHubData = new GitHubData();
 
 		List<RevCommit> commitHistory = new ArrayList<>();
