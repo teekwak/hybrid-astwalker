@@ -177,9 +177,7 @@ public class GitHubData {
 		}
 	}
 	
-	public void runGitCommand(String directoryLocation, Map<String, String> hashCodePairs) throws IOException {	
-		System.out.println(directoryLocation);
-		
+	public void runGitCommand(String directoryLocation, Map<String, String> hashCodePairs) throws IOException {			
 		for(Map.Entry<String, String> entry : hashCodePairs.entrySet()) {								
 			ProcessBuilder pb = new ProcessBuilder("git", "diff-tree", "--numstat", entry.getKey(), entry.getValue());
 			pb.directory( new File(directoryLocation) );
