@@ -25,6 +25,7 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.EmptyTreeIterator;
+import org.eclipse.jgit.util.FileUtils;
 
 public class GitHubData {
 
@@ -176,12 +177,40 @@ public class GitHubData {
 		}
 	}
 	
-	
+	public void runGitCommand(String directoryLocation, Map<String, String> hashCodePairs) throws IOException {	
+		System.out.println(directoryLocation);
+		
+		for(Map.Entry<String, String> entry : hashCodePairs.entrySet()) {								
+			ProcessBuilder pb = new ProcessBuilder("git", "diff-tree", "--numstat", entry.getKey(), entry.getValue());
+			pb.directory( new File(directoryLocation) );
+		
+			Process proc = pb.start();
+			
+			InputStreamReader isr = new InputStreamReader(proc.getInputStream());
+			BufferedReader br = new BufferedReader(isr);
+			
+			String s = null;
+			while((s = br.readLine()) != null) {
+				String[] parts = s.split("\t");
+				
+				if(parts.length == 3) { // for some reason, git diff-tree --numstat --root $3 also returns hash code of commit
+					System.out.println(parts[2] + "\nLines inserted:\t" + parts[0] + "\nLines deleted:\t" + parts[1]);	
+				}
+			}
+			
+			br.close();
+			isr.close();
+			proc.destroy();
+		}
+		
+	}
 
 	
 	public static void main(String[] args) throws IOException, NoWorkTreeException, GitAPIException {	
 		String directoryLocation = "/home/kwak/Desktop/jgit-test/";
 
+		//String directoryLocation = "/home/kwak/Desktop/didactic-octo-capsicum/";
+		
 		Git git = Git.open( new File (directoryLocation + ".git") );
 
 		GitHubData gitHubData = new GitHubData();
@@ -198,9 +227,10 @@ public class GitHubData {
 		}
 			
 		gitHubData.addHashCodePairsToMap(commitHistory);
-		gitHubData.runBashScript(directoryLocation, gitHubData.hashCodePairs);	
-			
-		git.close();
+		//gitHubData.runBashScript(directoryLocation, gitHubData.hashCodePairs);	
+		gitHubData.runGitCommand(directoryLocation, gitHubData.hashCodePairs);
 		
+		git.close();
+	
 	}
 }
