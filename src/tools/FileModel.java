@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.eclipse.core.runtime.CoreException;
+import tools.ASTWalker;
 
 public class FileModel {
 

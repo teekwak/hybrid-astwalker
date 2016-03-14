@@ -94,7 +94,7 @@ public class GitHubData_Final {
 		String directoryLocation = args[0];
 		
 		Git git = Git.open( new File (directoryLocation + ".git") );
-		GitHubData gitHubData = new GitHubData();
+		GitHubData_Final gitHubData = new GitHubData_Final();
 
 		List<RevCommit> commitHistory = new ArrayList<>();
 		for(RevCommit commit : git.log().call()) {
