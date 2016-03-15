@@ -39,6 +39,9 @@ public class ASTWalkerAndGitData {
 	 * fileModel holds all AST information
 	 * 
 	 * gitData.javaFileList has a list of Java file objects with data on each commit
+	 * gitData.getCommitDataPerFile() creates commit objects
+	 * gitData.addHashCodePairsToMap() populates hash codes
+	 * gitData.getDiff() gets insertions and deletions for all commits
 	 */
 	public static void runASTandGitData(File parentNode, String topDirectoryLocation) throws IOException, CoreException, NoHeadException, GitAPIException {
 		FileModel fileModel = new FileModel();
@@ -53,13 +56,8 @@ public class ASTWalkerAndGitData {
 		}
 		Collections.reverse(commitHistory);
 		
-		// create commit objects here
 		gitData.getCommitDataPerFile(topDirectoryLocation, parentNode.getAbsolutePath());
-		
-		// populate hash codes
 		gitData.addHashCodePairsToMap(commitHistory);
-		
-		// get insertions and deletions count
 		gitData.getDiff(topDirectoryLocation, gitData.hashCodePairs);
 		
 		git.close();
@@ -74,9 +72,7 @@ public class ASTWalkerAndGitData {
 	}
 	
 	public static void main(String[] args) throws IOException, CoreException, NoHeadException, GitAPIException {
-		// String directoryLocation = args[0];
-				
-		String topDirectoryLocation = "/home/kwak/Desktop/jgit-test/";
+		String topDirectoryLocation = args[0];				
 		File inputFolder = new File( topDirectoryLocation );
 		traverseUntilJava(inputFolder, topDirectoryLocation);
 	}
