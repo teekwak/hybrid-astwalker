@@ -26,7 +26,7 @@ public class ASTWalkerTest {
 	private static FileModel fileModel;
 
 	public ASTWalkerTest() throws IOException, CoreException {		
-		String fileLocation = "/home/kwak/Desktop/ReSender/src/com/gilevich/resender/GMailSender.java";
+		String fileLocation = "src/com/gilevich/resender/GMailSender.java";
 		
 		//String fileLocation = "/home/kwak/Documents/workspace/ASTWalker/src/exampleCode/Example.java";
 		
