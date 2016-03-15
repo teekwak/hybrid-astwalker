@@ -29,7 +29,6 @@ public class ASTWalkerAndGitData {
 		}
 		else {
 			if(parentNode.getName().endsWith(".java")) {	
-				// AST model for each file created here
 				runASTandGitData(parentNode, topDirectoryLocation);
 			}
 		}
