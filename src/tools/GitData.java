@@ -39,16 +39,6 @@ class CommitData {
 		date = d;
 		message = m;		
 	}
-	
-	CommitData(String h, String a, String e, String d, String m, int i, int del) {
-		hashCode = h;
-		author = a;
-		email = e;
-		date = d;
-		message = m;
-		insertions = i;
-		deletions = del;
-	}
 }
 
 class JavaFile {
@@ -111,7 +101,11 @@ public class GitData {
 		}			
 	}
 	
-	public void getDiff(String directoryLocation, Map<String, String> hashCodePairs) throws IOException {			
+	/*
+	 * gets insertions and deletions for all commits
+	 * parses and adds insertions/deletions based on hash code and file name
+	 */
+	public void getDiff(String directoryLocation, Map<String, String> hashCodePairs) throws IOException {					
 		for(Map.Entry<String, String> entry : hashCodePairs.entrySet()) {								
 			ProcessBuilder pb = new ProcessBuilder("git", "diff-tree", "--numstat", entry.getKey(), entry.getValue(), directoryLocation);
 			pb.directory( new File(directoryLocation) );
@@ -126,7 +120,18 @@ public class GitData {
 					String[] parts = s.split("\t");
 					
 					if(parts.length == 3) { // for some reason, git diff-tree --numstat --root $3 also returns hash code of commit
-						System.out.println(parts[2] + "\nLines inserted:\t" + parts[0] + "\nLines deleted:\t" + parts[1]);	
+						String[] nameParts = parts[2].split("/"); 
+					
+						for(JavaFile j : javaFileList) {
+							if(j.name.equals(nameParts[nameParts.length - 1])) {
+								for(CommitData c : j.commitDataList) {
+									if(c.hashCode.equals(entry.getValue())) {
+										c.insertions = Integer.parseInt(parts[0]);
+										c.deletions = Integer.parseInt(parts[1]);
+									}
+								}
+							}
+						}
 					}
 				}
 			}
@@ -138,8 +143,10 @@ public class GitData {
 	}
 
 	public void getCommitDataPerFile(String directoryLocation, String javaFileName) throws IOException {
-		JavaFile javaFileObject = new JavaFile(javaFileName);
-			
+		String[] name = javaFileName.split("/");
+		
+		JavaFile javaFileObject = new JavaFile(name[name.length - 1]);
+				
 		File dir = new File(directoryLocation);
 		
 		// get number of lines in a file
@@ -179,13 +186,12 @@ public class GitData {
 		proc2.destroy();
 		
 		// get all commits of a single file
-		
-		ProcessBuilder pb = new ProcessBuilder("git", "log", "--follow", javaFileName);
-		pb.directory(new File(directoryLocation));
+		ProcessBuilder pb3 = new ProcessBuilder("git", "log", "--follow", javaFileName);
+		pb3.directory(dir);
 			
-		Process proc = pb.start();
-		InputStreamReader isr = new InputStreamReader(proc.getInputStream());
-		BufferedReader br = new BufferedReader(isr);
+		Process proc3 = pb3.start();
+		InputStreamReader isr3 = new InputStreamReader(proc3.getInputStream());
+		BufferedReader br3 = new BufferedReader(isr3);
 						
 		List<String> hashCode = new ArrayList<>();
 		List<String> author = new ArrayList<>();
@@ -194,7 +200,7 @@ public class GitData {
 		List<String> message = new ArrayList<>();
 			
 		String s = null;
-		while((s = br.readLine()) != null) {
+		while((s = br3.readLine()) != null) {
 				
 			if(s.startsWith("commit")) {
 				hashCode.add(s.split(" ")[1]);
@@ -234,14 +240,14 @@ public class GitData {
 
 		javaFileList.add(javaFileObject);
 			
-		br.close();
-		isr.close();
-		proc.destroy();	
+		br3.close();
+		isr3.close();
+		proc3.destroy();	
 	}
 	
 	public static void main(String[] args) throws IOException, NoWorkTreeException, GitAPIException {	
 		//String directoryLocation = args[0];
-		
+		/*
 		String directoryLocation = "/home/kwak/Desktop/jgit-test/";
 		
 		Git git = Git.open( new File (directoryLocation + ".git") );
@@ -263,5 +269,6 @@ public class GitData {
 		gitData.getDiff(directoryLocation, gitData.hashCodePairs);
 		
 		git.close();	
+		*/
 	}
 }
