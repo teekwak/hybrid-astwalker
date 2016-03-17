@@ -62,6 +62,10 @@ class MethodDeclarationObject {
 			return false;
 		}
 		
+		if(this.parameterTypes.size() != pT.size()) {
+			return false;
+		}
+				
 		for(int i = 0; i < pT.size(); i++) {
 			String[] parts = pT.get(i).toString().split(" ");
 
