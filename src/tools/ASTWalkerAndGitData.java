@@ -41,11 +41,22 @@ public class ASTWalkerAndGitData {
 	 * gitData.getCommitDataPerFile() creates commit objects
 	 * gitData.addHashCodePairsToMap() populates hash codes
 	 * gitData.getDiff() gets insertions and deletions for all commits
+	 * 
+	 * to get the insertions/deletions at each commit, stored in CommitData object
+	 * 
+	 * for(JavaFile j : gitData.javaFileList) {
+	 *     for(CommitData c : j.commitDataList) {
+	 *         System.out.println(j.name + " +" + c.insertions + " -" + c.deletions);
+	 *     }
+	 * }
+	 * 
 	 */
 	public static void runASTandGitData(File parentNode, String topDirectoryLocation) throws IOException, CoreException, NoHeadException, GitAPIException {
 		FileModel fileModel = new FileModel();
 		fileModel = fileModel.parseDeclarations(parentNode.getAbsolutePath());
 			
+		fileModel.printEverything();
+		
 		GitData gitData = new GitData();
 		Git git = Git.open( new File (topDirectoryLocation + ".git") );
 		
@@ -60,18 +71,12 @@ public class ASTWalkerAndGitData {
 		gitData.getDiff(topDirectoryLocation, gitData.hashCodePairs);
 		
 		git.close();
-		
-		/*
-		for(JavaFile j : gitData.javaFileList) {
-			for(CommitData c : j.commitDataList) {
-				System.out.println(j.name + " +" + c.insertions + " -" + c.deletions);
-			}
-		}
-		*/
 	}
 	
 	public static void main(String[] args) throws IOException, CoreException, NoHeadException, GitAPIException {
-		String topDirectoryLocation = args[0];				
+		//String topDirectoryLocation = args[0];
+		String topDirectoryLocation = "/home/kwak/Desktop/jabber-plugin/";
+		
 		File inputFolder = new File( topDirectoryLocation );
 		traverseUntilJava(inputFolder, topDirectoryLocation);
 	}

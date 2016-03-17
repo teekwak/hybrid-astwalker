@@ -244,31 +244,4 @@ public class GitData {
 		isr3.close();
 		proc3.destroy();	
 	}
-	
-	public static void main(String[] args) throws IOException, NoWorkTreeException, GitAPIException {	
-		//String directoryLocation = args[0];
-		/*
-		String directoryLocation = "/home/kwak/Desktop/jgit-test/";
-		
-		Git git = Git.open( new File (directoryLocation + ".git") );
-				
-		GitData gitData = new GitData();
-
-		
-		List<RevCommit> commitHistory = new ArrayList<>();
-		for(RevCommit commit : git.log().call()) {
-			commitHistory.add(commit);
-		}
-		Collections.reverse(commitHistory);
-			
-		for(RevCommit commit : commitHistory) {
-			gitData.commitObjectList.add(new CommitObject(getAuthorOfCommit(commit), getAuthorEmailOfCommit(commit), getHashCodeOfCommit(commit), getCommitMessage(commit), formatDate(getDateOfCommit(commit))));
-		}
-			
-		gitData.addHashCodePairsToMap(commitHistory);
-		gitData.getDiff(directoryLocation, gitData.hashCodePairs);
-		
-		git.close();	
-		*/
-	}
 }

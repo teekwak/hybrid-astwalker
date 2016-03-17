@@ -197,43 +197,4 @@ public class FileModel {
 		this.whileStatement__.printAllWhileStatements();
 		this.wildcard__.printAllWildcards();
 	}
-	
-	public static void traverseUntilJava(File parentNode) throws IOException, CoreException {
-		if(parentNode.isDirectory()) {
-			File childNodes[] = parentNode.listFiles();
-						
-			for(File c : childNodes) {
-				if(!c.getName().startsWith(".")) {
-					traverseUntilJava(c);
-				}
-			}
-		}
-		else {
-			if(parentNode.getName().endsWith(".java")) {						
-				FileModel fileModel = new FileModel();
-				
-				fileModel = fileModel.parseDeclarations(parentNode.getAbsolutePath());
-				
-				//fileModel.class__.printAllClasses();
-				
-				fileModel.class__.printAllClassComplexities();
-				
-				fileModel.methodDeclaration__.printAllMethodDeclarationComplexities();	
-								
-			}
-		}
-	}
-	
-	public static void main(String[] args) throws IOException, CoreException{
-
-		//File inputFolder = new File(args[0]);
-		
-		//File inputFolder = new File("/home/kwak/Desktop/ReSender");
-		
-		File inputFolder = new File("src/exampleCode/GMailSender.java");
-		
-		//File inputFolder = new File("/home/kwak/Documents/workspace/ASTWalker/src/exampleCode/Example.java");
-		
-		traverseUntilJava(inputFolder);
-	}
 }
