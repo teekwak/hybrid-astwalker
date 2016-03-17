@@ -45,6 +45,22 @@ import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
 import org.eclipse.jdt.core.dom.WildcardType;
 
+import entities.Entity;
+
+class MethodDeclarationObject implements Entity {
+
+	public MethodDeclarationObject(String string, String string2, String name, Type returnType2, boolean varargs,
+			boolean constructor, boolean isStatic, boolean isAbstract, List<Object> parameters, int lineNumber,
+			int columnNumber) {
+		// TODO Auto-generated constructor stub
+	}
+	
+}
+
+class ClassObject implements Entity {
+	
+}
+
 /**
  * Walks Java source code and parses constructs
  *
@@ -53,8 +69,7 @@ import org.eclipse.jdt.core.dom.WildcardType;
 public class ASTWalker {
 
 	public FileModel fileModel;
-	public Stack<TypeDeclaration> currentClassStack = new Stack<>();
-	public Stack<MethodDeclaration> currentMethodStack = new Stack<>();
+	public Stack<Entity> entityStack = new Stack<>();
 	public boolean inMethod = false;
 
 	/**
@@ -223,14 +238,17 @@ public class ASTWalker {
 					isStatic = true;
 				}
 				
-				fileModel.methodDeclaration__.addMethodDeclaration(name.toString(), name.getFullyQualifiedName().toString(), className.getName(), node.getReturnType2(), node.isVarargs(), node.isConstructor(), isStatic, isAbstract, (List<Object>)node.parameters(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
-				fileModel.class__.addMethodDeclarationToClass(className.getName(), name.toString());
+				//fileModel.methodDeclaration__.addMethodDeclaration(name.toString(), name.getFullyQualifiedName().toString(), className.getName(), node.getReturnType2(), node.isVarargs(), node.isConstructor(), isStatic, isAbstract, (List<Object>)node.parameters(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+				//fileModel.class__.addMethodDeclarationToClass(className.getName(), name.toString());
+				
+				entityStack.push(new MethodDeclarationObject(name.toString(), name.getFullyQualifiedName().toString(), className.getName(), node.getReturnType2(), node.isVarargs(), node.isConstructor(), isStatic, isAbstract, (List<Object>)node.parameters(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition())));
 				return true;
 			}
 
 			public void endVisit(MethodDeclaration node) {
 				inMethod = false;
 				currentMethodStack.pop();
+				fileModel.class__.addMethodDeclarationToClass(entityStack.pop());
 			}
 
 			@SuppressWarnings("unchecked")
@@ -398,10 +416,12 @@ public class ASTWalker {
 
 			public boolean visit(TypeDeclaration node) {
 				currentClassStack.push(node);
-
+				// create class object
+				
 				if(!node.isInterface()) {
 					fileModel.class__.addClass(node.getName().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
-
+					
+					
 					if(node.getSuperclassType() != null) {
 						fileModel.class__.addExtends(node.getSuperclassType().toString(), cu.getLineNumber(node.getStartPosition()));
 					}
@@ -415,12 +435,14 @@ public class ASTWalker {
 				else {
 					fileModel.interface__.addInterface(node.getName().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
 				}
-
+				
+				// push class object to entity stack here because interfaces have stuff in them too
 				return true;
 			}
 
 			public void endVisit(TypeDeclaration node) {
 				currentClassStack.pop();
+				// add class object to class__ and pop entityStack at the same time
 			}
 
 			// done-ish. excluded qualifiedType, unionType, wildcardType
@@ -551,7 +573,7 @@ public class ASTWalker {
 
 			public boolean visit(WhileStatement node){
 				if(inMethod) {
-					fileModel.whileStatement__.addWhileStatement(node.getExpression().toString(), currentClassStack.peek().getName().toString(), currentMethodStack.peek().getName().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
+					fileModel.whileStatement__.addWhileStatement(node.getExpression().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
 					addEntityToCounter("WhileStatement");
 				}
 				return true;
@@ -559,7 +581,7 @@ public class ASTWalker {
 
 			public boolean visit(WildcardType node) {
 				if(inMethod) {
-					fileModel.wildcard__.addWildcard(currentClassStack.peek().getName().toString(), currentMethodStack.peek().getName().toString(), ((ParameterizedType) node.getParent()).getType(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
+					fileModel.wildcard__.addWildcard(((ParameterizedType) node.getParent()).getType(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
 					addEntityToCounter("Wildcard");
 				}
 				return false;
