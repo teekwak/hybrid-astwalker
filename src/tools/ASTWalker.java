@@ -67,8 +67,8 @@ public class ASTWalker {
 	/**
 	 * Reads code file
 	 *
-	 * @param filePath
-	 * @return
+	 * @param filePath = absolute path to file
+	 * @return char[] of file
 	 * @throws IOException
 	 */
 	public static char[] readFileToCharArray(String filePath) throws IOException {
@@ -88,6 +88,13 @@ public class ASTWalker {
 		return fileData.toString().toCharArray();
 	}
 
+	/**
+	 * Actually extracts constructs from code
+	 * 
+	 * @param fileLocation = absolute path to file
+	 * @return FileModel object populated with constructs
+	 * @throws IOException, CoreException
+	 */
 	public FileModel parseFile(String fileLocation) throws IOException, CoreException {
 		this.fileModel = new FileModel();
 
@@ -190,7 +197,6 @@ public class ASTWalker {
 */
 			@SuppressWarnings("unchecked")
 			public boolean visit(MethodDeclaration node) {
-				//currentMethodStack.push(node);
 				inMethod = true;
 
 				SimpleName name = node.getName();
