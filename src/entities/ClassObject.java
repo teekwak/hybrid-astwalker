@@ -10,6 +10,10 @@ public class ClassObject implements Entity {
 	int columnNumber;
 	List<Entity> entitiesInsideClass;
 
+	public ClassObject() {
+		this.entitiesInsideClass = new ArrayList<>();
+	}
+	
 	public ClassObject(String n, int l, int c) {
 		name = n;
 		lineNumber = l;
@@ -21,4 +25,17 @@ public class ClassObject implements Entity {
 		entitiesInsideClass.add(e);
 	}
 	
+	public void printChildren() {
+		
+	}
+
+	@Override
+	public String getName() {
+		return this.name;
+	}
+
+	@Override
+	public void setName(String n) {
+		this.name = n;
+	}
 }

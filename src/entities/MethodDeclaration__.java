@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.core.dom.Type;
 
+/*
 class MethodDeclarationObject {
 	String name;
 	String fullyQualifiedName;
@@ -123,6 +124,7 @@ class MethodDeclarationObject {
 	}
 	
 }
+*/
 
 public class MethodDeclaration__ {
 	List<MethodDeclarationObject> methodDeclarationObjectList;

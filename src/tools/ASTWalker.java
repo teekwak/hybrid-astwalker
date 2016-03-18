@@ -103,7 +103,7 @@ public class ASTWalker {
 
 		// alphabetical order
 		cu.accept(new ASTVisitor() {
-
+/*
 			@SuppressWarnings("unchecked")
 			public boolean visit(CatchClause node) {
 				if(inMethod) {
@@ -184,7 +184,7 @@ public class ASTWalker {
 
 				return true;
 			}
-
+*/
 			@SuppressWarnings("unchecked")
 			public boolean visit(MethodDeclaration node) {
 				//currentMethodStack.push(node);
@@ -212,7 +212,10 @@ public class ASTWalker {
 				
 				//MethodDeclarationObject md = new MethodDeclarationObject(name.toString(), name.getFullyQualifiedName().toString(), className.getName(), node.getReturnType2(), node.isVarargs(), node.isConstructor(), isStatic, isAbstract, (List<Object>)node.parameters(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition())); 
 				
-				MethodDeclarationObject md = new MethodDeclarationObject(name.getFullyQualifiedName().toString(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+				//MethodDeclarationObject md = new MethodDeclarationObject(name.getFullyQualifiedName().toString(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+				
+				MethodDeclarationObject md = new MethodDeclarationObject();
+				md.setName(name.toString());
 				
 				entityStack.push(md);
 				return true;
@@ -220,8 +223,8 @@ public class ASTWalker {
 
 			public void endVisit(MethodDeclaration node) {
 				inMethod = false;
-				Entity temp = entityStack.pop();
-				fileModel.methodDeclarationContainer.addMethodDeclaration((MethodDeclarationObject) temp);
+				MethodDeclarationObject temp = (MethodDeclarationObject) entityStack.pop();
+				fileModel.methodDeclarationContainer.addMethodDeclaration(temp);
 				entityStack.peek().addChild(temp);
 				
 			}
@@ -385,8 +388,10 @@ public class ASTWalker {
 				
 				if(!node.isInterface()) {
 					//fileModel.class__.addClass(node.getName().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
-					ClassObject co = new ClassObject(node.getName().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
-					
+					//ClassObject co = new ClassObject(node.getName().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
+					ClassObject co = new ClassObject();
+					co.setName(node.getName().toString());
+							
 					entityStack.push(co);
 					
 					if(node.getSuperclassType() != null) {

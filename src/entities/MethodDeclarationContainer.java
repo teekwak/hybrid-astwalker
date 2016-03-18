@@ -12,7 +12,7 @@ public class MethodDeclarationContainer {
 	
 	public void printAll() {
 		for(MethodDeclarationObject mdo : methodDeclarationObjectList) {
-			System.out.println(mdo.name);
+			System.out.println(mdo.getName());
 		}
 	}
 	

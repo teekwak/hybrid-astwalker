@@ -33,5 +33,15 @@ public class MethodDeclarationObject implements Entity {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public String getName() {
+		return this.name;
+	}
+
+	@Override
+	public void setName(String n) {
+		this.name = n;
+	}
 	
 }

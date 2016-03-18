@@ -227,6 +227,8 @@ public class FileModel {
 								
 				fileModel.classContainer.printAll();
 				
+				System.out.println("-------------------------");
+				
 				fileModel.methodDeclarationContainer.printAll();
 								
 			}

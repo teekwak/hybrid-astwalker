@@ -12,7 +12,11 @@ public class ClassContainer {
 	
 	public void printAll() {
 		for(ClassObject co : classObjectList) {
-			System.out.println(co.name);
+			System.out.println(co.getName());
+			
+			for(Entity e : co.entitiesInsideClass) {
+				System.out.println(e.getName());
+			}		
 		}
 	}
 	
