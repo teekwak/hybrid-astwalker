@@ -210,7 +210,9 @@ public class ASTWalker {
 				//fileModel.methodDeclaration__.addMethodDeclaration(name.toString(), name.getFullyQualifiedName().toString(), className.getName(), node.getReturnType2(), node.isVarargs(), node.isConstructor(), isStatic, isAbstract, (List<Object>)node.parameters(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 				//fileModel.class__.addMethodDeclarationToClass(className.getName(), name.toString());
 				
-				MethodDeclarationObject md = new MethodDeclarationObject(name.toString(), name.getFullyQualifiedName().toString(), className.getName(), node.getReturnType2(), node.isVarargs(), node.isConstructor(), isStatic, isAbstract, (List<Object>)node.parameters(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition())); 
+				//MethodDeclarationObject md = new MethodDeclarationObject(name.toString(), name.getFullyQualifiedName().toString(), className.getName(), node.getReturnType2(), node.isVarargs(), node.isConstructor(), isStatic, isAbstract, (List<Object>)node.parameters(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition())); 
+				
+				MethodDeclarationObject md = new MethodDeclarationObject(name.getFullyQualifiedName().toString(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 				
 				entityStack.push(md);
 				return true;

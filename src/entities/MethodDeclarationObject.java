@@ -16,6 +16,12 @@ public class MethodDeclarationObject implements Entity {
 		this.entitiesInsideClass = new ArrayList<>();
 	}
 	
+	public MethodDeclarationObject(String name, int lineNumber, int columnNumber) {
+		this.name = name;
+		this.lineNumber = lineNumber;
+		this.columnNumber = columnNumber;
+	}
+	
 	public MethodDeclarationObject(String string, String string2, String name, Type returnType2, boolean varargs,
 			boolean constructor, boolean isStatic, boolean isAbstract, List<Object> parameters, int lineNumber,
 			int columnNumber) {
