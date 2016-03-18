@@ -27,4 +27,7 @@ public interface Entity {
 
 	public void addImplementsInterface(String s);
 	public List<String> getImplements();
+	
+	public void addThrowsException(String s);
+	public List<String> getThrowsException();
 }

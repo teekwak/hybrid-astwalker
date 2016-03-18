@@ -33,16 +33,13 @@ public class PackageContainer {
 	}
 	
 	public void printAll() {
-		System.out.println("--- Packages ---");
-
 		if(packageObjectList.size() > 0) {
 			for(PackageObject obj : packageObjectList) {
 				obj.printEntity();
 			}
-			System.out.println();
 		}
 		else {
-			System.out.println("None\n");
+			System.out.println("No Packages\n");
 		}
 	}
 }

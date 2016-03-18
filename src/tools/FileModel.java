@@ -231,21 +231,11 @@ public class FileModel {
 				fileModel = fileModel.parseDeclarations(parentNode.getAbsolutePath());
 
 				fileModel.packageContainer.printAll();
-				
 				System.out.println("-------------------------");
-				
 				fileModel.importContainer.printAll();
-				
 				System.out.println("-------------------------");
-				
 				fileModel.classContainer.printAll();
 				
-				System.out.println("-------------------------");
-				
-				fileModel.methodDeclarationContainer.printAll();
-				
-				
-								
 			}
 		}
 	}

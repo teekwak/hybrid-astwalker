@@ -41,9 +41,10 @@ public class Example extends SomeSuperClass implements thing1, thing2, thing3 {
 	public static void main(String[] args) {
 		System.out.println(true && true);
 		System.out.println(1 > 0);
+		throw new Exception();
 	}
 
-	public int returnOne() {
+	public int returnOne() throws IllegalArgumentException {
 		class insideMethod {
 			String why;
 		}

@@ -28,10 +28,6 @@ public class ClassObject extends SuperEntityClass {
 		entitiesInsideClass.add(e);
 	}
 	
-	public void printChildren() {
-		
-	}
-	
 	public void setSuperClass(String s) {
 		this.superClass = s;
 	}
@@ -41,7 +37,21 @@ public class ClassObject extends SuperEntityClass {
 	}
 	
 	public void printInfo() {
-		System.out.println(this.name);
+		StringBuilder s = new StringBuilder();
+		s.append(this.getName());
+				
+		if(this.getSuperClass() != null) {
+			s.append(" extends " + this.getSuperClass());
+		}
+		
+		if(this.getImplements().size() > 0) {
+			s.append(" implements");
+			for(String imp : this.getImplements()) {
+				s.append(" " + imp);
+			}
+		}
+
+		System.out.println(s.toString());
 		
 		for(Entity e : entitiesInsideClass) {
 			e.printInfo();
@@ -54,5 +64,17 @@ public class ClassObject extends SuperEntityClass {
 
 	public List<String> getImplements() {
 		return this.implementsList;
+	}
+
+	@Override
+	public void addThrowsException(String s) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public List<String> getThrowsException() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

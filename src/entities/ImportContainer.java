@@ -39,7 +39,7 @@ public class ImportContainer {
 			}
 		}
 		else {
-			System.out.println("None\n");
+			System.out.println("No Imports\n");
 		}
 	}
 }

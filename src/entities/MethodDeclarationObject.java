@@ -7,22 +7,12 @@ import org.eclipse.jdt.core.dom.Type;
 
 public class MethodDeclarationObject extends SuperEntityClass {
 
+	List<String> thrownExceptions;
 	List<Entity> entitiesInsideMethodDeclaration;
 	
 	public MethodDeclarationObject() {
+		this.thrownExceptions = new ArrayList<>();
 		this.entitiesInsideMethodDeclaration = new ArrayList<>();
-	}
-	
-	public MethodDeclarationObject(String name, int lineNumber, int columnNumber) {
-		this.name = name;
-		this.lineNumber = lineNumber;
-		this.columnNumber = columnNumber;
-	}
-	
-	public MethodDeclarationObject(String string, String string2, String name, Type returnType2, boolean varargs,
-			boolean constructor, boolean isStatic, boolean isAbstract, List<Object> parameters, int lineNumber,
-			int columnNumber) {
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
@@ -32,7 +22,18 @@ public class MethodDeclarationObject extends SuperEntityClass {
 
 	@Override
 	public void printInfo() {
-		System.out.println(this.name);
+		StringBuilder s = new StringBuilder();
+		s.append(this.getName());
+				
+		if(this.thrownExceptions.size() > 0) {
+			s.append(" throws");
+			for(String ex : this.thrownExceptions) {
+				s.append(" " + ex);
+			}
+		}
+
+		System.out.println(s.toString());
+		
 		for(Entity e : entitiesInsideMethodDeclaration) {
 			e.printInfo();
 		}
@@ -60,5 +61,15 @@ public class MethodDeclarationObject extends SuperEntityClass {
 	public List<String> getImplements() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void addThrowsException(String s) {
+		this.thrownExceptions.add(s);
+	}
+
+	@Override
+	public List<String> getThrowsException() {
+		return this.thrownExceptions;
 	}
 }

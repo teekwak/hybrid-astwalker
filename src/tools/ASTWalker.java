@@ -48,6 +48,7 @@ import org.eclipse.jdt.core.dom.WildcardType;
 
 import entities.ClassObject;
 import entities.MethodDeclarationObject;
+import entities.ThrowObject;
 import entities.DoStatementObject;
 import entities.Entity;
 
@@ -123,10 +124,9 @@ public class ASTWalker {
 				return true;
 			}
 
+*/
 			public boolean visit(DoStatement node) {
-				if(inMethod) {
-					//fileModel.doStatement__.addDoStatement(node.getExpression().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
-					
+				if(inMethod) {					
 					DoStatementObject dso = new DoStatementObject();
 					dso.setName(node.getExpression().toString());
 					dso.setLineNumber(cu.getLineNumber(node.getStartPosition()));
@@ -135,7 +135,7 @@ public class ASTWalker {
 				}
 				return true;
 			}
-
+/*
 			public boolean visit(EnhancedForStatement node) {
 				if(inMethod) {
 					SimpleName name = node.getParameter().getName();
@@ -156,11 +156,6 @@ public class ASTWalker {
 			public boolean visit(IfStatement node) {
 				if(inMethod) {
 					//fileModel.ifStatement__.addIfStatement(node.getExpression().toString(), currentClassStack.peek().getName().toString(), currentMethodStack.peek().getName().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
-				
-					// +1 to complexity for else statement
-					if(node.getElseStatement() != null) {
-						//addEntityToCounter("IfStatement");
-					}
 				}
 
 				return true;
@@ -200,6 +195,7 @@ public class ASTWalker {
 
 				SimpleName name = node.getName();
 				
+				/*
 				IMethodBinding binding = node.resolveBinding();
 				ITypeBinding className = binding.getDeclaringClass();
 
@@ -214,12 +210,19 @@ public class ASTWalker {
 				if(Modifier.isStatic(mod)) {
 					isStatic = true;
 				}
+				*/
 				
 				MethodDeclarationObject md = new MethodDeclarationObject();
 				md.setName(name.toString());
 				md.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 				md.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-								
+				
+				if(node.thrownExceptionTypes().size() > 0) {
+					for(Object o : node.thrownExceptionTypes()) {
+						md.addThrowsException(o.toString());
+					}
+				}
+				
 				entityStack.push(md);
 				return true;
 			}
@@ -353,14 +356,21 @@ public class ASTWalker {
 
 				return true;
 			}
+*/
 
 			public boolean visit(ThrowStatement node) {
 				if(inMethod) {
 					//fileModel.throwStatement__.addThrowStatement(node.getExpression().toString(), currentClassStack.peek().getName().toString(), currentMethodStack.peek().getName().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
+					ThrowObject to = new ThrowObject();
+					to.setName(node.getExpression().toString());
+					to.setLineNumber(cu.getLineNumber(node.getStartPosition()));
+					to.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));	
+					entityStack.peek().addChild(to);
 				}
 				return true;
 			}
 
+/*
 			@SuppressWarnings("unchecked")
 			public boolean visit(TryStatement node) {
 				if(inMethod) {
@@ -396,7 +406,7 @@ public class ASTWalker {
 					co.setSuperClass(node.getSuperclassType().toString());
 				}
 				
-				if(node.superInterfaceTypes().size() != 0) {
+				if(node.superInterfaceTypes().size() > 0) {
 					for(Object o : node.superInterfaceTypes()) {
 						co.addImplementsInterface(o.toString());	
 					}
@@ -411,7 +421,7 @@ public class ASTWalker {
 						//fileModel.class__.addExtends(node.getSuperclassType().toString(), cu.getLineNumber(node.getStartPosition()));
 					}
 
-					if(node.superInterfaceTypes().size() != 0) {
+					if(node.superInterfaceTypes().size() > 0) {
 						for(Object o : node.superInterfaceTypes()) {
 							//fileModel.interface__.addImplements(o.toString(), cu.getLineNumber(node.getStartPosition()));
 						}
