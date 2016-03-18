@@ -11,6 +11,7 @@ import entities.IfStatement__;
 import entities.Import__;
 import entities.InfixExpression__;
 import entities.Interface__;
+import entities.MethodDeclarationContainer;
 import entities.MethodDeclaration__;
 import entities.MethodInvocation__;
 import entities.Package__;
@@ -32,6 +33,7 @@ import tools.ASTWalker;
 public class FileModel {
 	
 	ClassContainer classContainer;
+	MethodDeclarationContainer methodDeclarationContainer;
 /*
 	Array__ array__;
 	CatchClause__ catchClause__;
@@ -59,6 +61,7 @@ public class FileModel {
 	public FileModel() {
 		
 		this.classContainer = new ClassContainer();
+		this.methodDeclarationContainer = new MethodDeclarationContainer();
 		/*
 		this.array__ = new Array__();
 		this.catchClause__ = new CatchClause__();
@@ -221,16 +224,10 @@ public class FileModel {
 				FileModel fileModel = new FileModel();
 				
 				fileModel = fileModel.parseDeclarations(parentNode.getAbsolutePath());
-				
-				//fileModel.class__.printClassObject();
-				
+								
 				fileModel.classContainer.printAll();
 				
-				//fileModel.class__.printAllClasses();
-				
-				//fileModel.class__.printAllClassComplexities();
-				
-				//fileModel.methodDeclaration__.printAllMethodDeclarationComplexities();	
+				fileModel.methodDeclarationContainer.printAll();
 								
 			}
 		}

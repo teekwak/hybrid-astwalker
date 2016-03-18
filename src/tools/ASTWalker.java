@@ -47,23 +47,9 @@ import org.eclipse.jdt.core.dom.WhileStatement;
 import org.eclipse.jdt.core.dom.WildcardType;
 
 import entities.ClassObject;
+import entities.MethodDeclarationObject;
 import entities.Entity;
 
-class MethodDeclarationObject implements Entity {
-
-	public MethodDeclarationObject(String string, String string2, String name, Type returnType2, boolean varargs,
-			boolean constructor, boolean isStatic, boolean isAbstract, List<Object> parameters, int lineNumber,
-			int columnNumber) {
-		// TODO Auto-generated constructor stub
-	}
-
-	@Override
-	public void addChild(Entity e) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-}
 
 /**
  * Walks Java source code and parses constructs
@@ -233,7 +219,9 @@ public class ASTWalker {
 			public void endVisit(MethodDeclaration node) {
 				inMethod = false;
 				Entity temp = entityStack.pop();
+				fileModel.methodDeclarationContainer.addMethodDeclaration((MethodDeclarationObject) temp);
 				entityStack.peek().addChild(temp);
+				
 			}
 
 			@SuppressWarnings("unchecked")
