@@ -1,5 +1,7 @@
 package entities;
 
+import java.util.List;
+
 import org.eclipse.jdt.core.dom.Type;
 
 public interface Entity {
@@ -19,4 +21,10 @@ public interface Entity {
 	
 	public void setColumnNumber(int n);
 	public int getColumnNumber();
+
+	public void setSuperClass(String s);
+	public String getSuperClass();
+
+	public void addImplementsInterface(String s);
+	public List<String> getImplements();
 }

@@ -2,7 +2,6 @@ package tools;
 import entities.Array__;
 import entities.CatchClause__;
 import entities.ClassContainer;
-import entities.Class__;
 import entities.ConditionalExpression__;
 import entities.DoStatement__;
 import entities.ForStatement__;
@@ -12,7 +11,6 @@ import entities.Import__;
 import entities.InfixExpression__;
 import entities.Interface__;
 import entities.MethodDeclarationContainer;
-import entities.MethodDeclaration__;
 import entities.MethodInvocation__;
 import entities.Package__;
 import entities.Primitive__;
@@ -23,6 +21,8 @@ import entities.ThrowStatement__;
 import entities.TryStatement__;
 import entities.WhileStatement__;
 import entities.Wildcard__;
+import obsolete.Class__;
+import obsolete.MethodDeclaration__;
 
 import java.io.File;
 import java.io.IOException;
@@ -229,7 +229,7 @@ public class FileModel {
 				
 				System.out.println("-------------------------");
 				
-				//fileModel.methodDeclarationContainer.printAll();
+				fileModel.methodDeclarationContainer.printAll();
 								
 			}
 		}

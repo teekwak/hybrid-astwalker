@@ -122,7 +122,7 @@ public class ASTWalker {
 
 				return true;
 			}
-*/
+
 			public boolean visit(DoStatement node) {
 				if(inMethod) {
 					//fileModel.doStatement__.addDoStatement(node.getExpression().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
@@ -135,7 +135,7 @@ public class ASTWalker {
 				}
 				return true;
 			}
-/*
+
 			public boolean visit(EnhancedForStatement node) {
 				if(inMethod) {
 					SimpleName name = node.getParameter().getName();
@@ -384,16 +384,26 @@ public class ASTWalker {
 			}
 */
 			public boolean visit(TypeDeclaration node) {
-				//currentClassStack.push(node);
-				// create class object
 
 				ClassObject co = new ClassObject();
 				co.setName(node.getName().toString());
+				co.setLineNumber(cu.getLineNumber(node.getStartPosition()));
+				co.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
+				
+				if(node.getSuperclassType() != null) {
+					co.setSuperClass(node.getSuperclassType().toString());
+				}
+				
+				if(node.superInterfaceTypes().size() != 0) {
+					for(Object o : node.superInterfaceTypes()) {
+						co.addImplementsInterface(o.toString());	
+					}
+				}
+				
 				entityStack.push(co);
 				
 				if(!node.isInterface()) {
 					//fileModel.class__.addClass(node.getName().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
-					//ClassObject co = new ClassObject(node.getName().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
 					
 					if(node.getSuperclassType() != null) {
 						//fileModel.class__.addExtends(node.getSuperclassType().toString(), cu.getLineNumber(node.getStartPosition()));
@@ -409,7 +419,6 @@ public class ASTWalker {
 					//fileModel.interface__.addInterface(node.getName().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
 				}
 				
-				// push class object to entity stack here because interfaces have stuff in them too
 				return true;
 			}
 

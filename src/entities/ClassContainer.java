@@ -12,7 +12,21 @@ public class ClassContainer {
 	
 	public void printAll() {
 		for(ClassObject co : classObjectList) {
-			System.out.println(co.getName());
+			StringBuilder s = new StringBuilder();
+			s.append(co.getName());
+					
+			if(co.getSuperClass() != null) {
+				s.append(" extends " + co.getSuperClass());
+			}
+			
+			if(co.getImplements().size() > 0) {
+				s.append(" implements");
+				for(String imp : co.getImplements()) {
+					s.append(" " + imp);
+				}
+			}
+
+			System.out.println(s.toString());
 			
 			for(Entity e : co.entitiesInsideClass) {
 				e.printInfo();

@@ -3,14 +3,17 @@ package entities;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClassObject implements Entity {
+public class ClassObject extends SuperEntityClass {
 
 	String name;
 	int lineNumber;
 	int columnNumber;
+	String superClass;
+	List<String> implementsList;
 	List<Entity> entitiesInsideClass;
 
 	public ClassObject() {
+		this.implementsList = new ArrayList<>();
 		this.entitiesInsideClass = new ArrayList<>();
 	}
 	
@@ -28,42 +31,28 @@ public class ClassObject implements Entity {
 	public void printChildren() {
 		
 	}
-
-	@Override
+	
+	public void setSuperClass(String s) {
+		this.superClass = s;
+	}
+	
+	public String getSuperClass() {
+		return this.superClass;
+	}
+	
 	public void printInfo() {
 		System.out.println(this.name);
+		
 		for(Entity e : entitiesInsideClass) {
 			e.printInfo();
 		}
 	}
-	
-	@Override
-	public String getName() {
-		return this.name;
+
+	public void addImplementsInterface(String s) {
+		this.implementsList.add(s);
 	}
 
-	@Override
-	public void setName(String n) {
-		this.name = n;
-	}
-
-	@Override
-	public void setLineNumber(int n) {
-		this.lineNumber = n;
-	}
-
-	@Override
-	public int getLineNumber() {
-		return this.lineNumber;
-	}
-
-	@Override
-	public void setColumnNumber(int n) {
-		this.columnNumber = n;
-	}
-
-	@Override
-	public int getColumnNumber() {
-		return this.columnNumber;
+	public List<String> getImplements() {
+		return this.implementsList;
 	}
 }

@@ -5,11 +5,8 @@ import java.util.List;
 
 import org.eclipse.jdt.core.dom.Type;
 
-public class MethodDeclarationObject implements Entity {
+public class MethodDeclarationObject extends SuperEntityClass {
 
-	String name;
-	int lineNumber;
-	int columnNumber;
 	List<Entity> entitiesInsideMethodDeclaration;
 	
 	public MethodDeclarationObject() {
@@ -40,35 +37,4 @@ public class MethodDeclarationObject implements Entity {
 			e.printInfo();
 		}
 	}
-	
-	@Override
-	public String getName() {
-		return this.name;
-	}
-
-	@Override
-	public void setName(String n) {
-		this.name = n;
-	}
-	
-	@Override
-	public void setLineNumber(int n) {
-		this.lineNumber = n;
-	}
-
-	@Override
-	public int getLineNumber() {
-		return this.lineNumber;
-	}
-
-	@Override
-	public void setColumnNumber(int n) {
-		this.columnNumber = n;
-	}
-
-	@Override
-	public int getColumnNumber() {
-		return this.columnNumber;
-	}
-	
 }

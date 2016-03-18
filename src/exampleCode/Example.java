@@ -37,15 +37,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-public class Example {
+public class Example extends SomeSuperClass implements thing1, thing2, thing3 {
 	public static void main(String[] args) {
 		System.out.println(true && true);
 		System.out.println(1 > 0);
-		
-		int i = 20;
-		do {
-			System.out.println("hi");
-		} while (i < 10);
 	}
 
 	public int returnOne() {

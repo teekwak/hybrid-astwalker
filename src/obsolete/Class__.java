@@ -1,9 +1,12 @@
-package entities;
+package obsolete;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import entities.ClassObject;
+import entities.Entity;
 
 class SuperClassObject {
 	String name;
