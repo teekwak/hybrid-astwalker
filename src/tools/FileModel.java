@@ -1,6 +1,7 @@
 package tools;
 import entities.Array__;
 import entities.CatchClause__;
+import entities.ClassContainer;
 import entities.Class__;
 import entities.ConditionalExpression__;
 import entities.DoStatement__;
@@ -29,7 +30,9 @@ import org.eclipse.core.runtime.CoreException;
 import tools.ASTWalker;
 
 public class FileModel {
-
+	
+	ClassContainer classContainer;
+/*
 	Array__ array__;
 	CatchClause__ catchClause__;
 	Class__ class__;
@@ -52,8 +55,11 @@ public class FileModel {
 	SwitchStatement__ switchStatement__;
 	WhileStatement__ whileStatement__;
 	Wildcard__ wildcard__;
-	
+*/
 	public FileModel() {
+		
+		this.classContainer = new ClassContainer();
+		/*
 		this.array__ = new Array__();
 		this.catchClause__ = new CatchClause__();
 		this.class__ = new Class__();
@@ -76,8 +82,9 @@ public class FileModel {
 		this.tryStatement__ = new TryStatement__();
 		this.whileStatement__ = new WhileStatement__();
 		this.wildcard__ = new Wildcard__();
+		*/
 	}
-
+/*
 	public Array__ getArrays() {
 		return this.array__;
 	}
@@ -165,11 +172,6 @@ public class FileModel {
 	public Wildcard__ getWildcards() {
 		return this.wildcard__;
 	}
-
-	public FileModel parseDeclarations(String fileLocation) throws IOException, CoreException {
-		ASTWalker astWalker = new ASTWalker();
-		return astWalker.parseFile(fileLocation);
-	}
 	
 	public void printEverything() {
 		this.array__.printAllArrays();
@@ -196,5 +198,47 @@ public class FileModel {
 		this.tryStatement__.printAllTryStatements();
 		this.whileStatement__.printAllWhileStatements();
 		this.wildcard__.printAllWildcards();
+	}
+*/	
+	
+	public FileModel parseDeclarations(String fileLocation) throws IOException, CoreException {
+		ASTWalker astWalker = new ASTWalker();
+		return astWalker.parseFile(fileLocation);
+	}
+	
+	public static void traverseUntilJava(File parentNode) throws IOException, CoreException {
+		if(parentNode.isDirectory()) {
+			File childNodes[] = parentNode.listFiles();
+						
+			for(File c : childNodes) {
+				if(!c.getName().startsWith(".")) {
+					traverseUntilJava(c);
+				}
+			}
+		}
+		else {
+			if(parentNode.getName().endsWith(".java")) {						
+				FileModel fileModel = new FileModel();
+				
+				fileModel = fileModel.parseDeclarations(parentNode.getAbsolutePath());
+				
+				//fileModel.class__.printClassObject();
+				
+				fileModel.classContainer.printAll();
+				
+				//fileModel.class__.printAllClasses();
+				
+				//fileModel.class__.printAllClassComplexities();
+				
+				//fileModel.methodDeclaration__.printAllMethodDeclarationComplexities();	
+								
+			}
+		}
+	}
+	
+	public static void main(String[] args) throws IOException, CoreException {		
+		File inputFolder = new File("/home/kwak/Documents/workspace/ASTWalker/src/exampleCode/Example.java");
+		
+		traverseUntilJava(inputFolder);
 	}
 }

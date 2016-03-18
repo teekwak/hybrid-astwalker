@@ -21,6 +21,7 @@ class MethodDeclarationObject {
 	List<String> parameterNames;
 	List<String> parameterTypes;
 	List<String> statements;
+	List<Entity> listOfEntities;
 	
 	Map<String, Integer> entitiesInsideMethod;
 

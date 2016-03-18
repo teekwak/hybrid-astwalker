@@ -44,6 +44,9 @@ public class Example {
 	}
 
 	public int returnOne() {
+		class insideMethod {
+			String why;
+		}
 		return 1;
 	}
 	
