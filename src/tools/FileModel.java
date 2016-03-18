@@ -229,7 +229,7 @@ public class FileModel {
 				
 				System.out.println("-------------------------");
 				
-				fileModel.methodDeclarationContainer.printAll();
+				//fileModel.methodDeclarationContainer.printAll();
 								
 			}
 		}

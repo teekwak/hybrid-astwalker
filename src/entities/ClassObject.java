@@ -30,6 +30,14 @@ public class ClassObject implements Entity {
 	}
 
 	@Override
+	public void printInfo() {
+		System.out.println(this.name);
+		for(Entity e : entitiesInsideClass) {
+			e.printInfo();
+		}
+	}
+	
+	@Override
 	public String getName() {
 		return this.name;
 	}
@@ -37,5 +45,25 @@ public class ClassObject implements Entity {
 	@Override
 	public void setName(String n) {
 		this.name = n;
+	}
+
+	@Override
+	public void setLineNumber(int n) {
+		this.lineNumber = n;
+	}
+
+	@Override
+	public int getLineNumber() {
+		return this.lineNumber;
+	}
+
+	@Override
+	public void setColumnNumber(int n) {
+		this.columnNumber = n;
+	}
+
+	@Override
+	public int getColumnNumber() {
+		return this.columnNumber;
 	}
 }

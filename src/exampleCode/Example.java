@@ -41,6 +41,11 @@ public class Example {
 	public static void main(String[] args) {
 		System.out.println(true && true);
 		System.out.println(1 > 0);
+		
+		int i = 20;
+		do {
+			System.out.println("hi");
+		} while (i < 10);
 	}
 
 	public int returnOne() {

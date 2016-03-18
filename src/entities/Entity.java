@@ -9,6 +9,14 @@ public interface Entity {
 	Object SolrValue = null;
 	
 	public void addChild(Entity e);
-	public String getName();
+	public void printInfo();
+	
 	public void setName(String n);
+	public String getName();
+	
+	public void setLineNumber(int n);
+	public int getLineNumber();
+	
+	public void setColumnNumber(int n);
+	public int getColumnNumber();
 }

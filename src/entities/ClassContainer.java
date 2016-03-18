@@ -15,7 +15,7 @@ public class ClassContainer {
 			System.out.println(co.getName());
 			
 			for(Entity e : co.entitiesInsideClass) {
-				System.out.println(e.getName());
+				e.printInfo();
 			}		
 		}
 	}

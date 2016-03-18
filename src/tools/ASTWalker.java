@@ -47,6 +47,7 @@ import org.eclipse.jdt.core.dom.WhileStatement;
 import org.eclipse.jdt.core.dom.WildcardType;
 
 import entities.ClassObject;
+import entities.DoStatementObject;
 import entities.MethodDeclarationObject;
 import entities.Entity;
 
@@ -121,15 +122,20 @@ public class ASTWalker {
 
 				return true;
 			}
-
+*/
 			public boolean visit(DoStatement node) {
 				if(inMethod) {
 					//fileModel.doStatement__.addDoStatement(node.getExpression().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
+					
+					DoStatementObject dso = new DoStatementObject();
+					dso.setName(node.getExpression().toString());
+					dso.setLineNumber(cu.getLineNumber(node.getStartPosition()));
+					dso.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));		
+					entityStack.peek().addChild(dso);
 				}
-
 				return true;
 			}
-
+/*
 			public boolean visit(EnhancedForStatement node) {
 				if(inMethod) {
 					SimpleName name = node.getParameter().getName();
@@ -207,16 +213,11 @@ public class ASTWalker {
 					isStatic = true;
 				}
 				
-				//fileModel.methodDeclaration__.addMethodDeclaration(name.toString(), name.getFullyQualifiedName().toString(), className.getName(), node.getReturnType2(), node.isVarargs(), node.isConstructor(), isStatic, isAbstract, (List<Object>)node.parameters(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
-				//fileModel.class__.addMethodDeclarationToClass(className.getName(), name.toString());
-				
-				//MethodDeclarationObject md = new MethodDeclarationObject(name.toString(), name.getFullyQualifiedName().toString(), className.getName(), node.getReturnType2(), node.isVarargs(), node.isConstructor(), isStatic, isAbstract, (List<Object>)node.parameters(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition())); 
-				
-				//MethodDeclarationObject md = new MethodDeclarationObject(name.getFullyQualifiedName().toString(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
-				
 				MethodDeclarationObject md = new MethodDeclarationObject();
 				md.setName(name.toString());
-				
+				md.setLineNumber(cu.getLineNumber(name.getStartPosition()));
+				md.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
+								
 				entityStack.push(md);
 				return true;
 			}
@@ -228,7 +229,7 @@ public class ASTWalker {
 				entityStack.peek().addChild(temp);
 				
 			}
-
+/*
 			@SuppressWarnings("unchecked")
 			public boolean visit(MethodInvocation node) {
 				
@@ -381,18 +382,18 @@ public class ASTWalker {
 
 				return true;
 			}
-
+*/
 			public boolean visit(TypeDeclaration node) {
 				//currentClassStack.push(node);
 				// create class object
+
+				ClassObject co = new ClassObject();
+				co.setName(node.getName().toString());
+				entityStack.push(co);
 				
 				if(!node.isInterface()) {
 					//fileModel.class__.addClass(node.getName().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
 					//ClassObject co = new ClassObject(node.getName().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
-					ClassObject co = new ClassObject();
-					co.setName(node.getName().toString());
-							
-					entityStack.push(co);
 					
 					if(node.getSuperclassType() != null) {
 						//fileModel.class__.addExtends(node.getSuperclassType().toString(), cu.getLineNumber(node.getStartPosition()));
@@ -418,7 +419,7 @@ public class ASTWalker {
 				fileModel.classContainer.addClass((ClassObject) entityStack.pop());
 				
 			}
-
+/*
 			// done-ish. excluded qualifiedType, unionType, wildcardType
 			public boolean visit(VariableDeclarationFragment node) {
 				SimpleName name = node.getName();
@@ -546,7 +547,7 @@ public class ASTWalker {
 				}
 				return false;
 			}
-
+*/
 		});
 
 		return fileModel;

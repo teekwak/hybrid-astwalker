@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.core.dom.Type;
-
+/*
 class ArrayObject {
 	String name;
 	String fullyQualifiedName;
@@ -30,6 +30,7 @@ class ArrayObject {
 		System.out.println("\tMethod:\t" + methodName);
 	}
 }
+*/
 
 public class Array__ {
 	List<ArrayObject> arrayObjectList;
