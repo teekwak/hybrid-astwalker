@@ -1,7 +1,7 @@
 package tools;
 import entities.Array__;
 import entities.CatchClause__;
-import entities.ClassContainer;
+import entities.JavaFile;
 import entities.ConditionalExpression__;
 import entities.ForStatement__;
 import entities.Generics__;
@@ -34,7 +34,7 @@ public class FileModel {
 	
 	PackageContainer packageContainer;
 	ImportContainer importContainer;
-	ClassContainer classContainer;
+	JavaFile classContainer;
 	MethodDeclarationContainer methodDeclarationContainer;
 	
 /*
@@ -65,7 +65,7 @@ public class FileModel {
 		
 		this.packageContainer = new PackageContainer();
 		this.importContainer = new ImportContainer();
-		this.classContainer = new ClassContainer();
+		this.classContainer = new JavaFile();
 		this.methodDeclarationContainer = new MethodDeclarationContainer();
 		/*
 		this.array__ = new Array__();

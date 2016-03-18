@@ -52,41 +52,4 @@ public class ArrayObject implements Entity {
 	public int getColumnNumber() {
 		return this.columnNumber;
 	}
-
-	@Override
-	public void setSuperClass(String s) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public String getSuperClass() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void addImplementsInterface(String s) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public List<String> getImplements() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void addThrowsException(String s) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public List<String> getThrowsException() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

@@ -38,7 +38,7 @@ public class ClassObject extends SuperEntityClass {
 	
 	public void printInfo() {
 		StringBuilder s = new StringBuilder();
-		s.append(this.getName());
+		s.append("ClassObject " + this.getName());
 				
 		if(this.getSuperClass() != null) {
 			s.append(" extends " + this.getSuperClass());
@@ -64,17 +64,5 @@ public class ClassObject extends SuperEntityClass {
 
 	public List<String> getImplements() {
 		return this.implementsList;
-	}
-
-	@Override
-	public void addThrowsException(String s) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public List<String> getThrowsException() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 }

@@ -21,13 +21,5 @@ public interface Entity {
 	
 	public void setColumnNumber(int n);
 	public int getColumnNumber();
-
-	public void setSuperClass(String s);
-	public String getSuperClass();
-
-	public void addImplementsInterface(String s);
-	public List<String> getImplements();
 	
-	public void addThrowsException(String s);
-	public List<String> getThrowsException();
 }

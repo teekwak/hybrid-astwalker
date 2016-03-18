@@ -3,18 +3,16 @@ package entities;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClassContainer {
+public class JavaFile {
 	List<ClassObject> classObjectList;
 	
-	public ClassContainer() {
+	public JavaFile() {
 		classObjectList = new ArrayList<>();
 	}
 	
 	public void printAll() {
 		for(ClassObject co : classObjectList) {			
-			for(Entity e : co.entitiesInsideClass) {
-				e.printInfo();
-			}		
+			co.printInfo();
 		}
 	}
 	
