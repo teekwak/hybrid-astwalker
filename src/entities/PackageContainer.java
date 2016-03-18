@@ -21,10 +21,10 @@ class PackageObject {
 	}
 }
 
-public class Package__ {
+public class PackageContainer {
 	List<PackageObject> packageObjectList;
 
-	public Package__() {
+	public PackageContainer() {
 		packageObjectList = new ArrayList<>();
 	}
 
@@ -32,7 +32,7 @@ public class Package__ {
 		packageObjectList.add(new PackageObject(name, fullyQualifiedName, lineNumber, columnNumber));
 	}
 	
-	public void printAllPackages() {
+	public void printAll() {
 		System.out.println("--- Packages ---");
 
 		if(packageObjectList.size() > 0) {
@@ -45,40 +45,4 @@ public class Package__ {
 			System.out.println("None\n");
 		}
 	}
-	
-	/*
-	 * start testing
-	 */
-	
-	public List<PackageObject> getPackageObjectList() {
-		return packageObjectList;
-	}
-
-	public List<Integer> getLineNumbers() {
-		List<Integer> list = new ArrayList<>();
-		for(PackageObject obj : packageObjectList) {
-			list.add(obj.lineNumber);
-		}
-		return list;
-	}
-	
-	public List<Integer> getColumnNumbers() {
-		List<Integer> list = new ArrayList<>();
-		for(PackageObject obj : packageObjectList) {
-			list.add(obj.columnNumber);
-		}
-		return list;
-	}	
-	
-	public List<String> getNames() {
-		List<String> list = new ArrayList<>();
-		for(PackageObject obj : packageObjectList) {
-			list.add(obj.name);
-		}
-		return list;
-	}
-	
-	/*
-	 * end testing
-	 */
 }

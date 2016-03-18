@@ -3,16 +3,15 @@ import entities.Array__;
 import entities.CatchClause__;
 import entities.ClassContainer;
 import entities.ConditionalExpression__;
-import entities.DoStatement__;
 import entities.ForStatement__;
 import entities.Generics__;
 import entities.IfStatement__;
-import entities.Import__;
+import entities.ImportContainer;
 import entities.InfixExpression__;
 import entities.Interface__;
 import entities.MethodDeclarationContainer;
 import entities.MethodInvocation__;
-import entities.Package__;
+import entities.PackageContainer;
 import entities.Primitive__;
 import entities.ReturnStatement__;
 import entities.SimpleName__;
@@ -22,6 +21,7 @@ import entities.TryStatement__;
 import entities.WhileStatement__;
 import entities.Wildcard__;
 import obsolete.Class__;
+import obsolete.DoStatement__;
 import obsolete.MethodDeclaration__;
 
 import java.io.File;
@@ -32,8 +32,11 @@ import tools.ASTWalker;
 
 public class FileModel {
 	
+	PackageContainer packageContainer;
+	ImportContainer importContainer;
 	ClassContainer classContainer;
 	MethodDeclarationContainer methodDeclarationContainer;
+	
 /*
 	Array__ array__;
 	CatchClause__ catchClause__;
@@ -60,6 +63,8 @@ public class FileModel {
 */
 	public FileModel() {
 		
+		this.packageContainer = new PackageContainer();
+		this.importContainer = new ImportContainer();
 		this.classContainer = new ClassContainer();
 		this.methodDeclarationContainer = new MethodDeclarationContainer();
 		/*
@@ -224,12 +229,22 @@ public class FileModel {
 				FileModel fileModel = new FileModel();
 				
 				fileModel = fileModel.parseDeclarations(parentNode.getAbsolutePath());
-								
+
+				fileModel.packageContainer.printAll();
+				
+				System.out.println("-------------------------");
+				
+				fileModel.importContainer.printAll();
+				
+				System.out.println("-------------------------");
+				
 				fileModel.classContainer.printAll();
 				
 				System.out.println("-------------------------");
 				
 				fileModel.methodDeclarationContainer.printAll();
+				
+				
 								
 			}
 		}

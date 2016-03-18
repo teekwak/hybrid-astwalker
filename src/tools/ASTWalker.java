@@ -47,8 +47,8 @@ import org.eclipse.jdt.core.dom.WhileStatement;
 import org.eclipse.jdt.core.dom.WildcardType;
 
 import entities.ClassObject;
-import entities.DoStatementObject;
 import entities.MethodDeclarationObject;
+import entities.DoStatementObject;
 import entities.Entity;
 
 
@@ -166,6 +166,8 @@ public class ASTWalker {
 				return true;
 			}
 
+*/
+
 			public boolean visit(ImportDeclaration node){
 				Name name = node.getName();			
 				
@@ -176,10 +178,10 @@ public class ASTWalker {
 					fullyQualifiedName = "";
 				}
 				
-				//fileModel.import__.addImport(name.toString(), fullyQualifiedName, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+				fileModel.importContainer.addImport(name.toString(), fullyQualifiedName, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 				return true;
 			}
-
+/*
 			public boolean visit(InfixExpression node){
 				if(inMethod) {
 					//fileModel.infixExpression__.addInfixExpression(node.getOperator().toString(), node.getLeftOperand().toString(), node.getRightOperand().toString(), currentClassStack.peek().getName().toString(), currentMethodStack.peek().getName().toString(), cu.getLineNumber(node.getLeftOperand().getStartPosition()), (cu.getColumnNumber(node.getLeftOperand().getStartPosition())));
@@ -258,7 +260,7 @@ public class ASTWalker {
 
 				return true;
 			}
-
+*/
 			public boolean visit(PackageDeclaration node){
 				Name name = node.getName();
 				
@@ -269,10 +271,10 @@ public class ASTWalker {
 					fullyQualifiedName = "";
 				}
 				
-				//fileModel.package__.addPackage(name.toString(), fullyQualifiedName, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+				fileModel.packageContainer.addPackage(name.toString(), fullyQualifiedName, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
 				return true;
 			}
-
+/*
 			public boolean visit(ReturnStatement node) {
 				if(inMethod) {
 					String expression;

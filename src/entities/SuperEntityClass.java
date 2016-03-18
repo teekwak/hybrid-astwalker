@@ -1,7 +1,5 @@
 package entities;
 
-import java.util.List;
-
 public abstract class SuperEntityClass implements Entity {
 
 	String name;
