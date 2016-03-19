@@ -4,7 +4,6 @@ import org.eclipse.jdt.core.dom.Type;
 
 public class CatchClauseObject extends SuperEntityClass {
 	Type exception;
-	// name = variable name
 
 	@Override
 	public void printInfo() {

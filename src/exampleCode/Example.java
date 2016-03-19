@@ -63,6 +63,8 @@ public class Example extends SomeSuperClass implements thing1, thing2, thing3 {
 		catch(NullPointerException e) {
 			
 		}
+		
+		System.out.println(1 == 2 ? true : false);
 		return;
 	}
 

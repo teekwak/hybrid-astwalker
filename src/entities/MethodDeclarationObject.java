@@ -7,6 +7,8 @@ import org.eclipse.jdt.core.dom.Type;
 
 public class MethodDeclarationObject extends SuperEntityClass {
 
+	// need arguments
+	
 	boolean isStatic;
 	boolean isAbstract;
 	List<String> thrownExceptions;
