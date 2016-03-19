@@ -57,8 +57,12 @@ public class Example extends SomeSuperClass implements thing1, thing2, thing3 {
 	}
 	
 	public void printLine() {
-		boolean thing = true;
-		
+		try{
+			// do something
+		}
+		catch(NullPointerException e) {
+			
+		}
 		return;
 	}
 

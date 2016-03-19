@@ -46,6 +46,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
 import org.eclipse.jdt.core.dom.WildcardType;
 
+import entities.CatchClauseObject;
 import entities.ClassObject;
 import entities.MethodDeclarationObject;
 import entities.PackageObject;
@@ -117,17 +118,23 @@ public class ASTWalker {
 
 		// alphabetical order
 		cu.accept(new ASTVisitor() {
-/*
+
 			@SuppressWarnings("unchecked")
 			public boolean visit(CatchClause node) {
 				if(inMethod) {
 					SimpleName name = node.getException().getName();
-					//fileModel.catchClause__.addCatch(node.getException().getType(), name.toString(), currentClassStack.peek().getName().toString(), currentMethodStack.peek().getName().toString(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					
+					CatchClauseObject cco = new CatchClauseObject();
+					cco.setName(name.toString());
+					cco.setType(node.getException().getType());
+					cco.setLineNumber(cu.getLineNumber(name.getStartPosition()));
+					cco.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
+					entityStack.peek().addChild(cco);
 				}
 
 				return true;
 			}
-
+/*
 			public boolean visit(ConditionalExpression node){
 				if(inMethod) {
 					//fileModel.conditionalExpression__.addConditionalExpression(node.getExpression().toString(), node.getElseExpression().toString(), node.getThenExpression().toString(), currentClassStack.peek().getName().toString(), currentMethodStack.peek().getName().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
