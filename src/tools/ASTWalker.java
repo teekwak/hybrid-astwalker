@@ -46,12 +46,13 @@ import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
 import org.eclipse.jdt.core.dom.WildcardType;
 
-import entities.CatchClauseObject;
 import entities.ClassObject;
+import entities.ConditionalExpressionObject;
 import entities.MethodDeclarationObject;
 import entities.PackageObject;
 import entities.ThrowObject;
 import entities.WhileStatementObject;
+import entities.CatchClauseObject;
 import entities.DoStatementObject;
 import entities.Entity;
 import entities.ImportObject;
@@ -134,16 +135,21 @@ public class ASTWalker {
 
 				return true;
 			}
-/*
+
 			public boolean visit(ConditionalExpression node){
 				if(inMethod) {
-					//fileModel.conditionalExpression__.addConditionalExpression(node.getExpression().toString(), node.getElseExpression().toString(), node.getThenExpression().toString(), currentClassStack.peek().getName().toString(), currentMethodStack.peek().getName().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
+					ConditionalExpressionObject ceo = new ConditionalExpressionObject();
+					ceo.setName(node.getExpression().toString());
+					ceo.setElseExpression(node.getElseExpression().toString());
+					ceo.setThenExpression(node.getThenExpression().toString());
+					ceo.setLineNumber(cu.getLineNumber(node.getStartPosition()));
+					ceo.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
+					entityStack.peek().addChild(ceo);
 				}
 
 				return true;
 			}
 
-*/
 			public boolean visit(DoStatement node) {
 				if(inMethod) {					
 					DoStatementObject dso = new DoStatementObject();
@@ -254,7 +260,6 @@ public class ASTWalker {
 			public void endVisit(MethodDeclaration node) {
 				inMethod = false;
 				MethodDeclarationObject temp = (MethodDeclarationObject) entityStack.pop();
-				fileModel.methodDeclarationContainer.addMethodDeclaration(temp);
 				entityStack.peek().addChild(temp);
 			}
 /*
