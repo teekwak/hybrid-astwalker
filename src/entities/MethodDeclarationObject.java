@@ -7,6 +7,8 @@ import org.eclipse.jdt.core.dom.Type;
 
 public class MethodDeclarationObject extends SuperEntityClass {
 
+	boolean isStatic;
+	boolean isAbstract;
 	List<String> thrownExceptions;
 	List<Entity> entitiesInsideMethodDeclaration;
 	
@@ -30,7 +32,7 @@ public class MethodDeclarationObject extends SuperEntityClass {
 				s.append(" " + ex);
 			}
 		}
-
+		
 		System.out.println(s.toString());
 		
 		for(Entity e : entitiesInsideMethodDeclaration) {
@@ -44,5 +46,21 @@ public class MethodDeclarationObject extends SuperEntityClass {
 
 	public List<String> getThrowsException() {
 		return this.thrownExceptions;
+	}
+	
+	public void setStatic(boolean tf) {
+		this.isStatic = tf;
+	}
+	
+	public boolean getStatic() {
+		return this.isStatic;
+	}
+	
+	public void setAbstract(boolean tf) {
+		this.isAbstract = tf;
+	}
+	
+	public boolean getAbstract() {
+		return this.isAbstract;
 	}
 }

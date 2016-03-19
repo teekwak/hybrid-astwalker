@@ -50,6 +50,7 @@ import entities.ClassObject;
 import entities.MethodDeclarationObject;
 import entities.PackageObject;
 import entities.ThrowObject;
+import entities.WhileStatementObject;
 import entities.DoStatementObject;
 import entities.Entity;
 import entities.ImportObject;
@@ -211,7 +212,6 @@ public class ASTWalker {
 
 				SimpleName name = node.getName();
 				
-				/*
 				IMethodBinding binding = node.resolveBinding();
 				ITypeBinding className = binding.getDeclaringClass();
 
@@ -226,12 +226,13 @@ public class ASTWalker {
 				if(Modifier.isStatic(mod)) {
 					isStatic = true;
 				}
-				*/
 				
 				MethodDeclarationObject md = new MethodDeclarationObject();
 				md.setName(name.toString());
 				md.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 				md.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
+				md.setStatic(isStatic);
+				md.setAbstract(isAbstract);
 				
 				if(node.thrownExceptionTypes().size() > 0) {
 					for(Object o : node.thrownExceptionTypes()) {
@@ -416,6 +417,7 @@ public class ASTWalker {
 				return true;
 			}
 */
+			// NOT DONE
 			public boolean visit(TypeDeclaration node) {
 
 				// need to not go into interfaces
@@ -438,23 +440,6 @@ public class ASTWalker {
 				}
 				
 				entityStack.push(co);
-				
-				if(!node.isInterface()) {
-					//fileModel.class__.addClass(node.getName().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
-					
-					if(node.getSuperclassType() != null) {
-						//fileModel.class__.addExtends(node.getSuperclassType().toString(), cu.getLineNumber(node.getStartPosition()));
-					}
-
-					if(node.superInterfaceTypes().size() > 0) {
-						for(Object o : node.superInterfaceTypes()) {
-							//fileModel.interface__.addImplements(o.toString(), cu.getLineNumber(node.getStartPosition()));
-						}
-					}
-				}
-				else {
-					//fileModel.interface__.addInterface(node.getName().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
-				}
 				
 				return true;
 			}
@@ -579,14 +564,19 @@ public class ASTWalker {
 
 				return false; // does this stop from going to VariableDeclarationFragment?
 			}
-
+*/
 			public boolean visit(WhileStatement node){
 				if(inMethod) {
-					//fileModel.whileStatement__.addWhileStatement(node.getExpression().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
+					WhileStatementObject wo = new WhileStatementObject();
+					wo.setName(node.getExpression().toString());
+					wo.setLineNumber(cu.getLineNumber(node.getStartPosition()));
+					wo.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));	
+
+					entityStack.peek().addChild(wo);
 				}
 				return true;
 			}
-
+/*
 			public boolean visit(WildcardType node) {
 				if(inMethod) {
 					//fileModel.wildcard__.addWildcard(((ParameterizedType) node.getParent()).getType(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));

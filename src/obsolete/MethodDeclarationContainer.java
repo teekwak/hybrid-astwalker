@@ -1,7 +1,9 @@
-package entities;
+package obsolete;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import entities.MethodDeclarationObject;
 
 public class MethodDeclarationContainer {
 	List<MethodDeclarationObject> methodDeclarationObjectList;

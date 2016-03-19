@@ -1,8 +1,10 @@
-package entities;
+package obsolete;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import entities.WhileStatementObject;
+/*
 class WhileStatementObject {
 	String expression;
 	String className;
@@ -24,7 +26,7 @@ class WhileStatementObject {
 		System.out.println("\tMethod:\t" + methodName);
 	}
 }
-
+*/
 public class WhileStatement__ {
 	public List<WhileStatementObject> whileStatementObjectList;
 
