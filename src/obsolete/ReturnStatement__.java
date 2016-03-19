@@ -1,27 +1,11 @@
-package entities;
+package obsolete;
 
 import java.util.ArrayList;
 import java.util.List;
 
-class ReturnStatementObject {
-	String expression;
-	String className;
-	String methodName;
-	int lineNumber;
-	int columnNumber;
+import entities.ReturnStatementObject;
 
-	ReturnStatementObject(String ex, String cn, String mn, int l, int c) {
-		expression = ex;
-		className = cn;
-		methodName = mn;
-		lineNumber = l;
-		columnNumber = c;
-	}
-	
-	void printEntity() {
-		
-	}
-}
+
 
 public class ReturnStatement__ {
 	List<ReturnStatementObject> returnStatementObjectList;

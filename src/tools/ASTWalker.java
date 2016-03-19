@@ -50,6 +50,7 @@ import entities.ClassObject;
 import entities.ConditionalExpressionObject;
 import entities.MethodDeclarationObject;
 import entities.PackageObject;
+import entities.ReturnStatementObject;
 import entities.ThrowObject;
 import entities.WhileStatementObject;
 import entities.CatchClauseObject;
@@ -311,7 +312,7 @@ public class ASTWalker {
 				
 				return true;
 			}
-/*
+
 			public boolean visit(ReturnStatement node) {
 				if(inMethod) {
 					String expression;
@@ -322,11 +323,17 @@ public class ASTWalker {
 						expression = "";
 					}
 					
-					//fileModel.returnStatement__.addReturnStatement(expression, currentClassStack.peek().getName().toString(), currentMethodStack.peek().getName().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));					
+					ReturnStatementObject rso = new ReturnStatementObject();
+					rso.setName(expression);
+					rso.setLineNumber(cu.getLineNumber(node.getStartPosition()));
+					rso.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
+					entityStack.peek().addChild(rso);
 				}
 				return true;
 			}
+
 			
+/*			
 			// called on parameters of function
 			// done-ish. excluded qualifiedType, unionType, wildcardType
 			public boolean visit(SingleVariableDeclaration node) {				
