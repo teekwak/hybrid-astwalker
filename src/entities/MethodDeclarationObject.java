@@ -15,7 +15,6 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		this.entitiesInsideMethodDeclaration = new ArrayList<>();
 	}
 
-	@Override
 	public void addChild(Entity e) {
 		entitiesInsideMethodDeclaration.add(e);		
 	}
@@ -23,7 +22,7 @@ public class MethodDeclarationObject extends SuperEntityClass {
 	@Override
 	public void printInfo() {
 		StringBuilder s = new StringBuilder();
-		s.append(this.getName());
+		s.append("MethodDeclarationObject " + this.getName());
 				
 		if(this.thrownExceptions.size() > 0) {
 			s.append(" throws");

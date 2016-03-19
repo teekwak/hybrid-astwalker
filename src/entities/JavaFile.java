@@ -11,7 +11,7 @@ public class JavaFile {
 	}
 	
 	public void printAll() {
-		for(ClassObject co : classObjectList) {			
+		for(ClassObject co : classObjectList) {		
 			co.printInfo();
 		}
 	}

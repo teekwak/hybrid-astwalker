@@ -1,8 +1,11 @@
-package entities;
+package obsolete;
 
 import java.util.List;
-import java.util.ArrayList;
 
+import entities.PackageObject;
+
+import java.util.ArrayList;
+/*
 class PackageObject {
 	String name;
 	String fullyQualifiedName;
@@ -20,7 +23,7 @@ class PackageObject {
 		System.out.println(name + " => " + lineNumber + " | " + columnNumber);
 	}
 }
-
+*/
 public class PackageContainer {
 	List<PackageObject> packageObjectList;
 

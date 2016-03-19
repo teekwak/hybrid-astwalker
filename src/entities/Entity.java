@@ -10,7 +10,6 @@ public interface Entity {
 	String SolrKey = null;
 	Object SolrValue = null;
 	
-	public void addChild(Entity e);
 	public void printInfo();
 	
 	public void setName(String n);
@@ -21,5 +20,7 @@ public interface Entity {
 	
 	public void setColumnNumber(int n);
 	public int getColumnNumber();
+
+	public void addChild(Entity e);
 	
 }

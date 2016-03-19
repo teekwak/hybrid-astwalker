@@ -48,9 +48,11 @@ import org.eclipse.jdt.core.dom.WildcardType;
 
 import entities.ClassObject;
 import entities.MethodDeclarationObject;
+import entities.PackageObject;
 import entities.ThrowObject;
 import entities.DoStatementObject;
 import entities.Entity;
+import entities.ImportObject;
 
 
 /**
@@ -62,6 +64,8 @@ public class ASTWalker {
 
 	public FileModel fileModel;
 	public Stack<Entity> entityStack = new Stack<>();
+	public PackageObject packageObject = new PackageObject();
+	public List<ImportObject> importList = new ArrayList<>();
 	public boolean inMethod = false;
 
 	/**
@@ -179,8 +183,14 @@ public class ASTWalker {
 				} catch (NullPointerException e) {
 					fullyQualifiedName = "";
 				}
-				
-				fileModel.importContainer.addImport(name.toString(), fullyQualifiedName, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+								
+				ImportObject io = new ImportObject();
+				io.setName(name.toString());
+				io.setFullyQualifiedName(fullyQualifiedName);
+				io.setLineNumber(cu.getLineNumber(name.getStartPosition()));
+				io.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
+				importList.add(io);
+	
 				return true;
 			}
 /*
@@ -238,7 +248,6 @@ public class ASTWalker {
 				MethodDeclarationObject temp = (MethodDeclarationObject) entityStack.pop();
 				fileModel.methodDeclarationContainer.addMethodDeclaration(temp);
 				entityStack.peek().addChild(temp);
-				
 			}
 /*
 			@SuppressWarnings("unchecked")
@@ -280,7 +289,13 @@ public class ASTWalker {
 					fullyQualifiedName = "";
 				}
 				
-				fileModel.packageContainer.addPackage(name.toString(), fullyQualifiedName, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+				PackageObject po = new PackageObject();
+				po.setName(node.getName().toString());
+				po.setFullyQualifiedName(fullyQualifiedName);
+				po.setLineNumber(cu.getLineNumber(name.getStartPosition()));
+				po.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
+				packageObject = po;
+				
 				return true;
 			}
 /*
@@ -403,10 +418,14 @@ public class ASTWalker {
 */
 			public boolean visit(TypeDeclaration node) {
 
+				// need to not go into interfaces
+				
 				ClassObject co = new ClassObject();
 				co.setName(node.getName().toString());
 				co.setLineNumber(cu.getLineNumber(node.getStartPosition()));
 				co.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
+				co.setPackageObject(packageObject);
+				co.setImportList(importList);
 				
 				if(node.getSuperclassType() != null) {
 					co.setSuperClass(node.getSuperclassType().toString());
@@ -443,7 +462,7 @@ public class ASTWalker {
 			public void endVisit(TypeDeclaration node) {
 				//currentClassStack.pop();
 				// add class object to class__ and pop entityStack at the same time
-				fileModel.classContainer.addClass((ClassObject) entityStack.pop());
+				fileModel.javaFile.addClass((ClassObject) entityStack.pop());
 				
 			}
 /*

@@ -6,12 +6,10 @@ import entities.ConditionalExpression__;
 import entities.ForStatement__;
 import entities.Generics__;
 import entities.IfStatement__;
-import entities.ImportContainer;
 import entities.InfixExpression__;
 import entities.Interface__;
 import entities.MethodDeclarationContainer;
 import entities.MethodInvocation__;
-import entities.PackageContainer;
 import entities.Primitive__;
 import entities.ReturnStatement__;
 import entities.SimpleName__;
@@ -22,7 +20,9 @@ import entities.WhileStatement__;
 import entities.Wildcard__;
 import obsolete.Class__;
 import obsolete.DoStatement__;
+import obsolete.ImportContainer;
 import obsolete.MethodDeclaration__;
+import obsolete.PackageContainer;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,9 +32,7 @@ import tools.ASTWalker;
 
 public class FileModel {
 	
-	PackageContainer packageContainer;
-	ImportContainer importContainer;
-	JavaFile classContainer;
+	JavaFile javaFile;
 	MethodDeclarationContainer methodDeclarationContainer;
 	
 /*
@@ -63,9 +61,7 @@ public class FileModel {
 */
 	public FileModel() {
 		
-		this.packageContainer = new PackageContainer();
-		this.importContainer = new ImportContainer();
-		this.classContainer = new JavaFile();
+		this.javaFile = new JavaFile();
 		this.methodDeclarationContainer = new MethodDeclarationContainer();
 		/*
 		this.array__ = new Array__();
@@ -230,11 +226,7 @@ public class FileModel {
 				
 				fileModel = fileModel.parseDeclarations(parentNode.getAbsolutePath());
 
-				fileModel.packageContainer.printAll();
-				System.out.println("-------------------------");
-				fileModel.importContainer.printAll();
-				System.out.println("-------------------------");
-				fileModel.classContainer.printAll();
+				fileModel.javaFile.printAll();
 				
 			}
 		}

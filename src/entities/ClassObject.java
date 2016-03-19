@@ -11,7 +11,9 @@ public class ClassObject extends SuperEntityClass {
 	String superClass;
 	List<String> implementsList;
 	List<Entity> entitiesInsideClass;
-
+	PackageObject packageObject;
+	List<ImportObject> importObjectList;
+	
 	public ClassObject() {
 		this.implementsList = new ArrayList<>();
 		this.entitiesInsideClass = new ArrayList<>();
@@ -36,6 +38,7 @@ public class ClassObject extends SuperEntityClass {
 		return this.superClass;
 	}
 	
+	@Override
 	public void printInfo() {
 		StringBuilder s = new StringBuilder();
 		s.append("ClassObject " + this.getName());
@@ -64,5 +67,21 @@ public class ClassObject extends SuperEntityClass {
 
 	public List<String> getImplements() {
 		return this.implementsList;
+	}
+	
+	public void setImportList(List<ImportObject> list ) {
+		this.importObjectList = list;
+	}
+	
+	public List<ImportObject> getImportList() {
+		return this.importObjectList;
+	}
+	
+	public void setPackageObject(PackageObject po) {
+		packageObject = po;
+	}
+	
+	public PackageObject getPackageObject() {
+		return this.packageObject;
 	}
 }
