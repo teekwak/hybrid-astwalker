@@ -16,6 +16,4 @@ public class ArrayObject extends SuperEntityClass {
 		return this.fullyQualifiedName;
 	}
 	
-	
-	
 }

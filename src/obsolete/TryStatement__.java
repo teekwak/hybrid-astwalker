@@ -1,4 +1,4 @@
-package entities;
+package obsolete;
 
 import java.util.ArrayList;
 import java.util.List;

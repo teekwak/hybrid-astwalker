@@ -53,6 +53,8 @@ import entities.PackageObject;
 // import entities.ReturnStatementObject;
 import entities.ThrowObject;
 import entities.WhileStatementObject;
+import entities.WildcardObject;
+import entities.TryStatementObject;
 import entities.CatchClauseObject;
 import entities.DoStatementObject;
 import entities.Entity;
@@ -327,7 +329,7 @@ public class ASTWalker {
 				return true;
 			}
 
-/*
+/* ignoring for now
 			public boolean visit(ReturnStatement node) {
 				if(inMethod) {
 					String expression;
@@ -427,31 +429,22 @@ public class ASTWalker {
 				return true;
 			}
 
-/*
+
 			@SuppressWarnings("unchecked")
 			public boolean visit(TryStatement node) {
 				if(inMethod) {
-					String tryBody = "";
-					String finallyBody = "";
+					String tryBody = "Try Statement";
 
-					try {
-						tryBody = node.getBody().toString();
-					} catch (NullPointerException e1) {
-						tryBody = "";
-					}
-
-					try {
-						finallyBody = node.getFinally().toString();
-					} catch (NullPointerException e2) {
-						finallyBody = "";
-					}
-
-					//fileModel.tryStatement__.addTryStatement(tryBody, currentClassStack.peek().getName().toString(), currentMethodStack.peek().getName().toString(), node.catchClauses(), finallyBody, cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
+					TryStatementObject tso = new TryStatementObject();
+					tso.setName(tryBody);
+					tso.setLineNumber(cu.getLineNumber(node.getStartPosition()));
+					tso.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
+					entityStack.peek().addChild(tso);
 				}
 
 				return true;
 			}
-*/
+
 			// NOT DONE
 			public boolean visit(TypeDeclaration node) {
 
@@ -611,14 +604,20 @@ public class ASTWalker {
 				}
 				return true;
 			}
-/*
+
 			public boolean visit(WildcardType node) {
-				if(inMethod) {
-					//fileModel.wildcard__.addWildcard(((ParameterizedType) node.getParent()).getType(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
+				if(inMethod) {					
+					WildcardObject wo = new WildcardObject();
+					wo.setName("Wildcard");
+					wo.setType(((ParameterizedType) node.getParent()).getType());
+					wo.setLineNumber(cu.getLineNumber(node.getStartPosition()));
+					wo.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
+					entityStack.peek().addChild(wo);					
 				}
+				
 				return false;
 			}
-*/
+
 		});
 
 		return fileModel;

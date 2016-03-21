@@ -57,20 +57,17 @@ public class Example extends SomeSuperClass implements thing1, thing2, thing3 {
 	}
 	
 	public void printLine() {
-		try{
-			// do something
-		}
-		catch(NullPointerException e) {
-			
-		}
+		Collection<?> list = new ArrayList<>();
 		
 		return;
 	}
 
 	class Another {
 		public double num() {
-			if(1 == 2) {
-				// do somethinf
+			try {
+				
+			} catch (NullPointerException e) {
+				
 			}
 			
 			return 1.2;

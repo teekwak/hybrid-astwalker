@@ -1,10 +1,12 @@
-package entities;
+package obsolete;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.core.dom.Type;
 
+import entities.WildcardObject;
+/*
 class WildcardObject {
 	String className;
 	String methodName;
@@ -26,7 +28,7 @@ class WildcardObject {
 		System.out.println("\tMethod:\t" + methodName);
 	}
 }
-
+*/
 public class Wildcard__ {
 	List<WildcardObject> wildcardObjectList;
 
