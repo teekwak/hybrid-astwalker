@@ -11,10 +11,10 @@ public class ClassObject extends SuperEntityClass {
 	String superClass;
 	List<String> implementsList;
 	
-	List<Entity> classList;
-	List<Entity> importObjectList;
+	List<SuperEntityClass> classList;
+	List<SuperEntityClass> importObjectList;
 	List<MethodDeclarationObject> methodDeclarationList;
-	Entity packageObject;
+	SuperEntityClass packageObject;
 	
 	public ClassObject() {
 		this.implementsList = new ArrayList<>();
@@ -90,15 +90,15 @@ public class ClassObject extends SuperEntityClass {
 		return this.implementsList;
 	}
 	
-	public void setImportList(List<Entity> list ) {
+	public void setImportList(List<SuperEntityClass> list ) {
 		this.importObjectList = list;
 	}
 	
-	public List<Entity> getImportList() {
+	public List<SuperEntityClass> getImportList() {
 		return this.importObjectList;
 	}
 	
-	public void setPackageObject(Entity po) {
+	public void setPackageObject(SuperEntityClass po) {
 		packageObject = po;
 	}
 	

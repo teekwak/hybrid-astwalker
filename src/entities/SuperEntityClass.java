@@ -14,11 +14,11 @@ public class SuperEntityClass implements Entity {
 	int columnNumber;
 	List<SuperEntityClass> switchCaseList;
 	
-	List<Entity> arrayList;
-	List<Entity> genericsList;
-	List<Entity> primitiveList;
-	List<Entity> simpleList;
-	List<Entity> wildcardList;
+	List<SuperEntityClass> arrayList;
+	List<SuperEntityClass> genericsList;
+	List<SuperEntityClass> primitiveList;
+	List<SuperEntityClass> simpleList;
+	List<SuperEntityClass> wildcardList;
 	
 	public SuperEntityClass() {
 		this.arrayList = new ArrayList<>();
@@ -82,35 +82,35 @@ public class SuperEntityClass implements Entity {
 		return this.switchCaseList;
 	}
 	
-	public void addArray(Entity ao) {
+	public void addArray(SuperEntityClass ao) {
 		this.arrayList.add(ao);
 	}
 
-	public void addCatchClause(Entity cco) {
+	public void addCatchClause(SuperEntityClass cco) {
 		// Method Declaration only
 	}
 
-	public void addConditionalExpression(Entity ceo) {
+	public void addConditionalExpression(SuperEntityClass ceo) {
 		// Method Declaration only
 	}
 	
-	public void addDoStatement(Entity dso) {
+	public void addDoStatement(SuperEntityClass dso) {
 		// Method Declaration only
 	}
 	
-	public void addForStatement(Entity fso) {
+	public void addForStatement(SuperEntityClass fso) {
 		// Method Declaration only		
 	}
 	
-	public void addGenerics(Entity go) {
+	public void addGenerics(SuperEntityClass go) {
 		this.genericsList.add(go);
 	}
 
-	public void addIfStatement(Entity iso) {
+	public void addIfStatement(SuperEntityClass iso) {
 		// Method Declaration only
 	}
 
-	public void addInfixExpression(Entity ieo) {
+	public void addInfixExpression(SuperEntityClass ieo) {
 		// Method Declaration only
 	}
 	
@@ -122,11 +122,11 @@ public class SuperEntityClass implements Entity {
 		// Method Declaration only
 	}
 	
-	public void addPrimitive(Entity po) {
+	public void addPrimitive(SuperEntityClass po) {
 		this.primitiveList.add(po);
 	}
 	
-	public void addSimple(Entity so) {
+	public void addSimple(SuperEntityClass so) {
 		this.simpleList.add(so);
 	}
 
@@ -134,20 +134,20 @@ public class SuperEntityClass implements Entity {
 		// Method Declaration only
 	}
 	
-	public void addThrowStatement(Entity to) {
+	public void addThrowStatement(SuperEntityClass to) {
 		// Method Declaration only
 	}
 
-	public void addTryStatement(Entity tso) {
+	public void addTryStatement(SuperEntityClass tso) {
 		// Method Declaration only
 	}
 	
-	public void addWhileStatement(Entity wso) {
+	public void addWhileStatement(SuperEntityClass wso) {
 		// Method Declaration only
 	}
 
 	// not working
-	public void addWildcard(Entity wo) {
+	public void addWildcard(SuperEntityClass wo) {
 		this.wildcardList.add(wo);
 	}
 	

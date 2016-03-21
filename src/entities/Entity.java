@@ -25,21 +25,21 @@ public interface Entity {
 	public void setType(Type t);
 	public Type getType();
 
-	public void addArray(Entity ao);
-	public void addCatchClause(Entity cco);
-	public void addConditionalExpression(Entity ceo);
-	public void addDoStatement(Entity dso);
-	public void addForStatement(Entity fso);
-	public void addGenerics(Entity go);
-	public void addIfStatement(Entity iso);
-	public void addInfixExpression(Entity ieo);
+	public void addArray(SuperEntityClass ao);
+	public void addCatchClause(SuperEntityClass cco);
+	public void addConditionalExpression(SuperEntityClass ceo);
+	public void addDoStatement(SuperEntityClass dso);
+	public void addForStatement(SuperEntityClass fso);
+	public void addGenerics(SuperEntityClass go);
+	public void addIfStatement(SuperEntityClass iso);
+	public void addInfixExpression(SuperEntityClass ieo);
 	public void addMethodDeclaration(MethodDeclarationObject temp);
 	public void addMethodInvocation(MethodInvocationObject mio);
-	public void addPrimitive(Entity po);
-	public void addSimple(Entity so);
+	public void addPrimitive(SuperEntityClass po);
+	public void addSimple(SuperEntityClass so);
 	public void addSwitchStatement(SuperEntityClass sso);
-	public void addThrowStatement(Entity to);
-	public void addTryStatement(Entity tso);
-	public void addWhileStatement(Entity wso);
-	public void addWildcard(Entity wo);
+	public void addThrowStatement(SuperEntityClass to);
+	public void addTryStatement(SuperEntityClass tso);
+	public void addWhileStatement(SuperEntityClass wso);
+	public void addWildcard(SuperEntityClass wo);
 }
