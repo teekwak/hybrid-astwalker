@@ -11,6 +11,14 @@ public class MethodDeclarationObject extends SuperEntityClass {
 	List<Entity> entitiesInsideMethodDeclaration;
 	List<?> parametersList;
 	
+	List<Entity> arrayList;
+	List<Entity> catchClauseList;
+	List<Entity> conditionalExpressionList;
+	List<Entity> doStatementList;
+	List<Entity> forStatementList;
+	List<Entity> genericsList;
+	
+	
 	public MethodDeclarationObject() {
 		this.thrownExceptions = new ArrayList<>();
 		this.entitiesInsideMethodDeclaration = new ArrayList<>();

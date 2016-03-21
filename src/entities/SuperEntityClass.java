@@ -2,7 +2,7 @@ package entities;
 
 import org.eclipse.jdt.core.dom.Type;
 
-public abstract class SuperEntityClass implements Entity {
+public class SuperEntityClass implements Entity {
 
 	String name;
 	Type type;
