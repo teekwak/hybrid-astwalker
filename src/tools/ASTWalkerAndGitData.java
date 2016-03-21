@@ -17,6 +17,9 @@ import tools.GitData;
 
 public class ASTWalkerAndGitData {
 	
+	static List<FileModel> fileModelList = new ArrayList<>();
+	static List<GitData> gitDataList = new ArrayList<>();
+	
 	public static void traverseUntilJava(File parentNode, String topDirectoryLocation) throws IOException, CoreException, NoHeadException, GitAPIException {
 		if(parentNode.isDirectory()) {
 			File childNodes[] = parentNode.listFiles();
@@ -56,6 +59,8 @@ public class ASTWalkerAndGitData {
 		fileModel = fileModel.parseDeclarations(parentNode.getAbsolutePath());
 			
 		fileModel.printAll();
+	
+		fileModelList.add(fileModel);
 		
 		GitData gitData = new GitData();
 		Git git = Git.open( new File (topDirectoryLocation + ".git") );
@@ -70,6 +75,8 @@ public class ASTWalkerAndGitData {
 		gitData.addHashCodePairsToMap(commitHistory);
 		gitData.getDiff(topDirectoryLocation, gitData.hashCodePairs);
 		
+		gitDataList.add(gitData);
+		
 		git.close();
 	}
 	
@@ -79,5 +86,8 @@ public class ASTWalkerAndGitData {
 		
 		File inputFolder = new File( topDirectoryLocation );
 		traverseUntilJava(inputFolder, topDirectoryLocation);
+		
+		System.out.println(fileModelList.size());
+		System.out.println(gitDataList.size());
 	}
 }
