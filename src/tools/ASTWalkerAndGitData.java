@@ -17,8 +17,8 @@ import tools.GitData;
 
 public class ASTWalkerAndGitData {
 	
-	static List<FileModel> fileModelList = new ArrayList<>();
-	static List<GitData> gitDataList = new ArrayList<>();
+	public static List<FileModel> fileModelList = new ArrayList<>();
+	public static List<GitData> gitDataList = new ArrayList<>();
 	
 	public static void traverseUntilJava(File parentNode, String topDirectoryLocation) throws IOException, CoreException, NoHeadException, GitAPIException {
 		if(parentNode.isDirectory()) {
@@ -81,6 +81,9 @@ public class ASTWalkerAndGitData {
 	}
 	
 	public static void main(String[] args) throws IOException, CoreException, NoHeadException, GitAPIException {
+		fileModelList.clear();
+		gitDataList.clear();
+		
 		//String topDirectoryLocation = args[0];
 		String topDirectoryLocation = "/home/kwak/Desktop/jabber-plugin/";
 		

@@ -15,7 +15,7 @@ public class JavaClass extends SuperEntityClass {
 	List<SuperEntityClass> classList;
 	List<SuperEntityClass> genericsList;
 	List<SuperEntityClass> importObjectList;
-	List<MethodDeclarationObject> methodDeclarationList;
+	List<SuperEntityClass> methodDeclarationList;
 	List<SuperEntityClass> primitiveList;
 	List<SuperEntityClass> simpleList;
 	List<SuperEntityClass> wildcardList;
@@ -69,7 +69,7 @@ public class JavaClass extends SuperEntityClass {
 			e.printInfo();
 		}
 		
-		for(MethodDeclarationObject e : methodDeclarationList) {
+		for(Entity e : methodDeclarationList) {
 			e.printInfo();
 		}		
 		
@@ -119,6 +119,8 @@ public class JavaClass extends SuperEntityClass {
 	}
 
 	public void addEntity(SuperEntityClass entity, EntityType ET) {
+		this.entityList.add(entity);
+		
 		if(ET == EntityType.ARRAY) {
 			this.arrayList.add(entity);
 		}
@@ -129,7 +131,7 @@ public class JavaClass extends SuperEntityClass {
 			this.genericsList.add(entity);
 		}
 		else if(ET == EntityType.METHOD_DECLARATION) {
-			this.methodDeclarationList.add((MethodDeclarationObject)entity);
+			this.methodDeclarationList.add(entity);
 		}
 		else if(ET == EntityType.PRIMITIVE) {
 			this.primitiveList.add(entity);

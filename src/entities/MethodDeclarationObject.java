@@ -19,7 +19,7 @@ public class MethodDeclarationObject extends SuperEntityClass {
 	List<SuperEntityClass> genericsList;
 	List<SuperEntityClass> ifStatementList;
 	List<SuperEntityClass> infixExpressionList;
-	List<MethodInvocationObject> methodInvocationList;
+	List<SuperEntityClass> methodInvocationList;
 	List<SuperEntityClass> primitiveList;
 	List<SuperEntityClass> simpleList;
 	List<SuperEntityClass> switchStatementList;
@@ -177,6 +177,8 @@ public class MethodDeclarationObject extends SuperEntityClass {
 	}
 	
 	public void addEntity(SuperEntityClass entity, EntityType ET) {
+		this.entityList.add(entity);
+		
 		if(ET == EntityType.ARRAY) {
 			this.arrayList.add(entity);
 		}
@@ -205,7 +207,7 @@ public class MethodDeclarationObject extends SuperEntityClass {
 			this.infixExpressionList.add(entity);
 		}
 		else if(ET == EntityType.METHOD_INVOCATION) {
-			this.methodInvocationList.add((MethodInvocationObject)entity);
+			this.methodInvocationList.add(entity);
 		}
 		else if(ET == EntityType.PRIMITIVE) {
 			this.primitiveList.add(entity);

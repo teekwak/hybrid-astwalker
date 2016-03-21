@@ -1,11 +1,14 @@
 package entities;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.core.dom.Type;
 
 public class SuperEntityClass implements Entity {
 
+	List<Entity> entityList;
+	
 	String name;
 	String fullyQualifiedName;
 	Type type;
@@ -13,7 +16,7 @@ public class SuperEntityClass implements Entity {
 	int columnNumber;
 	
 	public SuperEntityClass() {
-
+		entityList = new ArrayList<>();
 	}
 	
 	public String getName() {
@@ -64,15 +67,11 @@ public class SuperEntityClass implements Entity {
 		System.out.println(this.name + " (" + this.lineNumber + " | " + this.columnNumber + ")");		
 	}
 	
-	public void setSwitchCaseList(List<SuperEntityClass> scl) {
-
+	public void addEntity(SuperEntityClass entity, EntityType ET) {
+		entityList.add(entity);
 	}
 	
-	public List<SuperEntityClass> getSwitchCaseList() {
-		return null;
-	}
-
-	public void addEntity(SuperEntityClass entity, EntityType ET) {
-		
+	public void addEntities(List<SuperEntityClass> listOfEntities, EntityType ET) {
+		entityList.addAll(listOfEntities);
 	}
 }

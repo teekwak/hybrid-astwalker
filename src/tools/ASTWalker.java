@@ -368,11 +368,11 @@ public class ASTWalker {
 							switchCase.setName(expression);
 							switchCase.setLineNumber(cu.getLineNumber(((SwitchCase) s).getStartPosition()));
 							switchCase.setColumnNumber(cu.getColumnNumber(((SwitchCase)s).getStartPosition()));
-							switchCaseList.add(switchCase);						
+							switchCaseList.add(switchCase);	
 						}
 					}
 					
-					sso.setSwitchCaseList(switchCaseList);
+					sso.addEntities(switchCaseList, EntityType.SWITCH_CASE);
 					entityStack.peek().addEntity(sso, EntityType.SWITCH_STATEMENT);
 				}
 
