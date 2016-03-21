@@ -49,6 +49,7 @@ import org.eclipse.jdt.core.dom.WildcardType;
 import entities.ClassObject;
 import entities.ConditionalExpressionObject;
 import entities.MethodDeclarationObject;
+import entities.MethodInvocationObject;
 import entities.PackageObject;
 // import entities.ReturnStatementObject;
 import entities.ThrowObject;
@@ -279,7 +280,7 @@ public class ASTWalker {
 				MethodDeclarationObject temp = (MethodDeclarationObject) entityStack.pop();
 				entityStack.peek().addChild(temp);
 			}
-/*
+
 			@SuppressWarnings("unchecked")
 			public boolean visit(MethodInvocation node) {
 				
@@ -292,23 +293,19 @@ public class ASTWalker {
 					} catch (NullPointerException e) {
 						fullyQualifiedName = "";
 					}
-					
-					IMethodBinding binding = node.resolveMethodBinding();
-					
-					String parentClass;
-					
-					try {
-						parentClass = binding.getDeclaringClass().getName();
-					} catch (NullPointerException e) {
-						parentClass = "";
-					}
-					
-					//fileModel.methodInvocation__.addMethodInvocation(name.toString(), fullyQualifiedName, parentClass, currentClassStack.peek().getName().toString(), node.arguments(), cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));	
+									
+					MethodInvocationObject mio = new MethodInvocationObject();
+					mio.setName(name.toString());
+					mio.setFullyQualifiedName(fullyQualifiedName);
+					mio.setArguments(node.arguments());
+					mio.setLineNumber(cu.getLineNumber(name.getStartPosition()));
+					mio.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
+					entityStack.peek().addChild(mio);
 				}
 
 				return true;
 			}
-*/
+
 			public boolean visit(PackageDeclaration node){
 				Name name = node.getName();
 				

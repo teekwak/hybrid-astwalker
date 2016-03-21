@@ -1,11 +1,14 @@
-package entities;
+package obsolete;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.LinkedHashMap;
 
+import entities.MethodInvocationObject;
+
+import java.util.LinkedHashMap;
+/*
 class MethodInvocationObject {
 	String name;
 	String fullyQualifiedName;
@@ -61,7 +64,7 @@ class MethodInvocationObject {
 		}
 	}
 }
-
+*/
 public class MethodInvocation__ {
 	List<MethodInvocationObject> methodInvocationObjectList;
 

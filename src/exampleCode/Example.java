@@ -44,9 +44,7 @@ public class Example extends SomeSuperClass implements thing1, thing2, thing3 {
 	}
 	
 	public static void main(String[] args) {
-		System.out.println(true && true);
-		System.out.println(1 > 0);
-		throw new Exception();
+
 	}
 
 	public int returnOne() throws IllegalArgumentException {
@@ -56,19 +54,17 @@ public class Example extends SomeSuperClass implements thing1, thing2, thing3 {
 		return 1;
 	}
 	
+	public int printNumbers(int a, int b, int c) {
+		System.out.println(a + b + c);
+	}
+	
 	public void printLine() {
-		Collection<?> list = new ArrayList<>();
-		
+		printNumbers(1, 2, 3);
 		return;
 	}
 
 	class Another {
 		public double num() {
-			try {
-				
-			} catch (NullPointerException e) {
-				
-			}
 			
 			return 1.2;
 		}
