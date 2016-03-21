@@ -103,11 +103,8 @@ public class ClassObject extends SuperEntityClass {
 		entitiesInsideClass.add(e);
 	}
 
-	
-	
 	public void addMethodDeclaration(MethodDeclarationObject mdo) {
 		this.methodDeclarationList.add(mdo);
-	}
-	
+	}	
 	
 }

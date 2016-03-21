@@ -28,7 +28,6 @@ import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
 import org.eclipse.jdt.core.dom.ParameterizedType;
-// import org.eclipse.jdt.core.dom.ReturnStatement;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.SwitchCase;
@@ -44,29 +43,9 @@ import org.eclipse.jdt.core.dom.WhileStatement;
 import org.eclipse.jdt.core.dom.WildcardType;
 
 import entities.ClassObject;
-import entities.ConditionalExpressionObject;
 import entities.MethodDeclarationObject;
-import entities.MethodInvocationObject;
-import entities.PackageObject;
-import entities.PrimitiveObject;
-import entities.SimpleObject;
 import entities.SuperEntityClass;
-import entities.SwitchStatementObject;
-// import entities.ReturnStatementObject;
-import entities.ThrowObject;
-import entities.WhileStatementObject;
-import entities.WildcardObject;
-import entities.TryStatementObject;
-import entities.ArrayObject;
-import entities.CatchClauseObject;
-import entities.DoStatementObject;
 import entities.Entity;
-import entities.ForStatementObject;
-import entities.GenericsObject;
-import entities.IfStatementObject;
-import entities.ImportObject;
-import entities.InfixExpressionObject;
-
 
 /**
  * Walks Java source code and parses constructs
@@ -77,7 +56,7 @@ public class ASTWalker {
 
 	public FileModel fileModel;
 	public Stack<Entity> entityStack = new Stack<>();
-	public Entity packageObject = new PackageObject();
+	public Entity packageObject = new SuperEntityClass();
 	public List<Entity> importList = new ArrayList<>();
 	public boolean inMethod = false;
 	public boolean inInterface = false; // ignoring interfaces
@@ -331,27 +310,6 @@ public class ASTWalker {
 				
 				return true;
 			}
-
-/* ignoring for now
-			public boolean visit(ReturnStatement node) {
-				if(inMethod) {
-					String expression;
-					
-					try {
-						expression = node.getExpression().toString();
-					} catch (NullPointerException e) {
-						expression = "";
-					}
-					
-					ReturnStatementObject rso = new ReturnStatementObject();
-					rso.setName(expression);
-					rso.setLineNumber(cu.getLineNumber(node.getStartPosition()));
-					rso.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
-					entityStack.peek().addChild(rso);
-				}
-				return true;
-			}
-*/
 			
 			// called on parameters of function
 			// done-ish. excluded qualifiedType, unionType, wildcardType
@@ -511,7 +469,7 @@ public class ASTWalker {
 				Type nodeType = ((FieldDeclaration) node.getParent()).getType();
 				
 				if(nodeType.isArrayType()) {
-					Entity ao = new ArrayObject();
+					Entity ao = new SuperEntityClass();
 					ao.setName(name.toString());
 					ao.setType(nodeType);
 					ao.setLineNumber(cu.getLineNumber(name.getStartPosition()));
