@@ -6,9 +6,4 @@ public class ArrayObject extends SuperEntityClass {
 		
 	}
 	
-	@Override
-	public void printInfo() {
-		System.out.println(this.name + " " + this.type);
-	}
-	
 }
