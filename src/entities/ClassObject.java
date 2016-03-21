@@ -51,17 +51,31 @@ public class ClassObject extends SuperEntityClass {
 
 		System.out.println(s.toString());
 		
-		/*
-		for(Entity e : entitiesInsideClass) {
-			e.printInfo();
-		}
-		*/
-		
-		for(Entity e : this.methodDeclarationList) {
+		for(Entity e : this.classList) {
 			e.printInfo();
 		}
 		
-		for(Entity e : this.genericsList) {
+		for(MethodDeclarationObject e : methodDeclarationList) {
+			e.printInfo();
+		}		
+		
+		for(Entity e : arrayList) {
+			e.printInfo();
+		}
+		
+		for(Entity e : genericsList) {
+			e.printInfo();
+		}
+		
+		for(Entity e : primitiveList) {
+			e.printInfo();
+		}
+		
+		for(Entity e : simpleList) {
+			e.printInfo();
+		}
+		
+		for(Entity e : wildcardList) {
 			e.printInfo();
 		}
 	}

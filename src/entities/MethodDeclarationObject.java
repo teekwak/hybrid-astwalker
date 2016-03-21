@@ -18,7 +18,7 @@ public class MethodDeclarationObject extends SuperEntityClass {
 	List<Entity> ifStatementList;
 	List<Entity> infixExpressionList;
 	List<Entity> methodInvocationList;
-	List<Entity> switchStatementList;
+	List<SuperEntityClass> switchStatementList;
 	List<Entity> throwStatementList;
 	List<Entity> tryStatementList;
 	List<Entity> whileStatementList;
@@ -55,13 +55,67 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		
 		System.out.println(s.toString());
 		
-		/*
-		for(Entity e : entitiesInsideMethodDeclaration) {
+		for(Entity e : arrayList) {
 			e.printInfo();
 		}
-		*/
+		
+		for(Entity e : classList) {
+			e.printInfo();
+		}
+		
+		for(Entity e : catchClauseList) {
+			e.printInfo();
+		}
+		
+		for(Entity e : conditionalExpressionList) {
+			e.printInfo();
+		}
+		
+		for(Entity e : doStatementList) {
+			e.printInfo();
+		}
+		
+		for(Entity e : forStatementList) {
+			e.printInfo();
+		}
+		
+		for(Entity e : genericsList) {
+			e.printInfo();
+		}
+		
+		for(Entity e : ifStatementList) {
+			e.printInfo();
+		}
+		
+		for(Entity e : infixExpressionList) {
+			e.printInfo();
+		}
+		
+		for(Entity e : methodInvocationList) {
+			e.printInfo();
+		}
 		
 		for(Entity e : primitiveList) {
+			e.printInfo();
+		}
+		
+		for(Entity e : simpleList) {
+			e.printInfo();
+		}
+		
+		for(Entity e : switchStatementList) {
+			e.printInfo();
+		}
+		
+		for(Entity e : throwStatementList) {
+			e.printInfo();
+		}
+		
+		for(Entity e : tryStatementList) {
+			e.printInfo();
+		}
+		
+		for(Entity e : wildcardList) {
 			e.printInfo();
 		}
 	}
@@ -126,8 +180,8 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		this.methodInvocationList.add(mio);
 	}
 	
-	public void addSwitchStatement(Entity sso) {
-		
+	public void addSwitchStatement(SuperEntityClass sso) {
+		this.switchCaseList.add(sso);
 	}
 	
 	public void addThrowStatement(Entity tso) {

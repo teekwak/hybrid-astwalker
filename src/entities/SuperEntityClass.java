@@ -130,7 +130,7 @@ public class SuperEntityClass implements Entity {
 		this.simpleList.add(so);
 	}
 
-	public void addSwitchStatement(Entity sso) {
+	public void addSwitchStatement(SuperEntityClass sso) {
 		// Method Declaration only
 	}
 	

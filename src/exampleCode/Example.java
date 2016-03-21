@@ -60,7 +60,7 @@ public class Example extends SomeSuperClass implements thing1, thing2, thing3 {
 		String[] parts = {"h", "i"};
 	}
 	
-	public int printNumbers(int a, int b, int c) {
+	public Collection<?> printNumbers(int a, int b, int c) {
 		System.out.println(a + b + c);
 
 	}

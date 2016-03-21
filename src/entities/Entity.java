@@ -37,7 +37,7 @@ public interface Entity {
 	public void addMethodInvocation(MethodInvocationObject mio);
 	public void addPrimitive(Entity po);
 	public void addSimple(Entity so);
-	public void addSwitchStatement(Entity sso);
+	public void addSwitchStatement(SuperEntityClass sso);
 	public void addThrowStatement(Entity to);
 	public void addTryStatement(Entity tso);
 	public void addWhileStatement(Entity wso);
