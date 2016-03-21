@@ -8,7 +8,6 @@ public class MethodDeclarationObject extends SuperEntityClass {
 	boolean isStatic;
 	boolean isAbstract;
 	List<String> thrownExceptions;
-	List<Entity> entitiesInsideMethodDeclaration;
 	List<?> parametersList;
 	
 	List<Entity> catchClauseList;
@@ -26,7 +25,6 @@ public class MethodDeclarationObject extends SuperEntityClass {
 	
 	public MethodDeclarationObject() {
 		this.thrownExceptions = new ArrayList<>();
-		this.entitiesInsideMethodDeclaration = new ArrayList<>();
 		this.parametersList = new ArrayList<>();
 		
 		this.catchClauseList = new ArrayList<>();
@@ -42,11 +40,7 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		this.tryStatementList = new ArrayList<>();
 		this.whileStatementList = new ArrayList<>();
 	}
-
-	public void addChild(Entity e) {
-		entitiesInsideMethodDeclaration.add(e);		
-	}
-
+	
 	@Override
 	public void printInfo() {
 		StringBuilder s = new StringBuilder();

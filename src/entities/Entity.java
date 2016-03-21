@@ -1,7 +1,5 @@
 package entities;
 
-import java.util.List;
-
 import org.eclipse.jdt.core.dom.Type;
 
 public interface Entity {
@@ -44,5 +42,4 @@ public interface Entity {
 	public void addTryStatement(Entity tso);
 	public void addWhileStatement(Entity wso);
 	public void addWildcard(Entity wo);
-
 }

@@ -10,7 +10,6 @@ public class ClassObject extends SuperEntityClass {
 	int columnNumber;
 	String superClass;
 	List<String> implementsList;
-	List<Entity> entitiesInsideClass;
 	
 	List<Entity> classList;
 	List<Entity> importObjectList;
@@ -19,19 +18,11 @@ public class ClassObject extends SuperEntityClass {
 	
 	public ClassObject() {
 		this.implementsList = new ArrayList<>();
-		this.entitiesInsideClass = new ArrayList<>();
 		
 		this.classList = new ArrayList<>();
 		this.importObjectList = new ArrayList<>();
 		this.methodDeclarationList = new ArrayList<>();
 		this.packageObject = null;
-	}
-	
-	public ClassObject(String n, int l, int c) {
-		name = n;
-		lineNumber = l;
-		columnNumber = c;
-		entitiesInsideClass = new ArrayList<>();
 	}
 	
 	public void setSuperClass(String s) {
@@ -97,10 +88,6 @@ public class ClassObject extends SuperEntityClass {
 	
 	public Entity getPackageObject() {
 		return this.packageObject;
-	}
-	
-	public void addChild(Entity e) {
-		entitiesInsideClass.add(e);
 	}
 
 	public void addMethodDeclaration(MethodDeclarationObject mdo) {

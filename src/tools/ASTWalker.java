@@ -42,6 +42,7 @@ import org.eclipse.jdt.core.dom.WildcardType;
 
 import entities.ClassObject;
 import entities.MethodDeclarationObject;
+import entities.MethodInvocationObject;
 import entities.SuperEntityClass;
 import entities.Entity;
 
@@ -259,22 +260,14 @@ public class ASTWalker {
 				
 				inMethod = false;
 			}
-/*
+
 			public boolean visit(MethodInvocation node) {
 				
 				if(inMethod) {					
 					SimpleName name = node.getName();
-					String fullyQualifiedName;
-					
-					try {
-						fullyQualifiedName = name.getFullyQualifiedName();
-					} catch (NullPointerException e) {
-						fullyQualifiedName = "";
-					}
 									
 					MethodInvocationObject mio = new MethodInvocationObject();
 					mio.setName(name.toString());
-					mio.setFullyQualifiedName(fullyQualifiedName);
 					mio.setArguments(node.arguments());
 					mio.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 					mio.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
@@ -283,7 +276,7 @@ public class ASTWalker {
 
 				return true;
 			}
-*/
+
 			public boolean visit(PackageDeclaration node){
 				Name name = node.getName();
 				
@@ -396,7 +389,6 @@ public class ASTWalker {
 				return true;
 			}
 
-
 			public boolean visit(TryStatement node) {
 				if(inMethod) {
 					String tryBody = "Try Statement";
@@ -411,7 +403,6 @@ public class ASTWalker {
 				return true;
 			}
 
-			// NOT DONE
 			public boolean visit(TypeDeclaration node) {
 
 				if(node.isInterface()) {
@@ -452,7 +443,6 @@ public class ASTWalker {
 				inInterface = false;
 			}
 
-			// done-ish. excluded qualifiedType, unionType, wildcardType
 			public boolean visit(VariableDeclarationFragment node) {
 				if(inInterface == false) {
 				
@@ -499,7 +489,6 @@ public class ASTWalker {
 				return true;
 			}
 
-			// done-ish. excluded qualifiedType, unionType, wildcardType
 			public boolean visit(VariableDeclarationStatement node) {
 				if(inInterface == false) {
 					Type nodeType = node.getType();
@@ -549,7 +538,6 @@ public class ASTWalker {
 				return false; // does this stop from going to VariableDeclarationFragment?
 			}
 
-			// done-ish. excluded qualifiedType, unionType, wildcardType
 			public boolean visit(VariableDeclarationExpression node) {
 				if(inInterface == false) {
 					Type nodeType = node.getType();
