@@ -1,4 +1,4 @@
-package entities;
+package obsolete;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +31,8 @@ class ArrayObject {
 	}
 }
 */
+
+import entities.ArrayObject;
 
 public class Array__ {
 	List<ArrayObject> arrayObjectList;
