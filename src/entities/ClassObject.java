@@ -16,8 +16,6 @@ public class ClassObject extends SuperEntityClass {
 	List<Entity> importObjectList;
 	List<MethodDeclarationObject> methodDeclarationList;
 	Entity packageObject;
-	List<Entity> primitiveList;
-	List<Entity> simpleList;
 	
 	public ClassObject() {
 		this.implementsList = new ArrayList<>();
@@ -27,8 +25,6 @@ public class ClassObject extends SuperEntityClass {
 		this.importObjectList = new ArrayList<>();
 		this.methodDeclarationList = new ArrayList<>();
 		this.packageObject = null;
-		this.primitiveList = new ArrayList<>();
-		this.simpleList = new ArrayList<>();
 	}
 	
 	public ClassObject(String n, int l, int c) {

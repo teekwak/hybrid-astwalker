@@ -15,11 +15,15 @@ public class SuperEntityClass implements Entity {
 	
 	List<Entity> arrayList;
 	List<Entity> genericsList;
+	List<Entity> primitiveList;
+	List<Entity> simpleList;
 	List<Entity> wildcardList;
 	
 	public SuperEntityClass() {
 		this.arrayList = new ArrayList<>();
 		this.genericsList = new ArrayList<>();
+		this.primitiveList = new ArrayList<>();
+		this.simpleList = new ArrayList<>();
 		this.wildcardList = new ArrayList<>();
 	}
 	
@@ -100,37 +104,31 @@ public class SuperEntityClass implements Entity {
 		this.genericsList.add(go);
 	}
 
-	@Override
 	public void addMethodDeclaration(MethodDeclarationObject temp) {
 		// Class only	
 	}
 
-	@Override
 	public void addMethodInvocation(MethodInvocationObject mio) {
 		// Method Declaration only
 	}
 
-	@Override
 	public void addPrimitive(Entity po) {
-		// TODO Auto-generated method stub
-		
+		this.primitiveList.add(po);
 	}
 
 	@Override
 	public void addSimple(Entity so) {
-		// TODO Auto-generated method stub
-		
+		this.simpleList.add(so);
 	}
 
 	@Override
 	public void addThrowStatement(Entity to) {
-		// TODO Auto-generated method stub
-		
+		// Method Declaration only
 	}
 
 	@Override
 	public void addTryStatement(Entity tso) {
-		// TODO Auto-generated method stub
+		// Method Declaration only
 		
 	}
 	

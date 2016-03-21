@@ -19,10 +19,8 @@ public class MethodDeclarationObject extends SuperEntityClass {
 	List<Entity> ifStatementList;
 	List<Entity> infixExpressionList;
 	List<Entity> methodInvocationList;
-	List<Entity> primitiveList;
-	List<Entity> simpleList;
 	List<Entity> switchStatementList;
-	List<Entity> throwList;
+	List<Entity> throwStatementList;
 	List<Entity> tryStatementList;
 	List<Entity> whileStatementList;
 	
@@ -39,10 +37,8 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		this.ifStatementList = new ArrayList<>();
 		this.infixExpressionList = new ArrayList<>();
 		this.methodInvocationList = new ArrayList<>();
-		this.primitiveList = new ArrayList<>();
-		this.simpleList = new ArrayList<>();
 		this.switchStatementList = new ArrayList<>();
-		this.throwList = new ArrayList<>();
+		this.throwStatementList = new ArrayList<>();
 		this.tryStatementList = new ArrayList<>();
 		this.whileStatementList = new ArrayList<>();
 	}
@@ -71,7 +67,7 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		}
 		*/
 		
-		for(Entity e : genericsList) {
+		for(Entity e : primitiveList) {
 			e.printInfo();
 		}
 	}
@@ -130,8 +126,16 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		this.methodInvocationList.add(mio);
 	}
 	
+	public void addThrowStatement(Entity tso) {
+		this.throwStatementList.add(tso);
+	}
+	
+	public void addTryStatement(Entity tso) {
+		this.tryStatementList.add(tso);
+	}
+	
 	public void addWhileStatement(Entity wso) {
 		this.whileStatementList.add(wso);
 	} 
-	
+
 }
