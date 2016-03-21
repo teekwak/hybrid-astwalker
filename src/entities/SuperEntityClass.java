@@ -27,7 +27,7 @@ public class SuperEntityClass implements Entity {
 		this.simpleList = new ArrayList<>();
 		this.wildcardList = new ArrayList<>();
 		
-		this.switchCases = new ArrayList<>();
+		this.switchCaseList = new ArrayList<>();
 	}
 	
 	public String getName() {
