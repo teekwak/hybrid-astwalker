@@ -9,12 +9,6 @@ public class CatchClauseObject extends SuperEntityClass {
 	public void printInfo() {
 		System.out.println(this.name + " " + this.exception.toString());
 	}
-
-	@Override
-	public void addChild(Entity e) {
-		// TODO Auto-generated method stub
-		
-	}
 	
 	public void setType(Type t) {
 		this.exception = t;

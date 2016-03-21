@@ -11,9 +11,4 @@ public class ReturnStatementObject extends SuperEntityClass {
 		System.out.println(this.name + " " + this.lineNumber + " " + this.columnNumber);	
 	}
 	
-	@Override
-	public void addChild(Entity e) {
-		// TODO Auto-generated method stub
-		
-	}
 }

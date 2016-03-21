@@ -30,4 +30,12 @@ public abstract class SuperEntityClass implements Entity {
 		return this.columnNumber;
 	}
 	
+	public void addChild(Entity e) {
+		
+	}
+	
+	public void printInfo() {
+		System.out.println(this.name + " (" + this.lineNumber + " | " + this.columnNumber + ")");		
+	}
+	
 }
