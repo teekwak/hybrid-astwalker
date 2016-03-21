@@ -8,6 +8,10 @@ public interface Entity {
 	String SolrKey = null;
 	Object SolrValue = null;
 	
+	public enum EntityType {
+		ARRAY, CLASS, GENERICS, METHOD_DECLARATION, METHOD_INVOCATION, PRIMITIVE, SIMPLE, WILDCARD
+	}
+	
 	public void printInfo();
 	
 	public void setName(String n);
@@ -25,21 +29,5 @@ public interface Entity {
 	public void setType(Type t);
 	public Type getType();
 
-	public void addArray(SuperEntityClass ao);
-	public void addCatchClause(SuperEntityClass cco);
-	public void addConditionalExpression(SuperEntityClass ceo);
-	public void addDoStatement(SuperEntityClass dso);
-	public void addForStatement(SuperEntityClass fso);
-	public void addGenerics(SuperEntityClass go);
-	public void addIfStatement(SuperEntityClass iso);
-	public void addInfixExpression(SuperEntityClass ieo);
-	public void addMethodDeclaration(MethodDeclarationObject temp);
-	public void addMethodInvocation(MethodInvocationObject mio);
-	public void addPrimitive(SuperEntityClass po);
-	public void addSimple(SuperEntityClass so);
-	public void addSwitchStatement(SuperEntityClass sso);
-	public void addThrowStatement(SuperEntityClass to);
-	public void addTryStatement(SuperEntityClass tso);
-	public void addWhileStatement(SuperEntityClass wso);
-	public void addWildcard(SuperEntityClass wo);
+	public void addEntity(SuperEntityClass entity, EntityType ET);
 }

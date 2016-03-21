@@ -45,6 +45,7 @@ import entities.MethodDeclarationObject;
 import entities.MethodInvocationObject;
 import entities.SuperEntityClass;
 import entities.Entity;
+import entities.Entity.EntityType;
 
 /**
  * Walks Java source code and parses constructs
@@ -309,7 +310,7 @@ public class ASTWalker {
 					ao.setType(node.getType());
 					ao.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 					ao.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-					entityStack.peek().addArray(ao);
+					entityStack.peek().addEntity(ao, EntityType.ARRAY);
 				}
 				
 				else if(node.getType().isParameterizedType()) {

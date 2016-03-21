@@ -10,35 +10,49 @@ public class MethodDeclarationObject extends SuperEntityClass {
 	List<String> thrownExceptions;
 	List<?> parametersList;
 	
-	List<Entity> catchClauseList;
-	List<Entity> classList;
-	List<Entity> conditionalExpressionList;
-	List<Entity> doStatementList;
-	List<Entity> forStatementList;
-	List<Entity> ifStatementList;
-	List<Entity> infixExpressionList;
-	List<Entity> methodInvocationList;
+	List<SuperEntityClass> arrayList;
+	List<SuperEntityClass> catchClauseList;
+	List<SuperEntityClass> classList;
+	List<SuperEntityClass> conditionalExpressionList;
+	List<SuperEntityClass> doStatementList;
+	List<SuperEntityClass> forStatementList;
+	List<SuperEntityClass> genericsList;
+	List<SuperEntityClass> ifStatementList;
+	List<SuperEntityClass> infixExpressionList;
+	List<SuperEntityClass> methodInvocationList;
+	List<SuperEntityClass> primitiveList;
+	List<SuperEntityClass> simpleList;
 	List<SuperEntityClass> switchStatementList;
-	List<Entity> throwStatementList;
-	List<Entity> tryStatementList;
-	List<Entity> whileStatementList;
+	List<SuperEntityClass> throwStatementList;
+	List<SuperEntityClass> tryStatementList;
+	List<SuperEntityClass> whileStatementList;
+	List<SuperEntityClass> wildcardList;
 	
+	List<SuperEntityClass> switchCaseList;
+
 	public MethodDeclarationObject() {
 		this.thrownExceptions = new ArrayList<>();
 		this.parametersList = new ArrayList<>();
 		
+		this.arrayList = new ArrayList<>();
 		this.catchClauseList = new ArrayList<>();
 		this.classList = new ArrayList<>();
 		this.conditionalExpressionList = new ArrayList<>();
 		this.doStatementList = new ArrayList<>();
 		this.forStatementList = new ArrayList<>();
+		this.genericsList = new ArrayList<>();
 		this.ifStatementList = new ArrayList<>();
 		this.infixExpressionList = new ArrayList<>();
 		this.methodInvocationList = new ArrayList<>();
+		this.primitiveList = new ArrayList<>();
+		this.simpleList = new ArrayList<>();
 		this.switchStatementList = new ArrayList<>();
 		this.throwStatementList = new ArrayList<>();
 		this.tryStatementList = new ArrayList<>();
 		this.whileStatementList = new ArrayList<>();
+		this.wildcardList = new ArrayList<>();
+		
+		this.switchCaseList = new ArrayList<>();
 	}
 	
 	@Override
@@ -154,31 +168,31 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		return this.isAbstract;
 	}
 	
-	public void addCatchClause(Entity cco) {
+	public void addCatchClause(SuperEntityClass cco) {
 		this.catchClauseList.add(cco);
 	}
 	
-	public void addConditionalExpression(Entity ceo) {
+	public void addConditionalExpression(SuperEntityClass ceo) {
 		this.conditionalExpressionList.add(ceo);
 	}
 	
-	public void addDoStatement(Entity dso) {
+	public void addDoStatement(SuperEntityClass dso) {
 		this.doStatementList.add(dso);
 	}
 	
-	public void addForStatement(Entity fso) {
+	public void addForStatement(SuperEntityClass fso) {
 		this.forStatementList.add(fso);
 	}	
 	
-	public void addIfStatement(Entity iso) {
+	public void addIfStatement(SuperEntityClass iso) {
 		this.ifStatementList.add(iso);
 	}
 	
-	public void addInfixExpression(Entity ieo) {
+	public void addInfixExpression(SuperEntityClass ieo) {
 		this.infixExpressionList.add(ieo);
 	}
 	
-	public void addMethodInvocation(Entity mio) {
+	public void addMethodInvocation(SuperEntityClass mio) {
 		this.methodInvocationList.add(mio);
 	}
 	
@@ -186,16 +200,44 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		this.switchCaseList.add(sso);
 	}
 	
-	public void addThrowStatement(Entity tso) {
+	public void addThrowStatement(SuperEntityClass tso) {
 		this.throwStatementList.add(tso);
 	}
 	
-	public void addTryStatement(Entity tso) {
+	public void addTryStatement(SuperEntityClass tso) {
 		this.tryStatementList.add(tso);
 	}
 	
-	public void addWhileStatement(Entity wso) {
+	public void addWhileStatement(SuperEntityClass wso) {
 		this.whileStatementList.add(wso);
 	} 
 
+	public void setSwitchCaseList(List<SuperEntityClass> scl) {
+		this.switchCaseList = scl;
+	}
+	
+	public List<SuperEntityClass> getSwitchCaseList() {
+		return this.switchCaseList;
+	}
+	
+	public void addArray(SuperEntityClass ao) {
+		this.arrayList.add(ao);
+	}
+
+	public void addGenerics(SuperEntityClass go) {
+		this.genericsList.add(go);
+	}
+	
+	public void addPrimitive(SuperEntityClass po) {
+		this.primitiveList.add(po);
+	}
+	
+	public void addSimple(SuperEntityClass so) {
+		this.simpleList.add(so);
+	}
+
+	public void addWildcard(SuperEntityClass wo) {
+		this.wildcardList.add(wo);
+	}
+	
 }

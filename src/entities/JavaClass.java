@@ -11,17 +11,29 @@ public class JavaClass extends SuperEntityClass {
 	String superClass;
 	List<String> implementsList;
 	
+	List<SuperEntityClass> arrayList;
 	List<SuperEntityClass> classList;
+	List<SuperEntityClass> genericsList;
 	List<SuperEntityClass> importObjectList;
 	List<MethodDeclarationObject> methodDeclarationList;
-	SuperEntityClass packageObject;
+	List<SuperEntityClass> primitiveList;
+	List<SuperEntityClass> simpleList;
+	List<SuperEntityClass> wildcardList;
 	
+	SuperEntityClass packageObject;
+
 	public JavaClass() {
 		this.implementsList = new ArrayList<>();
 		
+		this.arrayList = new ArrayList<>();
 		this.classList = new ArrayList<>();
+		this.genericsList = new ArrayList<>();
 		this.importObjectList = new ArrayList<>();
 		this.methodDeclarationList = new ArrayList<>();
+		this.primitiveList = new ArrayList<>();
+		this.simpleList = new ArrayList<>();
+		this.wildcardList = new ArrayList<>();
+		
 		this.packageObject = null;
 	}
 	
@@ -106,8 +118,28 @@ public class JavaClass extends SuperEntityClass {
 		return this.packageObject;
 	}
 
-	public void addMethodDeclaration(MethodDeclarationObject mdo) {
-		this.methodDeclarationList.add(mdo);
-	}	
+	public void addEntity(SuperEntityClass entity, EntityType ET) {
+		if(ET == EntityType.ARRAY) {
+			this.arrayList.add(entity);
+		}
+		else if(ET == EntityType.CLASS) {
+			this.classList.add(entity);
+		}
+		else if(ET == EntityType.GENERICS) {
+			this.genericsList.add(entity);
+		}
+		else if(ET == EntityType.METHOD_DECLARATION) {
+			this.methodDeclarationList.add((MethodDeclarationObject)entity);
+		}
+		else if(ET == EntityType.PRIMITIVE) {
+			this.primitiveList.add(entity);
+		}
+		else if(ET == EntityType.SIMPLE) {
+			this.simpleList.add(entity);
+		}
+		else if(ET == EntityType.WILDCARD) {
+			this.wildcardList.add(entity);
+		}
+	}
 	
 }
