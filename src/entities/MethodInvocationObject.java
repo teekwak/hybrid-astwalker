@@ -1,5 +1,6 @@
 package entities;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MethodInvocationObject extends SuperEntityClass {
@@ -8,7 +9,7 @@ public class MethodInvocationObject extends SuperEntityClass {
 	List<?> argumentsList;
 	
 	public MethodInvocationObject() {
-		
+		this.argumentsList = new ArrayList<>();
 	}
 	
 	public void setFullyQualifiedName(String fqn) {

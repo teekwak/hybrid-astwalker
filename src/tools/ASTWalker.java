@@ -262,6 +262,7 @@ public class ASTWalker {
 					
 					MethodDeclarationObject md = new MethodDeclarationObject();
 					md.setName(name.toString());
+					md.setParametersList(node.parameters());
 					md.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 					md.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
 					md.setStatic(isStatic);

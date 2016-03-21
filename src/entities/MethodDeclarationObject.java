@@ -4,17 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MethodDeclarationObject extends SuperEntityClass {
-
-	// need arguments
 	
 	boolean isStatic;
 	boolean isAbstract;
 	List<String> thrownExceptions;
 	List<Entity> entitiesInsideMethodDeclaration;
+	List<?> parametersList;
 	
 	public MethodDeclarationObject() {
 		this.thrownExceptions = new ArrayList<>();
 		this.entitiesInsideMethodDeclaration = new ArrayList<>();
+		this.parametersList = new ArrayList<>();
 	}
 
 	public void addChild(Entity e) {
@@ -46,6 +46,14 @@ public class MethodDeclarationObject extends SuperEntityClass {
 
 	public List<String> getThrowsException() {
 		return this.thrownExceptions;
+	}
+	
+	public void setParametersList(List<?> pl) {
+		this.parametersList = pl;
+	}
+	
+	public List<?> getParametersList() {
+		return this.parametersList;
 	}
 	
 	public void setStatic(boolean tf) {
