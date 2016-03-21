@@ -1,21 +1,31 @@
 package tools;
 
-import entities.JavaFile;
+import entities.ClassObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import tools.ASTWalker;
 
 public class FileModel {
 	
-	JavaFile javaFile;
+	List<ClassObject> classObjectList;
 	
+	public void printAll() {
+		for(ClassObject co : classObjectList) {		
+			co.printInfo();
+		}
+	}
+	
+	public void addClass(ClassObject co) {
+		classObjectList.add(co);
+	}
+		
 	public FileModel() {
-		
-		this.javaFile = new JavaFile(); 
-		
+		this.classObjectList = new ArrayList<>();
 	}
 
 	public FileModel parseDeclarations(String fileLocation) throws IOException, CoreException {
@@ -39,7 +49,7 @@ public class FileModel {
 				
 				fileModel = fileModel.parseDeclarations(parentNode.getAbsolutePath());
 
-				fileModel.javaFile.printAll();
+				fileModel.printAll();
 				
 			}
 		}
