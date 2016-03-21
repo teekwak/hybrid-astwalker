@@ -12,6 +12,7 @@ public class SuperEntityClass implements Entity {
 	Type type;
 	int lineNumber;
 	int columnNumber;
+	List<SuperEntityClass> switchCaseList;
 	
 	List<Entity> arrayList;
 	List<Entity> genericsList;
@@ -25,6 +26,8 @@ public class SuperEntityClass implements Entity {
 		this.primitiveList = new ArrayList<>();
 		this.simpleList = new ArrayList<>();
 		this.wildcardList = new ArrayList<>();
+		
+		this.switchCases = new ArrayList<>();
 	}
 	
 	public String getName() {
@@ -71,6 +74,14 @@ public class SuperEntityClass implements Entity {
 		return this.type;
 	}
 
+	public void setSwitchCaseList(List<SuperEntityClass> scl) {
+		this.switchCaseList = scl;
+	}
+	
+	public List<SuperEntityClass> getSwitchCaseList() {
+		return this.switchCaseList;
+	}
+	
 	public void addArray(Entity ao) {
 		this.arrayList.add(ao);
 	}
@@ -79,18 +90,58 @@ public class SuperEntityClass implements Entity {
 		// Method Declaration only
 	}
 
+	public void addConditionalExpression(Entity ceo) {
+		// Method Declaration only
+	}
+	
+	public void addDoStatement(Entity dso) {
+		// Method Declaration only
+	}
+	
 	public void addForStatement(Entity fso) {
 		// Method Declaration only		
+	}
+	
+	public void addGenerics(Entity go) {
+		this.genericsList.add(go);
 	}
 
 	public void addIfStatement(Entity iso) {
 		// Method Declaration only
 	}
 
-	public void addDoStatement(Entity dso) {
+	public void addInfixExpression(Entity ieo) {
+		// Method Declaration only
+	}
+	
+	public void addMethodDeclaration(MethodDeclarationObject temp) {
+		// Class only	
+	}
+	
+	public void addMethodInvocation(MethodInvocationObject mio) {
+		// Method Declaration only
+	}
+	
+	public void addPrimitive(Entity po) {
+		this.primitiveList.add(po);
+	}
+	
+	public void addSimple(Entity so) {
+		this.simpleList.add(so);
+	}
+
+	public void addSwitchStatement(Entity sso) {
+		// Method Declaration only
+	}
+	
+	public void addThrowStatement(Entity to) {
 		// Method Declaration only
 	}
 
+	public void addTryStatement(Entity tso) {
+		// Method Declaration only
+	}
+	
 	public void addWhileStatement(Entity wso) {
 		// Method Declaration only
 	}
@@ -98,38 +149,6 @@ public class SuperEntityClass implements Entity {
 	// not working
 	public void addWildcard(Entity wo) {
 		this.wildcardList.add(wo);
-	}
-
-	public void addGenerics(Entity go) {
-		this.genericsList.add(go);
-	}
-
-	public void addMethodDeclaration(MethodDeclarationObject temp) {
-		// Class only	
-	}
-
-	public void addMethodInvocation(MethodInvocationObject mio) {
-		// Method Declaration only
-	}
-
-	public void addPrimitive(Entity po) {
-		this.primitiveList.add(po);
-	}
-
-	@Override
-	public void addSimple(Entity so) {
-		this.simpleList.add(so);
-	}
-
-	@Override
-	public void addThrowStatement(Entity to) {
-		// Method Declaration only
-	}
-
-	@Override
-	public void addTryStatement(Entity tso) {
-		// Method Declaration only
-		
 	}
 	
 }

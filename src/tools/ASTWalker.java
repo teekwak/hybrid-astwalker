@@ -3,9 +3,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Stack;
 
 import org.eclipse.core.runtime.CoreException;
@@ -124,22 +122,19 @@ public class ASTWalker {
 
 				return true;
 			}
-
-/*			
+		
 			public boolean visit(ConditionalExpression node){
 				if(inMethod) {
-					ConditionalExpressionObject ceo = new ConditionalExpressionObject();
+					Entity ceo = new SuperEntityClass();
 					ceo.setName(node.getExpression().toString());
-					ceo.setElseExpression(node.getElseExpression().toString());
-					ceo.setThenExpression(node.getThenExpression().toString());
 					ceo.setLineNumber(cu.getLineNumber(node.getStartPosition()));
 					ceo.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
-					entityStack.peek().addChild(ceo);
+					entityStack.peek().addConditionalExpression(ceo);
 				}
 
 				return true;
 			}
-*/
+
 			public boolean visit(DoStatement node) {
 				if(inMethod) {					
 					Entity dso = new SuperEntityClass();
@@ -206,21 +201,19 @@ public class ASTWalker {
 	
 				return true;
 			}
-/*
+
 			public boolean visit(InfixExpression node){
 				if(inMethod) {					
-					InfixExpressionObject ieo = new InfixExpressionObject();
+					Entity ieo = new SuperEntityClass();
 					ieo.setName(node.getOperator().toString());
-					ieo.setOperator(node.getOperator().toString());
-					ieo.setLeftOperand(node.getLeftOperand().toString());
-					ieo.setRightOperand(node.getRightOperand().toString());
 					ieo.setLineNumber(cu.getLineNumber(node.getLeftOperand().getStartPosition()));
 					ieo.setColumnNumber(cu.getColumnNumber(node.getLeftOperand().getStartPosition()));		
+					entityStack.peek().addInfixExpression(ieo);
 				}
 
 				return true;
 			}
-*/		
+		
 			public boolean visit(MethodDeclaration node) {
 				if(inInterface == false) {
 					inMethod = true;
@@ -356,21 +349,21 @@ public class ASTWalker {
 				}
 				return true;
 			}
-/*
+
 			public boolean visit(SwitchStatement node) {
 
 				if(inMethod) {
-					SwitchStatementObject sso = new SwitchStatementObject();
+					SuperEntityClass sso = new SuperEntityClass();
 					sso.setName(node.getExpression().toString());
 					sso.setLineNumber(cu.getLineNumber(node.getStartPosition()));
 					sso.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
 					
-					Map<String, Map<Integer, Integer>> switchCaseMap = new HashMap<>();
-
+					List<SuperEntityClass> switchCaseList = new ArrayList<>();
+					
 					for(Object s : node.statements()) {
 						if(s instanceof SwitchCase) {
-							Map<Integer, Integer> position = new HashMap<>();
-
+							SuperEntityClass switchCase = new SuperEntityClass();
+							
 							String expression = "";
 							try {
 								expression = ((SwitchCase) s).getExpression().toString();
@@ -378,19 +371,20 @@ public class ASTWalker {
 								expression = "Default";
 							}
 
-							position.put(cu.getLineNumber(((SwitchCase) s).getStartPosition()), cu.getColumnNumber(((SwitchCase)s).getStartPosition()));
-							switchCaseMap.put(expression, position);							
+							switchCase.setName(expression);
+							switchCase.setLineNumber(cu.getLineNumber(((SwitchCase) s).getStartPosition()));
+							switchCase.setColumnNumber(cu.getColumnNumber(((SwitchCase)s).getStartPosition()));
+							switchCaseList.add(switchCase);						
 						}
 					}
 					
-					sso.setSwitchCaseMap(switchCaseMap);
-
-					entityStack.peek().addChild(sso);
+					sso.setSwitchCaseList(switchCaseList);
+					entityStack.peek().addSwitchStatement(sso);
 				}
 
 				return true;
 			}
-*/
+
 			public boolean visit(ThrowStatement node) {
 				if(inMethod) {
 					Entity to = new SuperEntityClass();
@@ -420,8 +414,6 @@ public class ASTWalker {
 			// NOT DONE
 			public boolean visit(TypeDeclaration node) {
 
-				// need to not go into interfaces
-				
 				if(node.isInterface()) {
 					inInterface = true;
 				}
@@ -464,57 +456,9 @@ public class ASTWalker {
 			public boolean visit(VariableDeclarationFragment node) {
 				if(inInterface == false) {
 				
-				SimpleName name = node.getName();
-				
-				Type nodeType = ((FieldDeclaration) node.getParent()).getType();
-				
-				if(nodeType.isArrayType()) {
-					Entity ao = new SuperEntityClass();
-					ao.setName(name.toString());
-					ao.setType(nodeType);
-					ao.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-					ao.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-					entityStack.peek().addArray(ao);
-				}
-				else if(nodeType.isParameterizedType()) {
-					Entity go = new SuperEntityClass();
-					go.setName(name.toString());
-					go.setType(nodeType);
-					go.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-					go.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-					entityStack.peek().addGenerics(go);
-				}
-				else if(nodeType.isPrimitiveType()) {
-					Entity po = new SuperEntityClass();
-					po.setName(name.toString());
-					po.setType(nodeType);
-					po.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-					po.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-					entityStack.peek().addPrimitive(po);
-				}
-				else if(nodeType.isSimpleType()) {
-					Entity so = new SuperEntityClass();
-					so.setName(name.toString());
-					so.setType(nodeType);
-					so.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-					so.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-					entityStack.peek().addSimple(so);
-				}
-				else {
-					System.out.println("Something is missing " + nodeType);
-				}
-				}
-				return true;
-			}
-
-			// done-ish. excluded qualifiedType, unionType, wildcardType
-			public boolean visit(VariableDeclarationStatement node) {
-				if(inInterface == false) {
-				Type nodeType = node.getType();
-				
-				for(Object v : node.fragments()) {
+					SimpleName name = node.getName();
 					
-					SimpleName name = ((VariableDeclarationFragment) v).getName();
+					Type nodeType = ((FieldDeclaration) node.getParent()).getType();
 					
 					if(nodeType.isArrayType()) {
 						Entity ao = new SuperEntityClass();
@@ -552,6 +496,54 @@ public class ASTWalker {
 						System.out.println("Something is missing " + nodeType);
 					}
 				}
+				return true;
+			}
+
+			// done-ish. excluded qualifiedType, unionType, wildcardType
+			public boolean visit(VariableDeclarationStatement node) {
+				if(inInterface == false) {
+					Type nodeType = node.getType();
+					
+					for(Object v : node.fragments()) {
+						
+						SimpleName name = ((VariableDeclarationFragment) v).getName();
+						
+						if(nodeType.isArrayType()) {
+							Entity ao = new SuperEntityClass();
+							ao.setName(name.toString());
+							ao.setType(nodeType);
+							ao.setLineNumber(cu.getLineNumber(name.getStartPosition()));
+							ao.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
+							entityStack.peek().addArray(ao);
+						}
+						else if(nodeType.isParameterizedType()) {
+							Entity go = new SuperEntityClass();
+							go.setName(name.toString());
+							go.setType(nodeType);
+							go.setLineNumber(cu.getLineNumber(name.getStartPosition()));
+							go.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
+							entityStack.peek().addGenerics(go);
+						}
+						else if(nodeType.isPrimitiveType()) {
+							Entity po = new SuperEntityClass();
+							po.setName(name.toString());
+							po.setType(nodeType);
+							po.setLineNumber(cu.getLineNumber(name.getStartPosition()));
+							po.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
+							entityStack.peek().addPrimitive(po);
+						}
+						else if(nodeType.isSimpleType()) {
+							Entity so = new SuperEntityClass();
+							so.setName(name.toString());
+							so.setType(nodeType);
+							so.setLineNumber(cu.getLineNumber(name.getStartPosition()));
+							so.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
+							entityStack.peek().addSimple(so);
+						}
+						else {
+							System.out.println("Something is missing " + nodeType);
+						}
+					}
 				
 				}
 				return false; // does this stop from going to VariableDeclarationFragment?

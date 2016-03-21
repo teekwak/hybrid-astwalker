@@ -104,10 +104,12 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		return this.isAbstract;
 	}
 	
-	
-	
 	public void addCatchClause(Entity cco) {
 		this.catchClauseList.add(cco);
+	}
+	
+	public void addConditionalExpression(Entity ceo) {
+		this.conditionalExpressionList.add(ceo);
 	}
 	
 	public void addDoStatement(Entity dso) {
@@ -122,8 +124,16 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		this.ifStatementList.add(iso);
 	}
 	
+	public void addInfixExpression(Entity ieo) {
+		this.infixExpressionList.add(ieo);
+	}
+	
 	public void addMethodInvocation(Entity mio) {
 		this.methodInvocationList.add(mio);
+	}
+	
+	public void addSwitchStatement(Entity sso) {
+		
 	}
 	
 	public void addThrowStatement(Entity tso) {
