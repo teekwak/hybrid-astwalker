@@ -12,7 +12,7 @@ public class ClassObject extends SuperEntityClass {
 	List<String> implementsList;
 	List<Entity> entitiesInsideClass;
 	
-	List<Entity> arrayList;
+	List<Entity> classList;
 	List<Entity> genericsList;
 	List<Entity> importObjectList;
 	List<MethodDeclarationObject> methodDeclarationList;
@@ -25,7 +25,7 @@ public class ClassObject extends SuperEntityClass {
 		this.implementsList = new ArrayList<>();
 		this.entitiesInsideClass = new ArrayList<>();
 		
-		this.arrayList = new ArrayList<>();
+		this.classList = new ArrayList<>();
 		this.genericsList = new ArrayList<>();
 		this.importObjectList = new ArrayList<>();
 		this.methodDeclarationList = new ArrayList<>();
@@ -40,10 +40,6 @@ public class ClassObject extends SuperEntityClass {
 		lineNumber = l;
 		columnNumber = c;
 		entitiesInsideClass = new ArrayList<>();
-	}
-		
-	public void addChild(Entity e) {
-		entitiesInsideClass.add(e);
 	}
 	
 	public void setSuperClass(String s) {
@@ -72,7 +68,13 @@ public class ClassObject extends SuperEntityClass {
 
 		System.out.println(s.toString());
 		
+		/*
 		for(Entity e : entitiesInsideClass) {
+			e.printInfo();
+		}
+		*/
+		
+		for(Entity e : arrayList) {
 			e.printInfo();
 		}
 	}
@@ -100,4 +102,11 @@ public class ClassObject extends SuperEntityClass {
 	public Entity getPackageObject() {
 		return this.packageObject;
 	}
+	
+	public void addChild(Entity e) {
+		entitiesInsideClass.add(e);
+	}
+
+	
+	
 }

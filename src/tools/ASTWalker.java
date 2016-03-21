@@ -50,6 +50,7 @@ import entities.MethodInvocationObject;
 import entities.PackageObject;
 import entities.PrimitiveObject;
 import entities.SimpleObject;
+import entities.SuperEntityClass;
 import entities.SwitchStatementObject;
 // import entities.ReturnStatementObject;
 import entities.ThrowObject;
@@ -76,8 +77,8 @@ public class ASTWalker {
 
 	public FileModel fileModel;
 	public Stack<Entity> entityStack = new Stack<>();
-	public PackageObject packageObject = new PackageObject();
-	public List<ImportObject> importList = new ArrayList<>();
+	public Entity packageObject = new PackageObject();
+	public List<Entity> importList = new ArrayList<>();
 	public boolean inMethod = false;
 	public boolean inInterface = false; // ignoring interfaces
 
@@ -134,17 +135,18 @@ public class ASTWalker {
 				if(inMethod) {
 					SimpleName name = node.getException().getName();
 					
-					CatchClauseObject cco = new CatchClauseObject();
+					Entity cco = new SuperEntityClass();
 					cco.setName(name.toString());
 					cco.setType(node.getException().getType());
 					cco.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 					cco.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-					entityStack.peek().addChild(cco);
+					entityStack.peek().addCatchClause(cco);
 				}
 
 				return true;
 			}
 
+/*			
 			public boolean visit(ConditionalExpression node){
 				if(inMethod) {
 					ConditionalExpressionObject ceo = new ConditionalExpressionObject();
@@ -158,26 +160,25 @@ public class ASTWalker {
 
 				return true;
 			}
-
+*/
 			public boolean visit(DoStatement node) {
 				if(inMethod) {					
-					DoStatementObject dso = new DoStatementObject();
+					Entity dso = new SuperEntityClass();
 					dso.setName(node.getExpression().toString());
 					dso.setLineNumber(cu.getLineNumber(node.getStartPosition()));
 					dso.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));		
-					entityStack.peek().addChild(dso);
+					entityStack.peek().addDoStatement(dso);
 				}
 				return true;
 			}
 
 			public boolean visit(EnhancedForStatement node) {
 				if(inMethod) {
-					ForStatementObject fso = new ForStatementObject();
+					Entity fso = new SuperEntityClass();
 					fso.setName(node.getExpression().toString());
-					fso.setEnhanced(true);
 					fso.setLineNumber(cu.getLineNumber(node.getStartPosition()));
 					fso.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
-					entityStack.peek().addChild(fso);	
+					entityStack.peek().addForStatement(fso);	
 				}
 
 				return true;
@@ -185,12 +186,11 @@ public class ASTWalker {
 
 			public boolean visit(ForStatement node) {
 				if(inMethod) {
-					ForStatementObject fso = new ForStatementObject();
+					Entity fso = new SuperEntityClass();
 					fso.setName(node.getExpression().toString());
-					fso.setEnhanced(false);
 					fso.setLineNumber(cu.getLineNumber(node.getStartPosition()));
 					fso.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
-					entityStack.peek().addChild(fso);				
+					entityStack.peek().addForStatement(fso);				
 				}
 
 				return true;
@@ -198,11 +198,11 @@ public class ASTWalker {
 
 			public boolean visit(IfStatement node) {
 				if(inMethod) {
-					IfStatementObject iso = new IfStatementObject();
+					Entity iso = new SuperEntityClass();
 					iso.setName(node.getExpression().toString());
 					iso.setLineNumber(cu.getLineNumber(node.getStartPosition()));
 					iso.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
-					entityStack.peek().addChild(iso);
+					entityStack.peek().addIfStatement(iso);
 				}
 
 				return true;
@@ -218,7 +218,7 @@ public class ASTWalker {
 					fullyQualifiedName = "";
 				}
 								
-				ImportObject io = new ImportObject();
+				Entity io = new SuperEntityClass();
 				io.setName(name.toString());
 				io.setFullyQualifiedName(fullyQualifiedName);
 				io.setLineNumber(cu.getLineNumber(name.getStartPosition()));
@@ -227,7 +227,7 @@ public class ASTWalker {
 	
 				return true;
 			}
-
+/*
 			public boolean visit(InfixExpression node){
 				if(inMethod) {					
 					InfixExpressionObject ieo = new InfixExpressionObject();
@@ -241,7 +241,7 @@ public class ASTWalker {
 
 				return true;
 			}
-			
+*/		
 			public boolean visit(MethodDeclaration node) {
 				if(inInterface == false) {
 					inMethod = true;
@@ -282,12 +282,12 @@ public class ASTWalker {
 			public void endVisit(MethodDeclaration node) {
 				if(inInterface == false) {
 					MethodDeclarationObject temp = (MethodDeclarationObject) entityStack.pop();
-					entityStack.peek().addChild(temp);					
+					entityStack.peek().addMethodDeclaration(temp);					
 				}
 				
 				inMethod = false;
 			}
-
+/*
 			public boolean visit(MethodInvocation node) {
 				
 				if(inMethod) {					
@@ -306,12 +306,12 @@ public class ASTWalker {
 					mio.setArguments(node.arguments());
 					mio.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 					mio.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-					entityStack.peek().addChild(mio);
+					entityStack.peek().addMethodInvocation(mio);
 				}
 
 				return true;
 			}
-
+*/
 			public boolean visit(PackageDeclaration node){
 				Name name = node.getName();
 				
@@ -322,7 +322,7 @@ public class ASTWalker {
 					fullyQualifiedName = "";
 				}
 				
-				PackageObject po = new PackageObject();
+				Entity po = new SuperEntityClass();
 				po.setName(node.getName().toString());
 				po.setFullyQualifiedName(fullyQualifiedName);
 				po.setLineNumber(cu.getLineNumber(name.getStartPosition()));
@@ -360,37 +360,37 @@ public class ASTWalker {
 				SimpleName name = node.getName();
 				
 				if(node.getType().isArrayType()) {
-					ArrayObject ao = new ArrayObject();
+					Entity ao = new SuperEntityClass();
 					ao.setName(name.toString());
 					ao.setType(node.getType());
 					ao.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 					ao.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-					entityStack.peek().addChild(ao);
+					entityStack.peek().addArray(ao);
 				}
 				
 				else if(node.getType().isParameterizedType()) {
-					GenericsObject go = new GenericsObject();
+					Entity go = new SuperEntityClass();
 					go.setName(name.toString());
 					go.setType(node.getType());
 					go.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 					go.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-					entityStack.peek().addChild(go);
+					entityStack.peek().addGenerics(go);
 				}
 				else if(node.getType().isPrimitiveType()) {
-					PrimitiveObject po = new PrimitiveObject();
+					Entity po = new SuperEntityClass();
 					po.setName(name.toString());
 					po.setType(node.getType());
 					po.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 					po.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-					entityStack.peek().addChild(po);
+					entityStack.peek().addPrimitive(po);
 				}
 				else if(node.getType().isSimpleType()) {
-					SimpleObject so = new SimpleObject();
+					Entity so = new SuperEntityClass();
 					so.setName(name.toString());
 					so.setType(node.getType());
 					so.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 					so.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-					entityStack.peek().addChild(so);
+					entityStack.peek().addSimple(so);
 				}
 				else {
 					System.out.println("Something is missing " + node.getType());
@@ -398,7 +398,7 @@ public class ASTWalker {
 				}
 				return true;
 			}
-
+/*
 			public boolean visit(SwitchStatement node) {
 
 				if(inMethod) {
@@ -432,14 +432,14 @@ public class ASTWalker {
 
 				return true;
 			}
-
+*/
 			public boolean visit(ThrowStatement node) {
 				if(inMethod) {
-					ThrowObject to = new ThrowObject();
+					Entity to = new SuperEntityClass();
 					to.setName(node.getExpression().toString());
 					to.setLineNumber(cu.getLineNumber(node.getStartPosition()));
 					to.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));	
-					entityStack.peek().addChild(to);
+					entityStack.peek().addThrowStatement(to);
 				}
 				return true;
 			}
@@ -449,11 +449,11 @@ public class ASTWalker {
 				if(inMethod) {
 					String tryBody = "Try Statement";
 
-					TryStatementObject tso = new TryStatementObject();
+					Entity tso = new SuperEntityClass();
 					tso.setName(tryBody);
 					tso.setLineNumber(cu.getLineNumber(node.getStartPosition()));
 					tso.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
-					entityStack.peek().addChild(tso);
+					entityStack.peek().addTryStatement(tso);
 				}
 
 				return true;
@@ -511,36 +511,36 @@ public class ASTWalker {
 				Type nodeType = ((FieldDeclaration) node.getParent()).getType();
 				
 				if(nodeType.isArrayType()) {
-					ArrayObject ao = new ArrayObject();
+					Entity ao = new ArrayObject();
 					ao.setName(name.toString());
 					ao.setType(nodeType);
 					ao.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 					ao.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-					entityStack.peek().addChild(ao);
+					entityStack.peek().addArray(ao);
 				}
 				else if(nodeType.isParameterizedType()) {
-					GenericsObject go = new GenericsObject();
+					Entity go = new SuperEntityClass();
 					go.setName(name.toString());
 					go.setType(nodeType);
 					go.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 					go.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-					entityStack.peek().addChild(go);
+					entityStack.peek().addGenerics(go);
 				}
 				else if(nodeType.isPrimitiveType()) {
-					PrimitiveObject po = new PrimitiveObject();
+					Entity po = new SuperEntityClass();
 					po.setName(name.toString());
 					po.setType(nodeType);
 					po.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 					po.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-					entityStack.peek().addChild(po);
+					entityStack.peek().addPrimitive(po);
 				}
 				else if(nodeType.isSimpleType()) {
-					SimpleObject so = new SimpleObject();
+					Entity so = new SuperEntityClass();
 					so.setName(name.toString());
 					so.setType(nodeType);
 					so.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 					so.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-					entityStack.peek().addChild(so);
+					entityStack.peek().addSimple(so);
 				}
 				else {
 					System.out.println("Something is missing " + nodeType);
@@ -559,36 +559,36 @@ public class ASTWalker {
 					SimpleName name = ((VariableDeclarationFragment) v).getName();
 					
 					if(nodeType.isArrayType()) {
-						ArrayObject ao = new ArrayObject();
+						Entity ao = new SuperEntityClass();
 						ao.setName(name.toString());
 						ao.setType(nodeType);
 						ao.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 						ao.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-						entityStack.peek().addChild(ao);
+						entityStack.peek().addArray(ao);
 					}
 					else if(nodeType.isParameterizedType()) {
-						GenericsObject go = new GenericsObject();
+						Entity go = new SuperEntityClass();
 						go.setName(name.toString());
 						go.setType(nodeType);
 						go.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 						go.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-						entityStack.peek().addChild(go);
+						entityStack.peek().addGenerics(go);
 					}
 					else if(nodeType.isPrimitiveType()) {
-						PrimitiveObject po = new PrimitiveObject();
+						Entity po = new SuperEntityClass();
 						po.setName(name.toString());
 						po.setType(nodeType);
 						po.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 						po.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-						entityStack.peek().addChild(po);
+						entityStack.peek().addPrimitive(po);
 					}
 					else if(nodeType.isSimpleType()) {
-						SimpleObject so = new SimpleObject();
+						Entity so = new SuperEntityClass();
 						so.setName(name.toString());
 						so.setType(nodeType);
 						so.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 						so.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-						entityStack.peek().addChild(so);
+						entityStack.peek().addSimple(so);
 					}
 					else {
 						System.out.println("Something is missing " + nodeType);
@@ -608,36 +608,36 @@ public class ASTWalker {
 						SimpleName name = ((VariableDeclarationFragment) v).getName();
 
 						if(nodeType.isArrayType()) {
-							ArrayObject ao = new ArrayObject();
+							Entity ao = new SuperEntityClass();
 							ao.setName(name.toString());
 							ao.setType(nodeType);
 							ao.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 							ao.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-							entityStack.peek().addChild(ao);
+							entityStack.peek().addArray(ao);
 						}
 						else if(nodeType.isParameterizedType()) {
-							GenericsObject go = new GenericsObject();
+							Entity go = new SuperEntityClass();
 							go.setName(name.toString());
 							go.setType(nodeType);
 							go.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 							go.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-							entityStack.peek().addChild(go);
+							entityStack.peek().addGenerics(go);
 						}
 						else if(nodeType.isPrimitiveType()) {
-							PrimitiveObject po = new PrimitiveObject();
+							Entity po = new SuperEntityClass();
 							po.setName(name.toString());
 							po.setType(nodeType);
 							po.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 							po.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-							entityStack.peek().addChild(po);
+							entityStack.peek().addPrimitive(po);
 						}
 						else if(nodeType.isSimpleType()) {
-							SimpleObject so = new SimpleObject();
+							Entity so = new SuperEntityClass();
 							so.setName(name.toString());
 							so.setType(nodeType);
 							so.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 							so.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-							entityStack.peek().addChild(so);
+							entityStack.peek().addSimple(so);
 						}
 						else {
 							System.out.println("Something is missing " + nodeType);
@@ -649,23 +649,23 @@ public class ASTWalker {
 
 			public boolean visit(WhileStatement node){
 				if(inMethod) {
-					WhileStatementObject wso = new WhileStatementObject();
+					Entity wso = new SuperEntityClass();
 					wso.setName(node.getExpression().toString());
 					wso.setLineNumber(cu.getLineNumber(node.getStartPosition()));
 					wso.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));	
-					entityStack.peek().addChild(wso);
+					entityStack.peek().addWhileStatement(wso);
 				}
 				return true;
 			}
 
 			public boolean visit(WildcardType node) {
 				if(inMethod) {					
-					WildcardObject wo = new WildcardObject();
+					Entity wo = new SuperEntityClass();
 					wo.setName("Wildcard");
 					wo.setType(((ParameterizedType) node.getParent()).getType());
 					wo.setLineNumber(cu.getLineNumber(node.getStartPosition()));
 					wo.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
-					entityStack.peek().addChild(wo);					
+					entityStack.peek().addWildcard(wo);					
 				}
 				
 				return false;

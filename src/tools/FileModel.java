@@ -50,7 +50,6 @@ public class FileModel {
 				fileModel = fileModel.parseDeclarations(parentNode.getAbsolutePath());
 
 				fileModel.printAll();
-				
 			}
 		}
 	}

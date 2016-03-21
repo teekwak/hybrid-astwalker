@@ -13,6 +13,7 @@ public class MethodDeclarationObject extends SuperEntityClass {
 	
 	List<Entity> arrayList;
 	List<Entity> catchClauseList;
+	List<Entity> classList;
 	List<Entity> conditionalExpressionList;
 	List<Entity> doStatementList;
 	List<Entity> forStatementList;
@@ -35,6 +36,7 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		
 		this.arrayList = new ArrayList<>();
 		this.catchClauseList = new ArrayList<>();
+		this.classList = new ArrayList<>();
 		this.conditionalExpressionList = new ArrayList<>();
 		this.doStatementList = new ArrayList<>();
 		this.forStatementList = new ArrayList<>();

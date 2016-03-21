@@ -38,6 +38,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 public class Example extends SomeSuperClass implements thing1, thing2, thing3 {
+	String[] someArray;
+	
 	interface inf {
 		void print();
 		String getName();
