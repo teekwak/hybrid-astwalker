@@ -119,7 +119,7 @@ public class ASTWalker {
 					cco.setType(node.getException().getType());
 					cco.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 					cco.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-					entityStack.peek().addCatchClause(cco);
+					entityStack.peek().addEntity(cco, EntityType.CATCH_CLAUSE);
 				}
 
 				return true;
@@ -131,7 +131,7 @@ public class ASTWalker {
 					ceo.setName(node.getExpression().toString());
 					ceo.setLineNumber(cu.getLineNumber(node.getStartPosition()));
 					ceo.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
-					entityStack.peek().addConditionalExpression(ceo);
+					entityStack.peek().addEntity(ceo, EntityType.CONDITIONAL_EXPRESSION);
 				}
 
 				return true;
@@ -143,7 +143,7 @@ public class ASTWalker {
 					dso.setName(node.getExpression().toString());
 					dso.setLineNumber(cu.getLineNumber(node.getStartPosition()));
 					dso.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));		
-					entityStack.peek().addDoStatement(dso);
+					entityStack.peek().addEntity(dso, EntityType.DO_STATEMENT);
 				}
 				return true;
 			}
@@ -154,7 +154,7 @@ public class ASTWalker {
 					fso.setName(node.getExpression().toString());
 					fso.setLineNumber(cu.getLineNumber(node.getStartPosition()));
 					fso.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
-					entityStack.peek().addForStatement(fso);	
+					entityStack.peek().addEntity(fso, EntityType.FOR_STATEMENT);	
 				}
 
 				return true;
@@ -166,7 +166,7 @@ public class ASTWalker {
 					fso.setName(node.getExpression().toString());
 					fso.setLineNumber(cu.getLineNumber(node.getStartPosition()));
 					fso.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
-					entityStack.peek().addForStatement(fso);				
+					entityStack.peek().addEntity(fso, EntityType.FOR_STATEMENT);				
 				}
 
 				return true;
@@ -178,7 +178,7 @@ public class ASTWalker {
 					iso.setName(node.getExpression().toString());
 					iso.setLineNumber(cu.getLineNumber(node.getStartPosition()));
 					iso.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
-					entityStack.peek().addIfStatement(iso);
+					entityStack.peek().addEntity(iso, EntityType.IF_STATEMENT);
 				}
 
 				return true;
@@ -210,7 +210,7 @@ public class ASTWalker {
 					ieo.setName(node.getOperator().toString());
 					ieo.setLineNumber(cu.getLineNumber(node.getLeftOperand().getStartPosition()));
 					ieo.setColumnNumber(cu.getColumnNumber(node.getLeftOperand().getStartPosition()));		
-					entityStack.peek().addInfixExpression(ieo);
+					entityStack.peek().addEntity(ieo, EntityType.INFIX_EXPRESSION);
 				}
 
 				return true;
@@ -256,7 +256,7 @@ public class ASTWalker {
 			public void endVisit(MethodDeclaration node) {
 				if(inInterface == false) {
 					MethodDeclarationObject temp = (MethodDeclarationObject) entityStack.pop();
-					entityStack.peek().addMethodDeclaration(temp);					
+					entityStack.peek().addEntity(temp, EntityType.METHOD_DECLARATION);					
 				}
 				
 				inMethod = false;
@@ -272,7 +272,7 @@ public class ASTWalker {
 					mio.setArguments(node.arguments());
 					mio.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 					mio.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-					entityStack.peek().addMethodInvocation(mio);
+					entityStack.peek().addEntity(mio, EntityType.METHOD_INVOCATION);
 				}
 
 				return true;
@@ -319,7 +319,7 @@ public class ASTWalker {
 					go.setType(node.getType());
 					go.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 					go.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-					entityStack.peek().addGenerics(go);
+					entityStack.peek().addEntity(go, EntityType.GENERICS);
 				}
 				else if(node.getType().isPrimitiveType()) {
 					SuperEntityClass po = new SuperEntityClass();
@@ -327,7 +327,7 @@ public class ASTWalker {
 					po.setType(node.getType());
 					po.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 					po.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-					entityStack.peek().addPrimitive(po);
+					entityStack.peek().addEntity(po, EntityType.PRIMITIVE);
 				}
 				else if(node.getType().isSimpleType()) {
 					SuperEntityClass so = new SuperEntityClass();
@@ -335,7 +335,7 @@ public class ASTWalker {
 					so.setType(node.getType());
 					so.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 					so.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-					entityStack.peek().addSimple(so);
+					entityStack.peek().addEntity(so, EntityType.SIMPLE);
 				}
 				else {
 					System.out.println("Something is missing " + node.getType());
@@ -373,7 +373,7 @@ public class ASTWalker {
 					}
 					
 					sso.setSwitchCaseList(switchCaseList);
-					entityStack.peek().addSwitchStatement(sso);
+					entityStack.peek().addEntity(sso, EntityType.SWITCH_STATEMENT);
 				}
 
 				return true;
@@ -385,7 +385,7 @@ public class ASTWalker {
 					to.setName(node.getExpression().toString());
 					to.setLineNumber(cu.getLineNumber(node.getStartPosition()));
 					to.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));	
-					entityStack.peek().addThrowStatement(to);
+					entityStack.peek().addEntity(to, EntityType.THROW_STATEMENT);
 				}
 				return true;
 			}
@@ -398,7 +398,7 @@ public class ASTWalker {
 					tso.setName(tryBody);
 					tso.setLineNumber(cu.getLineNumber(node.getStartPosition()));
 					tso.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
-					entityStack.peek().addTryStatement(tso);
+					entityStack.peek().addEntity(tso, EntityType.TRY_STATEMENT);
 				}
 
 				return true;
@@ -457,7 +457,7 @@ public class ASTWalker {
 						ao.setType(nodeType);
 						ao.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 						ao.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-						entityStack.peek().addArray(ao);
+						entityStack.peek().addEntity(ao, EntityType.ARRAY);
 					}
 					else if(nodeType.isParameterizedType()) {
 						SuperEntityClass go = new SuperEntityClass();
@@ -465,7 +465,7 @@ public class ASTWalker {
 						go.setType(nodeType);
 						go.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 						go.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-						entityStack.peek().addGenerics(go);
+						entityStack.peek().addEntity(go, EntityType.GENERICS);
 					}
 					else if(nodeType.isPrimitiveType()) {
 						SuperEntityClass po = new SuperEntityClass();
@@ -473,7 +473,7 @@ public class ASTWalker {
 						po.setType(nodeType);
 						po.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 						po.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-						entityStack.peek().addPrimitive(po);
+						entityStack.peek().addEntity(po, EntityType.PRIMITIVE);
 					}
 					else if(nodeType.isSimpleType()) {
 						SuperEntityClass so = new SuperEntityClass();
@@ -481,7 +481,7 @@ public class ASTWalker {
 						so.setType(nodeType);
 						so.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 						so.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-						entityStack.peek().addSimple(so);
+						entityStack.peek().addEntity(so, EntityType.SIMPLE);
 					}
 					else {
 						System.out.println("Something is missing " + nodeType);
@@ -504,7 +504,7 @@ public class ASTWalker {
 							ao.setType(nodeType);
 							ao.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 							ao.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-							entityStack.peek().addArray(ao);
+							entityStack.peek().addEntity(ao, EntityType.ARRAY);
 						}
 						else if(nodeType.isParameterizedType()) {
 							SuperEntityClass go = new SuperEntityClass();
@@ -512,7 +512,7 @@ public class ASTWalker {
 							go.setType(nodeType);
 							go.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 							go.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-							entityStack.peek().addGenerics(go);
+							entityStack.peek().addEntity(go, EntityType.GENERICS);
 						}
 						else if(nodeType.isPrimitiveType()) {
 							SuperEntityClass po = new SuperEntityClass();
@@ -520,7 +520,7 @@ public class ASTWalker {
 							po.setType(nodeType);
 							po.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 							po.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-							entityStack.peek().addPrimitive(po);
+							entityStack.peek().addEntity(po, EntityType.PRIMITIVE);
 						}
 						else if(nodeType.isSimpleType()) {
 							SuperEntityClass so = new SuperEntityClass();
@@ -528,7 +528,7 @@ public class ASTWalker {
 							so.setType(nodeType);
 							so.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 							so.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-							entityStack.peek().addSimple(so);
+							entityStack.peek().addEntity(so, EntityType.SIMPLE);
 						}
 						else {
 							System.out.println("Something is missing " + nodeType);
@@ -552,7 +552,7 @@ public class ASTWalker {
 							ao.setType(nodeType);
 							ao.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 							ao.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-							entityStack.peek().addArray(ao);
+							entityStack.peek().addEntity(ao, EntityType.ARRAY);
 						}
 						else if(nodeType.isParameterizedType()) {
 							SuperEntityClass go = new SuperEntityClass();
@@ -560,7 +560,7 @@ public class ASTWalker {
 							go.setType(nodeType);
 							go.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 							go.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-							entityStack.peek().addGenerics(go);
+							entityStack.peek().addEntity(go, EntityType.GENERICS);
 						}
 						else if(nodeType.isPrimitiveType()) {
 							SuperEntityClass po = new SuperEntityClass();
@@ -568,7 +568,7 @@ public class ASTWalker {
 							po.setType(nodeType);
 							po.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 							po.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-							entityStack.peek().addPrimitive(po);
+							entityStack.peek().addEntity(po, EntityType.PRIMITIVE);
 						}
 						else if(nodeType.isSimpleType()) {
 							SuperEntityClass so = new SuperEntityClass();
@@ -576,7 +576,7 @@ public class ASTWalker {
 							so.setType(nodeType);
 							so.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 							so.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-							entityStack.peek().addSimple(so);
+							entityStack.peek().addEntity(so, EntityType.SIMPLE);
 						}
 						else {
 							System.out.println("Something is missing " + nodeType);
@@ -592,7 +592,7 @@ public class ASTWalker {
 					wso.setName(node.getExpression().toString());
 					wso.setLineNumber(cu.getLineNumber(node.getStartPosition()));
 					wso.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));	
-					entityStack.peek().addWhileStatement(wso);
+					entityStack.peek().addEntity(wso, EntityType.WHILE_STATEMENT);
 				}
 				return true;
 			}
@@ -604,7 +604,7 @@ public class ASTWalker {
 					wo.setType(((ParameterizedType) node.getParent()).getType());
 					wo.setLineNumber(cu.getLineNumber(node.getStartPosition()));
 					wo.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
-					entityStack.peek().addWildcard(wo);
+					entityStack.peek().addEntity(wo, EntityType.WILDCARD);
 				}
 				
 				return false;

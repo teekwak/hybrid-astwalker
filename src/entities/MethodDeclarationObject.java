@@ -19,7 +19,7 @@ public class MethodDeclarationObject extends SuperEntityClass {
 	List<SuperEntityClass> genericsList;
 	List<SuperEntityClass> ifStatementList;
 	List<SuperEntityClass> infixExpressionList;
-	List<SuperEntityClass> methodInvocationList;
+	List<MethodInvocationObject> methodInvocationList;
 	List<SuperEntityClass> primitiveList;
 	List<SuperEntityClass> simpleList;
 	List<SuperEntityClass> switchStatementList;
@@ -168,50 +168,6 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		return this.isAbstract;
 	}
 	
-	public void addCatchClause(SuperEntityClass cco) {
-		this.catchClauseList.add(cco);
-	}
-	
-	public void addConditionalExpression(SuperEntityClass ceo) {
-		this.conditionalExpressionList.add(ceo);
-	}
-	
-	public void addDoStatement(SuperEntityClass dso) {
-		this.doStatementList.add(dso);
-	}
-	
-	public void addForStatement(SuperEntityClass fso) {
-		this.forStatementList.add(fso);
-	}	
-	
-	public void addIfStatement(SuperEntityClass iso) {
-		this.ifStatementList.add(iso);
-	}
-	
-	public void addInfixExpression(SuperEntityClass ieo) {
-		this.infixExpressionList.add(ieo);
-	}
-	
-	public void addMethodInvocation(SuperEntityClass mio) {
-		this.methodInvocationList.add(mio);
-	}
-	
-	public void addSwitchStatement(SuperEntityClass sso) {
-		this.switchCaseList.add(sso);
-	}
-	
-	public void addThrowStatement(SuperEntityClass tso) {
-		this.throwStatementList.add(tso);
-	}
-	
-	public void addTryStatement(SuperEntityClass tso) {
-		this.tryStatementList.add(tso);
-	}
-	
-	public void addWhileStatement(SuperEntityClass wso) {
-		this.whileStatementList.add(wso);
-	} 
-
 	public void setSwitchCaseList(List<SuperEntityClass> scl) {
 		this.switchCaseList = scl;
 	}
@@ -220,24 +176,58 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		return this.switchCaseList;
 	}
 	
-	public void addArray(SuperEntityClass ao) {
-		this.arrayList.add(ao);
-	}
-
-	public void addGenerics(SuperEntityClass go) {
-		this.genericsList.add(go);
-	}
-	
-	public void addPrimitive(SuperEntityClass po) {
-		this.primitiveList.add(po);
-	}
-	
-	public void addSimple(SuperEntityClass so) {
-		this.simpleList.add(so);
-	}
-
-	public void addWildcard(SuperEntityClass wo) {
-		this.wildcardList.add(wo);
+	public void addEntity(SuperEntityClass entity, EntityType ET) {
+		if(ET == EntityType.ARRAY) {
+			this.arrayList.add(entity);
+		}
+		else if(ET == EntityType.CATCH_CLAUSE) {
+			this.catchClauseList.add(entity);
+		}
+		else if(ET == EntityType.CLASS) {
+			this.classList.add(entity);
+		}
+		else if(ET == EntityType.CONDITIONAL_EXPRESSION) {
+			this.conditionalExpressionList.add(entity);
+		}
+		else if(ET == EntityType.DO_STATEMENT) {
+			this.doStatementList.add(entity);
+		}
+		else if(ET == EntityType.FOR_STATEMENT) {
+			this.forStatementList.add(entity);
+		}
+		else if(ET == EntityType.GENERICS) {
+			this.genericsList.add(entity);
+		}
+		else if(ET == EntityType.IF_STATEMENT) {
+			this.ifStatementList.add(entity);
+		}
+		else if(ET == EntityType.INFIX_EXPRESSION) {
+			this.infixExpressionList.add(entity);
+		}
+		else if(ET == EntityType.METHOD_INVOCATION) {
+			this.methodInvocationList.add((MethodInvocationObject)entity);
+		}
+		else if(ET == EntityType.PRIMITIVE) {
+			this.primitiveList.add(entity);
+		}
+		else if(ET == EntityType.SIMPLE) {
+			this.simpleList.add(entity);
+		}
+		else if(ET == EntityType.SWITCH_STATEMENT) {
+			this.switchCaseList.add(entity);
+		}
+		else if(ET == EntityType.THROW_STATEMENT) {
+			this.throwStatementList.add(entity);
+		}
+		else if(ET == EntityType.TRY_STATEMENT) {
+			this.tryStatementList.add(entity);
+		}
+		else if(ET == EntityType.WHILE_STATEMENT) {
+			this.whileStatementList.add(entity);
+		}
+		else if(ET == EntityType.WILDCARD) {
+			this.wildcardList.add(entity);
+		}
 	}
 	
 }
