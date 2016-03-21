@@ -53,6 +53,8 @@ public class MethodDeclarationObject extends SuperEntityClass {
 			}
 		}
 		
+		s.append(" (" + this.lineNumber + " | " + this.columnNumber + ")");
+		
 		System.out.println(s.toString());
 		
 		for(Entity e : arrayList) {

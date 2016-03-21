@@ -49,6 +49,8 @@ public class ClassObject extends SuperEntityClass {
 			}
 		}
 
+		s.append(" (" + this.lineNumber + " | " + this.columnNumber + ")");
+		
 		System.out.println(s.toString());
 		
 		for(Entity e : this.classList) {
