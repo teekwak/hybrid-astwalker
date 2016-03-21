@@ -1,8 +1,11 @@
 package entities;
 
+import org.eclipse.jdt.core.dom.Type;
+
 public abstract class SuperEntityClass implements Entity {
 
 	String name;
+	Type type;
 	int lineNumber;
 	int columnNumber;
 	
@@ -32,6 +35,14 @@ public abstract class SuperEntityClass implements Entity {
 	
 	public void addChild(Entity e) {
 		
+	}
+	
+	public void setType(Type t) {
+		this.type = t;
+	}
+	
+	public Type getType() {
+		return this.type;
 	}
 	
 	public void printInfo() {
