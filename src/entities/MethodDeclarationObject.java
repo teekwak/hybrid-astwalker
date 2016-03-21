@@ -16,13 +16,39 @@ public class MethodDeclarationObject extends SuperEntityClass {
 	List<Entity> conditionalExpressionList;
 	List<Entity> doStatementList;
 	List<Entity> forStatementList;
+	List<Entity> ifStatementList;
+	List<Entity> infixExpressionList;
 	List<Entity> genericsList;
-	
+	List<Entity> methodInvocationList;
+	List<Entity> primitiveList;
+	List<Entity> simpleList;
+	List<Entity> switchStatementList;
+	List<Entity> throwList;
+	List<Entity> tryStatementList;
+	List<Entity> whileStatementList;
+	List<Entity> wildcardList;
 	
 	public MethodDeclarationObject() {
 		this.thrownExceptions = new ArrayList<>();
 		this.entitiesInsideMethodDeclaration = new ArrayList<>();
 		this.parametersList = new ArrayList<>();
+		
+		this.arrayList = new ArrayList<>();
+		this.catchClauseList = new ArrayList<>();
+		this.conditionalExpressionList = new ArrayList<>();
+		this.doStatementList = new ArrayList<>();
+		this.forStatementList = new ArrayList<>();
+		this.genericsList = new ArrayList<>();
+		this.ifStatementList = new ArrayList<>();
+		this.infixExpressionList = new ArrayList<>();
+		this.methodInvocationList = new ArrayList<>();
+		this.primitiveList = new ArrayList<>();
+		this.simpleList = new ArrayList<>();
+		this.switchStatementList = new ArrayList<>();
+		this.throwList = new ArrayList<>();
+		this.tryStatementList = new ArrayList<>();
+		this.whileStatementList = new ArrayList<>();
+		this.wildcardList = new ArrayList<>();
 	}
 
 	public void addChild(Entity e) {

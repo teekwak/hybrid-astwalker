@@ -5,6 +5,7 @@ import org.eclipse.jdt.core.dom.Type;
 public class SuperEntityClass implements Entity {
 
 	String name;
+	String fullyQualifiedName;
 	Type type;
 	int lineNumber;
 	int columnNumber;
@@ -43,6 +44,14 @@ public class SuperEntityClass implements Entity {
 	
 	public Type getType() {
 		return this.type;
+	}
+	
+	public void setFullyQualifiedName(String fqn) {
+		this.fullyQualifiedName = fqn;
+	}
+	
+	public String getFullyQualifiedName() {
+		return this.fullyQualifiedName;
 	}
 	
 	public void printInfo() {
