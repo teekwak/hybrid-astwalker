@@ -52,6 +52,7 @@ public class Example extends SomeSuperClass implements thing1, thing2, thing3 {
 			String why;
 		}
 		return 1;
+		String[] parts = {"h", "i"};
 	}
 	
 	public int printNumbers(int a, int b, int c) {

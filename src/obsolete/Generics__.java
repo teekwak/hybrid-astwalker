@@ -1,9 +1,11 @@
-package entities;
+package obsolete;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.core.dom.Type;
+
+import entities.GenericsObject;
 
 class GenericsObject {
 	String name;

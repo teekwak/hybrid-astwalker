@@ -2,14 +2,14 @@ package entities;
 
 import org.eclipse.jdt.core.dom.Type;
 
-public class ArrayObject extends SuperEntityClass {
+public class GenericsObject extends SuperEntityClass {
 	
 	Type type;
 	
-	public ArrayObject() {
+	public GenericsObject() {
 		
 	}
-	
+
 	public void setType(Type t) {
 		this.type = t;
 	}
@@ -17,10 +17,4 @@ public class ArrayObject extends SuperEntityClass {
 	public Type getType() {
 		return this.type;
 	}
-	
-	@Override
-	public void printInfo() {
-		System.out.println(this.name + " " + this.type);
-	}
-	
 }
