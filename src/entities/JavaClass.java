@@ -3,7 +3,7 @@ package entities;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClassObject extends SuperEntityClass {
+public class JavaClass extends SuperEntityClass {
 
 	String name;
 	int lineNumber;
@@ -16,7 +16,7 @@ public class ClassObject extends SuperEntityClass {
 	List<MethodDeclarationObject> methodDeclarationList;
 	SuperEntityClass packageObject;
 	
-	public ClassObject() {
+	public JavaClass() {
 		this.implementsList = new ArrayList<>();
 		
 		this.classList = new ArrayList<>();

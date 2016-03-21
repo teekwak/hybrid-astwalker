@@ -1,6 +1,6 @@
 package tools;
 
-import entities.ClassObject;
+import entities.JavaClass;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,20 +12,20 @@ import tools.ASTWalker;
 
 public class FileModel {
 	
-	List<ClassObject> classObjectList;
+	List<JavaClass> javaClassList;
 	
 	public void printAll() {
-		for(ClassObject co : classObjectList) {		
+		for(JavaClass co : javaClassList) {		
 			co.printInfo();
 		}
 	}
 	
-	public void addClass(ClassObject co) {
-		classObjectList.add(co);
+	public void addJavaClass(JavaClass co) {
+		javaClassList.add(co);
 	}
 		
 	public FileModel() {
-		this.classObjectList = new ArrayList<>();
+		this.javaClassList = new ArrayList<>();
 	}
 
 	public FileModel parseDeclarations(String fileLocation) throws IOException, CoreException {

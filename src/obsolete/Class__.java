@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import entities.ClassObject;
+import entities.JavaClass;
 import entities.Entity;
 
 class SuperClassObject {
@@ -24,7 +24,7 @@ class SuperClassObject {
 
 public class Class__ {
 
-	List<ClassObject> classObjectList;
+	List<JavaClass> classObjectList;
 	List<SuperClassObject> superClassObjectList;
 	
 	
@@ -33,18 +33,18 @@ public class Class__ {
 		superClassObjectList = new ArrayList<>();
 	}
 
-	public void addClass(ClassObject c) {
+	public void addClass(JavaClass c) {
 		classObjectList.add(c);
 	}
 	
 	public void printClassObject() {
-		for(ClassObject co : classObjectList) {
+		for(JavaClass co : classObjectList) {
 			System.out.println(co.name);
 		}
 	}
 	
 	public void addChild(Entity e) {
-		classObjectList.add((ClassObject) e);
+		classObjectList.add((JavaClass) e);
 	}
 	
 	
@@ -55,7 +55,7 @@ public class Class__ {
 	
 	
 	public void addClass(String name, int lineNumber, int columnNumber) {
-		classObjectList.add(new ClassObject(name, lineNumber, columnNumber));
+		classObjectList.add(new JavaClass(name, lineNumber, columnNumber));
 	}
 	
 	public void addExtends(String name, int lineNumber) {
@@ -88,13 +88,13 @@ public class Class__ {
 	 * start testing
 	 */
 	
-	public List<ClassObject> getClassObjectList() {
+	public List<JavaClass> getClassObjectList() {
 		return this.classObjectList;
 	}
 	
 	public List<Integer> getLineNumbers() {
 		List<Integer> list = new ArrayList<>();
-		for(ClassObject obj : classObjectList) {
+		for(JavaClass obj : classObjectList) {
 			list.add(obj.lineNumber);
 		}
 		return list;
@@ -102,7 +102,7 @@ public class Class__ {
 
 	public List<Integer> getColumnNumbers() {
 		List<Integer> list = new ArrayList<>();
-		for(ClassObject obj : classObjectList) {
+		for(JavaClass obj : classObjectList) {
 			list.add(obj.columnNumber);
 		}
 		return list;
@@ -110,7 +110,7 @@ public class Class__ {
 	
 	public List<String> getNames() {
 		List<String> list = new ArrayList<>();
-		for(ClassObject obj : classObjectList) {
+		for(JavaClass obj : classObjectList) {
 			list.add(obj.name);
 		}
 		return list;

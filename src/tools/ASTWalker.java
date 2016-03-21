@@ -40,7 +40,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
 import org.eclipse.jdt.core.dom.WildcardType;
 
-import entities.ClassObject;
+import entities.JavaClass;
 import entities.MethodDeclarationObject;
 import entities.MethodInvocationObject;
 import entities.SuperEntityClass;
@@ -412,7 +412,7 @@ public class ASTWalker {
 				else {
 					inInterface = false;
 					
-					ClassObject co = new ClassObject();
+					JavaClass co = new JavaClass();
 					co.setName(node.getName().toString());
 					co.setLineNumber(cu.getLineNumber(node.getStartPosition()));
 					co.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
@@ -437,7 +437,7 @@ public class ASTWalker {
 
 			public void endVisit(TypeDeclaration node) {				
 				if(inInterface == false) {
-					fileModel.addClass((ClassObject) entityStack.pop());					
+					fileModel.addJavaClass((JavaClass) entityStack.pop());					
 				}
 				
 				inInterface = false;
