@@ -63,6 +63,10 @@ public class SuperEntityClass implements Entity {
 		return this.fullyQualifiedName;
 	}
 	
+	public List<Entity> getEntityList() {
+		return this.entityList;
+	}
+	
 	public void printInfo() {
 		System.out.println(this.name + " (" + this.lineNumber + " | " + this.columnNumber + ")");		
 	}
