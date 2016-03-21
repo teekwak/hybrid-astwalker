@@ -14,9 +14,13 @@ public class SuperEntityClass implements Entity {
 	int columnNumber;
 	
 	List<Entity> arrayList;
+	List<Entity> genericsList;
+	List<Entity> wildcardList;
 	
 	public SuperEntityClass() {
 		this.arrayList = new ArrayList<>();
+		this.genericsList = new ArrayList<>();
+		this.wildcardList = new ArrayList<>();
 	}
 	
 	public String getName() {
@@ -67,58 +71,43 @@ public class SuperEntityClass implements Entity {
 		this.arrayList.add(ao);
 	}
 
-	@Override
 	public void addCatchClause(Entity cco) {
-		// TODO Auto-generated method stub
-		
+		// Method Declaration only
 	}
 
-	@Override
 	public void addForStatement(Entity fso) {
-		// TODO Auto-generated method stub
-		
+		// Method Declaration only		
 	}
 
-	@Override
 	public void addIfStatement(Entity iso) {
-		// TODO Auto-generated method stub
-		
+		// Method Declaration only
 	}
 
-	@Override
 	public void addDoStatement(Entity dso) {
-		// TODO Auto-generated method stub
-		
+		// Method Declaration only
 	}
 
-	@Override
 	public void addWhileStatement(Entity wso) {
-		// TODO Auto-generated method stub
-		
+		// Method Declaration only
 	}
 
-	@Override
+	// not working
 	public void addWildcard(Entity wo) {
-		// TODO Auto-generated method stub
-		
+		this.wildcardList.add(wo);
 	}
 
-	@Override
 	public void addGenerics(Entity go) {
-		// TODO Auto-generated method stub
-		
+		this.genericsList.add(go);
 	}
 
 	@Override
 	public void addMethodDeclaration(MethodDeclarationObject temp) {
-		// TODO Auto-generated method stub
-		
+		// Class only	
 	}
 
 	@Override
 	public void addMethodInvocation(MethodInvocationObject mio) {
-		// TODO Auto-generated method stub
-		
+		// Method Declaration only
 	}
 
 	@Override

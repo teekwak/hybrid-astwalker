@@ -665,7 +665,7 @@ public class ASTWalker {
 					wo.setType(((ParameterizedType) node.getParent()).getType());
 					wo.setLineNumber(cu.getLineNumber(node.getStartPosition()));
 					wo.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
-					entityStack.peek().addWildcard(wo);					
+					entityStack.peek().addWildcard(wo);			
 				}
 				
 				return false;

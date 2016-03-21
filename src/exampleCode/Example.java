@@ -39,6 +39,9 @@ import java.util.LinkedList;
 
 public class Example extends SomeSuperClass implements thing1, thing2, thing3 {
 	String[] someArray;
+	Collection<?> thisCollection;
+	
+	Map<Integer, Integer> insideClassMap = new HashMap<>();
 	
 	interface inf {
 		void print();
@@ -46,7 +49,7 @@ public class Example extends SomeSuperClass implements thing1, thing2, thing3 {
 	}
 	
 	public static void main(String[] args) {
-
+		Map<Integer, Integer> insideMethodMap = new HashMap<>();
 	}
 
 	public int returnOne() throws IllegalArgumentException {
@@ -59,6 +62,7 @@ public class Example extends SomeSuperClass implements thing1, thing2, thing3 {
 	
 	public int printNumbers(int a, int b, int c) {
 		System.out.println(a + b + c);
+
 	}
 	
 	public void printLine() {

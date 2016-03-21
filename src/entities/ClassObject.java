@@ -13,26 +13,22 @@ public class ClassObject extends SuperEntityClass {
 	List<Entity> entitiesInsideClass;
 	
 	List<Entity> classList;
-	List<Entity> genericsList;
 	List<Entity> importObjectList;
 	List<MethodDeclarationObject> methodDeclarationList;
 	Entity packageObject;
 	List<Entity> primitiveList;
 	List<Entity> simpleList;
-	List<Entity> wildcardList;
 	
 	public ClassObject() {
 		this.implementsList = new ArrayList<>();
 		this.entitiesInsideClass = new ArrayList<>();
 		
 		this.classList = new ArrayList<>();
-		this.genericsList = new ArrayList<>();
 		this.importObjectList = new ArrayList<>();
 		this.methodDeclarationList = new ArrayList<>();
 		this.packageObject = null;
 		this.primitiveList = new ArrayList<>();
 		this.simpleList = new ArrayList<>();
-		this.wildcardList = new ArrayList<>();
 	}
 	
 	public ClassObject(String n, int l, int c) {
@@ -74,7 +70,11 @@ public class ClassObject extends SuperEntityClass {
 		}
 		*/
 		
-		for(Entity e : arrayList) {
+		for(Entity e : this.methodDeclarationList) {
+			e.printInfo();
+		}
+		
+		for(Entity e : this.genericsList) {
 			e.printInfo();
 		}
 	}
@@ -107,6 +107,11 @@ public class ClassObject extends SuperEntityClass {
 		entitiesInsideClass.add(e);
 	}
 
+	
+	
+	public void addMethodDeclaration(MethodDeclarationObject mdo) {
+		this.methodDeclarationList.add(mdo);
+	}
 	
 	
 }

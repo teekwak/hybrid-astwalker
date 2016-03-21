@@ -11,7 +11,6 @@ public class MethodDeclarationObject extends SuperEntityClass {
 	List<Entity> entitiesInsideMethodDeclaration;
 	List<?> parametersList;
 	
-	List<Entity> arrayList;
 	List<Entity> catchClauseList;
 	List<Entity> classList;
 	List<Entity> conditionalExpressionList;
@@ -19,7 +18,6 @@ public class MethodDeclarationObject extends SuperEntityClass {
 	List<Entity> forStatementList;
 	List<Entity> ifStatementList;
 	List<Entity> infixExpressionList;
-	List<Entity> genericsList;
 	List<Entity> methodInvocationList;
 	List<Entity> primitiveList;
 	List<Entity> simpleList;
@@ -27,20 +25,17 @@ public class MethodDeclarationObject extends SuperEntityClass {
 	List<Entity> throwList;
 	List<Entity> tryStatementList;
 	List<Entity> whileStatementList;
-	List<Entity> wildcardList;
 	
 	public MethodDeclarationObject() {
 		this.thrownExceptions = new ArrayList<>();
 		this.entitiesInsideMethodDeclaration = new ArrayList<>();
 		this.parametersList = new ArrayList<>();
 		
-		this.arrayList = new ArrayList<>();
 		this.catchClauseList = new ArrayList<>();
 		this.classList = new ArrayList<>();
 		this.conditionalExpressionList = new ArrayList<>();
 		this.doStatementList = new ArrayList<>();
 		this.forStatementList = new ArrayList<>();
-		this.genericsList = new ArrayList<>();
 		this.ifStatementList = new ArrayList<>();
 		this.infixExpressionList = new ArrayList<>();
 		this.methodInvocationList = new ArrayList<>();
@@ -50,7 +45,6 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		this.throwList = new ArrayList<>();
 		this.tryStatementList = new ArrayList<>();
 		this.whileStatementList = new ArrayList<>();
-		this.wildcardList = new ArrayList<>();
 	}
 
 	public void addChild(Entity e) {
@@ -71,7 +65,13 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		
 		System.out.println(s.toString());
 		
+		/*
 		for(Entity e : entitiesInsideMethodDeclaration) {
+			e.printInfo();
+		}
+		*/
+		
+		for(Entity e : genericsList) {
 			e.printInfo();
 		}
 	}
@@ -107,4 +107,31 @@ public class MethodDeclarationObject extends SuperEntityClass {
 	public boolean getAbstract() {
 		return this.isAbstract;
 	}
+	
+	
+	
+	public void addCatchClause(Entity cco) {
+		this.catchClauseList.add(cco);
+	}
+	
+	public void addDoStatement(Entity dso) {
+		this.doStatementList.add(dso);
+	}
+	
+	public void addForStatement(Entity fso) {
+		this.forStatementList.add(fso);
+	}	
+	
+	public void addIfStatement(Entity iso) {
+		this.ifStatementList.add(iso);
+	}
+	
+	public void addMethodInvocation(Entity mio) {
+		this.methodInvocationList.add(mio);
+	}
+	
+	public void addWhileStatement(Entity wso) {
+		this.whileStatementList.add(wso);
+	} 
+	
 }
