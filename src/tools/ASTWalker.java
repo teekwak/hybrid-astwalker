@@ -79,6 +79,7 @@ public class ASTWalker {
 	public PackageObject packageObject = new PackageObject();
 	public List<ImportObject> importList = new ArrayList<>();
 	public boolean inMethod = false;
+	public boolean inInterface = false; // ignoring interfaces
 
 	/**
 	 * Reads code file
@@ -242,43 +243,48 @@ public class ASTWalker {
 			}
 			
 			public boolean visit(MethodDeclaration node) {
-				inMethod = true;
+				if(inInterface == false) {
+					inMethod = true;
 
-				SimpleName name = node.getName();
-				
-				boolean isStatic = false;
-				boolean isAbstract = false;
-				
-				int mod = node.getModifiers();
-				if(Modifier.isAbstract(mod)) {
-					isAbstract = true;
-				}
-				
-				if(Modifier.isStatic(mod)) {
-					isStatic = true;
-				}
-				
-				MethodDeclarationObject md = new MethodDeclarationObject();
-				md.setName(name.toString());
-				md.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-				md.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-				md.setStatic(isStatic);
-				md.setAbstract(isAbstract);
-				
-				if(node.thrownExceptionTypes().size() > 0) {
-					for(Object o : node.thrownExceptionTypes()) {
-						md.addThrowsException(o.toString());
+					SimpleName name = node.getName();
+					
+					boolean isStatic = false;
+					boolean isAbstract = false;
+					
+					int mod = node.getModifiers();
+					if(Modifier.isAbstract(mod)) {
+						isAbstract = true;
 					}
+					
+					if(Modifier.isStatic(mod)) {
+						isStatic = true;
+					}
+					
+					MethodDeclarationObject md = new MethodDeclarationObject();
+					md.setName(name.toString());
+					md.setLineNumber(cu.getLineNumber(name.getStartPosition()));
+					md.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
+					md.setStatic(isStatic);
+					md.setAbstract(isAbstract);
+					
+					if(node.thrownExceptionTypes().size() > 0) {
+						for(Object o : node.thrownExceptionTypes()) {
+							md.addThrowsException(o.toString());
+						}
+					}
+					
+					entityStack.push(md);			
 				}
-				
-				entityStack.push(md);
 				return true;
 			}
 
 			public void endVisit(MethodDeclaration node) {
+				if(inInterface == false) {
+					MethodDeclarationObject temp = (MethodDeclarationObject) entityStack.pop();
+					entityStack.peek().addChild(temp);					
+				}
+				
 				inMethod = false;
-				MethodDeclarationObject temp = (MethodDeclarationObject) entityStack.pop();
-				entityStack.peek().addChild(temp);
 			}
 
 			public boolean visit(MethodInvocation node) {
@@ -345,10 +351,11 @@ public class ASTWalker {
 				return true;
 			}
 */
-		
+			
 			// called on parameters of function
 			// done-ish. excluded qualifiedType, unionType, wildcardType
-			public boolean visit(SingleVariableDeclaration node) {				
+			public boolean visit(SingleVariableDeclaration node) {			
+				if(inInterface == false) {
 				SimpleName name = node.getName();
 				
 				if(node.getType().isArrayType()) {
@@ -387,7 +394,7 @@ public class ASTWalker {
 				else {
 					System.out.println("Something is missing " + node.getType());
 				}
-				
+				}
 				return true;
 			}
 
@@ -456,34 +463,48 @@ public class ASTWalker {
 
 				// need to not go into interfaces
 				
-				ClassObject co = new ClassObject();
-				co.setName(node.getName().toString());
-				co.setLineNumber(cu.getLineNumber(node.getStartPosition()));
-				co.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
-				co.setPackageObject(packageObject);
-				co.setImportList(importList);
-				
-				if(node.getSuperclassType() != null) {
-					co.setSuperClass(node.getSuperclassType().toString());
+				if(node.isInterface()) {
+					inInterface = true;
 				}
 				
-				if(node.superInterfaceTypes().size() > 0) {
-					for(Object o : node.superInterfaceTypes()) {
-						co.addImplementsInterface(o.toString());	
+				else {
+					inInterface = false;
+					
+					ClassObject co = new ClassObject();
+					co.setName(node.getName().toString());
+					co.setLineNumber(cu.getLineNumber(node.getStartPosition()));
+					co.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
+					co.setPackageObject(packageObject);
+					co.setImportList(importList);
+					
+					if(node.getSuperclassType() != null) {
+						co.setSuperClass(node.getSuperclassType().toString());
 					}
+					
+					if(node.superInterfaceTypes().size() > 0) {
+						for(Object o : node.superInterfaceTypes()) {
+							co.addImplementsInterface(o.toString());	
+						}
+					}
+					
+					entityStack.push(co);					
 				}
-				
-				entityStack.push(co);
 				
 				return true;
 			}
 
-			public void endVisit(TypeDeclaration node) {
-				fileModel.javaFile.addClass((ClassObject) entityStack.pop());
+			public void endVisit(TypeDeclaration node) {				
+				if(inInterface == false) {
+					fileModel.javaFile.addClass((ClassObject) entityStack.pop());					
+				}
+				
+				inInterface = false;
 			}
 
 			// done-ish. excluded qualifiedType, unionType, wildcardType
 			public boolean visit(VariableDeclarationFragment node) {
+				if(inInterface == false) {
+				
 				SimpleName name = node.getName();
 				
 				Type nodeType = ((FieldDeclaration) node.getParent()).getType();
@@ -523,13 +544,13 @@ public class ASTWalker {
 				else {
 					System.out.println("Something is missing " + nodeType);
 				}
-				
+				}
 				return true;
 			}
 
 			// done-ish. excluded qualifiedType, unionType, wildcardType
 			public boolean visit(VariableDeclarationStatement node) {
-				
+				if(inInterface == false) {
 				Type nodeType = node.getType();
 				
 				for(Object v : node.fragments()) {
@@ -573,12 +594,13 @@ public class ASTWalker {
 					}
 				}
 				
-
+				}
 				return false; // does this stop from going to VariableDeclarationFragment?
 			}
 
 			// done-ish. excluded qualifiedType, unionType, wildcardType
 			public boolean visit(VariableDeclarationExpression node) {
+				if(inInterface == false) {
 					Type nodeType = node.getType();
 					
 					for(Object v : node.fragments()) {
@@ -620,7 +642,7 @@ public class ASTWalker {
 							System.out.println("Something is missing " + nodeType);
 						}
 					}
-				
+				}
 				return false; // does this stop from going to VariableDeclarationFragment?
 			}
 
