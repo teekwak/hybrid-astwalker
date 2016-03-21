@@ -31,7 +31,7 @@ import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
 import org.eclipse.jdt.core.dom.ParameterizedType;
-import org.eclipse.jdt.core.dom.ReturnStatement;
+// import org.eclipse.jdt.core.dom.ReturnStatement;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.SwitchCase;
@@ -62,6 +62,7 @@ import entities.Entity;
 import entities.ForStatementObject;
 import entities.IfStatementObject;
 import entities.ImportObject;
+import entities.InfixExpressionObject;
 
 
 /**
@@ -225,27 +226,26 @@ public class ASTWalker {
 	
 				return true;
 			}
-/*
+
 			public boolean visit(InfixExpression node){
-				if(inMethod) {
-					//fileModel.infixExpression__.addInfixExpression(node.getOperator().toString(), node.getLeftOperand().toString(), node.getRightOperand().toString(), currentClassStack.peek().getName().toString(), currentMethodStack.peek().getName().toString(), cu.getLineNumber(node.getLeftOperand().getStartPosition()), (cu.getColumnNumber(node.getLeftOperand().getStartPosition())));
-					
-					if(node.getOperator().toString().equals("&&") || node.getOperator().toString().equals("||")) {
-					}
+				if(inMethod) {					
+					InfixExpressionObject ieo = new InfixExpressionObject();
+					ieo.setName(node.getOperator().toString());
+					ieo.setOperator(node.getOperator().toString());
+					ieo.setLeftOperand(node.getLeftOperand().toString());
+					ieo.setRightOperand(node.getRightOperand().toString());
+					ieo.setLineNumber(cu.getLineNumber(node.getLeftOperand().getStartPosition()));
+					ieo.setColumnNumber(cu.getColumnNumber(node.getLeftOperand().getStartPosition()));		
 				}
 
 				return true;
 			}
-*/
-			@SuppressWarnings("unchecked")
+			
 			public boolean visit(MethodDeclaration node) {
 				inMethod = true;
 
 				SimpleName name = node.getName();
 				
-				IMethodBinding binding = node.resolveBinding();
-				ITypeBinding className = binding.getDeclaringClass();
-
 				boolean isStatic = false;
 				boolean isAbstract = false;
 				
@@ -281,7 +281,6 @@ public class ASTWalker {
 				entityStack.peek().addChild(temp);
 			}
 
-			@SuppressWarnings("unchecked")
 			public boolean visit(MethodInvocation node) {
 				
 				if(inMethod) {					
@@ -427,7 +426,6 @@ public class ASTWalker {
 			}
 
 
-			@SuppressWarnings("unchecked")
 			public boolean visit(TryStatement node) {
 				if(inMethod) {
 					String tryBody = "Try Statement";

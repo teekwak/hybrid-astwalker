@@ -1,8 +1,10 @@
-package entities;
+package obsolete;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import entities.InfixExpressionObject;
+/*
 class InfixExpressionObject {
 	String operator;
 	String leftOperand;
@@ -28,7 +30,7 @@ class InfixExpressionObject {
 		System.out.println(leftOperand + " " + operator + " " + rightOperand + " => " + lineNumber + " | " + columnNumber);
 	}
 }
-
+*/
 public class InfixExpression__ {
 	public List<InfixExpressionObject> infixExpressionObjectList;
 
