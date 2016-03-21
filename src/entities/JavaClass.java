@@ -14,7 +14,7 @@ public class JavaClass extends SuperEntityClass {
 	List<SuperEntityClass> arrayList;
 	List<SuperEntityClass> classList;
 	List<SuperEntityClass> genericsList;
-	List<SuperEntityClass> importObjectList;
+	List<SuperEntityClass> importList;
 	List<SuperEntityClass> methodDeclarationList;
 	List<SuperEntityClass> primitiveList;
 	List<SuperEntityClass> simpleList;
@@ -28,7 +28,7 @@ public class JavaClass extends SuperEntityClass {
 		this.arrayList = new ArrayList<>();
 		this.classList = new ArrayList<>();
 		this.genericsList = new ArrayList<>();
-		this.importObjectList = new ArrayList<>();
+		this.importList = new ArrayList<>();
 		this.methodDeclarationList = new ArrayList<>();
 		this.primitiveList = new ArrayList<>();
 		this.simpleList = new ArrayList<>();
@@ -45,7 +45,6 @@ public class JavaClass extends SuperEntityClass {
 		return this.superClass;
 	}
 	
-	@Override
 	public void printInfo() {
 		StringBuilder s = new StringBuilder();
 		s.append("ClassObject " + this.getName());
@@ -103,11 +102,11 @@ public class JavaClass extends SuperEntityClass {
 	}
 	
 	public void setImportList(List<SuperEntityClass> list ) {
-		this.importObjectList = list;
+		this.importList = list;
 	}
 	
 	public List<SuperEntityClass> getImportList() {
-		return this.importObjectList;
+		return this.importList;
 	}
 	
 	public void setPackageObject(SuperEntityClass po) {
@@ -118,6 +117,34 @@ public class JavaClass extends SuperEntityClass {
 		return this.packageObject;
 	}
 
+	public List<SuperEntityClass> getArrayList() {
+		return this.arrayList;
+	}
+	
+	public List<SuperEntityClass> getClassList() {
+		return this.classList;
+	}
+	
+	public List<SuperEntityClass> getGenericsList() {
+		return this.genericsList;
+	}
+	
+	public List<SuperEntityClass> getMethodDeclarationList() {
+		return this.methodDeclarationList;
+	}
+	
+	public List<SuperEntityClass> getPrimitiveList() {
+		return this.primitiveList;
+	}
+	
+	public List<SuperEntityClass> getSimpleList() {
+		return this.simpleList;
+	}
+	
+	public List<SuperEntityClass> getWildcardList() {
+		return this.wildcardList;
+	}
+	
 	public void addEntity(SuperEntityClass entity, EntityType ET) {
 		this.entityList.add(entity);
 		

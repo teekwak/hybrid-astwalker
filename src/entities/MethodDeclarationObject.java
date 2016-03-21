@@ -176,6 +176,74 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		return this.switchCaseList;
 	}
 	
+	public List<SuperEntityClass> getArrayList() {
+		return this.arrayList;
+	}
+	
+	public List<SuperEntityClass> getCatchClauseList() {
+		return this.catchClauseList;
+	}
+	
+	public List<SuperEntityClass> getClassList() {
+		return this.classList;
+	}
+	
+	public List<SuperEntityClass> getConditionalExpressionList() {
+		return this.conditionalExpressionList;
+	}
+	
+	public List<SuperEntityClass> getDoStatementList() {
+		return this.doStatementList;
+	}
+	
+	public List<SuperEntityClass> getForStatementList() {
+		return this.forStatementList;
+	}
+	
+	public List<SuperEntityClass> getGenericsList() {
+		return this.genericsList;
+	}
+	
+	public List<SuperEntityClass> getIfStatementList() {
+		return this.ifStatementList;
+	}
+	
+	public List<SuperEntityClass> getInfixExpressionList() {
+		return this.infixExpressionList;
+	}
+	
+	public List<SuperEntityClass> getMethodInvocationList() {
+		return this.methodInvocationList;
+	}
+	
+	public List<SuperEntityClass> getPrimitiveList() {
+		return this.primitiveList;
+	}
+	
+	public List<SuperEntityClass> getSimpleList() {
+		return this.simpleList;
+	}
+	
+	public List<SuperEntityClass> getSwitchStatementList() {
+		return this.switchStatementList;
+	}
+	
+	public List<SuperEntityClass> getThrowStatementList() {
+		return this.throwStatementList;
+	}
+	
+	public List<SuperEntityClass> getTryStatementList() {
+		return this.tryStatementList;
+	}
+	
+	public List<SuperEntityClass> getWhileStatementList() {
+		return this.whileStatementList;
+	}
+	
+	public List<SuperEntityClass> getWildcardList() {
+		return this.wildcardList;
+	}
+	
 	public void addEntity(SuperEntityClass entity, EntityType ET) {
 		this.entityList.add(entity);
 		

@@ -27,6 +27,10 @@ public class FileModel {
 		this.javaClassList = new ArrayList<>();
 	}
 
+	public List<JavaClass> getJavaClassList() {
+		return this.javaClassList;
+	}
+	
 	public FileModel parseDeclarations(String fileLocation) throws IOException, CoreException {
 		ASTWalker astWalker = new ASTWalker();
 		return astWalker.parseFile(fileLocation);
