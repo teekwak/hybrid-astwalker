@@ -1,8 +1,8 @@
-package entities;
+package obsolete;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/*
 class ForStatementObject {
 	String expression;
 	String className;
@@ -26,6 +26,9 @@ class ForStatementObject {
 		System.out.println("\tMethod:\t" + methodName);
 	}
 }
+*/
+
+import entities.ForStatementObject;
 
 public class ForStatement__ {
 	List<ForStatementObject> forStatementObjectList;

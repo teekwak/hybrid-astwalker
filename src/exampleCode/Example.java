@@ -64,12 +64,19 @@ public class Example extends SomeSuperClass implements thing1, thing2, thing3 {
 			
 		}
 		
-		System.out.println(1 == 2 ? true : false);
 		return;
 	}
 
 	class Another {
 		public double num() {
+			for(int i = 0; i < 10; i++) {
+				System.out.println(10);
+			}
+			
+			List<String> list = new ArrayList<>();
+			for(String s : list) {
+				// do something
+			}
 			return 1.2;
 		}
 	}

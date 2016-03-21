@@ -50,12 +50,13 @@ import entities.ClassObject;
 import entities.ConditionalExpressionObject;
 import entities.MethodDeclarationObject;
 import entities.PackageObject;
-import entities.ReturnStatementObject;
+// import entities.ReturnStatementObject;
 import entities.ThrowObject;
 import entities.WhileStatementObject;
 import entities.CatchClauseObject;
 import entities.DoStatementObject;
 import entities.Entity;
+import entities.ForStatementObject;
 import entities.ImportObject;
 
 
@@ -161,11 +162,15 @@ public class ASTWalker {
 				}
 				return true;
 			}
-/*
+
 			public boolean visit(EnhancedForStatement node) {
 				if(inMethod) {
-					SimpleName name = node.getParameter().getName();
-					//fileModel.forStatement__.addForStatement(name.toString(), true, cu.getLineNumber(name.getStartPosition()), cu.getColumnNumber(name.getStartPosition()));
+					ForStatementObject fso = new ForStatementObject();
+					fso.setName(node.getExpression().toString());
+					fso.setEnhanced(true);
+					fso.setLineNumber(cu.getLineNumber(node.getStartPosition()));
+					fso.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
+					entityStack.peek().addChild(fso);	
 				}
 
 				return true;
@@ -174,11 +179,17 @@ public class ASTWalker {
 			public boolean visit(ForStatement node) {
 				if(inMethod) {
 					//fileModel.forStatement__.addForStatement(node.getExpression().toString(), currentClassStack.peek().getName().toString(), currentMethodStack.peek().getName().toString(), false, cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
+					ForStatementObject fso = new ForStatementObject();
+					fso.setName(node.getExpression().toString());
+					fso.setEnhanced(false);
+					fso.setLineNumber(cu.getLineNumber(node.getStartPosition()));
+					fso.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
+					entityStack.peek().addChild(fso);				
 				}
 
 				return true;
 			}
-
+/*
 			public boolean visit(IfStatement node) {
 				if(inMethod) {
 					//fileModel.ifStatement__.addIfStatement(node.getExpression().toString(), currentClassStack.peek().getName().toString(), currentMethodStack.peek().getName().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
@@ -313,6 +324,7 @@ public class ASTWalker {
 				return true;
 			}
 
+/*
 			public boolean visit(ReturnStatement node) {
 				if(inMethod) {
 					String expression;
@@ -331,6 +343,7 @@ public class ASTWalker {
 				}
 				return true;
 			}
+*/
 
 			
 /*			
