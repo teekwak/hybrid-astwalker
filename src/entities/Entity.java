@@ -1,7 +1,5 @@
 package entities;
 
-import java.util.List;
-
 import org.eclipse.jdt.core.dom.Type;
 
 public interface Entity {

@@ -3,8 +3,6 @@ package entities;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jdt.core.dom.Type;
-
 public class MethodDeclarationObject extends SuperEntityClass {
 
 	// need arguments

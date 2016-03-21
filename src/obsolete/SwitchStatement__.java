@@ -1,9 +1,11 @@
-package entities;
+package obsolete;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import entities.SwitchStatementObject;
+/*
 class SwitchStatementObject {
 
 	String expression;
@@ -36,7 +38,7 @@ class SwitchStatementObject {
 		}
 	}
 }
-
+*/
 public class SwitchStatement__ {
 	public List<SwitchStatementObject> switchStatementObjectList;
 
