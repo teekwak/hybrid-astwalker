@@ -55,7 +55,7 @@ public class ASTWalkerAndGitData {
 		FileModel fileModel = new FileModel();
 		fileModel = fileModel.parseDeclarations(parentNode.getAbsolutePath());
 			
-		fileModel.printEverything();
+		fileModel.javaFile.printAll();
 		
 		GitData gitData = new GitData();
 		Git git = Git.open( new File (topDirectoryLocation + ".git") );

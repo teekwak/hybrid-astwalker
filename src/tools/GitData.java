@@ -146,7 +146,7 @@ public class GitData {
 		String[] name = javaFileName.split("/");
 		
 		JavaFile javaFileObject = new JavaFile(name[name.length - 1]);
-				
+		
 		File dir = new File(directoryLocation);
 		
 		// get number of lines in a file
