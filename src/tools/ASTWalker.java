@@ -57,6 +57,7 @@ import entities.CatchClauseObject;
 import entities.DoStatementObject;
 import entities.Entity;
 import entities.ForStatementObject;
+import entities.IfStatementObject;
 import entities.ImportObject;
 
 
@@ -189,16 +190,18 @@ public class ASTWalker {
 
 				return true;
 			}
-/*
+
 			public boolean visit(IfStatement node) {
 				if(inMethod) {
-					//fileModel.ifStatement__.addIfStatement(node.getExpression().toString(), currentClassStack.peek().getName().toString(), currentMethodStack.peek().getName().toString(), cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()));
+					IfStatementObject iso = new IfStatementObject();
+					iso.setName(node.getExpression().toString());
+					iso.setLineNumber(cu.getLineNumber(node.getStartPosition()));
+					iso.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
+					entityStack.peek().addChild(iso);
 				}
 
 				return true;
 			}
-
-*/
 
 			public boolean visit(ImportDeclaration node){
 				Name name = node.getName();			

@@ -1,8 +1,8 @@
-package entities;
+package obsolete;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/*
 class IfStatementObject {
 	String expression;
 	String className;
@@ -22,6 +22,9 @@ class IfStatementObject {
 		System.out.println(expression + " => " + lineNumber + " | " + columnNumber);
 	}
 }
+*/
+
+import entities.IfStatementObject;
 
 public class IfStatement__ {
 	public List<IfStatementObject> ifStatementObjectList;
