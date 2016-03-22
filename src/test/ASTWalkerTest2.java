@@ -10,6 +10,8 @@ import org.junit.Test;
 
 import entities.Entity;
 import entities.JavaClass;
+import entities.MethodDeclarationObject;
+import entities.SuperEntityClass;
 import tools.FileModel;
 
 public class ASTWalkerTest2 {
@@ -90,5 +92,26 @@ public class ASTWalkerTest2 {
 		totalImportCount_gmail = fileModel_gmail.getJavaClassList().get(0).getImportList().size();
 		assertEquals(14, totalImportCount_gmail);
 	}
+
+	@Test 
+	public void tryStatementCheck() {
+		// JabberChatEx.java
+		int count_jabber = 0;
+		for(JavaClass j : fileModel_jabber.getJavaClassList()) {
+			for(SuperEntityClass mdo : j.getMethodDeclarationList()) {
+				count_jabber += ((MethodDeclarationObject) mdo).getTryStatementList().size();
+			}
+		}
+		assertEquals(1, count_jabber);
+		
+		int count_gmail = 0;
+		for(JavaClass j : fileModel_gmail.getJavaClassList()) {
+			for(SuperEntityClass mdo : j.getMethodDeclarationList()) {
+				count_gmail += ((MethodDeclarationObject) mdo).getTryStatementList().size();
+			}
+		}
+		assertEquals(1, count_gmail);
+	}
+	
 	
 }
