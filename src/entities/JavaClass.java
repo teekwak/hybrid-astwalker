@@ -5,9 +5,6 @@ import java.util.List;
 
 public class JavaClass extends SuperEntityClass {
 
-	String name;
-	int lineNumber;
-	int columnNumber;
 	String superClass;
 	List<String> implementsList;
 	

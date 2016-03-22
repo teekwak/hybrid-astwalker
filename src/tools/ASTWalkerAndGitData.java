@@ -31,7 +31,12 @@ public class ASTWalkerAndGitData {
 			}
 		}
 		else {
+			/*
 			if(parentNode.getName().endsWith(".java")) {	
+				runASTandGitData(parentNode, topDirectoryLocation);
+			}
+			*/
+			if(parentNode.getName().equals("JabberChat.java")) {
 				runASTandGitData(parentNode, topDirectoryLocation);
 			}
 		}
