@@ -68,7 +68,7 @@ public class SuperEntityClass implements Entity {
 	}
 	
 	public void printInfo() {
-		System.out.println(this.name + " (" + this.lineNumber + " | " + this.columnNumber + ")");		
+		System.out.println(this.name + " [" + this.lineNumber + " | " + this.columnNumber + "]");		
 	}
 	
 	public void addEntity(SuperEntityClass entity, EntityType ET) {

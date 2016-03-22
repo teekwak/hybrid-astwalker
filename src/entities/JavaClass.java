@@ -57,7 +57,7 @@ public class JavaClass extends SuperEntityClass {
 			}
 		}
 
-		s.append(" (" + this.lineNumber + " | " + this.columnNumber + ")");
+		s.append(" [" + this.lineNumber + " | " + this.columnNumber + "]");
 		
 		System.out.println(s.toString());
 		

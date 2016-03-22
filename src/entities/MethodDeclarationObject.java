@@ -67,7 +67,19 @@ public class MethodDeclarationObject extends SuperEntityClass {
 			}
 		}
 		
-		s.append(" (" + this.lineNumber + " | " + this.columnNumber + ")");
+		s.append("(");
+	
+		for(int i = 0; i < this.parametersList.size(); i++) {
+			if(i == this.parametersList.size() - 1) {
+				s.append(this.parametersList.get(i));
+			}
+			else {
+				s.append(this.parametersList.get(i) + ", ");
+			}	
+		}
+		
+		s.append(")");
+		s.append(" [" + this.lineNumber + " | " + this.columnNumber + "]");
 		
 		System.out.println(s.toString());
 		
@@ -128,6 +140,10 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		}
 		
 		for(Entity e : tryStatementList) {
+			e.printInfo();
+		}
+		
+		for(Entity e : whileStatementList) {
 			e.printInfo();
 		}
 		

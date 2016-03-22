@@ -28,4 +28,25 @@ public class MethodInvocationObject extends SuperEntityClass {
 		return argumentsList;
 	}
 	
+	public void printInfo() {
+		StringBuilder s = new StringBuilder();
+		s.append(this.name);
+		
+		s.append("(");
+		
+		for(int i = 0; i < this.argumentsList.size(); i++) {
+			if(i == this.argumentsList.size() - 1) {
+				s.append(this.argumentsList.get(i));
+			}
+			else {
+				s.append(this.argumentsList.get(i) + ", ");
+			}	
+		}
+		
+		s.append(")");
+		s.append(" [" + this.lineNumber + " | " + this.columnNumber + "]");
+		
+		System.out.println(s.toString());
+	}
+	
 }
