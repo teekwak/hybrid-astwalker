@@ -168,6 +168,8 @@ public class GitData {
 				scanner.nextLine();
 			}
 			
+			scanner.close();
+			
 		} catch (Exception e) {
 			System.out.println("Data is null!");
 		}
@@ -188,6 +190,8 @@ public class GitData {
 			while (scanner.hasNextLine()) {
 				count += scanner.nextLine().length();
 			}
+			
+			scanner.close();
 			
 		} catch (Exception e) {
 			System.out.println("Data is null!");

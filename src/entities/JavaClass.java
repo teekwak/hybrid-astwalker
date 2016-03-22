@@ -6,6 +6,7 @@ import java.util.List;
 public class JavaClass extends SuperEntityClass {
 
 	String superClass;
+	String sourceCode;
 	List<String> implementsList;
 	
 	List<SuperEntityClass> arrayList;
@@ -114,6 +115,14 @@ public class JavaClass extends SuperEntityClass {
 		return this.packageObject;
 	}
 
+	public void setSourceCode(String s) {
+		this.sourceCode = s;
+	}
+	
+	public String getSourceCode() {
+		return this.sourceCode;
+	}
+	
 	public List<SuperEntityClass> getArrayList() {
 		return this.arrayList;
 	}

@@ -4,6 +4,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.Stack;
 
 import org.eclipse.core.runtime.CoreException;
@@ -68,7 +69,7 @@ public class ASTWalker {
 	 * @return char[] of file
 	 * @throws IOException
 	 */
-	public static char[] readFileToCharArray(String filePath) throws IOException {
+	public static String readFileToCharArray(String filePath) throws IOException {
 		StringBuilder fileData = new StringBuilder(1000);
 		BufferedReader reader = new BufferedReader(new FileReader(filePath));
 
@@ -82,7 +83,7 @@ public class ASTWalker {
 
 		reader.close();
 
-		return fileData.toString().toCharArray();
+		return fileData.toString();
 	}
 
 	/**
@@ -95,11 +96,13 @@ public class ASTWalker {
 	public FileModel parseFile(String fileLocation) throws IOException, CoreException {
 		this.fileModel = new FileModel();
 
+		String sourceCode = readFileToCharArray(fileLocation);
+		
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
 
 		parser.setUnitName(fileLocation);
 		parser.setEnvironment(null, null, null, true);
-		parser.setSource(readFileToCharArray(fileLocation));
+		parser.setSource(sourceCode.toCharArray());
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		parser.setResolveBindings(true);
 		parser.setBindingsRecovery(true);
@@ -220,10 +223,8 @@ public class ASTWalker {
 				if(inInterface == false) {
 					inMethod = true;
 
-					System.out.println(node.getLength());
-					
 					SimpleName name = node.getName();
-					
+										
 					String fullyQualifiedName;
 					try {
 						fullyQualifiedName = name.getFullyQualifiedName();
@@ -249,6 +250,8 @@ public class ASTWalker {
 					md.setParametersList(node.parameters());
 					md.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 					md.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
+					md.setNumberOfCharacters(node.getLength());
+					md.setEndLine(cu.getLineNumber(node.getStartPosition() + node.getLength()));
 					md.setConstructor(node.isConstructor());
 					md.setVarargs(node.isVarargs());
 					md.setStatic(isStatic);
@@ -433,6 +436,28 @@ public class ASTWalker {
 				else {
 					inInterface = false;
 					
+					int startLine = cu.getLineNumber(node.getStartPosition());
+					int endLine = cu.getLineNumber(node.getStartPosition() + node.getLength());
+					
+					// get source code
+					StringBuilder classSourceCode = new StringBuilder();
+					
+					Scanner scanner = new Scanner(sourceCode);
+						// skip lines before class declaration
+						for(int i = 0; i < startLine - 1; i++) {
+							scanner.nextLine();
+						}
+					
+						// get lines and add new line character
+						for(int j = startLine - 1; j < endLine - 1; j++) {
+							classSourceCode.append(scanner.nextLine());
+							classSourceCode.append(System.getProperty("line.separator"));
+						}
+						
+						// get last line without adding new line character
+						classSourceCode.append(scanner.nextLine());
+					scanner.close();
+					
 					String fullyQualifiedName;
 					try {
 						fullyQualifiedName = node.getName().getFullyQualifiedName();
@@ -443,8 +468,11 @@ public class ASTWalker {
 					JavaClass co = new JavaClass();
 					co.setName(node.getName().toString());
 					co.setFullyQualifiedName(fullyQualifiedName);
-					co.setLineNumber(cu.getLineNumber(node.getStartPosition()));
+					co.setLineNumber(startLine);
 					co.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
+					co.setNumberOfCharacters(node.getLength());
+					co.setEndLine(endLine);
+					co.setSourceCode(classSourceCode.toString());
 					co.setPackageObject(packageObject);
 					co.setImportList(importList);
 					
