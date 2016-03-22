@@ -3,8 +3,6 @@ package entities;
 import java.util.ArrayList;
 import java.util.List;
 
-import entities.Entity.EntityType;
-
 public class MethodDeclarationObject extends SuperEntityClass {
 	
 	List<Entity> entityList;
@@ -13,7 +11,6 @@ public class MethodDeclarationObject extends SuperEntityClass {
 	boolean isConstructor;
 	boolean isStatic;
 	boolean isVarargs;
-	int cyclomaticComplexity;
 	
 	List<String> thrownExceptions;
 	List<?> parametersList;

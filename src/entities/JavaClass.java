@@ -177,4 +177,16 @@ public class JavaClass extends SuperEntityClass {
 		}
 	}
 	
+	public void setCyclomaticComplexity() {
+		int count = 0;
+		for(SuperEntityClass md : this.methodDeclarationList) {
+			count += ((MethodDeclarationObject) md).getCyclomaticComplexity();
+		}
+		this.cyclomaticComplexity = count;
+	}
+	
+	public int getCyclomaticComplexity() {
+		return this.cyclomaticComplexity;
+	}
+	
 }

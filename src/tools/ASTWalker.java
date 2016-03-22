@@ -496,7 +496,9 @@ public class ASTWalker {
 
 			public void endVisit(TypeDeclaration node) {				
 				if(inInterface == false) {
-					fileModel.addJavaClass((JavaClass) entityStack.pop());					
+					JavaClass temp = (JavaClass) entityStack.pop();
+					temp.setCyclomaticComplexity();
+					fileModel.addJavaClass(temp);					
 				}
 				
 				inInterface = false;

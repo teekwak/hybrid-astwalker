@@ -18,6 +18,7 @@ public class SuperEntityClass implements Entity {
 	int columnNumber;
 	int numberOfCharacters;
 	int endLine;
+	int cyclomaticComplexity;
 	
 	public SuperEntityClass() {
 		entityList = new ArrayList<>();
@@ -97,4 +98,5 @@ public class SuperEntityClass implements Entity {
 	public void addEntities(List<SuperEntityClass> listOfEntities, EntityType ET) {
 		entityList.addAll(listOfEntities);
 	}
+	
 }
