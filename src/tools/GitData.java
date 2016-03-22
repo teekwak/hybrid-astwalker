@@ -9,10 +9,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 
 import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -40,21 +42,29 @@ class JavaFile {
 	int numberOfLines;
 	int numberOfCharacters;
 	List<CommitData> commitDataList;
+	Set<String> uniqueAuthors;
 	
 	JavaFile(String n) {
 		commitDataList = new ArrayList<>();
+		uniqueAuthors = new HashSet<>();
 		name = n;
+	}
+
+	public void setUniqueAuthors(List<String> set) {
+		uniqueAuthors = new HashSet<>(set);
+	}
+	
+	public Set<String> getUniqueAuthors() {
+		return this.uniqueAuthors;
 	}
 }
 
 public class GitData {
 
-	List<CommitObject> commitObjectList;	// stores author name, email, commit message, date of commit
 	Map<String, String> hashCodePairs;		// stores pairs of commit hash codes
 	List<JavaFile> javaFileList;
 	
 	public GitData() {
-		commitObjectList = new ArrayList<>();
 		hashCodePairs = new LinkedHashMap<>();
 		javaFileList = new ArrayList<>();
 	}
@@ -260,7 +270,9 @@ public class GitData {
 				message.add(s.trim());
 			}
 		}
-			
+		
+		javaFileObject.setUniqueAuthors(author);
+		
 		for(int i = 0; i < hashCode.size(); i++) {
 			CommitData c = new CommitData(hashCode.get(i), author.get(i), email.get(i), date.get(i), message.get(i)); 
 			javaFileObject.commitDataList.add(c);

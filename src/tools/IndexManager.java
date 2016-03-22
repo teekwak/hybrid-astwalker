@@ -36,8 +36,8 @@ public class IndexManager {
 				runASTandGitData(parentNode, topDirectoryLocation);
 			}
 			*/
-			//if(parentNode.getName().equals("JabberConnectionDebugger.java")) {
-			if(parentNode.getName().equals("java1.java")) {
+			if(parentNode.getName().equals("JabberConnectionDebugger.java")) {
+			//if(parentNode.getName().equals("java1.java")) {
 				runASTandGitData(parentNode, topDirectoryLocation);
 			}
 		}
@@ -89,8 +89,8 @@ public class IndexManager {
 		gitDataList.clear();
 		
 		//String topDirectoryLocation = args[0];
-		//String topDirectoryLocation = "/home/kwak/Desktop/jabber-plugin/";
-		String topDirectoryLocation = "/home/kwak/Desktop/jgit-test/";
+		String topDirectoryLocation = "/home/kwak/Desktop/jabber-plugin/";
+		//String topDirectoryLocation = "/home/kwak/Desktop/jgit-test/";
 		
 		File inputFolder = new File( topDirectoryLocation );
 		traverseUntilJava(inputFolder, topDirectoryLocation);
