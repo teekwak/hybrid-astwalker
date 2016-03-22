@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -134,6 +135,48 @@ public class GitData {
 		}
 	}
 
+	public static int getLineCountOfFile(String javaFileName) {
+		File file = new File(javaFileName);
+		
+		int count = 0;
+		try {
+			
+			@SuppressWarnings("resource")
+			Scanner scanner = new Scanner(file);
+		
+			while (scanner.hasNext()) {
+				count++;
+				scanner.nextLine();
+			}
+			
+		} catch (Exception e) {
+			System.out.println("Data is null!");
+		}
+		
+		return count;	
+	}
+	
+	public static int getCharacterCountOfFile(String javaFileName) {
+		File file = new File(javaFileName);
+		
+		int count = 0;
+		
+		try {
+			
+			@SuppressWarnings("resource")
+			Scanner scanner = new Scanner(file);
+		
+			while (scanner.hasNextLine()) {
+				count += scanner.nextLine().length();
+			}
+			
+		} catch (Exception e) {
+			System.out.println("Data is null!");
+		}
+		
+		return count;
+	}
+	
 	public void getCommitDataPerFile(String directoryLocation, String javaFileName) throws IOException {
 		String[] name = javaFileName.split("/");
 		
@@ -142,40 +185,10 @@ public class GitData {
 		File dir = new File(directoryLocation);
 		
 		// get number of lines in a file
-		ProcessBuilder pb1 = new ProcessBuilder("wc", "-l", javaFileName);
-		pb1.directory(dir);
-		
-		Process proc1 = pb1.start();
-		
-		InputStreamReader isr1 = new InputStreamReader(proc1.getInputStream());
-		BufferedReader br1 = new BufferedReader(isr1);
-		
-		String s1 = null;
-		while((s1 = br1.readLine()) != null) {
-			javaFileObject.numberOfLines = Integer.parseInt(s1.split(" ")[0]);
-		}
-		
-		br1.close();
-		isr1.close();
-		proc1.destroy();	
+		javaFileObject.numberOfLines = getLineCountOfFile(javaFileName);
 		
 		// get number of characters in a file
-		ProcessBuilder pb2 = new ProcessBuilder("wc", "-c", javaFileName);
-		pb2.directory(dir);
-		
-		Process proc2 = pb2.start();
-		
-		InputStreamReader isr2 = new InputStreamReader(proc2.getInputStream());
-		BufferedReader br2 = new BufferedReader(isr2);
-		
-		String s2 = null;
-		while((s2 = br2.readLine()) != null) {
-			javaFileObject.numberOfCharacters = Integer.parseInt(s2.split(" ")[0]);
-		}
-		
-		br2.close();
-		isr2.close();
-		proc2.destroy();
+		javaFileObject.numberOfCharacters = getCharacterCountOfFile(javaFileName);
 		
 		// get all commits of a single file
 		ProcessBuilder pb3 = new ProcessBuilder("git", "log", "--follow", javaFileName);
@@ -236,4 +249,5 @@ public class GitData {
 		isr3.close();
 		proc3.destroy();	
 	}
+	
 }
