@@ -5,8 +5,11 @@ import java.util.List;
 
 public class MethodDeclarationObject extends SuperEntityClass {
 	
-	boolean isStatic;
 	boolean isAbstract;
+	boolean isConstructor;
+	boolean isStatic;
+	boolean isVarargs;
+	
 	List<String> thrownExceptions;
 	List<?> parametersList;
 	
@@ -166,6 +169,22 @@ public class MethodDeclarationObject extends SuperEntityClass {
 	
 	public List<?> getParametersList() {
 		return this.parametersList;
+	}
+	
+	public void setVarargs(boolean iv) {
+		this.isVarargs = iv;
+	}
+	
+	public boolean getVarargs() {
+		return this.isVarargs;
+	}
+	
+	public void setConstructor(boolean ic) {
+		this.isConstructor = ic;
+	}
+	
+	public boolean getConstructor() {
+		return this.isConstructor;
 	}
 	
 	public void setStatic(boolean tf) {

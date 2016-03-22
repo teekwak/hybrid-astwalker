@@ -30,7 +30,7 @@ public class MethodInvocationObject extends SuperEntityClass {
 	
 	public void printInfo() {
 		StringBuilder s = new StringBuilder();
-		s.append(this.name);
+		s.append("\t" + this.name);
 		
 		s.append("(");
 		

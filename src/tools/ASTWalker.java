@@ -222,6 +222,13 @@ public class ASTWalker {
 
 					SimpleName name = node.getName();
 					
+					String fullyQualifiedName;
+					try {
+						fullyQualifiedName = name.getFullyQualifiedName();
+					} catch (NullPointerException e) {
+						fullyQualifiedName = name.toString();
+					}
+					
 					boolean isStatic = false;
 					boolean isAbstract = false;
 					
@@ -236,9 +243,12 @@ public class ASTWalker {
 					
 					MethodDeclarationObject md = new MethodDeclarationObject();
 					md.setName(name.toString());
+					md.setFullyQualifiedName(fullyQualifiedName);
 					md.setParametersList(node.parameters());
 					md.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 					md.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
+					md.setConstructor(node.isConstructor());
+					md.setVarargs(node.isVarargs());
 					md.setStatic(isStatic);
 					md.setAbstract(isAbstract);
 					
@@ -266,9 +276,17 @@ public class ASTWalker {
 				
 				if(inMethod) {					
 					SimpleName name = node.getName();
-									
+						
+					String fullyQualifiedName;
+					try {
+						fullyQualifiedName = name.getFullyQualifiedName();
+					} catch (NullPointerException e) {
+						fullyQualifiedName = name.toString();
+					}
+					
 					MethodInvocationObject mio = new MethodInvocationObject();
 					mio.setName(name.toString());
+					mio.setFullyQualifiedName(fullyQualifiedName);
 					mio.setArguments(node.arguments());
 					mio.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 					mio.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
@@ -413,8 +431,16 @@ public class ASTWalker {
 				else {
 					inInterface = false;
 					
+					String fullyQualifiedName;
+					try {
+						fullyQualifiedName = node.getName().getFullyQualifiedName();
+					} catch (NullPointerException e) {
+						fullyQualifiedName = node.getName().toString();
+					}
+					
 					JavaClass co = new JavaClass();
 					co.setName(node.getName().toString());
+					co.setFullyQualifiedName(fullyQualifiedName);
 					co.setLineNumber(cu.getLineNumber(node.getStartPosition()));
 					co.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
 					co.setPackageObject(packageObject);
