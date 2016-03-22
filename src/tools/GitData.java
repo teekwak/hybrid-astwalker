@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -86,6 +87,24 @@ public class GitData {
 		return dateFormat.format(date);		
 	}
 
+	public static int getYear(Date date) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		return cal.get(Calendar.YEAR);
+	}
+
+	public static int getMonth(Date date) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		return cal.get(Calendar.MONTH);
+	}
+	
+	public static int getDay(Date date) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		return cal.get(Calendar.DAY_OF_MONTH);
+	}
+	
 	public void addHashCodePairsToMap(List<RevCommit> commitHistory) {
 		this.hashCodePairs.put("--root", commitHistory.get(0).name());
 		
