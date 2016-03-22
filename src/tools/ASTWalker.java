@@ -3,6 +3,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.EmptyStackException;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Stack;
@@ -272,7 +273,6 @@ public class ASTWalker {
 				if(inInterface == false) {
 					MethodDeclarationObject temp = (MethodDeclarationObject) entityStack.pop();
 					temp.setCyclomaticComplexity();
-					System.out.println(temp.getCyclomaticComplexity());
 					entityStack.peek().addEntity(temp, EntityType.METHOD_DECLARATION);					
 				}
 				
@@ -497,6 +497,16 @@ public class ASTWalker {
 			public void endVisit(TypeDeclaration node) {				
 				if(inInterface == false) {
 					JavaClass temp = (JavaClass) entityStack.pop();
+					
+					// check if inner class
+					boolean isInnerClass = true;
+					try {
+						entityStack.peek();
+					} catch (EmptyStackException e) {
+						isInnerClass = false;
+					}					
+					temp.setInnerClass(isInnerClass);
+					
 					temp.setCyclomaticComplexity();
 					fileModel.addJavaClass(temp);					
 				}

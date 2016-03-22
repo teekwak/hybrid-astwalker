@@ -7,6 +7,7 @@ public class JavaClass extends SuperEntityClass {
 
 	String superClass;
 	String sourceCode;
+	boolean isInnerClass;
 	List<String> implementsList;
 	
 	List<SuperEntityClass> arrayList;
@@ -115,6 +116,14 @@ public class JavaClass extends SuperEntityClass {
 		return this.packageObject;
 	}
 
+	public void setInnerClass(boolean ic) {
+		this.isInnerClass = ic;
+	}
+	
+	public boolean getInnerClass() {
+		return this.isInnerClass;
+	}
+	
 	public void setSourceCode(String s) {
 		this.sourceCode = s;
 	}
