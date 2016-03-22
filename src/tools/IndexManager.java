@@ -2,6 +2,7 @@ package tools;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -20,7 +21,7 @@ public class IndexManager {
 	public static List<FileModel> fileModelList = new ArrayList<>();
 	public static List<GitData> gitDataList = new ArrayList<>();
 	
-	public static void traverseUntilJava(File parentNode, String topDirectoryLocation) throws IOException, CoreException, NoHeadException, GitAPIException {
+	public static void traverseUntilJava(File parentNode, String topDirectoryLocation) throws IOException, CoreException, NoHeadException, GitAPIException, ParseException {
 		if(parentNode.isDirectory()) {
 			File childNodes[] = parentNode.listFiles();
 						
@@ -60,7 +61,7 @@ public class IndexManager {
 	 * }
 	 * 
 	 */
-	public static void runASTandGitData(File parentNode, String topDirectoryLocation) throws IOException, CoreException, NoHeadException, GitAPIException {
+	public static void runASTandGitData(File parentNode, String topDirectoryLocation) throws IOException, CoreException, NoHeadException, GitAPIException, ParseException {
 		FileModel fileModel = new FileModel();
 		fileModel = fileModel.parseDeclarations(parentNode.getAbsolutePath());
 		//fileModel.printAll();
@@ -85,12 +86,12 @@ public class IndexManager {
 		
 		for(JavaFile j : gitData.javaFileList) {
 			for(CommitData cd : j.commitDataList) {
-				System.out.println(cd.date);
+				System.out.println(cd.solrDate);
 			}
 		}
 	}
 	
-	public static void main(String[] args) throws IOException, CoreException, NoHeadException, GitAPIException {
+	public static void main(String[] args) throws IOException, CoreException, NoHeadException, GitAPIException, ParseException {
 		fileModelList.clear();
 		gitDataList.clear();
 		

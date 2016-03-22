@@ -4,11 +4,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -17,7 +15,6 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 
-import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 class CommitData {
@@ -120,52 +117,6 @@ public class GitData {
 		javaFileList = new ArrayList<>();
 	}
 	
-	public static String getAuthorOfCommit(RevCommit commit) {
-		PersonIdent author = commit.getAuthorIdent();
-		return author.getName();
-	}
-	
-	public static String getAuthorEmailOfCommit(RevCommit commit) {
-		PersonIdent author = commit.getAuthorIdent();
-		return author.getEmailAddress();
-	}
-	
-	public static String getCommitMessage(RevCommit commit) {
-		return commit.getFullMessage();
-	}
-	
-	public static Date getDateOfCommit(RevCommit commit) {
-		PersonIdent author = commit.getAuthorIdent();
-		return author.getWhen();
-	}
-	
-	public static String getHashCodeOfCommit(RevCommit commit) {
-		return commit.name();
-	}
-	
-	public static String formatDate(Date date) {
-		DateFormat dateFormat = new SimpleDateFormat("MM dd yyyy hh:mm:ss");
-		return dateFormat.format(date);		
-	}
-
-	public static int getYear(Date date) {
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(date);
-		return cal.get(Calendar.YEAR);
-	}
-
-	public static int getMonth(Date date) {
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(date);
-		return cal.get(Calendar.MONTH);
-	}
-	
-	public static int getDay(Date date) {
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(date);
-		return cal.get(Calendar.DAY_OF_MONTH);
-	}
-	
 	public void addHashCodePairsToMap(List<RevCommit> commitHistory) {
 		this.hashCodePairs.put("--root", commitHistory.get(0).name());
 		
@@ -199,8 +150,8 @@ public class GitData {
 							if(j.name.equals(nameParts[nameParts.length - 1])) {
 								for(CommitData c : j.commitDataList) {
 									if(c.hashCode.equals(entry.getValue())) {
-										c.insertions = Integer.parseInt(parts[0]);
-										c.deletions = Integer.parseInt(parts[1]);
+										c.setInsertions(Integer.parseInt(parts[0]));
+										c.setDeletions(Integer.parseInt(parts[1]));
 									}
 								}
 							}
@@ -219,9 +170,7 @@ public class GitData {
 		File file = new File(javaFileName);
 		
 		int count = 0;
-		try {
-			
-			@SuppressWarnings("resource")
+		try {			
 			Scanner scanner = new Scanner(file);
 		
 			while (scanner.hasNext()) {
@@ -243,9 +192,7 @@ public class GitData {
 		
 		int count = 0;
 		
-		try {
-			
-			@SuppressWarnings("resource")
+		try {			
 			Scanner scanner = new Scanner(file);
 		
 			while (scanner.hasNextLine()) {
@@ -322,25 +269,35 @@ public class GitData {
 			}
 		}
 		
+		br3.close();
+		isr3.close();
+		proc3.destroy();
+		
+		
 		for(int i = 0; i < hashCodeList.size(); i++) {
 			CommitData cd = new CommitData();
 			
+			// format date
 			Date javaDate = new SimpleDateFormat("EEE MMM d HH:mm:ss yyyy Z").parse(dateList.get(i));
 			cd.setSolrDate(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(javaDate));
 			cd.setDay(new SimpleDateFormat("yyyy").format(javaDate));
 			cd.setMonth(new SimpleDateFormat("MM").format(javaDate));
 			cd.setYear(new SimpleDateFormat("dd").format(javaDate));
 			
+			// add everything else
+			cd.setAuthor(authorList.get(i));
+			cd.setEmail(emailList.get(i));
+			cd.setHashCode(hashCodeList.get(i));
+			cd.setMessage(messageList.get(i));
+			
+			// add object to list
 			javaFileObject.commitDataList.add(cd);
 		}
 		
 		javaFileObject.setUniqueAuthors(authorList);
 		javaFileObject.setUniqueEmails(emailList);
 		javaFileList.add(javaFileObject);
-			
-		br3.close();
-		isr3.close();
-		proc3.destroy();	
+		
 	}
 	
 }
