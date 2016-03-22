@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.eclipse.jdt.core.dom.Type;
 
+import entities.Entity.EntityType;
+
 public class SuperEntityClass implements Entity {
 
 	List<Entity> entityList;

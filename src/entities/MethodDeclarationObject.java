@@ -3,12 +3,17 @@ package entities;
 import java.util.ArrayList;
 import java.util.List;
 
+import entities.Entity.EntityType;
+
 public class MethodDeclarationObject extends SuperEntityClass {
+	
+	List<Entity> entityList;
 	
 	boolean isAbstract;
 	boolean isConstructor;
 	boolean isStatic;
 	boolean isVarargs;
+	int cyclomaticComplexity;
 	
 	List<String> thrownExceptions;
 	List<?> parametersList;
@@ -26,15 +31,16 @@ public class MethodDeclarationObject extends SuperEntityClass {
 	List<SuperEntityClass> methodInvocationList;
 	List<SuperEntityClass> primitiveList;
 	List<SuperEntityClass> simpleList;
+	List<SuperEntityClass> switchCaseList;
 	List<SuperEntityClass> switchStatementList;
 	List<SuperEntityClass> throwStatementList;
 	List<SuperEntityClass> tryStatementList;
 	List<SuperEntityClass> whileStatementList;
 	List<SuperEntityClass> wildcardList;
 	
-	List<SuperEntityClass> switchCaseList;
-
 	public MethodDeclarationObject() {
+		this.entityList = new ArrayList<>();
+		
 		this.thrownExceptions = new ArrayList<>();
 		this.parametersList = new ArrayList<>();
 		
@@ -51,13 +57,12 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		this.methodInvocationList = new ArrayList<>();
 		this.primitiveList = new ArrayList<>();
 		this.simpleList = new ArrayList<>();
+		this.switchCaseList = new ArrayList<>();
 		this.switchStatementList = new ArrayList<>();
 		this.throwStatementList = new ArrayList<>();
 		this.tryStatementList = new ArrayList<>();
 		this.whileStatementList = new ArrayList<>();
 		this.wildcardList = new ArrayList<>();
-		
-		this.switchCaseList = new ArrayList<>();
 	}
 	
 	@Override
@@ -213,10 +218,6 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		this.switchCaseList = scl;
 	}
 	
-	public List<SuperEntityClass> getSwitchCaseList() {
-		return this.switchCaseList;
-	}
-	
 	public List<SuperEntityClass> getArrayList() {
 		return this.arrayList;
 	}
@@ -267,6 +268,10 @@ public class MethodDeclarationObject extends SuperEntityClass {
 	
 	public List<SuperEntityClass> getSimpleList() {
 		return this.simpleList;
+	}
+	
+	public List<SuperEntityClass> getSwitchCaseList() {
+		return this.switchCaseList;
 	}
 	
 	public List<SuperEntityClass> getSwitchStatementList() {
@@ -332,7 +337,7 @@ public class MethodDeclarationObject extends SuperEntityClass {
 			this.simpleList.add(entity);
 		}
 		else if(ET == EntityType.SWITCH_STATEMENT) {
-			this.switchCaseList.add(entity);
+			this.switchStatementList.add(entity);
 		}
 		else if(ET == EntityType.THROW_STATEMENT) {
 			this.throwStatementList.add(entity);
@@ -348,4 +353,34 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		}
 	}
 	
+	public void addEntities(List<SuperEntityClass> listOfEntities, EntityType ET) {
+		if(ET == EntityType.SWITCH_CASE) {
+			this.switchCaseList.addAll(listOfEntities);
+		}
+	}
+	
+	public void setCyclomaticComplexity() {
+		int operatorCount = 0;
+		for(SuperEntityClass e : infixExpressionList) {
+			if(e.getName().equals("&&") || e.getName().equals("||")) {
+				operatorCount++;
+			}
+		}
+		
+		int switchCaseCount = 0;
+		for(SuperEntityClass e : switchStatementList) {
+			for(Entity f : e.getEntityList()) {
+				if(!f.getName().equals("Default")) {
+					switchCaseCount++;
+				}
+			}
+		}
+						
+		this.cyclomaticComplexity = 1 + ifStatementList.size() + forStatementList.size() + whileStatementList.size() + switchCaseCount 
+		+ catchClauseList.size() + operatorCount + conditionalExpressionList.size();
+	}
+	
+	public int getCyclomaticComplexity() {
+		return this.cyclomaticComplexity;
+	}
 }

@@ -15,7 +15,7 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import tools.FileModel;
 import tools.GitData;
 
-public class ASTWalkerAndGitData {
+public class IndexManager {
 	
 	public static List<FileModel> fileModelList = new ArrayList<>();
 	public static List<GitData> gitDataList = new ArrayList<>();
@@ -36,7 +36,8 @@ public class ASTWalkerAndGitData {
 				runASTandGitData(parentNode, topDirectoryLocation);
 			}
 			*/
-			if(parentNode.getName().equals("JabberConnectionDebugger.java")) {
+			//if(parentNode.getName().equals("JabberConnectionDebugger.java")) {
+			if(parentNode.getName().equals("java1.java")) {
 				runASTandGitData(parentNode, topDirectoryLocation);
 			}
 		}
@@ -62,9 +63,7 @@ public class ASTWalkerAndGitData {
 	public static void runASTandGitData(File parentNode, String topDirectoryLocation) throws IOException, CoreException, NoHeadException, GitAPIException {
 		FileModel fileModel = new FileModel();
 		fileModel = fileModel.parseDeclarations(parentNode.getAbsolutePath());
-			
-		fileModel.printAll();
-	
+		//fileModel.printAll();
 		fileModelList.add(fileModel);
 		
 		GitData gitData = new GitData();
@@ -90,12 +89,13 @@ public class ASTWalkerAndGitData {
 		gitDataList.clear();
 		
 		//String topDirectoryLocation = args[0];
-		String topDirectoryLocation = "/home/kwak/Desktop/jabber-plugin/";
+		//String topDirectoryLocation = "/home/kwak/Desktop/jabber-plugin/";
+		String topDirectoryLocation = "/home/kwak/Desktop/jgit-test/";
 		
 		File inputFolder = new File( topDirectoryLocation );
 		traverseUntilJava(inputFolder, topDirectoryLocation);
 		
-		System.out.println(fileModelList.size());
-		System.out.println(gitDataList.size());
+
+		
 	}
 }

@@ -271,6 +271,8 @@ public class ASTWalker {
 			public void endVisit(MethodDeclaration node) {
 				if(inInterface == false) {
 					MethodDeclarationObject temp = (MethodDeclarationObject) entityStack.pop();
+					temp.setCyclomaticComplexity();
+					System.out.println(temp.getCyclomaticComplexity());
 					entityStack.peek().addEntity(temp, EntityType.METHOD_DECLARATION);					
 				}
 				
@@ -394,7 +396,7 @@ public class ASTWalker {
 							switchCaseList.add(switchCase);	
 						}
 					}
-					
+										
 					sso.addEntities(switchCaseList, EntityType.SWITCH_CASE);
 					entityStack.peek().addEntity(sso, EntityType.SWITCH_STATEMENT);
 				}
