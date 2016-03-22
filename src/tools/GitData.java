@@ -43,10 +43,12 @@ class JavaFile {
 	int numberOfCharacters;
 	List<CommitData> commitDataList;
 	Set<String> uniqueAuthors;
+	Set<String> uniqueEmails;
 	
 	JavaFile(String n) {
 		commitDataList = new ArrayList<>();
 		uniqueAuthors = new HashSet<>();
+		uniqueEmails = new HashSet<>();
 		name = n;
 	}
 
@@ -56,6 +58,14 @@ class JavaFile {
 	
 	public Set<String> getUniqueAuthors() {
 		return this.uniqueAuthors;
+	}
+	
+	public void setUniqueEmails(List<String> set) {
+		uniqueEmails = new HashSet<>(set);
+	}
+	
+	public Set<String> getUniqueEmails() {
+		return this.uniqueEmails;
 	}
 }
 
@@ -231,17 +241,17 @@ public class GitData {
 		InputStreamReader isr3 = new InputStreamReader(proc3.getInputStream());
 		BufferedReader br3 = new BufferedReader(isr3);
 						
-		List<String> hashCode = new ArrayList<>();
-		List<String> author = new ArrayList<>();
-		List<String> email = new ArrayList<>();
-		List<String> date = new ArrayList<>();
-		List<String> message = new ArrayList<>();
+		List<String> hashCodeList = new ArrayList<>();
+		List<String> authorList = new ArrayList<>();
+		List<String> emailList = new ArrayList<>();
+		List<String> dateList = new ArrayList<>();
+		List<String> messageList = new ArrayList<>();
 			
 		String s = null;
 		while((s = br3.readLine()) != null) {
 				
 			if(s.startsWith("commit")) {
-				hashCode.add(s.split(" ")[1]);
+				hashCodeList.add(s.split(" ")[1]);
 			}
 			else if(s.startsWith("Author")) {
 				String[] parts = s.split(" ");
@@ -252,10 +262,10 @@ public class GitData {
 						authorParts.add(parts[i]);
 					}
 					else {
-						email.add(parts[i].replace("<", "").replace(">", ""));
+						emailList.add(parts[i].replace("<", "").replace(">", ""));
 					}
 				}
-				author.add(String.join(" ", authorParts).trim());
+				authorList.add(String.join(" ", authorParts).trim());
 			}
 			else if (s.startsWith("Date")) {
 				String[] parts = s.split(" ");
@@ -264,17 +274,18 @@ public class GitData {
 					dateParts.add(parts[i]);
 				}
 					
-				date.add(String.join(" ", dateParts).trim());
+				dateList.add(String.join(" ", dateParts).trim());
 			}
 			else if (!s.isEmpty()){
-				message.add(s.trim());
+				messageList.add(s.trim());
 			}
 		}
 		
-		javaFileObject.setUniqueAuthors(author);
+		javaFileObject.setUniqueAuthors(authorList);
+		javaFileObject.setUniqueEmails(emailList);
 		
-		for(int i = 0; i < hashCode.size(); i++) {
-			CommitData c = new CommitData(hashCode.get(i), author.get(i), email.get(i), date.get(i), message.get(i)); 
+		for(int i = 0; i < hashCodeList.size(); i++) {
+			CommitData c = new CommitData(hashCodeList.get(i), authorList.get(i), emailList.get(i), dateList.get(i), messageList.get(i)); 
 			javaFileObject.commitDataList.add(c);
 		}
 
