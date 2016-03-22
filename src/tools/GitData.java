@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -23,18 +24,58 @@ class CommitData {
 	String hashCode;
 	String author;
 	String email;
-	String date;
+	String solrDate;
+	String day;
+	String month;
+	String year;
 	String message;
 	int insertions;
 	int deletions;
 	
-	CommitData(String h, String a, String e, String d, String m) {
-		hashCode = h;
-		author = a;
-		email = e;
-		date = d;
-		message = m;		
+	CommitData() {
+	
 	}
+	
+	public void setSolrDate(String sd) {
+		this.solrDate = sd;
+	}
+	
+	public void setDay(String d) {
+		this.day = d;
+	}
+	
+	public void setMonth(String m) {
+		this.month = m;
+	} 
+	
+	public void setYear(String y) {
+		this.year = y;
+	}
+	
+	public void setHashCode(String hc) {
+		this.hashCode = hc;
+	}
+	
+	public void setAuthor(String a) {
+		this.author = a;
+	}
+	
+	public void setEmail(String e) {
+		this.email = e;
+	}
+	
+	public void setMessage(String m) {
+		this.message = m;
+	}
+	
+	public void setInsertions(int i) {
+		this.insertions = i;
+	}
+	
+	public void setDeletions(int d) {
+		this.deletions = d;
+	}
+	
 }
 
 class JavaFile {
@@ -220,7 +261,7 @@ public class GitData {
 		return count;
 	}
 	
-	public void getCommitDataPerFile(String directoryLocation, String javaFileName) throws IOException {
+	public void getCommitDataPerFile(String directoryLocation, String javaFileName) throws IOException, ParseException {
 		String[] name = javaFileName.split("/");
 		
 		JavaFile javaFileObject = new JavaFile(name[name.length - 1]);
@@ -281,14 +322,20 @@ public class GitData {
 			}
 		}
 		
+		for(int i = 0; i < hashCodeList.size(); i++) {
+			CommitData cd = new CommitData();
+			
+			Date javaDate = new SimpleDateFormat("EEE MMM d HH:mm:ss yyyy Z").parse(dateList.get(i));
+			cd.setSolrDate(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(javaDate));
+			cd.setDay(new SimpleDateFormat("yyyy").format(javaDate));
+			cd.setMonth(new SimpleDateFormat("MM").format(javaDate));
+			cd.setYear(new SimpleDateFormat("dd").format(javaDate));
+			
+			javaFileObject.commitDataList.add(cd);
+		}
+		
 		javaFileObject.setUniqueAuthors(authorList);
 		javaFileObject.setUniqueEmails(emailList);
-		
-		for(int i = 0; i < hashCodeList.size(); i++) {
-			CommitData c = new CommitData(hashCodeList.get(i), authorList.get(i), emailList.get(i), dateList.get(i), messageList.get(i)); 
-			javaFileObject.commitDataList.add(c);
-		}
-
 		javaFileList.add(javaFileObject);
 			
 		br3.close();

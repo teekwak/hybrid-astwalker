@@ -82,6 +82,12 @@ public class IndexManager {
 		gitDataList.add(gitData);
 		
 		git.close();
+		
+		for(JavaFile j : gitData.javaFileList) {
+			for(CommitData cd : j.commitDataList) {
+				System.out.println(cd.date);
+			}
+		}
 	}
 	
 	public static void main(String[] args) throws IOException, CoreException, NoHeadException, GitAPIException {
