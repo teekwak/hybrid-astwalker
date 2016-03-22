@@ -14,6 +14,8 @@ public class SuperEntityClass implements Entity {
 	Type type;
 	int lineNumber;
 	int columnNumber;
+	int numberOfCharacters;
+	int endLine;
 	
 	public SuperEntityClass() {
 		entityList = new ArrayList<>();
@@ -43,6 +45,21 @@ public class SuperEntityClass implements Entity {
 		return this.columnNumber;
 	}
 	
+	public void setNumberOfCharacters(int n) {
+		this.numberOfCharacters = n;
+	}
+	
+	public int getNumberOfCharacters() {
+		return this.numberOfCharacters;
+	}
+	
+	public void setEndLine(int n) {
+		this.endLine = n;
+	}
+	
+	public int getEndLine() {
+		return this.endLine;
+	}
 	public void setType(Type t) {
 		this.type = t;
 	}

@@ -220,6 +220,8 @@ public class ASTWalker {
 				if(inInterface == false) {
 					inMethod = true;
 
+					System.out.println(node.getLength());
+					
 					SimpleName name = node.getName();
 					
 					String fullyQualifiedName;

@@ -22,6 +22,7 @@ public class MethodDeclarationObject extends SuperEntityClass {
 	List<SuperEntityClass> genericsList;
 	List<SuperEntityClass> ifStatementList;
 	List<SuperEntityClass> infixExpressionList;
+	List<SuperEntityClass> methodDeclarationList;
 	List<SuperEntityClass> methodInvocationList;
 	List<SuperEntityClass> primitiveList;
 	List<SuperEntityClass> simpleList;
@@ -46,6 +47,7 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		this.genericsList = new ArrayList<>();
 		this.ifStatementList = new ArrayList<>();
 		this.infixExpressionList = new ArrayList<>();
+		this.methodDeclarationList = new ArrayList<>();
 		this.methodInvocationList = new ArrayList<>();
 		this.primitiveList = new ArrayList<>();
 		this.simpleList = new ArrayList<>();
@@ -119,6 +121,10 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		}
 		
 		for(Entity e : infixExpressionList) {
+			e.printInfo();
+		}
+
+		for(Entity e : methodDeclarationList) {
 			e.printInfo();
 		}
 		
@@ -247,6 +253,10 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		return this.infixExpressionList;
 	}
 	
+	public List<SuperEntityClass> getMethodDeclarationList() {
+		return this.methodDeclarationList;
+	}
+	
 	public List<SuperEntityClass> getMethodInvocationList() {
 		return this.methodInvocationList;
 	}
@@ -308,6 +318,9 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		}
 		else if(ET == EntityType.INFIX_EXPRESSION) {
 			this.infixExpressionList.add(entity);
+		}
+		else if(ET == EntityType.METHOD_DECLARATION) {
+			this.methodDeclarationList.add(entity);
 		}
 		else if(ET == EntityType.METHOD_INVOCATION) {
 			this.methodInvocationList.add(entity);
