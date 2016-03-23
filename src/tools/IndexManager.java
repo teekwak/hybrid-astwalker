@@ -38,56 +38,61 @@ public class IndexManager {
 	public static final String SNIPPET_ADDRESS_LOWER_BOUND = "snippet_address_lower_bound";
 	public static final String SNIPPET_ADDRESS_UPPER_BOUND ="snippet_address_upper_bound";
 	public static final String SNIPPET_IS_INNERCLASS = "snippet_is_innerClass";
-	public static final String SNIPPET_IMPORTS = "";
-	public static final String SNIPPET_IMPORTS_SHORT = "";
-	public static final String SNIPPET_IMPORTS_COUNT = "";
-	public static final String SNIPPET_IMPLEMENTS = "";
-	public static final String SNIPPET_IMPLEMENTS_SHORT = "";
-	public static final String SNIPPET_ALL_AUTHORS = "";
-	public static final String SNIPPET_AUTHOR_COUNT = "";
-	public static final String SNIPPET_ALL_AUTHOR_EMAILS = "";
-	public static final String AUTHOR_NAME = "";
-	public static final String AUTHOR_EMAIL = "";
-	public static final String SNIPPET_ALL_COMMENTS = "";
-	public static final String SNIPPET_ALL_DATES = "";
-	public static final String SNIPPET_NUMBER_OF_INSERTIONS = "";
-	public static final String SNIPPET_NUMBER_OF_DELETIONS = "";
-	public static final String SNIPPET_EXTENDS = "";
-	public static final String SNIPPET_EXTENDS_SHORT = "";
-	public static final String SNIPPET_GRANULARITY = "";
-	public static final String SNIPPET_PACKAGE = "";
-	public static final String SNIPPET_PACKAGE_SHORT = "";
-	public static final String SNIPPET_SIZE = "";
-	public static final String SNIPPET_THIS_VERSION = "";
-	public static final String SNIPPET_VERSION_COMMENT = "";
-	public static final String SNIPPET_LAST_UPDATED = "";
-	public static final String SNIPPET_NUMBER_OF_LINES = "";
+	public static final String SNIPPET_IMPORTS = "snippet_imports";
+	public static final String SNIPPET_IMPORTS_SHORT = "snippet_imports_short";
+	public static final String SNIPPET_IMPORTS_COUNT = "snippet_imports_count";
+	public static final String SNIPPET_IMPLEMENTS = "snippet_implements";
+	public static final String SNIPPET_IMPLEMENTS_SHORT = "snippet_implements_short";
+	public static final String SNIPPET_ALL_AUTHORS = "snippet_all_authors";
+	public static final String SNIPPET_AUTHOR_COUNT = "snippet_author_count";
+	public static final String SNIPPET_ALL_AUTHOR_EMAILS = "snippet_all_author_emails";
+	public static final String AUTHOR_NAME = "snippet_author_name";
+	public static final String AUTHOR_EMAIL = "snippet_author_email";
+	public static final String SNIPPET_ALL_COMMENTS = "snippet_all_version_comments";
+	public static final String SNIPPET_ALL_DATES = "snippet_all_dates";
+	public static final String SNIPPET_NUMBER_OF_INSERTIONS = "snippet_number_of_insertions";
+	public static final String SNIPPET_NUMBER_OF_DELETIONS = "snippet_number_of_deletions";
+	public static final String SNIPPET_INSERTION_CODE_CHURN = "snippet_insertion_code_churn";
+	public static final String SNIPPET_DELETED_CODE_CHURN = "snippet_deleted_code_churn";
+	public static final String SNIPPET_INSERTION_DELETION_CODE_CHURN = "snippet_insertion_deletion_code_churn";
 	
-	public static final String SNIPPET_NUMBER_OF_FUNCTIONS = "";
+	public static final String SNIPPET_EXTENDS = "snippet_extends";
+	public static final String SNIPPET_EXTENDS_SHORT = "snippet_extends_short";
+	public static final String SNIPPET_GRANULARITY = "snippet_granularity";
+	public static final String SNIPPET_PACKAGE = "snippet_package";
+	public static final String SNIPPET_PACKAGE_SHORT = "snippet_package_short";
+	public static final String SNIPPET_SIZE = "snippet_size";
+	public static final String SNIPPET_THIS_VERSION = "snippet_this_version";
+	public static final String SNIPPET_VERSION_COMMENT = "snippet_version_comment";
+	public static final String SNIPPET_LAST_UPDATED = "snippet_last_updated";
+	public static final String SNIPPET_NUMBER_OF_LINES = "snippet_number_of_lines";
 	
-	public static final String SNIPPET_ALL_VERSIONS = "";
-	public static final String SNIPPET_PATH_COMPLEXITY_SUM = "";
-	public static final String SNIPPET_NUMBER_OF_FIELDS = "";
+	public static final String SNIPPET_NUMBER_OF_FUNCTIONS = "snippet_number_of_functions";
 	
-	public static final String SNIPPET_IS_GENERIC = "";
+	public static final String SNIPPET_ALL_VERSIONS = "snippet_all_versions";
+	public static final String SNIPPET_PATH_COMPLEXITY_SUM = "snippet_path_complexity_class_sum";
+	public static final String SNIPPET_HAS_JAVA_COMMENTS = "snippet_has_java_comments";
+	public static final String SNIPPET_NUMBER_OF_FIELDS = "snippet_number_of_fields";
+	
+	public static final String SNIPPET_IS_GENERIC = "snippet_is_generic";
 	
 	
-	public static final String SNIPPET_NAME = "";
-	public static final String SNIPPET_NAME_DELIMITED = "";
+	public static final String SNIPPET_NAME = "snippet_class_name";
+	public static final String SNIPPET_NAME_DELIMITED = "snippet_class_name_delimited";
 	
 	
 	
 	// Method Declaration
-	public static final String SNIPPET_METHOD_DEC_WHILE_COUNT = "";
-	public static final String SNIPPET_METHOD_DEC_FOR_COUNT = "";
-	public static final String SNIPPET_METHOD_DEC_IF_COUNT = "";
-	public static final String SNIPPET_METHOD_DEC_CASE_COUNT = "";
-	public static final String SNIPPET_METHOD_DEC_TERNERARY_COUNT = "";
-	public static final String SNIPPET_METHOD_DEC_CATCH_COUNT = "";
+	public static final String SNIPPET_METHOD_DEC_WHILE_COUNT = "snippet_method_dec_while_count";
+	public static final String SNIPPET_METHOD_DEC_FOR_COUNT = "snippet_method_dec_for_count";
+	public static final String SNIPPET_METHOD_DEC_IF_COUNT = "snippet_method_dec_if_count";
+	public static final String SNIPPET_METHOD_DEC_CASE_COUNT = "snippet_method_dec_case_count";
+	public static final String SNIPPET_METHOD_DEC_TERNERARY_COUNT = "snippet_method_dec_ternerary_count";
+	public static final String SNIPPET_METHOD_DEC_CATCH_COUNT = "snippet_method_dec_catch_count";
 	
 	
-	public static final String SNIPPET_METHOD_DEC_IS_CONSTRUCTOR = "";
-	public static final String SNIPPET_METHOD_DEC_IS_VAR_ARGS = "";
+	public static final String SNIPPET_METHOD_DEC_IS_CONSTRUCTOR = "snippet_method_dec_is_constructor";
+	public static final String SNIPPET_METHOD_DEC_IS_VAR_ARGS = "snippet_method_dec_is_var_args";
 	
 	
 	public static void traverseUntilJava(File parentNode, String topDirectoryLocation) throws IOException, CoreException, NoHeadException, GitAPIException, ParseException {
@@ -258,11 +263,9 @@ public class IndexManager {
 		solrDoc.addField("day", headCommit.getDay());
 	
 		solrDoc.addField(IndexManager.SNIPPET_PATH_COMPLEXITY_SUM, Integer.toString(jc.getCyclomaticComplexity()));
+		solrDoc.addField(IndexManager.SNIPPET_HAS_JAVA_COMMENTS, jc.getHasComments());
 		
-		/*
-		solrDoc.addField(IndexManager.SNIPPET_HAS_JAVA_COMMENTS, snippet.hasComments);
-		solrDoc.addField(IndexManager.SNIPPET_HUMAN_LANGUAGE, snippet.humanLanguage);
-		*/
+		//solrDoc.addField(IndexManager.SNIPPET_HUMAN_LANGUAGE, snippet.humanLanguage);
 		
 		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_FIELDS, Integer.toString(jc.getGlobalList().size()));
 		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_FUNCTIONS, Integer.toString(jc.getMethodDeclarationList().size()));
@@ -270,13 +273,17 @@ public class IndexManager {
 		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_INSERTIONS, Integer.toString(headCommit.getInsertions()));
 		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_DELETIONS, Integer.toString(headCommit.getDeletions()));		
 		
-		/*
-
-		solrDoc.addField(IndexManager.SNIPPET_INSERTION_CODE_CHURN, snippet.insertionChurn); // number of insertions of head commit divided by lines of code
-		solrDoc.addField(IndexManager.SNIPPET_DELETED_CODE_CHURN, snippet.deletedChurn);
 		//solrDoc.addField(IndexManager.SNIPPET_CHANGED_CODE_CHURN, snippet.changedChurn);
-		solrDoc.addField(IndexManager.SNIPPET_INSERTION_DELETION_CODE_CHURN, ___);
-		*/
+
+		long calculation = 0;
+		calculation = headCommit.getInsertions() / (jc.getEndLine() - jc.getLineNumber() + 1);
+		solrDoc.addField(IndexManager.SNIPPET_INSERTION_CODE_CHURN, calculation);
+		
+		calculation = headCommit.getDeletions() / (jc.getEndLine() - jc.getLineNumber() + 1);
+		solrDoc.addField(IndexManager.SNIPPET_DELETED_CODE_CHURN, calculation);
+		
+		calculation = (headCommit.getInsertions() + headCommit.getDeletions()) / (jc.getEndLine() - jc.getLineNumber() + 1);
+		solrDoc.addField(IndexManager.SNIPPET_INSERTION_DELETION_CODE_CHURN, calculation);
 		
 		solrDoc.addField(IndexManager.SNIPPET_EXTENDS, jc.getSuperClass());
 		if(jc.getSuperClass() != null){
@@ -284,8 +291,6 @@ public class IndexManager {
 			solrDoc.addField(IndexManager.SNIPPET_EXTENDS_SHORT, split[split.length-1]);
 		}
 		
-		// TODO
-		// not sure if this correct granularity
 		solrDoc.addField(IndexManager.SNIPPET_GRANULARITY, "Class"); // String => Class, Method, Method Invocation
 		
 		solrDoc.addField(IndexManager.SNIPPET_PACKAGE, jc.getPackage());
@@ -336,7 +341,7 @@ public class IndexManager {
 		}
 		
 		for(String variableName: snippet.variableNames){
-			snippetDoc.addField(IndexManager.SNIPPET_VARIABLE_NAMES, variableName); // for field decs
+			snippetDoc.addField(IndexManager.SNIPPET_VARIABLE_NAMES, variableName); // for field decs AND ALL VARIABLES IN METHODS
 			
 			snippetDoc.addField(IndexManager.SNIPPET_VARIABLE_NAMES_DELIMITED, variableName);
 			
