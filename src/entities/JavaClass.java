@@ -8,6 +8,7 @@ public class JavaClass extends SuperEntityClass {
 	String fileName;
 	String superClass;
 	String sourceCode;
+	boolean isGenericType;
 	boolean isInnerClass;
 	List<String> implementsList;
 	
@@ -109,11 +110,11 @@ public class JavaClass extends SuperEntityClass {
 		return this.importList;
 	}
 	
-	public void setPackageObject(SuperEntityClass po) {
+	public void setPackage(SuperEntityClass po) {
 		packageObject = po;
 	}
 	
-	public Entity getPackageObject() {
+	public Entity getPackage() {
 		return this.packageObject;
 	}
 
@@ -139,6 +140,14 @@ public class JavaClass extends SuperEntityClass {
 	
 	public String getSourceCode() {
 		return this.sourceCode;
+	}
+	
+	public void setIsGenericType(boolean g) {
+		this.isGenericType = g;
+	}
+	
+	public boolean getIsGenericType() {
+		return this.isGenericType;
 	}
 	
 	public List<SuperEntityClass> getArrayList() {

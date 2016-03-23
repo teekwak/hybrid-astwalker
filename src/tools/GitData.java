@@ -17,6 +17,7 @@ import java.util.Set;
 
 import org.eclipse.jgit.revwalk.RevCommit;
 
+// data for each commit
 class CommitData {
 	String hashCode;
 	String author;
@@ -37,44 +38,85 @@ class CommitData {
 		this.solrDate = sd;
 	}
 	
+	public String getSolrDate() {
+		return this.solrDate;
+	}
+	
 	public void setDay(String d) {
 		this.day = d;
+	}
+	
+	public String getDay() {
+		return this.day;
 	}
 	
 	public void setMonth(String m) {
 		this.month = m;
 	} 
 	
+	public String getMonth() {
+		return this.month;
+	}
+	
 	public void setYear(String y) {
 		this.year = y;
+	}
+	
+	public String getYear() {
+		return this.year;
 	}
 	
 	public void setHashCode(String hc) {
 		this.hashCode = hc;
 	}
 	
+	public String getHashCode() {
+		return this.hashCode;
+	}
+	
 	public void setAuthor(String a) {
 		this.author = a;
+	}
+	
+	public String getAuthor() {
+		return this.author;
 	}
 	
 	public void setEmail(String e) {
 		this.email = e;
 	}
 	
+	public String getEmail() {
+		return this.email;
+	}
+	
 	public void setMessage(String m) {
 		this.message = m;
+	}
+	
+	public String getMessage() {
+		return this.message;
 	}
 	
 	public void setInsertions(int i) {
 		this.insertions = i;
 	}
 	
+	public int getInsertions() {
+		return this.insertions;
+	}
+	
 	public void setDeletions(int d) {
 		this.deletions = d;
 	}
 	
+	public int getDeletions() {
+		return this.deletions;
+	}
+	
 }
 
+// data for each file
 class JavaFile {
 	String fileLocation;
 	int numberOfLines;
@@ -109,8 +151,13 @@ class JavaFile {
 	public Set<String> getUniqueEmails() {
 		return this.uniqueEmails;
 	}
+	
+	public List<CommitData> getCommitDataList() {
+		return this.commitDataList;
+	}
 }
 
+// data for all files in a repo
 public class GitData {
 
 	Map<String, String> hashCodePairs;		// stores pairs of commit hash codes

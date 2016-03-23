@@ -20,6 +20,7 @@ import org.eclipse.jdt.core.dom.EnhancedForStatement;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ForStatement;
 import org.eclipse.jdt.core.dom.IMethodBinding;
+import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.InfixExpression;
@@ -471,6 +472,8 @@ public class ASTWalker {
 						classSourceCode.append(scanner.nextLine());
 					scanner.close();
 					
+					ITypeBinding binding = node.resolveBinding();
+										
 					String fullyQualifiedName;
 					try {
 						fullyQualifiedName = node.getName().getFullyQualifiedName();
@@ -487,7 +490,9 @@ public class ASTWalker {
 					co.setNumberOfCharacters(node.getLength());
 					co.setEndLine(endLine);
 					co.setSourceCode(classSourceCode.toString());
-					co.setPackageObject(packageObject);
+					co.setIsGenericType(binding.isGenericType());
+					
+					co.setPackage(packageObject);
 					co.setImportList(importList);
 					
 					if(node.getSuperclassType() != null) {

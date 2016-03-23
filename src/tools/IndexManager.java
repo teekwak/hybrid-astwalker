@@ -38,6 +38,23 @@ public class IndexManager {
 	public static final String SNIPPET_IMPORTS_COUNT = "";
 	public static final String SNIPPET_IMPLEMENTS = "";
 	public static final String SNIPPET_IMPLEMENTS_SHORT = "";
+	public static final String SNIPPET_ALL_AUTHORS = "";
+	public static final String SNIPPET_AUTHOR_COUNT = "";
+	public static final String SNIPPET_ALL_AUTHOR_EMAILS = "";
+	public static final String SNIPPET_ALL_COMMENTS = "";
+	public static final String SNIPPET_ALL_DATES = "";
+	public static final String SNIPPET_NUMBER_OF_INSERTIONS = "";
+	public static final String SNIPPET_NUMBER_OF_DELETIONS = "";
+	public static final String SNIPPET_EXTENDS = "";
+	public static final String SNIPPET_EXTENDS_SHORT = "";
+	public static final String SNIPPET_GRANULARITY = "";
+	public static final String SNIPPET_PACKAGE = "";
+	public static final String SNIPPET_PACKAGE_SHORT = "";
+	public static final String SNIPPET_SIZE = "";
+	public static final String SNIPPET_NUMBER_OF_LINES = "";
+	
+	public static final boolean SNIPPET_IS_GENERIC = false;
+	
 	
 	public static void traverseUntilJava(File parentNode, String topDirectoryLocation) throws IOException, CoreException, NoHeadException, GitAPIException, ParseException {
 		if(parentNode.isDirectory()) {
@@ -154,7 +171,7 @@ public class IndexManager {
 		
 		JavaClass jc = (JavaClass) entity;
 		
-		System.out.println("this is a class " + entity.getName());
+		//System.out.println("this is a class " + entity.getName());
 		
 		solrDoc.addField(IndexManager.SNIPPET_CODE, jc.getSourceCode());
 		solrDoc.addField(IndexManager.SNIPPET_ADDRESS_LOWER_BOUND, Integer.toString(jc.getEndLine()));
@@ -175,7 +192,170 @@ public class IndexManager {
 			
 			String[] split = interfaceStr.split("[.]");
 			solrDoc.addField(IndexManager.SNIPPET_IMPLEMENTS_SHORT, split[split.length - 1]);
+		}	
+		
+		for(String author : javaFile.getUniqueAuthors()) {
+			solrDoc.addField(IndexManager.SNIPPET_ALL_AUTHORS, author);
+		}
+		
+		solrDoc.addField(IndexManager.SNIPPET_AUTHOR_COUNT, Integer.toString(javaFile.getUniqueAuthors().size()));
+		
+		for(String email : javaFile.getUniqueEmails()) {
+			solrDoc.addField(IndexManager.SNIPPET_ALL_AUTHOR_EMAILS, email);
+		}
+
+		/*
+		snippetDoc.addField(IndexManager.AUTHOR_NAME, snippet.thisAuthor);
+		
+		snippetDoc.addField(IndexManager.AUTHOR_EMAIL, snippet.thisAuthorInfo.email);
+		snippetDoc.addField(IndexManager.AUTHOR_AVATAR, snippet.thisAuthorInfo.avatar);
+		snippetDoc.addField(IndexManager.AUTHOR_IS_SITE_ADMIN, snippet.thisAuthorInfo.siteAdmin);
+		snippetDoc.addField(IndexManager.AUTHOR_TYPE, snippet.thisAuthorInfo);
+		
+		snippetDoc.addField(IndexManager.PROJECT_ADDRESS, currentProject.project_address);
+		snippetDoc.addField(IndexManager.PROJECT_NAME, currentProject.project_name);
+		snippetDoc.addField(IndexManager.PROJECT_OWNER, currentProject.project_owner);
+		snippetDoc.addField(IndexManager.PROJECT_IS_FORK, currentProject.fork);
+		*/
+		
+		for(CommitData cd : javaFile.getCommitDataList()) {
+			solrDoc.addField(IndexManager.SNIPPET_ALL_COMMENTS, cd.getMessage());
+			
+			// can i do this?
+			solrDoc.addField(IndexManager.SNIPPET_ALL_DATES, cd.getSolrDate());
+			//snippetDoc.addField(IndexManager.SNIPPET_ALL_VERSIONS, version);
+			
+			
+		}
+		
+		CommitData headCommit = javaFile.getCommitDataList().get(javaFile.getCommitDataList().size() - 1);
+		
+		solrDoc.addField("year", headCommit.getYear());
+		solrDoc.addField("month", headCommit.getMonth());
+		solrDoc.addField("day", headCommit.getDay());
+	
+		/*
+		
+		solrDoc.addField(IndexManager.SNIPPET_PATH_COMPLEXITY_SUM, snippet.pathComplexitySum);
+
+		solrDoc.addField(IndexManager.SNIPPET_HAS_COMMENTS, snippet.hasComments);
+		solrDoc.addField(IndexManager.SNIPPET_HUMAN_LANGUAGE, snippet.humanLanguage);
+		*/
+		
+		
+		
+		/*
+		
+		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_FIELDS, snippet.number_of_fields);
+		
+		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_FUNCTIONS, snippet.number_of_functions);
+		*/
+		
+		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_INSERTIONS, Integer.toString(headCommit.getInsertions()));
+		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_DELETIONS, Integer.toString(headCommit.getDeletions()));		
+		
+		/*
+
+		solrDoc.addField(IndexManager.SNIPPET_INSERTION_CODE_CHURN, snippet.insertionChurn);
+		solrDoc.addField(IndexManager.SNIPPET_DELETED_CODE_CHURN, snippet.deletedChurn);
+		solrDoc.addField(IndexManager.SNIPPET_CHANGED_CODE_CHURN, snippet.changedChurn);
+		
+		*/
+		
+		solrDoc.addField(IndexManager.SNIPPET_EXTENDS, jc.getSuperClass());
+		if(jc.getSuperClass() != null){
+			String[] split = jc.getSuperClass().split("[.]");
+			solrDoc.addField(IndexManager.SNIPPET_EXTENDS_SHORT, split[split.length-1]);
+		}
+		
+		// TODO
+		// not sure if this correct granularity
+		solrDoc.addField(IndexManager.SNIPPET_GRANULARITY, "Class");
+		
+		solrDoc.addField(IndexManager.SNIPPET_PACKAGE, jc.getPackage());
+		
+		if(jc.getPackage().getFullyQualifiedName() != null){
+			String[] split = jc.getPackage().getFullyQualifiedName().split("[.]");
+			solrDoc.addField(IndexManager.SNIPPET_PACKAGE_SHORT, split[split.length-1]);
 		}		
+		
+		/*
+
+		String githubAddress = this.toGitHubAddres
+				(currentProject.project_owner,currentProject.project_name, file, snippet.thisVersion);
+		snippetDoc.addField(IndexManager.SNIPPET_ADDRESS, githubAddress);
+		
+		String id = githubAddress+"?start="+snippet.startLine+"&end="+snippet.endLine;
+		snippetDoc.addField("id",id);
+		snippetDoc.addField(IndexManager.EXPAND_ID, id);
+		
+		if(snippet.hasContainingClass){
+			String containingID= githubAddress+"?start="+snippet.containingClassStartLine+
+					"&end="+snippet.containingClassEndLine;
+			snippetDoc.addField(SNIPPET_CONTAINING_CLASS_ID,containingID);
+			snippetDoc.addField(IndexManager.SNIPPET_CONTAINING_CLASS_COMPLEXITY_SUM
+					,snippet.containgClassComplexitySum);
+		}
+		
+		*/
+		
+		solrDoc.addField(IndexManager.SNIPPET_SIZE, jc.getSourceCode().length());
+		
+		/*
+		
+		snippetDoc.addField(IndexManager.SNIPPET_THIS_VERSION, snippet.thisVersion);
+		
+		snippetDoc.addField(IndexManager.SNIPPET_NAME, snippet.name);
+		snippetDoc.addField(IndexManager.SNIPPET_NAME_DELIMITED, snippet.name);
+		
+		snippetDoc.addField(IndexManager.SNIPPET_VERSION_COMMENT,snippet.thisComment);
+		
+		snippetDoc.addField(IndexManager.SNIPPET_LAST_UPDATED, snippet.thisDate);
+				
+		*/		
+				
+		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_LINES, Integer.toString(jc.getEndLine() - jc.getLineNumber() + 1));
+		
+		/*
+		
+		for(String variableType: snippet.variableTypes){
+			snippetDoc.addField(IndexManager.SNIPPET_VARIABLE_TYPES, variableType);
+			
+			String[] split2 = variableType.split("[.]");
+			String shortName2 = split2[split2.length-1];
+			snippetDoc.addField(IndexManager.SNIPPET_VARIABLE_TYPES_SHORT, shortName2);
+		}
+		
+		for(String variableName: snippet.variableNames){
+			snippetDoc.addField(IndexManager.SNIPPET_VARIABLE_NAMES, variableName);
+			
+			snippetDoc.addField(IndexManager.SNIPPET_VARIABLE_NAMES_DELIMITED, variableName);
+			
+		}
+		
+		*/
+		
+		/*
+		
+		snippetDoc.addField(IndexManager.SNIPPET_IS_ABSTRACT,snippet.isAbstract);
+		*/
+		
+		solrDoc.addField(IndexManager.SNIPPET_IS_GENERIC,jc.getIsGenericType());
+		
+		/*
+		snippetDoc.addField(IndexManager.SNIPPET_IS_WILDCARD,snippet.isWildCard);
+		
+		for(String bound: snippet.wildCardBounds){
+			snippetDoc.addField(IndexManager.SNIPPET_IS_WILDCARD_BOUNDS,bound);
+		}
+		
+		for(String typeParameter: snippet.typeParameters){
+			snippetDoc.addField(IndexManager.SNIPPET_METHOD_DEC_IS_GENERIC_TYPE_PARAMS,typeParameter);
+		}
+		
+		snippetDoc.addField("parent",true);
+		*/
+		
 		
 		/*
 		 *  Missing stuff goes here
@@ -190,13 +370,13 @@ public class IndexManager {
 		if(entity instanceof MethodDeclarationObject) {
 			MethodDeclarationObject mdo = (MethodDeclarationObject) entity;
 			
-			System.out.println("this is a method declaration " + entity.getName());
+			//System.out.println("this is a method declaration " + entity.getName());
 		}
 		
 		else if(entity instanceof MethodInvocationObject) {
 			MethodInvocationObject mio = (MethodInvocationObject) entity;
 			
-			System.out.println("this is a method invocation " + entity.getName());
+			//System.out.println("this is a method invocation " + entity.getName());
 		}
 		
 		return solrDoc;
