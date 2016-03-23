@@ -116,6 +116,7 @@ public class IndexManager {
 			for(JavaClass jc : f.getJavaClassList()) {
 				JavaFile jf = null;
 				
+				// match JavaFile with JavaClass
 				for(GitData g : gitDataList) {
 					for(JavaFile temp : g.getJavaFileList()) {
 						if(temp.getFileLocation().equals(jc.getFileName())) {
@@ -124,19 +125,17 @@ public class IndexManager {
 					}
 				}
 				
-				
-				
-				makeSolrDoc(jc);
+				makeClassSolrDoc(jc, jf);
 				
 				for(SuperEntityClass md : jc.getMethodDeclarationList()) {
-					makeMethodDeclarationSolrDoc((MethodDeclarationObject)md);
+					findAllMethodDeclarations((MethodDeclarationObject)md);
 				}
 			}
 		}
 	}
 	
-	// recursively get method delcarations (for those method declarations inside of each other)
-	public static void makeMethodDeclarationSolrDoc(MethodDeclarationObject mdo) {
+	// recursively get method declarations (for those method declarations inside of each other)
+	public static void findAllMethodDeclarations(MethodDeclarationObject mdo) {
 		makeSolrDoc(mdo);
 		
 		for(SuperEntityClass mi : mdo.getMethodInvocationList() ) {
@@ -145,46 +144,50 @@ public class IndexManager {
 		
 		if(mdo.getMethodDeclarationList().size() > 0) {
 			for(SuperEntityClass mdChild : mdo.getMethodDeclarationList()) {
-				makeMethodDeclarationSolrDoc((MethodDeclarationObject)mdChild);
+				findAllMethodDeclarations((MethodDeclarationObject)mdChild);
 			}
 		}
+	}
+	
+	public static SolrInputDocument makeClassSolrDoc(SuperEntityClass entity, JavaFile javaFile) {
+		SolrInputDocument solrDoc = new SolrInputDocument();
+		
+		JavaClass jc = (JavaClass) entity;
+		
+		System.out.println("this is a class " + entity.getName());
+		
+		solrDoc.addField(IndexManager.SNIPPET_CODE, jc.getSourceCode());
+		solrDoc.addField(IndexManager.SNIPPET_ADDRESS_LOWER_BOUND, Integer.toString(jc.getEndLine()));
+		solrDoc.addField(IndexManager.SNIPPET_ADDRESS_UPPER_BOUND, Integer.toString(jc.getLineNumber()));
+	
+		solrDoc.addField(IndexManager.SNIPPET_IS_INNERCLASS, jc.getInnerClass());
+		
+		for(SuperEntityClass importStr : jc.getImportList()) {
+			solrDoc.addField(IndexManager.SNIPPET_IMPORTS, importStr.getFullyQualifiedName());
+			
+			String[] split = importStr.getFullyQualifiedName().split("[.]");
+			solrDoc.addField(IndexManager.SNIPPET_IMPORTS_SHORT, split[split.length - 1]);
+		}
+		solrDoc.addField(IndexManager.SNIPPET_IMPORTS_COUNT, Integer.toString(jc.getImportList().size()));
+		
+		for(String interfaceStr : jc.getImplements()) {
+			solrDoc.addField(IndexManager.SNIPPET_IMPLEMENTS, interfaceStr);
+			
+			String[] split = interfaceStr.split("[.]");
+			solrDoc.addField(IndexManager.SNIPPET_IMPLEMENTS_SHORT, split[split.length - 1]);
+		}		
+		
+		/*
+		 *  Missing stuff goes here
+		 */
+		
+		return solrDoc;
 	}
 	
 	public static SolrInputDocument makeSolrDoc(SuperEntityClass entity) {
 		SolrInputDocument solrDoc = new SolrInputDocument();
 				
-		// need to match GitData object with correct JavaFile
-		// actually, GitData object and JavaFile object should be indexed at the same time
-		
-		if(entity instanceof JavaClass) {
-			JavaClass jc = (JavaClass) entity;
-			
-			System.out.println("this is a class " + entity.getName());
-			
-			solrDoc.addField(IndexManager.SNIPPET_CODE, jc.getSourceCode());
-			solrDoc.addField(IndexManager.SNIPPET_ADDRESS_LOWER_BOUND, Integer.toString(jc.getEndLine()));
-			solrDoc.addField(IndexManager.SNIPPET_ADDRESS_UPPER_BOUND, Integer.toString(jc.getLineNumber()));
-		
-			solrDoc.addField(IndexManager.SNIPPET_IS_INNERCLASS, jc.getInnerClass());
-			
-			for(SuperEntityClass importStr : jc.getImportList()) {
-				solrDoc.addField(IndexManager.SNIPPET_IMPORTS, importStr.getFullyQualifiedName());
-				
-				String[] split = importStr.getFullyQualifiedName().split("[.]");
-				solrDoc.addField(IndexManager.SNIPPET_IMPORTS_SHORT, split[split.length - 1]);
-			}
-			solrDoc.addField(IndexManager.SNIPPET_IMPORTS_COUNT, Integer.toString(jc.getImportList().size()));
-			
-			for(String interfaceStr : jc.getImplements()) {
-				solrDoc.addField(IndexManager.SNIPPET_IMPLEMENTS, interfaceStr);
-				
-				String[] split = interfaceStr.split("[.]");
-				solrDoc.addField(IndexManager.SNIPPET_IMPLEMENTS_SHORT, split[split.length - 1]);
-			}
-			
-		}
-		
-		else if(entity instanceof MethodDeclarationObject) {
+		if(entity instanceof MethodDeclarationObject) {
 			MethodDeclarationObject mdo = (MethodDeclarationObject) entity;
 			
 			System.out.println("this is a method declaration " + entity.getName());
