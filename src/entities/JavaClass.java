@@ -8,6 +8,7 @@ public class JavaClass extends SuperEntityClass {
 	String fileName;
 	String superClass;
 	String sourceCode;
+	boolean isAbstract;
 	boolean isGenericType;
 	boolean isInnerClass;
 	boolean hasComments;
@@ -159,6 +160,14 @@ public class JavaClass extends SuperEntityClass {
 	
 	public boolean getIsGenericType() {
 		return this.isGenericType;
+	}
+	
+	public void setIsAbstract(boolean a) {
+		this.isAbstract = a;
+	}
+	
+	public boolean getIsAbstract() {
+		return this.isAbstract;
 	}
 	
 	public List<SuperEntityClass> getArrayList() {

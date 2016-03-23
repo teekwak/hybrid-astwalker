@@ -584,13 +584,14 @@ public class ASTWalker {
 					
 					ITypeBinding binding = node.resolveBinding();
 										
+					// get fully qualified name
 					String fullyQualifiedName;
 					try {
 						fullyQualifiedName = node.getName().getFullyQualifiedName();
 					} catch (NullPointerException e) {
 						fullyQualifiedName = node.getName().toString();
 					}
-										
+					
 					JavaClass co = new JavaClass();
 					co.setFileName(fileLocation);
 					co.setName(node.getName().toString());
@@ -615,6 +616,16 @@ public class ASTWalker {
 							co.addImplementsInterface(o.toString());	
 						}
 					}
+					
+					int mod = node.getModifiers();
+					if(Modifier.isAbstract(mod)) {
+						co.setIsAbstract(true);
+					}
+					else {
+						co.setIsAbstract(false);
+					}
+					
+					System.out.println(Modifier.isAbstract(mod));
 					
 					entityStack.push(co);					
 				}
