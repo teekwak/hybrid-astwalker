@@ -12,6 +12,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.BlockComment;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.Comment;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -25,6 +26,7 @@ import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.InfixExpression;
+import org.eclipse.jdt.core.dom.LineComment;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Modifier;
@@ -65,7 +67,30 @@ public class ASTWalker {
 	public List<SuperEntityClass> importList = new ArrayList<>();
 	public boolean inMethod = false;
 	public boolean inInterface = false; // ignoring interfaces
+	public boolean hasComments = false;
 
+	// find comments
+	class CommentVisitor extends ASTVisitor {
+		CompilationUnit cu;
+		String source;
+	 
+		public CommentVisitor(CompilationUnit cu, String source) {
+			super();
+			this.cu = cu;
+			this.source = source;
+		}
+	 
+		public boolean visit(LineComment node) {
+			hasComments = true;
+			return true;
+		}
+	 
+		public boolean visit(BlockComment node) {
+			hasComments = true;
+			return true;
+		}
+	}
+	
 	/**
 	 * Reads code file
 	 *
@@ -97,6 +122,7 @@ public class ASTWalker {
 	 * @return FileModel object populated with constructs
 	 * @throws IOException, CoreException
 	 */
+	@SuppressWarnings("unchecked")
 	public FileModel parseFile(String fileLocation) throws IOException, CoreException {
 		this.fileModel = new FileModel();
 
@@ -113,7 +139,11 @@ public class ASTWalker {
 		parser.setStatementsRecovery(true);
 
 		final CompilationUnit cu = (CompilationUnit) parser.createAST(null);
-
+		
+		for (Comment comment : (List<Comment>) cu.getCommentList()) {
+		    comment.accept(new CommentVisitor(cu, sourceCode));
+		}
+		
 		// alphabetical order
 		cu.accept(new ASTVisitor() {
 
@@ -132,12 +162,6 @@ public class ASTWalker {
 				return true;
 			}
 		
-			public boolean visit(Comment node) {
-				System.out.println("I hit a comment");
-				
-				return true;
-			}
-			
 			public boolean visit(ConditionalExpression node){
 				if(inMethod) {
 					SuperEntityClass ceo = new SuperEntityClass();
@@ -173,6 +197,72 @@ public class ASTWalker {
 				return true;
 			}
 
+			public boolean visit(FieldDeclaration node) {
+				if(inInterface == false) {
+					
+					Type nodeType = node.getType();
+					
+					for(Object v : node.fragments()) {
+						SimpleName name = ((VariableDeclarationFragment) v).getName();
+										
+						// get fully qualified name
+						ITypeBinding binding = node.getType().resolveBinding();
+						String fullyQualifiedName;
+						try {
+							fullyQualifiedName = binding.getQualifiedName();
+						} catch (NullPointerException e) {
+							fullyQualifiedName = name.toString();
+						}
+						
+						if(nodeType.isArrayType()) {
+							SuperEntityClass ao = new SuperEntityClass();
+							ao.setName(name.toString());
+							ao.setFullyQualifiedName(fullyQualifiedName);
+							ao.setType(nodeType);
+							ao.setLineNumber(cu.getLineNumber(name.getStartPosition()));
+							ao.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
+							entityStack.peek().addEntity(ao, EntityType.ARRAY);
+							entityStack.peek().addEntity(ao, EntityType.GLOBAL);
+						}
+						else if(nodeType.isParameterizedType()) {
+							SuperEntityClass go = new SuperEntityClass();
+							go.setName(name.toString());
+							go.setFullyQualifiedName(fullyQualifiedName);
+							go.setType(nodeType);
+							go.setLineNumber(cu.getLineNumber(name.getStartPosition()));
+							go.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
+							entityStack.peek().addEntity(go, EntityType.GENERICS);
+							entityStack.peek().addEntity(go, EntityType.GLOBAL);
+						}
+						else if(nodeType.isPrimitiveType()) {
+							SuperEntityClass po = new SuperEntityClass();
+							po.setName(name.toString());
+							po.setFullyQualifiedName(fullyQualifiedName);
+							po.setType(nodeType);
+							po.setLineNumber(cu.getLineNumber(name.getStartPosition()));
+							po.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
+							entityStack.peek().addEntity(po, EntityType.PRIMITIVE);
+							entityStack.peek().addEntity(po, EntityType.GLOBAL);
+						}
+						else if(nodeType.isSimpleType()) {
+							SuperEntityClass so = new SuperEntityClass();
+							so.setName(name.toString());
+							so.setFullyQualifiedName(fullyQualifiedName);
+							so.setType(nodeType);
+							so.setLineNumber(cu.getLineNumber(name.getStartPosition()));
+							so.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
+							entityStack.peek().addEntity(so, EntityType.SIMPLE);
+							entityStack.peek().addEntity(so, EntityType.GLOBAL);
+						}
+						else {
+							System.out.println("Something is missing " + nodeType);
+						}
+					}
+				}
+				
+				return true;
+			}			
+			
 			public boolean visit(ForStatement node) {
 				if(inMethod) {
 					SuperEntityClass fso = new SuperEntityClass();
@@ -510,6 +600,7 @@ public class ASTWalker {
 					co.setNumberOfCharacters(node.getLength());
 					co.setEndLine(endLine);
 					co.setSourceCode(classSourceCode.toString());
+					co.setHasComments(hasComments);
 					co.setIsGenericType(binding.isGenericType());
 					
 					co.setPackage(packageObject);
@@ -534,7 +625,7 @@ public class ASTWalker {
 			public void endVisit(TypeDeclaration node) {				
 				if(inInterface == false) {
 					JavaClass temp = (JavaClass) entityStack.pop();
-					
+										
 					// check if inner class
 					boolean isInnerClass = true;
 					try {
@@ -548,73 +639,8 @@ public class ASTWalker {
 					fileModel.addJavaClass(temp);					
 				}
 				
+				hasComments = false;
 				inInterface = false;
-			}
-			
-			public boolean visit(FieldDeclaration node) {
-				if(inInterface == false) {
-					
-					Type nodeType = node.getType();
-					
-					for(Object v : node.fragments()) {
-						SimpleName name = ((VariableDeclarationFragment) v).getName();
-										
-						// get fully qualified name
-						ITypeBinding binding = node.getType().resolveBinding();
-						String fullyQualifiedName;
-						try {
-							fullyQualifiedName = binding.getQualifiedName();
-						} catch (NullPointerException e) {
-							fullyQualifiedName = name.toString();
-						}
-						
-						if(nodeType.isArrayType()) {
-							SuperEntityClass ao = new SuperEntityClass();
-							ao.setName(name.toString());
-							ao.setFullyQualifiedName(fullyQualifiedName);
-							ao.setType(nodeType);
-							ao.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-							ao.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-							entityStack.peek().addEntity(ao, EntityType.ARRAY);
-							entityStack.peek().addEntity(ao, EntityType.GLOBAL);
-						}
-						else if(nodeType.isParameterizedType()) {
-							SuperEntityClass go = new SuperEntityClass();
-							go.setName(name.toString());
-							go.setFullyQualifiedName(fullyQualifiedName);
-							go.setType(nodeType);
-							go.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-							go.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-							entityStack.peek().addEntity(go, EntityType.GENERICS);
-							entityStack.peek().addEntity(go, EntityType.GLOBAL);
-						}
-						else if(nodeType.isPrimitiveType()) {
-							SuperEntityClass po = new SuperEntityClass();
-							po.setName(name.toString());
-							po.setFullyQualifiedName(fullyQualifiedName);
-							po.setType(nodeType);
-							po.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-							po.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-							entityStack.peek().addEntity(po, EntityType.PRIMITIVE);
-							entityStack.peek().addEntity(po, EntityType.GLOBAL);
-						}
-						else if(nodeType.isSimpleType()) {
-							SuperEntityClass so = new SuperEntityClass();
-							so.setName(name.toString());
-							so.setFullyQualifiedName(fullyQualifiedName);
-							so.setType(nodeType);
-							so.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-							so.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-							entityStack.peek().addEntity(so, EntityType.SIMPLE);
-							entityStack.peek().addEntity(so, EntityType.GLOBAL);
-						}
-						else {
-							System.out.println("Something is missing " + nodeType);
-						}
-					}
-				}
-				
-				return true;
 			}
 			
 			public boolean visit(VariableDeclarationStatement node) {

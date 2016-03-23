@@ -10,6 +10,7 @@ public class JavaClass extends SuperEntityClass {
 	String sourceCode;
 	boolean isGenericType;
 	boolean isInnerClass;
+	boolean hasComments;
 	List<String> implementsList;
 	
 	List<SuperEntityClass> arrayList;
@@ -120,6 +121,14 @@ public class JavaClass extends SuperEntityClass {
 		return this.packageObject;
 	}
 
+	public void setHasComments(boolean c) {
+		this.hasComments = c;
+	}
+	
+	public boolean getHasComments() {
+		return this.hasComments;
+	}
+	
 	public void setFileName(String s) {
 		this.fileName = s;
 	}
