@@ -35,6 +35,9 @@ public class IndexManager {
 	public static final String SNIPPET_IS_INNERCLASS = "snippet_is_innerClass";
 	public static final String SNIPPET_IMPORTS = "";
 	public static final String SNIPPET_IMPORTS_SHORT = "";
+	public static final String SNIPPET_IMPORTS_COUNT = "";
+	public static final String SNIPPET_IMPLEMENTS = "";
+	public static final String SNIPPET_IMPLEMENTS_SHORT = "";
 	
 	public static void traverseUntilJava(File parentNode, String topDirectoryLocation) throws IOException, CoreException, NoHeadException, GitAPIException, ParseException {
 		if(parentNode.isDirectory()) {
@@ -137,6 +140,8 @@ public class IndexManager {
 	public static SolrInputDocument makeSolrDoc(SuperEntityClass entity) {
 		SolrInputDocument solrDoc = new SolrInputDocument();
 				
+		// need to match GitData object with correct JavaFile
+		
 		if(entity instanceof JavaClass) {
 			JavaClass jc = (JavaClass) entity;
 			
@@ -153,6 +158,14 @@ public class IndexManager {
 				
 				String[] split = importStr.getFullyQualifiedName().split("[.]");
 				solrDoc.addField(IndexManager.SNIPPET_IMPORTS_SHORT, split[split.length - 1]);
+			}
+			solrDoc.addField(IndexManager.SNIPPET_IMPORTS_COUNT, Integer.toString(jc.getImportList().size()));
+			
+			for(String interfaceStr : jc.getImplements()) {
+				solrDoc.addField(IndexManager.SNIPPET_IMPLEMENTS, interfaceStr);
+				
+				String[] split = interfaceStr.split("[.]");
+				solrDoc.addField(IndexManager.SNIPPET_IMPLEMENTS_SHORT, split[split.length - 1]);
 			}
 		}
 		
