@@ -72,6 +72,9 @@ public class IndexManager {
 	public static final String SNIPPET_IS_GENERIC = "";
 	
 	
+	public static final String SNIPPET_NAME = "";
+	public static final String SNIPPET_NAME_DELIMITED = "";
+	
 	
 	
 	// Method Declaration
@@ -232,6 +235,8 @@ public class IndexManager {
 		
 		/*
 		
+		// from solr project info
+		
 		snippetDoc.addField(IndexManager.AUTHOR_AVATAR, snippet.thisAuthorInfo.avatar);
 		snippetDoc.addField(IndexManager.AUTHOR_IS_SITE_ADMIN, snippet.thisAuthorInfo.siteAdmin);
 		snippetDoc.addField(IndexManager.AUTHOR_TYPE, snippet.thisAuthorInfo);
@@ -248,8 +253,6 @@ public class IndexManager {
 			solrDoc.addField(IndexManager.SNIPPET_ALL_VERSIONS, cd.getHashCode());
 		}
 		
-		
-		
 		solrDoc.addField("year", headCommit.getYear());
 		solrDoc.addField("month", headCommit.getMonth());
 		solrDoc.addField("day", headCommit.getDay());
@@ -257,21 +260,11 @@ public class IndexManager {
 		solrDoc.addField(IndexManager.SNIPPET_PATH_COMPLEXITY_SUM, Integer.toString(jc.getCyclomaticComplexity()));
 		
 		/*
-		
-		
-
-		solrDoc.addField(IndexManager.SNIPPET_HAS_COMMENTS, snippet.hasComments);
+		solrDoc.addField(IndexManager.SNIPPET_HAS_JAVA_COMMENTS, snippet.hasComments);
 		solrDoc.addField(IndexManager.SNIPPET_HUMAN_LANGUAGE, snippet.humanLanguage);
 		*/
 		
 		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_FIELDS, Integer.toString(jc.getGlobalList().size()));
-		
-		/*
-		
-		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_FIELDS, snippet.number_of_fields); // number of local variables
-		
-		*/
-		
 		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_FUNCTIONS, Integer.toString(jc.getMethodDeclarationList().size()));
 		
 		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_INSERTIONS, Integer.toString(headCommit.getInsertions()));
@@ -279,10 +272,10 @@ public class IndexManager {
 		
 		/*
 
-		solrDoc.addField(IndexManager.SNIPPET_INSERTION_CODE_CHURN, snippet.insertionChurn);
+		solrDoc.addField(IndexManager.SNIPPET_INSERTION_CODE_CHURN, snippet.insertionChurn); // number of insertions of head commit divided by lines of code
 		solrDoc.addField(IndexManager.SNIPPET_DELETED_CODE_CHURN, snippet.deletedChurn);
-		solrDoc.addField(IndexManager.SNIPPET_CHANGED_CODE_CHURN, snippet.changedChurn);
-		
+		//solrDoc.addField(IndexManager.SNIPPET_CHANGED_CODE_CHURN, snippet.changedChurn);
+		solrDoc.addField(IndexManager.SNIPPET_INSERTION_DELETION_CODE_CHURN, ___);
 		*/
 		
 		solrDoc.addField(IndexManager.SNIPPET_EXTENDS, jc.getSuperClass());
@@ -293,7 +286,7 @@ public class IndexManager {
 		
 		// TODO
 		// not sure if this correct granularity
-		solrDoc.addField(IndexManager.SNIPPET_GRANULARITY, "Class");
+		solrDoc.addField(IndexManager.SNIPPET_GRANULARITY, "Class"); // String => Class, Method, Method Invocation
 		
 		solrDoc.addField(IndexManager.SNIPPET_PACKAGE, jc.getPackage());
 		
@@ -325,12 +318,8 @@ public class IndexManager {
 		solrDoc.addField(IndexManager.SNIPPET_SIZE, jc.getSourceCode().length());
 		solrDoc.addField(IndexManager.SNIPPET_THIS_VERSION, headCommit.getHashCode());
 		
-		/*
-				
-		snippetDoc.addField(IndexManager.SNIPPET_NAME, snippet.name);
-		snippetDoc.addField(IndexManager.SNIPPET_NAME_DELIMITED, snippet.name);
-		
-		*/
+		solrDoc.addField(IndexManager.SNIPPET_NAME, jc.getFullyQualifiedName());
+		solrDoc.addField(IndexManager.SNIPPET_NAME_DELIMITED, jc.getName());
 			
 		solrDoc.addField(IndexManager.SNIPPET_VERSION_COMMENT, headCommit.getMessage());
 		solrDoc.addField(IndexManager.SNIPPET_LAST_UPDATED, headCommit.getSolrDate());
@@ -339,7 +328,7 @@ public class IndexManager {
 		/*
 		
 		for(String variableType: snippet.variableTypes){
-			snippetDoc.addField(IndexManager.SNIPPET_VARIABLE_TYPES, variableType);
+			snippetDoc.addField(IndexManager.SNIPPET_VARIABLE_TYPES, variableType); // for field declarations AND ALL VARIABLES IN METHODS
 			
 			String[] split2 = variableType.split("[.]");
 			String shortName2 = split2[split2.length-1];
@@ -347,7 +336,7 @@ public class IndexManager {
 		}
 		
 		for(String variableName: snippet.variableNames){
-			snippetDoc.addField(IndexManager.SNIPPET_VARIABLE_NAMES, variableName);
+			snippetDoc.addField(IndexManager.SNIPPET_VARIABLE_NAMES, variableName); // for field decs
 			
 			snippetDoc.addField(IndexManager.SNIPPET_VARIABLE_NAMES_DELIMITED, variableName);
 			
@@ -357,14 +346,14 @@ public class IndexManager {
 		
 		/*
 		
-		snippetDoc.addField(IndexManager.SNIPPET_IS_ABSTRACT,snippet.isAbstract);
+		snippetDoc.addField(IndexManager.SNIPPET_IS_ABSTRACT,snippet.isAbstract); // do research
 		
 		*/
 		
 		solrDoc.addField(IndexManager.SNIPPET_IS_GENERIC, jc.getIsGenericType());
 		
 		/*
-		snippetDoc.addField(IndexManager.SNIPPET_IS_WILDCARD,snippet.isWildCard);
+		snippetDoc.addField(IndexManager.SNIPPET_IS_WILDCARD,snippet.isWildCard); // do research
 		
 		for(String bound: snippet.wildCardBounds){
 			snippetDoc.addField(IndexManager.SNIPPET_IS_WILDCARD_BOUNDS,bound);

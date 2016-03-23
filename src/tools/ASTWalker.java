@@ -13,6 +13,7 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CatchClause;
+import org.eclipse.jdt.core.dom.Comment;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ConditionalExpression;
 import org.eclipse.jdt.core.dom.DoStatement;
@@ -131,6 +132,12 @@ public class ASTWalker {
 				return true;
 			}
 		
+			public boolean visit(Comment node) {
+				System.out.println("I hit a comment");
+				
+				return true;
+			}
+			
 			public boolean visit(ConditionalExpression node){
 				if(inMethod) {
 					SuperEntityClass ceo = new SuperEntityClass();
@@ -341,9 +348,19 @@ public class ASTWalker {
 				if(inInterface == false) {
 				SimpleName name = node.getName();
 				
+				// get fully qualified name
+				ITypeBinding binding = node.getType().resolveBinding();
+				String fullyQualifiedName;
+				try {
+					fullyQualifiedName = binding.getQualifiedName();
+				} catch (NullPointerException e) {
+					fullyQualifiedName = name.toString();
+				}
+			
 				if(node.getType().isArrayType()) {
 					SuperEntityClass ao = new SuperEntityClass();
 					ao.setName(name.toString());
+					ao.setFullyQualifiedName(fullyQualifiedName);
 					ao.setType(node.getType());
 					ao.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 					ao.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
@@ -353,6 +370,7 @@ public class ASTWalker {
 				else if(node.getType().isParameterizedType()) {
 					SuperEntityClass go = new SuperEntityClass();
 					go.setName(name.toString());
+					go.setFullyQualifiedName(fullyQualifiedName);
 					go.setType(node.getType());
 					go.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 					go.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
@@ -361,6 +379,7 @@ public class ASTWalker {
 				else if(node.getType().isPrimitiveType()) {
 					SuperEntityClass po = new SuperEntityClass();
 					po.setName(name.toString());
+					po.setFullyQualifiedName(fullyQualifiedName);
 					po.setType(node.getType());
 					po.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 					po.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
@@ -369,6 +388,7 @@ public class ASTWalker {
 				else if(node.getType().isSimpleType()) {
 					SuperEntityClass so = new SuperEntityClass();
 					so.setName(name.toString());
+					so.setFullyQualifiedName(fullyQualifiedName);
 					so.setType(node.getType());
 					so.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 					so.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
@@ -538,10 +558,20 @@ public class ASTWalker {
 					
 					for(Object v : node.fragments()) {
 						SimpleName name = ((VariableDeclarationFragment) v).getName();
-											
+										
+						// get fully qualified name
+						ITypeBinding binding = node.getType().resolveBinding();
+						String fullyQualifiedName;
+						try {
+							fullyQualifiedName = binding.getQualifiedName();
+						} catch (NullPointerException e) {
+							fullyQualifiedName = name.toString();
+						}
+						
 						if(nodeType.isArrayType()) {
 							SuperEntityClass ao = new SuperEntityClass();
 							ao.setName(name.toString());
+							ao.setFullyQualifiedName(fullyQualifiedName);
 							ao.setType(nodeType);
 							ao.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 							ao.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
@@ -551,6 +581,7 @@ public class ASTWalker {
 						else if(nodeType.isParameterizedType()) {
 							SuperEntityClass go = new SuperEntityClass();
 							go.setName(name.toString());
+							go.setFullyQualifiedName(fullyQualifiedName);
 							go.setType(nodeType);
 							go.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 							go.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
@@ -560,6 +591,7 @@ public class ASTWalker {
 						else if(nodeType.isPrimitiveType()) {
 							SuperEntityClass po = new SuperEntityClass();
 							po.setName(name.toString());
+							po.setFullyQualifiedName(fullyQualifiedName);
 							po.setType(nodeType);
 							po.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 							po.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
@@ -569,6 +601,7 @@ public class ASTWalker {
 						else if(nodeType.isSimpleType()) {
 							SuperEntityClass so = new SuperEntityClass();
 							so.setName(name.toString());
+							so.setFullyQualifiedName(fullyQualifiedName);
 							so.setType(nodeType);
 							so.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 							so.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
@@ -592,9 +625,19 @@ public class ASTWalker {
 						
 						SimpleName name = ((VariableDeclarationFragment) v).getName();
 						
+						// get fully qualified name
+						ITypeBinding binding = node.getType().resolveBinding();
+						String fullyQualifiedName;
+						try {
+							fullyQualifiedName = binding.getQualifiedName();
+						} catch (NullPointerException e) {
+							fullyQualifiedName = name.toString();
+						}
+						
 						if(nodeType.isArrayType()) {
 							SuperEntityClass ao = new SuperEntityClass();
 							ao.setName(name.toString());
+							ao.setFullyQualifiedName(fullyQualifiedName);
 							ao.setType(nodeType);
 							ao.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 							ao.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
@@ -603,6 +646,7 @@ public class ASTWalker {
 						else if(nodeType.isParameterizedType()) {
 							SuperEntityClass go = new SuperEntityClass();
 							go.setName(name.toString());
+							go.setFullyQualifiedName(fullyQualifiedName);
 							go.setType(nodeType);
 							go.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 							go.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
@@ -611,6 +655,7 @@ public class ASTWalker {
 						else if(nodeType.isPrimitiveType()) {
 							SuperEntityClass po = new SuperEntityClass();
 							po.setName(name.toString());
+							po.setFullyQualifiedName(fullyQualifiedName);
 							po.setType(nodeType);
 							po.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 							po.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
@@ -619,6 +664,7 @@ public class ASTWalker {
 						else if(nodeType.isSimpleType()) {
 							SuperEntityClass so = new SuperEntityClass();
 							so.setName(name.toString());
+							so.setFullyQualifiedName(fullyQualifiedName);
 							so.setType(nodeType);
 							so.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 							so.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
@@ -640,9 +686,19 @@ public class ASTWalker {
 					for(Object v : node.fragments()) {
 						SimpleName name = ((VariableDeclarationFragment) v).getName();
 
+						// get fully qualified name
+						ITypeBinding binding = node.getType().resolveBinding();
+						String fullyQualifiedName;
+						try {
+							fullyQualifiedName = binding.getQualifiedName();
+						} catch (NullPointerException e) {
+							fullyQualifiedName = name.toString();
+						}
+						
 						if(nodeType.isArrayType()) {
 							SuperEntityClass ao = new SuperEntityClass();
 							ao.setName(name.toString());
+							ao.setFullyQualifiedName(fullyQualifiedName);
 							ao.setType(nodeType);
 							ao.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 							ao.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
@@ -651,6 +707,7 @@ public class ASTWalker {
 						else if(nodeType.isParameterizedType()) {
 							SuperEntityClass go = new SuperEntityClass();
 							go.setName(name.toString());
+							go.setFullyQualifiedName(fullyQualifiedName);
 							go.setType(nodeType);
 							go.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 							go.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
@@ -659,6 +716,7 @@ public class ASTWalker {
 						else if(nodeType.isPrimitiveType()) {
 							SuperEntityClass po = new SuperEntityClass();
 							po.setName(name.toString());
+							po.setFullyQualifiedName(fullyQualifiedName);
 							po.setType(nodeType);
 							po.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 							po.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
@@ -667,6 +725,7 @@ public class ASTWalker {
 						else if(nodeType.isSimpleType()) {
 							SuperEntityClass so = new SuperEntityClass();
 							so.setName(name.toString());
+							so.setFullyQualifiedName(fullyQualifiedName);
 							so.setType(nodeType);
 							so.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 							so.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
