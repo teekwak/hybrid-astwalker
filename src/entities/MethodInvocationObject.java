@@ -5,6 +5,7 @@ import java.util.List;
 
 public class MethodInvocationObject extends SuperEntityClass {
 
+	String declaringClass;
 	String fullyQualifiedName;
 	List<?> argumentsList;
 	
@@ -18,6 +19,14 @@ public class MethodInvocationObject extends SuperEntityClass {
 	
 	public String getFullyQualifiedName() {
 		return this.fullyQualifiedName;
+	}
+	
+	public void setDeclaringClass(String c) {
+		this.declaringClass = c;
+	}
+	
+	public String getDeclaringClass() {
+		return this.declaringClass;
 	}
 	
 	public void setArguments(List<?> al) {

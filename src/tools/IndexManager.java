@@ -102,29 +102,29 @@ public class IndexManager {
 		*/
 	}
 	
-	// you can probably skip this method because fileModel = snippet
-	// actually no, keep this method, rename it. it will be a factory because makeSolrDoc only returns one doc
-	// just get the logic down here, and then transfer over to makeSolrDoc
-	public static void constructSnippet(/*File file*/) {
-
-		// this does not cover everything
-		// need to make this recursive?
-		
+	// gets all classes, method declarations, and method invocation from each FileModel
+	public static void getFileModelConstructs(/*File file*/) {
 		for(FileModel f : fileModelList) {
 			for(JavaClass jc : f.javaClassList) {
 				makeSolrDoc(jc);
 				
 				for(SuperEntityClass md : jc.getMethodDeclarationList()) {
-					makeSolrDoc(md);
-					
-					for(SuperEntityClass mi : ((MethodDeclarationObject) md).getMethodInvocationList() ) {
-						makeSolrDoc(mi);
-					}
-					
-					for(SuperEntityClass md2 : ((MethodDeclarationObject) md).getMethodDeclarationList() ) {
-						makeSolrDoc(md2);
-					}
+					makeMethodDeclarationSolrDoc((MethodDeclarationObject)md);
 				}
+			}
+		}
+	}
+	
+	public static void makeMethodDeclarationSolrDoc(MethodDeclarationObject mdo) {
+		makeSolrDoc(mdo);
+		
+		for(SuperEntityClass mi : mdo.getMethodInvocationList() ) {
+			makeSolrDoc(mi);
+		}
+		
+		if(mdo.getMethodDeclarationList().size() > 0) {
+			for(SuperEntityClass mdChild : mdo.getMethodDeclarationList()) {
+				makeMethodDeclarationSolrDoc((MethodDeclarationObject)mdChild);
 			}
 		}
 	}
@@ -163,6 +163,6 @@ public class IndexManager {
 		
 		File inputFolder = new File( topDirectoryLocation );
 		traverseUntilJava(inputFolder, topDirectoryLocation);	
-		constructSnippet();
+		getFileModelConstructs();
 	}
 }

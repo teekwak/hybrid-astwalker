@@ -19,6 +19,7 @@ import org.eclipse.jdt.core.dom.DoStatement;
 import org.eclipse.jdt.core.dom.EnhancedForStatement;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ForStatement;
+import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.InfixExpression;
@@ -291,9 +292,21 @@ public class ASTWalker {
 						fullyQualifiedName = name.toString();
 					}
 					
+					IMethodBinding binding = node.resolveMethodBinding();
+					String parentClass;
+					
+					try {
+						parentClass = binding.getDeclaringClass().getQualifiedName();
+					} catch (NullPointerException e) {
+						parentClass = "None";
+					}
+					
+					System.out.println(parentClass + " " + name.toString());
+					
 					MethodInvocationObject mio = new MethodInvocationObject();
 					mio.setName(name.toString());
 					mio.setFullyQualifiedName(fullyQualifiedName);
+					mio.setDeclaringClass(parentClass);
 					mio.setArguments(node.arguments());
 					mio.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 					mio.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
@@ -323,8 +336,6 @@ public class ASTWalker {
 				return true;
 			}
 			
-			// called on parameters of function
-			// done-ish. excluded qualifiedType, unionType, wildcardType
 			public boolean visit(SingleVariableDeclaration node) {			
 				if(inInterface == false) {
 				SimpleName name = node.getName();
