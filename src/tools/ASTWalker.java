@@ -533,11 +533,12 @@ public class ASTWalker {
 			
 			public boolean visit(FieldDeclaration node) {
 				if(inInterface == false) {
+					
 					Type nodeType = node.getType();
 					
 					for(Object v : node.fragments()) {
 						SimpleName name = ((VariableDeclarationFragment) v).getName();
-					
+											
 						if(nodeType.isArrayType()) {
 							SuperEntityClass ao = new SuperEntityClass();
 							ao.setName(name.toString());
@@ -545,6 +546,7 @@ public class ASTWalker {
 							ao.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 							ao.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
 							entityStack.peek().addEntity(ao, EntityType.ARRAY);
+							entityStack.peek().addEntity(ao, EntityType.GLOBAL);
 						}
 						else if(nodeType.isParameterizedType()) {
 							SuperEntityClass go = new SuperEntityClass();
@@ -553,6 +555,7 @@ public class ASTWalker {
 							go.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 							go.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
 							entityStack.peek().addEntity(go, EntityType.GENERICS);
+							entityStack.peek().addEntity(go, EntityType.GLOBAL);
 						}
 						else if(nodeType.isPrimitiveType()) {
 							SuperEntityClass po = new SuperEntityClass();
@@ -561,6 +564,7 @@ public class ASTWalker {
 							po.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 							po.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
 							entityStack.peek().addEntity(po, EntityType.PRIMITIVE);
+							entityStack.peek().addEntity(po, EntityType.GLOBAL);
 						}
 						else if(nodeType.isSimpleType()) {
 							SuperEntityClass so = new SuperEntityClass();
@@ -569,6 +573,7 @@ public class ASTWalker {
 							so.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 							so.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
 							entityStack.peek().addEntity(so, EntityType.SIMPLE);
+							entityStack.peek().addEntity(so, EntityType.GLOBAL);
 						}
 						else {
 							System.out.println("Something is missing " + nodeType);

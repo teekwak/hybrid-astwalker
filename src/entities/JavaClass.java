@@ -15,6 +15,7 @@ public class JavaClass extends SuperEntityClass {
 	List<SuperEntityClass> arrayList;
 	List<SuperEntityClass> classList;
 	List<SuperEntityClass> genericsList;
+	List<SuperEntityClass> globalList;
 	List<SuperEntityClass> importList;
 	List<SuperEntityClass> methodDeclarationList;
 	List<SuperEntityClass> primitiveList;
@@ -29,6 +30,7 @@ public class JavaClass extends SuperEntityClass {
 		this.arrayList = new ArrayList<>();
 		this.classList = new ArrayList<>();
 		this.genericsList = new ArrayList<>();
+		this.globalList = new ArrayList<>();
 		this.importList = new ArrayList<>();
 		this.methodDeclarationList = new ArrayList<>();
 		this.primitiveList = new ArrayList<>();
@@ -162,6 +164,10 @@ public class JavaClass extends SuperEntityClass {
 		return this.genericsList;
 	}
 	
+	public List<SuperEntityClass> getGlobalList() {
+		return this.globalList;
+	}
+	
 	public List<SuperEntityClass> getMethodDeclarationList() {
 		return this.methodDeclarationList;
 	}
@@ -180,6 +186,11 @@ public class JavaClass extends SuperEntityClass {
 	
 	public void addEntity(SuperEntityClass entity, EntityType ET) {
 		this.entityList.add(entity);
+		
+		// global variables only
+		if(ET == EntityType.GLOBAL) {
+			this.globalList.add(entity);
+		}
 		
 		if(ET == EntityType.ARRAY) {
 			this.arrayList.add(entity);
