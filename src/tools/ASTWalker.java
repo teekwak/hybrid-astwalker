@@ -514,52 +514,54 @@ public class ASTWalker {
 				inInterface = false;
 			}
 			
-			public boolean visit(VariableDeclarationFragment node) {
+			public boolean visit(FieldDeclaration node) {
 				if(inInterface == false) {
-				
-					SimpleName name = node.getName();
+					Type nodeType = node.getType();
 					
-					Type nodeType = ((FieldDeclaration) node.getParent()).getType();
+					for(Object v : node.fragments()) {
+						SimpleName name = ((VariableDeclarationFragment) v).getName();
 					
-					if(nodeType.isArrayType()) {
-						SuperEntityClass ao = new SuperEntityClass();
-						ao.setName(name.toString());
-						ao.setType(nodeType);
-						ao.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-						ao.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-						entityStack.peek().addEntity(ao, EntityType.ARRAY);
-					}
-					else if(nodeType.isParameterizedType()) {
-						SuperEntityClass go = new SuperEntityClass();
-						go.setName(name.toString());
-						go.setType(nodeType);
-						go.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-						go.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-						entityStack.peek().addEntity(go, EntityType.GENERICS);
-					}
-					else if(nodeType.isPrimitiveType()) {
-						SuperEntityClass po = new SuperEntityClass();
-						po.setName(name.toString());
-						po.setType(nodeType);
-						po.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-						po.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-						entityStack.peek().addEntity(po, EntityType.PRIMITIVE);
-					}
-					else if(nodeType.isSimpleType()) {
-						SuperEntityClass so = new SuperEntityClass();
-						so.setName(name.toString());
-						so.setType(nodeType);
-						so.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-						so.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-						entityStack.peek().addEntity(so, EntityType.SIMPLE);
-					}
-					else {
-						System.out.println("Something is missing " + nodeType);
+						if(nodeType.isArrayType()) {
+							SuperEntityClass ao = new SuperEntityClass();
+							ao.setName(name.toString());
+							ao.setType(nodeType);
+							ao.setLineNumber(cu.getLineNumber(name.getStartPosition()));
+							ao.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
+							entityStack.peek().addEntity(ao, EntityType.ARRAY);
+						}
+						else if(nodeType.isParameterizedType()) {
+							SuperEntityClass go = new SuperEntityClass();
+							go.setName(name.toString());
+							go.setType(nodeType);
+							go.setLineNumber(cu.getLineNumber(name.getStartPosition()));
+							go.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
+							entityStack.peek().addEntity(go, EntityType.GENERICS);
+						}
+						else if(nodeType.isPrimitiveType()) {
+							SuperEntityClass po = new SuperEntityClass();
+							po.setName(name.toString());
+							po.setType(nodeType);
+							po.setLineNumber(cu.getLineNumber(name.getStartPosition()));
+							po.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
+							entityStack.peek().addEntity(po, EntityType.PRIMITIVE);
+						}
+						else if(nodeType.isSimpleType()) {
+							SuperEntityClass so = new SuperEntityClass();
+							so.setName(name.toString());
+							so.setType(nodeType);
+							so.setLineNumber(cu.getLineNumber(name.getStartPosition()));
+							so.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
+							entityStack.peek().addEntity(so, EntityType.SIMPLE);
+						}
+						else {
+							System.out.println("Something is missing " + nodeType);
+						}
 					}
 				}
+				
 				return true;
 			}
-
+			
 			public boolean visit(VariableDeclarationStatement node) {
 				if(inInterface == false) {
 					Type nodeType = node.getType();
@@ -606,7 +608,7 @@ public class ASTWalker {
 					}
 				
 				}
-				return false; // does this stop from going to VariableDeclarationFragment?
+				return true;
 			}
 
 			public boolean visit(VariableDeclarationExpression node) {
@@ -653,7 +655,7 @@ public class ASTWalker {
 						}
 					}
 				}
-				return false; // does this stop from going to VariableDeclarationFragment?
+				return true;
 			}
 
 			public boolean visit(WhileStatement node){
