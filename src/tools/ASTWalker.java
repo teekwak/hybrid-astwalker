@@ -285,6 +285,7 @@ public class ASTWalker {
 				if(inMethod) {					
 					SimpleName name = node.getName();
 						
+					// get fully qualified name
 					String fullyQualifiedName;
 					try {
 						fullyQualifiedName = name.getFullyQualifiedName();
@@ -292,17 +293,15 @@ public class ASTWalker {
 						fullyQualifiedName = name.toString();
 					}
 					
+					// get declaring class
 					IMethodBinding binding = node.resolveMethodBinding();
 					String parentClass;
-					
 					try {
 						parentClass = binding.getDeclaringClass().getQualifiedName();
 					} catch (NullPointerException e) {
 						parentClass = "None";
 					}
-					
-					System.out.println(parentClass + " " + name.toString());
-					
+										
 					MethodInvocationObject mio = new MethodInvocationObject();
 					mio.setName(name.toString());
 					mio.setFullyQualifiedName(fullyQualifiedName);
@@ -319,6 +318,7 @@ public class ASTWalker {
 			public boolean visit(PackageDeclaration node){
 				Name name = node.getName();
 				
+				// get fully qualified name
 				String fullyQualifiedName;
 				try {
 					fullyQualifiedName = name.getFullyQualifiedName();

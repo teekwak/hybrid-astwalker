@@ -30,6 +30,11 @@ public class IndexManager {
 	public static List<GitData> gitDataList = new ArrayList<>();
 	
 	public static final String SNIPPET_CODE = "snippet_code";
+	public static final String SNIPPET_ADDRESS_LOWER_BOUND = "snippet_address_lower_bound";
+	public static final String SNIPPET_ADDRESS_UPPER_BOUND ="snippet_address_upper_bound";
+	public static final String SNIPPET_IS_INNERCLASS = "snippet_is_innerClass";
+	public static final String SNIPPET_IMPORTS = "";
+	public static final String SNIPPET_IMPORTS_SHORT = "";
 	
 	public static void traverseUntilJava(File parentNode, String topDirectoryLocation) throws IOException, CoreException, NoHeadException, GitAPIException, ParseException {
 		if(parentNode.isDirectory()) {
@@ -133,22 +138,35 @@ public class IndexManager {
 		SolrInputDocument solrDoc = new SolrInputDocument();
 				
 		if(entity instanceof JavaClass) {
-			// do class stuff
+			JavaClass jc = (JavaClass) entity;
+			
 			System.out.println("this is a class " + entity.getName());
+			
+			solrDoc.addField(IndexManager.SNIPPET_CODE, jc.getSourceCode());
+			solrDoc.addField(IndexManager.SNIPPET_ADDRESS_LOWER_BOUND, Integer.toString(jc.getEndLine()));
+			solrDoc.addField(IndexManager.SNIPPET_ADDRESS_UPPER_BOUND, Integer.toString(jc.getLineNumber()));
+		
+			solrDoc.addField(IndexManager.SNIPPET_IS_INNERCLASS, jc.getInnerClass());
+			
+			for(SuperEntityClass importStr : jc.getImportList()) {
+				solrDoc.addField(IndexManager.SNIPPET_IMPORTS, importStr.getFullyQualifiedName());
+				
+				String[] split = importStr.getFullyQualifiedName().split("[.]");
+				solrDoc.addField(IndexManager.SNIPPET_IMPORTS_SHORT, split[split.length - 1]);
+			}
 		}
 		
 		else if(entity instanceof MethodDeclarationObject) {
-			// do method declaration stuff
+			MethodDeclarationObject mdo = (MethodDeclarationObject) entity;
+			
 			System.out.println("this is a method declaration " + entity.getName());
 		}
 		
 		else if(entity instanceof MethodInvocationObject) {
-			// do method invocation stuff
+			MethodInvocationObject mio = (MethodInvocationObject) entity;
+			
 			System.out.println("this is a method invocation " + entity.getName());
 		}
-		
-		
-		//solrDoc.addField(IndexManager.SNIPPET_CODE, "");
 		
 		return solrDoc;
 	}
