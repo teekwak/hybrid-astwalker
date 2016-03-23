@@ -113,7 +113,19 @@ public class IndexManager {
 	// gets all classes, method declarations, and method invocation from each FileModel
 	public static void getFileModelConstructs(/*File file*/) {
 		for(FileModel f : fileModelList) {
-			for(JavaClass jc : f.javaClassList) {
+			for(JavaClass jc : f.getJavaClassList()) {
+				JavaFile jf = null;
+				
+				for(GitData g : gitDataList) {
+					for(JavaFile temp : g.getJavaFileList()) {
+						if(temp.getFileLocation().equals(jc.getFileName())) {
+							jf = temp;
+						}
+					}
+				}
+				
+				
+				
 				makeSolrDoc(jc);
 				
 				for(SuperEntityClass md : jc.getMethodDeclarationList()) {
@@ -123,6 +135,7 @@ public class IndexManager {
 		}
 	}
 	
+	// recursively get method delcarations (for those method declarations inside of each other)
 	public static void makeMethodDeclarationSolrDoc(MethodDeclarationObject mdo) {
 		makeSolrDoc(mdo);
 		
@@ -141,6 +154,7 @@ public class IndexManager {
 		SolrInputDocument solrDoc = new SolrInputDocument();
 				
 		// need to match GitData object with correct JavaFile
+		// actually, GitData object and JavaFile object should be indexed at the same time
 		
 		if(entity instanceof JavaClass) {
 			JavaClass jc = (JavaClass) entity;
@@ -167,6 +181,7 @@ public class IndexManager {
 				String[] split = interfaceStr.split("[.]");
 				solrDoc.addField(IndexManager.SNIPPET_IMPLEMENTS_SHORT, split[split.length - 1]);
 			}
+			
 		}
 		
 		else if(entity instanceof MethodDeclarationObject) {

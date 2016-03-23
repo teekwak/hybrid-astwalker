@@ -477,8 +477,9 @@ public class ASTWalker {
 					} catch (NullPointerException e) {
 						fullyQualifiedName = node.getName().toString();
 					}
-					
+										
 					JavaClass co = new JavaClass();
+					co.setFileName(fileLocation);
 					co.setName(node.getName().toString());
 					co.setFullyQualifiedName(fullyQualifiedName);
 					co.setLineNumber(startLine);

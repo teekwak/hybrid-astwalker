@@ -76,7 +76,7 @@ class CommitData {
 }
 
 class JavaFile {
-	String name;
+	String fileLocation;
 	int numberOfLines;
 	int numberOfCharacters;
 	List<CommitData> commitDataList;
@@ -87,9 +87,13 @@ class JavaFile {
 		commitDataList = new ArrayList<>();
 		uniqueAuthors = new HashSet<>();
 		uniqueEmails = new HashSet<>();
-		name = n;
+		fileLocation = n;
 	}
 
+	public String getFileLocation() {
+		return this.fileLocation;
+	}
+	
 	public void setUniqueAuthors(List<String> set) {
 		uniqueAuthors = new HashSet<>(set);
 	}
@@ -125,6 +129,10 @@ public class GitData {
 		}			
 	}
 	
+	public List<JavaFile> getJavaFileList() {
+		return this.javaFileList;
+	}
+	
 	/*
 	 * gets insertions and deletions for all commits
 	 * parses and adds insertions/deletions based on hash code and file name
@@ -147,7 +155,7 @@ public class GitData {
 						String[] nameParts = parts[2].split("/"); 
 					
 						for(JavaFile j : javaFileList) {
-							if(j.name.equals(nameParts[nameParts.length - 1])) {
+							if(j.fileLocation.equals(nameParts[nameParts.length - 1])) {
 								for(CommitData c : j.commitDataList) {
 									if(c.hashCode.equals(entry.getValue())) {
 										c.setInsertions(Integer.parseInt(parts[0]));
@@ -208,10 +216,8 @@ public class GitData {
 		return count;
 	}
 	
-	public void getCommitDataPerFile(String directoryLocation, String javaFileName) throws IOException, ParseException {
-		String[] name = javaFileName.split("/");
-		
-		JavaFile javaFileObject = new JavaFile(name[name.length - 1]);
+	public void getCommitDataPerFile(String directoryLocation, String javaFileName) throws IOException, ParseException {				
+		JavaFile javaFileObject = new JavaFile(javaFileName);
 		
 		File dir = new File(directoryLocation);
 		

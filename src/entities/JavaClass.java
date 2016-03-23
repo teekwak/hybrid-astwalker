@@ -5,6 +5,7 @@ import java.util.List;
 
 public class JavaClass extends SuperEntityClass {
 
+	String fileName;
 	String superClass;
 	String sourceCode;
 	boolean isInnerClass;
@@ -116,6 +117,14 @@ public class JavaClass extends SuperEntityClass {
 		return this.packageObject;
 	}
 
+	public void setFileName(String s) {
+		this.fileName = s;
+	}
+	
+	public String getFileName() {
+		return this.fileName;
+	}
+	
 	public void setInnerClass(boolean ic) {
 		this.isInnerClass = ic;
 	}
