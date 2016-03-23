@@ -513,7 +513,7 @@ public class ASTWalker {
 				
 				inInterface = false;
 			}
-
+			
 			public boolean visit(VariableDeclarationFragment node) {
 				if(inInterface == false) {
 				

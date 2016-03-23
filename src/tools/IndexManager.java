@@ -13,13 +13,23 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.NoHeadException;
 import org.eclipse.jgit.revwalk.RevCommit;
 
+import entities.JavaClass;
+import entities.MethodDeclarationObject;
+import entities.MethodInvocationObject;
+import entities.SuperEntityClass;
 import tools.FileModel;
 import tools.GitData;
+
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.SolrInputDocument;
 
 public class IndexManager {
 	
 	public static List<FileModel> fileModelList = new ArrayList<>();
 	public static List<GitData> gitDataList = new ArrayList<>();
+	
+	public static final String SNIPPET_CODE = "snippet_code";
 	
 	public static void traverseUntilJava(File parentNode, String topDirectoryLocation) throws IOException, CoreException, NoHeadException, GitAPIException, ParseException {
 		if(parentNode.isDirectory()) {
@@ -83,12 +93,64 @@ public class IndexManager {
 		gitDataList.add(gitData);
 		
 		git.close();
-		
+		/*
 		for(JavaFile j : gitData.javaFileList) {
 			for(CommitData cd : j.commitDataList) {
 				System.out.println(cd.solrDate);
 			}
 		}
+		*/
+	}
+	
+	// you can probably skip this method because fileModel = snippet
+	// actually no, keep this method, rename it. it will be a factory because makeSolrDoc only returns one doc
+	// just get the logic down here, and then transfer over to makeSolrDoc
+	public static void constructSnippet(/*File file*/) {
+
+		// this does not cover everything
+		// need to make this recursive?
+		
+		for(FileModel f : fileModelList) {
+			for(JavaClass jc : f.javaClassList) {
+				makeSolrDoc(jc);
+				
+				for(SuperEntityClass md : jc.getMethodDeclarationList()) {
+					makeSolrDoc(md);
+					
+					for(SuperEntityClass mi : ((MethodDeclarationObject) md).getMethodInvocationList() ) {
+						makeSolrDoc(mi);
+					}
+					
+					for(SuperEntityClass md2 : ((MethodDeclarationObject) md).getMethodDeclarationList() ) {
+						makeSolrDoc(md2);
+					}
+				}
+			}
+		}
+	}
+	
+	public static SolrInputDocument makeSolrDoc(SuperEntityClass entity) {
+		SolrInputDocument solrDoc = new SolrInputDocument();
+				
+		if(entity instanceof JavaClass) {
+			// do class stuff
+			System.out.println("this is a class " + entity.getName());
+		}
+		
+		else if(entity instanceof MethodDeclarationObject) {
+			// do method declaration stuff
+			System.out.println("this is a method declaration " + entity.getName());
+		}
+		
+		else if(entity instanceof MethodInvocationObject) {
+			// do method invocation stuff
+			System.out.println("this is a method invocation " + entity.getName());
+		}
+		
+		
+		//solrDoc.addField(IndexManager.SNIPPET_CODE, "");
+		
+		return solrDoc;
 	}
 	
 	public static void main(String[] args) throws IOException, CoreException, NoHeadException, GitAPIException, ParseException {
@@ -100,9 +162,7 @@ public class IndexManager {
 		//String topDirectoryLocation = "/home/kwak/Desktop/jgit-test/";
 		
 		File inputFolder = new File( topDirectoryLocation );
-		traverseUntilJava(inputFolder, topDirectoryLocation);
-		
-
-		
+		traverseUntilJava(inputFolder, topDirectoryLocation);	
+		constructSnippet();
 	}
 }
