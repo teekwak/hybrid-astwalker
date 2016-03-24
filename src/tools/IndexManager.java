@@ -57,7 +57,6 @@ public class IndexManager {
 	public static final String SNIPPET_INSERTION_CODE_CHURN = "snippet_insertion_code_churn";
 	public static final String SNIPPET_DELETED_CODE_CHURN = "snippet_deleted_code_churn";
 	public static final String SNIPPET_INSERTION_DELETION_CODE_CHURN = "snippet_insertion_deletion_code_churn";
-	
 	public static final String SNIPPET_EXTENDS = "snippet_extends";
 	public static final String SNIPPET_EXTENDS_SHORT = "snippet_extends_short";
 	public static final String SNIPPET_GRANULARITY = "snippet_granularity";
@@ -68,27 +67,21 @@ public class IndexManager {
 	public static final String SNIPPET_VERSION_COMMENT = "snippet_version_comment";
 	public static final String SNIPPET_LAST_UPDATED = "snippet_last_updated";
 	public static final String SNIPPET_NUMBER_OF_LINES = "snippet_number_of_lines";
-	
-	public static final String SNIPPET_NUMBER_OF_FUNCTIONS = "snippet_number_of_functions";
-	
+	public static final String SNIPPET_NUMBER_OF_FUNCTIONS = "snippet_number_of_functions";	
 	public static final String SNIPPET_ALL_VERSIONS = "snippet_all_versions";
 	public static final String SNIPPET_PATH_COMPLEXITY_SUM = "snippet_path_complexity_class_sum";
 	public static final String SNIPPET_HAS_JAVA_COMMENTS = "snippet_has_java_comments";
 	public static final String SNIPPET_NUMBER_OF_FIELDS = "snippet_number_of_fields";
-	
 	public static final String SNIPPET_IS_GENERIC = "snippet_is_generic";
 	public static final String SNIPPET_IS_ABSTRACT = "snippet_is_abstract";
-	
 	public static final String SNIPPET_NAME = "snippet_class_name";
 	public static final String SNIPPET_NAME_DELIMITED = "snippet_class_name_delimited";
-	
 	public static final String SNIPPET_VARIABLE_TYPES = "snippet_variable_types";
 	public static final String SNIPPET_VARIABLE_TYPES_SHORT = "snippet_variable_types_short";
 	public static final String SNIPPET_VARIABLE_NAMES = "snippet_variable_names";
 	public static final String SNIPPET_VARIABLE_NAMES_DELIMITED = "snippet_variable_names_delimited";
-	
-	public static final String SNIPPET_IS_WILDCARD = "";
-	public static final String SNIPPET_IS_WILDCARD_BOUNDS = "";
+	public static final String SNIPPET_IS_WILDCARD = "snippet_is_wildcard";
+	public static final String SNIPPET_IS_WILDCARD_BOUNDS = "snippet_wildcard_bounds";
 	
 	// Method Declaration
 	public static final String SNIPPET_METHOD_DEC_WHILE_COUNT = "snippet_method_dec_while_count";
@@ -97,53 +90,45 @@ public class IndexManager {
 	public static final String SNIPPET_METHOD_DEC_CASE_COUNT = "snippet_method_dec_case_count";
 	public static final String SNIPPET_METHOD_DEC_TERNERARY_COUNT = "snippet_method_dec_ternerary_count";
 	public static final String SNIPPET_METHOD_DEC_CATCH_COUNT = "snippet_method_dec_catch_count";
-	
+	public static final String SNIPPET_METHOD_DEC_LOGICAL_COUNT = "snippet_method_dec_logical_count";
 	public static final String SNIPPET_METHOD_DEC_IS_CONSTRUCTOR = "snippet_method_dec_is_constructor";
 	public static final String SNIPPET_METHOD_DEC_IS_VAR_ARGS = "snippet_method_dec_is_var_args";
-	public static final String SNIPPET_METHOD_DEC_DECLARING_CLASS = "";
-	public static final String SNIPPET_METHOD_DEC_DECLARING_CLASS_SHORT = "";
-	
-	public static final String SNIPPET_METHOD_DEC_RETURN_TYPE = "";
-	public static final String SNIPPET_METHOD_DEC_NUMBER_OF_LOCAL_VARIABLES = "";
-	
-	public static final String SNIPPET_METHOD_DEC_PATH_COMPLEXITY = "";
+	public static final String SNIPPET_METHOD_DEC_DECLARING_CLASS = "snippet_method_dec_declaring_class";
+	public static final String SNIPPET_METHOD_DEC_DECLARING_CLASS_SHORT = "snippet_method_dec_declaring_class_short";
+	public static final String SNIPPET_METHOD_DEC_RETURN_TYPE = "snippet_method_dec_return_type";
+	public static final String SNIPPET_METHOD_DEC_NUMBER_OF_LOCAL_VARIABLES = "snippet_method_dec_number_of_local_variables";
+	public static final String SNIPPET_METHOD_DEC_PATH_COMPLEXITY = "snippet_method_dec_path_complexity_method";
 	public static final String SNIPPET_METHOD_DEC_NAME = "snippet_method_dec_name";
 	public static final String SNIPPET_METHOD_DEC_NAME_DELIMITED = "snippet_method_dec_name_delimited";
 	public static final String SNIPPET_METHOD_DEC_START = "snippet_method_dec_start";
 	public static final String SNIPPET_METHOD_DEC_END = "snippet_method_dec_end";
 	public static final String SNIPPET_METHOD_DEC_IS_ABSTRACT = "snippet_method_dec_is_abstract";
-	
 	public static final String SNIPPET_METHOD_DEC_IS_STATIC = "snippet_method_dec_is_static";
 	public static final String SNIPPET_METHOD_DEC_IS_GENERIC = "snippet_method_dec_is_generic";
-	public static final String SNIPPET_METHOD_DEC_IS_GENERIC_TYPE_PARAMS = "";
-	
-	public static final String SNIPPET_METHOD_DEC_IS_WILDCARD_BOUNDS = "";
-	
-	public static final String SNIPPET_METHOD_DEC_PARAMETER_TYPES = "";
-	public static final String SNIPPET_METHOD_DEC_PARAMETER_TYPES_PLACE = "";
-	public static final String SNIPPET_METHOD_DEC_PARAMETER_TYPES_SHORT = "";
-	public static final String SNIPPET_METHOD_DEC_PARAMETER_TYPES_SHORT_PLACE = "";
-	public static final String SNIPPET_METHOD_DEC_PARAMETER_TYPES_COUNT = "";
+	public static final String SNIPPET_METHOD_DEC_IS_GENERIC_TYPE_PARAMS = "snippet_method_dec_is_generic_type_parameters";
+	public static final String SNIPPET_METHOD_DEC_IS_WILDCARD_BOUNDS = "snippet_method_dec_is_wildcard_bounds";
+	public static final String SNIPPET_METHOD_DEC_PARAMETER_TYPES = "snippet_method_dec_parameter_types";
+	public static final String SNIPPET_METHOD_DEC_PARAMETER_TYPES_PLACE = "snippet_method_dec_parameter_types_place";
+	public static final String SNIPPET_METHOD_DEC_PARAMETER_TYPES_SHORT = "snippet_method_dec_parameter_types_short";
+	public static final String SNIPPET_METHOD_DEC_PARAMETER_TYPES_SHORT_PLACE = "snippet_method_dec_parameter_types_short_place";
+	public static final String SNIPPET_METHOD_DEC_PARAMETER_TYPES_COUNT = "snippet_method_dec_parameter_types_count";
 	
 	// Method Invocation
-	public static final String SNIPPET_METHOD_INVOCATION_NAME = "";
-	public static final String SNIPPET_METHOD_INVOCATION_NAME_DELIMITED = "";
-	public static final String SNIPPET_METHOD_INVOCATION_START = "";
-	public static final String SNIPPET_METHOD_INVOCATION_END = "";
-	
-	public static final String SNIPPET_METHOD_INVOCATION_DECLARING_CLASS = "";
-	public static final String SNIPPET_METHOD_INVOCATION_DECLARING_CLASS_SHORT = "";
-	
-	public static final String SNIPPET_METHOD_INVOCATION_ARG_TYPES = "";
-	public static final String SNIPPET_METHOD_INVOCATION_ARG_TYPES_PLACE = "";
-	public static final String SNIPPET_METHOD_INVOCATION_ARG_TYPES_SHORT = "";
-	public static final String SNIPPET_METHOD_INVOCATION_ARG_TYPES_SHORT_PLACE = "";
-	public static final String SNIPPET_METHOD_INVOCATION_ARG_TYPES_COUNT = "";
-	public static final String SNIPPET_METHOD_INVOCATION_ARG_TYPES_SHORT_COUNT = "";
-	public static final String SNIPPET_METHOD_INVOCATION_ARG_VALUES = "";
-	
-	public static final String SNIPPET_METHOD_INVOCATION_CALLING_CLASS = "";
-	public static final String SNIPPET_METHOD_INVOCATION_CALLING_CLASS_SHORT = "";
+	public static final String SNIPPET_METHOD_INVOCATION_NAME = "snippet_method_invocation_name";
+	public static final String SNIPPET_METHOD_INVOCATION_NAME_DELIMITED = "snippet_method_invocation_name_delimited";
+	public static final String SNIPPET_METHOD_INVOCATION_START = "snippet_method_invocation_start";
+	public static final String SNIPPET_METHOD_INVOCATION_END = "snippet_method_invocation_end";
+	public static final String SNIPPET_METHOD_INVOCATION_DECLARING_CLASS = "snippet_method_invocation_declaring_class";
+	public static final String SNIPPET_METHOD_INVOCATION_DECLARING_CLASS_SHORT = "snippet_method_invocation_declaring_class_short";
+	public static final String SNIPPET_METHOD_INVOCATION_ARG_TYPES = "snippet_method_invocation_arg_types";
+	public static final String SNIPPET_METHOD_INVOCATION_ARG_TYPES_PLACE = "snippet_method_invocation_arg_types_place";
+	public static final String SNIPPET_METHOD_INVOCATION_ARG_TYPES_SHORT = "snippet_method_invocation_arg_types_short";
+	public static final String SNIPPET_METHOD_INVOCATION_ARG_TYPES_SHORT_PLACE = "snippet_method_invocation_arg_types_short_place";
+	public static final String SNIPPET_METHOD_INVOCATION_ARG_TYPES_COUNT = "snippet_method_invocation_arg_types_count";
+	public static final String SNIPPET_METHOD_INVOCATION_ARG_TYPES_SHORT_COUNT = "snippet_method_invocation_arg_types_short_count";
+	public static final String SNIPPET_METHOD_INVOCATION_ARG_VALUES = "snippet_method_invocation_arg_values";
+	public static final String SNIPPET_METHOD_INVOCATION_CALLING_CLASS = "snippet_method_invocation_calling_class";
+	public static final String SNIPPET_METHOD_INVOCATION_CALLING_CLASS_SHORT = "snippet_method_invocation_calling_class_short";
 	
 	public static void traverseUntilJava(File parentNode, String topDirectoryLocation) throws IOException, CoreException, NoHeadException, GitAPIException, ParseException {
 		if(parentNode.isDirectory()) {
@@ -463,9 +448,9 @@ public class IndexManager {
 		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_CASE_COUNT, Integer.toString(mdo.getSwitchCaseList().size()));
 		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_TERNERARY_COUNT, Integer.toString(mdo.getConditionalExpressionList().size()));
 		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_CATCH_COUNT, Integer.toString(mdo.getCatchClauseList().size()));		
+		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_LOGICAL_COUNT, Integer.toString(mdo.getInfixExpressionList().size()));
 		
 		/*
-		methodDec.addField(IndexManager.SNIPPET_METHOD_DEC_LOGICAL_COUNT, dec.methodLogicOperandcount);
 		methodDec.addField(IndexManager.SNIPPET_METHOD_DEC_IS_RECURSIVE, dec.isRecurisive);
 		*/
 		
@@ -481,7 +466,7 @@ public class IndexManager {
 		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_RETURN_TYPE, mdo.getReturnType());
 	
 		int localVariableCount = mdo.getArrayList().size() + mdo.getGenericsList().size() + mdo.getPrimitiveList().size() + mdo.getSimpleList().size() - mdo.getParametersList().size();	
-		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_NUMBER_OF_LOCAL_VARIABLES, localVariableCount);
+		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_NUMBER_OF_LOCAL_VARIABLES, Integer.toString(localVariableCount));
 		System.out.println(mdo.getName() + " " + localVariableCount);
 		
 		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_PATH_COMPLEXITY, Integer.toString(mdo.getCyclomaticComplexity()));
