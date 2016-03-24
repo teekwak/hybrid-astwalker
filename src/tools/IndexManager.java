@@ -132,6 +132,13 @@ public class IndexManager {
 	public static final String SNIPPET_METHOD_INVOCATION_DECLARING_CLASS = "";
 	public static final String SNIPPET_METHOD_INVOCATION_DECLARING_CLASS_SHORT = "";
 	
+	public static final String SNIPPET_METHOD_INVOCATION_ARG_TYPES = "";
+	public static final String SNIPPET_METHOD_INVOCATION_ARG_TYPES_PLACE = "";
+	public static final String SNIPPET_METHOD_INVOCATION_ARG_TYPES_SHORT = "";
+	public static final String SNIPPET_METHOD_INVOCATION_ARG_TYPES_SHORT_PLACE = "";
+	public static final String SNIPPET_METHOD_INVOCATION_ARG_TYPES_COUNT = "";
+	public static final String SNIPPET_METHOD_INVOCATION_ARG_TYPES_SHORT_COUNT = "";
+	public static final String SNIPPET_METHOD_INVOCATION_ARG_VALUES = "";
 	
 	public static void traverseUntilJava(File parentNode, String topDirectoryLocation) throws IOException, CoreException, NoHeadException, GitAPIException, ParseException {
 		if(parentNode.isDirectory()) {
@@ -506,13 +513,6 @@ public class IndexManager {
 		Map<String, Integer> paramCount = new HashMap<String, Integer>();
 		Map<String, Integer> paramCountShort = new HashMap<String, Integer>();
 		
-		/*
-		for(int i = 0; i < mdo.getParametersList().size(); i++) {
-			String argType = mdo.getParametersList().get(i).toString();
-			System.out.println(argType.substring(0, argType.lastIndexOf(" ")) + " | " + argType.substring(argType.lastIndexOf(" ") + 1));
-		}
-		*/
-		
 		for(int i = 0; i < mdo.getParameterTypesList().size(); i++) {
 			String argType = mdo.getParameterTypesList().get(i);
 			
@@ -595,56 +595,54 @@ public class IndexManager {
 			String[] split = mio.getDeclaringClass().split("[.]");
 			methodInvSolrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_DECLARING_CLASS_SHORT, split[split.length-1]);
 		}
-		/*
-		HashMap<String, Integer> paramCount = new HashMap<String, Integer>();
-		HashMap<String, Integer> paramCountShort = new HashMap<String, Integer>();
-		
+
+		Map<String, Integer> paramCount = new HashMap<>();
+		Map<String, Integer> paramCountShort = new HashMap<>();
+
 		int place = 0;
-		for(String argType: invocation.argumentTypes){
-			methodInvocation.addField(IndexManager.SNIPPET_METHOD_INVOCATION_ARG_TYPES, argType);
-			methodInvocation.addField(IndexManager.SNIPPET_METHOD_INVOCATION_ARG_TYPES_PLACE, argType+"_"+place);
+		for(String argType: mio.getArgumentTypes()){
+			methodInvSolrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_ARG_TYPES, argType);
+			methodInvSolrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_ARG_TYPES_PLACE, argType + "_" + place);
 			
 			String[] split2 = argType.split("[.]");
 			String shortName2 = split2[split2.length-1];
-			methodInvocation.addField(IndexManager.SNIPPET_METHOD_INVOCATION_ARG_TYPES_SHORT, shortName2);
-			methodInvocation.addField(IndexManager.SNIPPET_METHOD_INVOCATION_ARG_TYPES_SHORT_PLACE, argType+"_"+place);
-			
-			if(paramCount.get(argType) == null){
+			methodInvSolrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_ARG_TYPES_SHORT, shortName2);
+			methodInvSolrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_ARG_TYPES_SHORT_PLACE, argType + "_" + place);
+						
+			if(paramCount.get(argType) == null) {
 				paramCount.put(argType, 1);
-			}else{
+			}
+			else {
 				int count = paramCount.get(argType)+1;
 				paramCount.put(argType, count);
 			}
 			
-			if(paramCountShort.get(shortName2) == null){
+			if(paramCountShort.get(shortName2) == null) {
 				paramCountShort.put(shortName2, 1);
-			}else{
+			}
+			else {
 				int count = paramCountShort.get(shortName2)+1;
 				paramCountShort.put(shortName2, count);
 			}
 			place++;
 		}
-		*/
 
-		/*
+		
 		for(String type: paramCount.keySet()){
 			int count = paramCount.get(type);
-			methodInvocation.addField(IndexManager.SNIPPET_METHOD_INVOCATION_ARG_TYPES_COUNT, type+"_"+count);
+			methodInvSolrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_ARG_TYPES_COUNT, type + "_" + count);
 		}
 		
 		for(String type: paramCountShort.keySet()){
 			int count = paramCountShort.get(type);
-			methodInvocation.addField(IndexManager.SNIPPET_METHOD_INVOCATION_ARG_TYPES_SHORT_COUNT, type+"_"+count);
+			methodInvSolrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_ARG_TYPES_SHORT_COUNT, type + "_" + count);
 		}
 		
-		for(String argValue: invocation.argumentValues){
-			methodInvocation.addField(IndexManager.SNIPPET_METHOD_INVOCATION_ARG_VALUES, argValue);
+		for(Object argValue: mio.getArguments()){
+			methodInvSolrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_ARG_VALUES, argValue.toString());
 		}
-		*/
 		
-		/*
 		CHILD_COUNT++;
-		*/
 
 		solrDoc.addChildDocument(methodInvSolrDoc);
 	}
