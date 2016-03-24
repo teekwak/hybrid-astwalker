@@ -27,6 +27,10 @@ import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 
 public class IndexManager {
+	ProjectInfo currentProject = new ProjectInfo();
+	AuthorInfo authorInfo = new AuthorInfo();
+	
+	private static IndexManager instance;
 	
 	public static List<FileModel> fileModelList = new ArrayList<>();
 	public static List<GitData> gitDataList = new ArrayList<>();
@@ -36,6 +40,17 @@ public class IndexManager {
 	public static int CHILD_COUNT = 0;
 	
 	// Class
+	public static final String AUTHOR_AVATAR = "snippet_author_avatar";
+	public static final String AUTHOR_EMAIL = "snippet_author_email";
+	public static final String AUTHOR_IS_SITE_ADMIN = "snippet_author_site_admin";
+	public static final String AUTHOR_NAME = "snippet_author_name";
+	public static final String AUTHOR_TYPE = "snippet_author_type";
+	
+	public static final String PROJECT_ADDRESS = "snippet_project_address";
+	public static final String PROJECT_IS_FORK = "snippet_project_is_fork";
+	public static final String PROJECT_NAME = "snippet_project_name";
+	public static final String PROJECT_OWNER = "snippet_project_owner";
+	
 	public static final String SNIPPET_CODE = "snippet_code";
 	public static final String SNIPPET_ADDRESS_LOWER_BOUND = "snippet_address_lower_bound";
 	public static final String SNIPPET_ADDRESS_UPPER_BOUND ="snippet_address_upper_bound";
@@ -48,8 +63,6 @@ public class IndexManager {
 	public static final String SNIPPET_ALL_AUTHORS = "snippet_all_authors";
 	public static final String SNIPPET_AUTHOR_COUNT = "snippet_author_count";
 	public static final String SNIPPET_ALL_AUTHOR_EMAILS = "snippet_all_author_emails";
-	public static final String AUTHOR_NAME = "snippet_author_name";
-	public static final String AUTHOR_EMAIL = "snippet_author_email";
 	public static final String SNIPPET_ALL_COMMENTS = "snippet_all_version_comments";
 	public static final String SNIPPET_ALL_DATES = "snippet_all_dates";
 	public static final String SNIPPET_NUMBER_OF_INSERTIONS = "snippet_number_of_insertions";
@@ -82,7 +95,7 @@ public class IndexManager {
 	public static final String SNIPPET_VARIABLE_NAMES_DELIMITED = "snippet_variable_names_delimited";
 	public static final String SNIPPET_IS_WILDCARD = "snippet_is_wildcard";
 	public static final String SNIPPET_IS_WILDCARD_BOUNDS = "snippet_wildcard_bounds";
-	
+
 	// Method Declaration
 	public static final String SNIPPET_METHOD_DEC_WHILE_COUNT = "snippet_method_dec_while_count";
 	public static final String SNIPPET_METHOD_DEC_FOR_COUNT = "snippet_method_dec_for_count";
@@ -129,6 +142,145 @@ public class IndexManager {
 	public static final String SNIPPET_METHOD_INVOCATION_ARG_VALUES = "snippet_method_invocation_arg_values";
 	public static final String SNIPPET_METHOD_INVOCATION_CALLING_CLASS = "snippet_method_invocation_calling_class";
 	public static final String SNIPPET_METHOD_INVOCATION_CALLING_CLASS_SHORT = "snippet_method_invocation_calling_class_short";
+	
+	private IndexManager(){
+		
+	}
+	
+	public static IndexManager getInstance(){
+		if(instance == null)
+			instance = new IndexManager();
+		
+		return instance;
+	}
+	
+
+	class AuthorInfo {
+
+		public String name = null;
+		public String avatar = null;
+		public String type = null;
+		public String email = null;
+		public String siteAdmin = null;
+		
+		public String toString(){
+			return name+" "+avatar+" "+type+" "+email+" "+siteAdmin;
+		}
+		
+		public String getAvatar() {
+			return avatar;
+		}
+		
+		public String getType() {
+			return type;
+		}
+		
+		public String getSiteAdmin() {
+			return siteAdmin;
+		}
+	}
+	
+	class ProjectInfo {
+		public String project_owner;
+		public String project_name;
+		
+		public String project_address;
+		
+		public String private_project;
+		public String fork;
+		
+		public ArrayList<String> langauge_count = new ArrayList<String>();
+		public ArrayList<String> languages = new ArrayList<String>();
+		public ArrayList<String> versions = new ArrayList<String>();
+		public ArrayList<String> comments = new ArrayList<String>();
+		public ArrayList<String> authors = new ArrayList<String>();
+		public ArrayList<String> allAuthorIDs = new ArrayList<String>();
+		
+		public String project_description;
+		
+		public String getCommentForVersion(String version){
+			
+			
+			int index = 0;
+			
+			for(int i = 0 ; i< versions.size(); i++){
+				if(versions.get(i).equals(version)){
+					index = i;
+					break;
+				}
+			}
+			
+			return comments.get(index);
+		}
+	}
+	
+	public void processRepo(String pathToDirectory, String projectURL) {
+		String htmlURL = "\""+projectURL+"\"";
+		
+		currentProject = new ProjectInfo();
+		SolrDocumentList list = Solrj.getInstance().query("id:"+htmlURL, "githubprojects", 1, 0, 9001);
+		
+		SolrDocument doc = (SolrDocument)list.get(0);
+		File project = null;
+		
+		if(doc.getFieldValue("description") != null){
+			String description = doc.getFieldValue("description").toString();
+			currentProject.project_description = description;
+		}
+		
+		if(doc.getFieldValue("fork") != null){
+			String fork = doc.getFieldValue("fork").toString();
+			currentProject.fork = fork;
+		}
+		
+		if(doc.getFieldValue("languageCount") != null){
+			ArrayList<Long> countArray = (ArrayList<Long>)doc.getFieldValue("languageCount");
+
+			ArrayList<String> languageCount = new ArrayList<String>();
+			for(Long count: countArray){
+				languageCount.add(count.toString());
+			}
+
+			currentProject.langauge_count.addAll(languageCount);
+		}
+
+		if(doc.getFieldValue("languages") != null){
+			ArrayList<String> languages = (ArrayList<String>)doc.getFieldValue("languages");
+			currentProject.languages.addAll(languages);
+		}
+
+		if(doc.getFieldValue("privateProject") != null){
+			String privateProject = doc.getFieldValue("privateProject").toString();
+			currentProject.private_project = privateProject;
+		}
+
+		if(doc.getFieldValue("projectName") != null){
+			String projectName = doc.getFieldValue("projectName").toString();
+			currentProject.project_name = projectName;
+			project = new File(pathToDirectory);
+		}
+		
+		AuthorInfo author = new AuthorInfo();
+		
+		if(doc.getFieldValue("siteAdmin") != null){
+			String siteAdmin = doc.getFieldValue("siteAdmin").toString();
+			author.siteAdmin = siteAdmin;
+		}
+
+		if(doc.getFieldValue("userName") != null){
+			String userName = doc.getFieldValue("userName").toString();
+			currentProject.project_owner = userName;
+			author.name = userName;
+		}
+
+		if(doc.getFieldValue("userType") != null){
+			String userType = doc.getFieldValue("userType").toString();
+			author.type = userType;
+		}
+
+		author.avatar = doc.getFieldValue("avatarURL").toString();		
+	}
+	
 	
 	public static void traverseUntilJava(File parentNode, String topDirectoryLocation) throws IOException, CoreException, NoHeadException, GitAPIException, ParseException {
 		if(parentNode.isDirectory()) {
@@ -209,13 +361,13 @@ public class IndexManager {
 					}
 				}
 				
-				makeClassSolrDoc(jc, jf);
+				IndexManager.getInstance().makeClassSolrDoc(jc, jf);
 				
 			}
 		}
 	}
 	
-	public static SolrInputDocument makeClassSolrDoc(SuperEntityClass entity, JavaFile javaFile) {
+	public SolrInputDocument makeClassSolrDoc(SuperEntityClass entity, JavaFile javaFile) {
 		SolrInputDocument solrDoc = new SolrInputDocument();
 		
 		JavaClass jc = (JavaClass) entity;
@@ -255,19 +407,14 @@ public class IndexManager {
 		solrDoc.addField(IndexManager.AUTHOR_NAME, headCommit.getAuthor());
 		solrDoc.addField(IndexManager.AUTHOR_EMAIL, headCommit.getEmail());
 		
-		/*
+		solrDoc.addField(IndexManager.AUTHOR_AVATAR, authorInfo.getAvatar());
+		solrDoc.addField(IndexManager.AUTHOR_IS_SITE_ADMIN, authorInfo.getSiteAdmin());
+		solrDoc.addField(IndexManager.AUTHOR_TYPE, authorInfo.getType());
 		
-		// from solr project info
-		
-		snippetDoc.addField(IndexManager.AUTHOR_AVATAR, snippet.thisAuthorInfo.avatar);
-		snippetDoc.addField(IndexManager.AUTHOR_IS_SITE_ADMIN, snippet.thisAuthorInfo.siteAdmin);
-		snippetDoc.addField(IndexManager.AUTHOR_TYPE, snippet.thisAuthorInfo);
-		
-		snippetDoc.addField(IndexManager.PROJECT_ADDRESS, currentProject.project_address);
-		snippetDoc.addField(IndexManager.PROJECT_NAME, currentProject.project_name);
-		snippetDoc.addField(IndexManager.PROJECT_OWNER, currentProject.project_owner);
-		snippetDoc.addField(IndexManager.PROJECT_IS_FORK, currentProject.fork);
-		*/
+		solrDoc.addField(IndexManager.PROJECT_ADDRESS, currentProject.project_address);
+		solrDoc.addField(IndexManager.PROJECT_NAME, currentProject.project_name);
+		solrDoc.addField(IndexManager.PROJECT_OWNER, currentProject.project_owner);
+		solrDoc.addField(IndexManager.PROJECT_IS_FORK, currentProject.fork);
 		
 		for(CommitData cd : javaFile.getCommitDataList()) {
 			solrDoc.addField(IndexManager.SNIPPET_ALL_COMMENTS, cd.getMessage());			
@@ -633,7 +780,19 @@ public class IndexManager {
 		String topDirectoryLocation = "/home/kwak/Desktop/jabber-plugin/";
 		//String topDirectoryLocation = "/home/kwak/Desktop/jgit-test/";
 		
+		String URL = "https://github.com/jenkinsci/jabber-plugin";
+		
+		/* 
+		 * given name of directory
+		 * match directory AND author to find url
+		 * 
+		 * use URL to run processRepo
+		 * THEN process each class, method dec, method inv
+		 */
+		
 		File inputFolder = new File( topDirectoryLocation );
+		
+		IndexManager.getInstance().processRepo(topDirectoryLocation, URL);
 		traverseUntilJava(inputFolder, topDirectoryLocation);	
 		getFileModelConstructs();
 	}
