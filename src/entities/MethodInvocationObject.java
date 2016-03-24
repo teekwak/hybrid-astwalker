@@ -6,12 +6,21 @@ import java.util.List;
 public class MethodInvocationObject extends SuperEntityClass {
 
 	String declaringClass;
+	String callingClass;
 	String fullyQualifiedName;
 	List<?> argumentsList;
 	List<String> argumentTypesList;
 	
 	public MethodInvocationObject() {
 		this.argumentsList = new ArrayList<>();
+	}
+	
+	public void setCallingClass(String s) {
+		this.callingClass = s;
+	}
+	
+	public String getCallingClass() {
+		return this.callingClass;
 	}
 	
 	public void setFullyQualifiedName(String fqn) {

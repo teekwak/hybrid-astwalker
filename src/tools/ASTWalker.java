@@ -431,10 +431,19 @@ public class ASTWalker {
 						}
 					}
 					
+					// get calling class
+					String callingClass;
+					try {
+						callingClass = node.getExpression().toString();
+					} catch (NullPointerException e) {
+						callingClass = "";
+					}
+										
 					MethodInvocationObject mio = new MethodInvocationObject();
 					mio.setName(name.toString());
 					mio.setFullyQualifiedName(fullyQualifiedName);
 					mio.setDeclaringClass(declaringClass);
+					mio.setCallingClass(callingClass);
 					mio.setArguments(node.arguments());
 					mio.setArgumentTypes(argumentTypes);
 					mio.setLineNumber(cu.getLineNumber(name.getStartPosition()));
