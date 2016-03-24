@@ -96,18 +96,24 @@ public class IndexManager {
 	public static final String SNIPPET_METHOD_DEC_TERNERARY_COUNT = "snippet_method_dec_ternerary_count";
 	public static final String SNIPPET_METHOD_DEC_CATCH_COUNT = "snippet_method_dec_catch_count";
 	
-	
 	public static final String SNIPPET_METHOD_DEC_IS_CONSTRUCTOR = "snippet_method_dec_is_constructor";
 	public static final String SNIPPET_METHOD_DEC_IS_VAR_ARGS = "snippet_method_dec_is_var_args";
 	
-	
+	public static final String SNIPPET_METHOD_DEC_RETURN_TYPE = "";
 	public static final String SNIPPET_METHOD_DEC_NAME = "snippet_method_dec_name";
 	public static final String SNIPPET_METHOD_DEC_NAME_DELIMITED = "snippet_method_dec_name_delimited";
-	private static final String SNIPPET_METHOD_DEC_START = "snippet_method_dec_start";
-	private static final String SNIPPET_METHOD_DEC_END = "snippet_method_dec_end";
-	private static final String SNIPPET_METHOD_DEC_IS_ABSTRACT = "snippet_method_dec_is_abstract";
+	public static final String SNIPPET_METHOD_DEC_START = "snippet_method_dec_start";
+	public static final String SNIPPET_METHOD_DEC_END = "snippet_method_dec_end";
+	public static final String SNIPPET_METHOD_DEC_IS_ABSTRACT = "snippet_method_dec_is_abstract";
 	
-	private static final String SNIPPET_METHOD_DEC_IS_STATIC = "snippet_method_dec_is_static";
+	public static final String SNIPPET_METHOD_DEC_IS_STATIC = "snippet_method_dec_is_static";
+	public static final String SNIPPET_METHOD_DEC_IS_GENERIC = "snippet_method_dec_is_generic";
+	
+	// Method Invocation
+	public static final String SNIPPET_METHOD_INVOCATION_NAME = "";
+	public static final String SNIPPET_METHOD_INVOCATION_NAME_DELIMITED = "";
+	public static final String SNIPPET_METHOD_INVOCATION_START = "";
+	public static final String SNIPPET_METHOD_INVOCATION_END = "";
 	
 	public static void traverseUntilJava(File parentNode, String topDirectoryLocation) throws IOException, CoreException, NoHeadException, GitAPIException, ParseException {
 		if(parentNode.isDirectory()) {
@@ -190,24 +196,6 @@ public class IndexManager {
 				
 				makeClassSolrDoc(jc, jf);
 				
-				for(SuperEntityClass md : jc.getMethodDeclarationList()) {
-					findAllMethodDeclarations((MethodDeclarationObject)md);
-				}
-			}
-		}
-	}
-	
-	// recursively get method declarations (for those method declarations inside of each other)
-	public static void findAllMethodDeclarations(MethodDeclarationObject mdo) {
-		makeMethodDeclarationSolrDoc(mdo);
-		
-		for(SuperEntityClass mi : mdo.getMethodInvocationList() ) {
-			makeMethodInvocationSolrDoc(mi);
-		}
-		
-		if(mdo.getMethodDeclarationList().size() > 0) {
-			for(SuperEntityClass mdChild : mdo.getMethodDeclarationList()) {
-				findAllMethodDeclarations((MethodDeclarationObject)mdChild);
 			}
 		}
 	}
@@ -358,8 +346,8 @@ public class IndexManager {
 		solrDoc.addField(IndexManager.SNIPPET_IS_ABSTRACT, jc.getIsAbstract());
 		solrDoc.addField(IndexManager.SNIPPET_IS_GENERIC, jc.getIsGenericType());
 		
-		/* are there any method declarations that have wildcards
-		
+		/* 
+		 		
 		for(String typeParameter: snippet.typeParameters){
 			snippetDoc.addField(IndexManager.SNIPPET_METHOD_DEC_IS_GENERIC_TYPE_PARAMS,typeParameter);
 		}
@@ -385,7 +373,27 @@ public class IndexManager {
 	
 		solrDoc.addField("parent", true);
 		
-		return solrDoc;
+		for(SuperEntityClass md : jc.getMethodDeclarationList()) {
+			findAllMethodDeclarations((MethodDeclarationObject)md, solrDoc);
+		}
+
+		return solrDoc; // returns solrDoc for class, method declaration, AND method invocation
+	}
+	
+	// recursively get method declarations (for those method declarations inside of each other)
+	// TODO revise to only make one doc, starting from class
+	public static void findAllMethodDeclarations(MethodDeclarationObject mdo, SolrInputDocument solrDoc) {
+		makeMethodDeclarationSolrDoc(mdo, solrDoc);
+		
+		for(SuperEntityClass mi : mdo.getMethodInvocationList() ) {
+			makeMethodInvocationSolrDoc(mi, solrDoc);
+		}
+		
+		if(mdo.getMethodDeclarationList().size() > 0) {
+			for(SuperEntityClass mdChild : mdo.getMethodDeclarationList()) {
+				findAllMethodDeclarations((MethodDeclarationObject)mdChild, solrDoc);
+			}
+		}
 	}
 	
 	public static void addVariableListToSolrDoc(List<SuperEntityClass> list, SolrInputDocument solrDoc) {
@@ -413,12 +421,9 @@ public class IndexManager {
 		}
 	}
 	
-	public static SolrInputDocument makeMethodDeclarationSolrDoc(SuperEntityClass entity) {
+	public static void makeMethodDeclarationSolrDoc(SuperEntityClass entity, SolrInputDocument solrDoc) {
 		SolrInputDocument methodDecSolrDoc = new SolrInputDocument();
-		
 		MethodDeclarationObject mdo = (MethodDeclarationObject) entity;
-		
-		
 		
 		/*
 		String idDec =  id+"&methodStart="+dec.startLine+"&methodEnd="+dec.endLine;
@@ -451,7 +456,11 @@ public class IndexManager {
 			methodDec.addField(IndexManager.SNIPPET_METHOD_DEC_DECLARING_CLASS_SHORT, shortName2);
 		}
 		
-		methodDec.addField(IndexManager.SNIPPET_METHOD_DEC_RETURN_TYPE, dec.returnType);
+		*/
+				
+		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_RETURN_TYPE, mdo.getReturnType());
+		
+		/*
 		methodDec.addField(IndexManager.SNIPPET_METHOD_DEC_NUMBER_OF_LOCAL_VARIABLES, dec.numberOfLocalVariables);
 		methodDec.addField(IndexManager.SNIPPET_METHOD_DEC_PATH_COMPLEXITY, dec.pathComplexity);
 		*/
@@ -462,12 +471,10 @@ public class IndexManager {
 		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_END, mdo.getEndLine());
 		
 		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_IS_ABSTRACT, mdo.getAbstract());
-		
 		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_IS_STATIC, mdo.getStatic());
+		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_IS_GENERIC, mdo.getIsGenericType());
 		
-		/*
-		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_IS_GENERIC,dec.isGeneric);
-		
+		/*		
 		
 		for(String typeParam: dec.typeParameters){
 			methodDec.addField(IndexManager.SNIPPET_METHOD_DEC_IS_GENERIC_TYPE_PARAMS,typeParam);
@@ -477,9 +484,13 @@ public class IndexManager {
 			methodDec.addField(IndexManager.SNIPPET_METHOD_DEC_IS_WILDCARD_BOUNDS,bound);
 		}
 		
-		methodDec.addField("parent",false);
-		methodDec.addField("is_method_dec_child",true);
+		*/
 		
+		methodDecSolrDoc.addField("parent",false);
+		methodDecSolrDoc.addField("is_method_dec_child",true);
+		
+		/*
+		 
 		HashMap<String, Integer> paramCount = new HashMap<String, Integer>();
 		HashMap<String, Integer> paramCountShort = new HashMap<String, Integer>();
 		
@@ -520,14 +531,15 @@ public class IndexManager {
 		}
 		
 		CHILD_COUNT++;
-		snippetDoc.addChildDocument(methodDec);
 		*/
 		
-		return methodDecSolrDoc;
+		solrDoc.addChildDocument(methodDecSolrDoc);
+		
 	}
 	
-	public static SolrInputDocument makeMethodInvocationSolrDoc(SuperEntityClass entity) {
+	public static void makeMethodInvocationSolrDoc(SuperEntityClass entity, SolrInputDocument solrDoc) {
 		SolrInputDocument methodInvSolrDoc = new SolrInputDocument();
+		MethodInvocationObject mio = (MethodInvocationObject) entity;
 		
 		methodInvSolrDoc.addField("parent",false);
 		methodInvSolrDoc.addField("is_method_invocation_child",true);
@@ -538,12 +550,17 @@ public class IndexManager {
 		String idInvo = id+"&start="+invocation.start+"&end="+invocation.end;
 		methodInvocation.addField("id", idInvo);
 		methodInvocation.addField(IndexManager.EXPAND_ID, id);
-		methodInvocation.addField(IndexManager.SNIPPET_METHOD_INVOCATION_NAME, invocation.methodName);
-		methodInvocation.addField(IndexManager.SNIPPET_METHOD_INVOCATION_NAME_DELIMITED, invocation.methodName);
-		methodInvocation.addField(IndexManager.SNIPPET_METHOD_INVOCATION_START, invocation.start);
-		methodInvocation.addField(IndexManager.SNIPPET_METHOD_INVOCATION_END, invocation.end);
-		methodInvocation.addField(IndexManager.SNIPPET_METHOD_INVOCATION_CALLING_CLASS, invocation.Callingclass);
 		
+		*/
+		
+		methodInvSolrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_NAME, mio.getFullyQualifiedName());
+		methodInvSolrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_NAME_DELIMITED, mio.getName());
+		methodInvSolrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_START, mio.getLineNumber());
+		methodInvSolrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_END, mio.getEndLine());
+		
+		/*
+		methodInvSolrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_CALLING_CLASS, invocation.Callingclass);
+	
 		if(invocation.Callingclass != null){
 		String[] split2 = invocation.Callingclass.split("[.]");
 		String shortName2 = split2[split2.length-1];
@@ -601,12 +618,10 @@ public class IndexManager {
 			methodInvocation.addField(IndexManager.SNIPPET_METHOD_INVOCATION_ARG_VALUES, argValue);
 		}
 		
-		//this is how to do a block join
-		snippetDoc.addChildDocument(methodInvocation);
 		CHILD_COUNT++;
 		*/
-		
-		return methodInvSolrDoc;
+
+		solrDoc.addChildDocument(methodInvSolrDoc);
 	}
 	
 	public static void main(String[] args) throws IOException, CoreException, NoHeadException, GitAPIException, ParseException {

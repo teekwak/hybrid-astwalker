@@ -14,6 +14,7 @@ public class MethodDeclarationObject extends SuperEntityClass {
 	boolean isVarargs;
 	
 	String wildcardBound;
+	String returnType;
 	List<String> thrownExceptions;
 	List<?> parametersList;
 	
@@ -227,6 +228,14 @@ public class MethodDeclarationObject extends SuperEntityClass {
 	
 	public boolean getIsGenericType() {
 		return this.isGeneric;
+	}
+	
+	public void setReturnType(String r) {
+		this.returnType = r;
+	}
+	
+	public String getReturnType() {
+		return this.returnType;
 	}
 	
 	public void setSwitchCaseList(List<SuperEntityClass> scl) {

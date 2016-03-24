@@ -345,10 +345,12 @@ public class ASTWalker {
 					}
 					
 					IMethodBinding binding = node.resolveBinding();
+					System.out.println(binding.getReturnType().getQualifiedName());
 					
 					MethodDeclarationObject md = new MethodDeclarationObject();
 					md.setName(name.toString());
 					md.setFullyQualifiedName(fullyQualifiedName);
+					md.setReturnType(binding.getReturnType().getQualifiedName());
 					md.setParametersList(node.parameters());
 					md.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 					md.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
@@ -586,6 +588,9 @@ public class ASTWalker {
 					scanner.close();
 					
 					ITypeBinding binding = node.resolveBinding();					
+					
+
+					
 					
 					// get fully qualified name
 					String fullyQualifiedName;
