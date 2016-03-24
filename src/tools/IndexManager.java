@@ -104,6 +104,7 @@ public class IndexManager {
 	public static final String SNIPPET_METHOD_DEC_DECLARING_CLASS_SHORT = "";
 	
 	public static final String SNIPPET_METHOD_DEC_RETURN_TYPE = "";
+	public static final String SNIPPET_METHOD_DEC_NUMBER_OF_LOCAL_VARIABLES = "";
 	
 	public static final String SNIPPET_METHOD_DEC_PATH_COMPLEXITY = "";
 	public static final String SNIPPET_METHOD_DEC_NAME = "snippet_method_dec_name";
@@ -478,13 +479,12 @@ public class IndexManager {
 		}
 				
 		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_RETURN_TYPE, mdo.getReturnType());
-		
-		/*
-		methodDec.addField(IndexManager.SNIPPET_METHOD_DEC_NUMBER_OF_LOCAL_VARIABLES, dec.numberOfLocalVariables);
-		*/
+	
+		int localVariableCount = mdo.getArrayList().size() + mdo.getGenericsList().size() + mdo.getPrimitiveList().size() + mdo.getSimpleList().size() - mdo.getParametersList().size();	
+		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_NUMBER_OF_LOCAL_VARIABLES, localVariableCount);
+		System.out.println(mdo.getName() + " " + localVariableCount);
 		
 		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_PATH_COMPLEXITY, Integer.toString(mdo.getCyclomaticComplexity()));
-		
 		
 		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_NAME, mdo.getFullyQualifiedName());
 		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_NAME_DELIMITED, mdo.getName());
