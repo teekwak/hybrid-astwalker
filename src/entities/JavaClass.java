@@ -148,11 +148,11 @@ public class JavaClass extends SuperEntityClass {
 		return this.fileName;
 	}
 	
-	public void setInnerClass(boolean ic) {
+	public void setIsInnerClass(boolean ic) {
 		this.isInnerClass = ic;
 	}
 	
-	public boolean getInnerClass() {
+	public boolean getIsInnerClass() {
 		return this.isInnerClass;
 	}
 	

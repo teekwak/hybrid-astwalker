@@ -371,22 +371,23 @@ public class ASTWalker {
 					}
 					
 					MethodDeclarationObject md = new MethodDeclarationObject();
-					md.setAbstract(isAbstract);
+
 					md.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
 					md.setDeclaringClass(binding.getDeclaringClass().getQualifiedName());
-					md.setConstructor(node.isConstructor());
 					md.setEndLine(cu.getLineNumber(node.getStartPosition() + node.getLength()));
 					md.setFullyQualifiedName(fullyQualifiedName);
 					md.setGenericParametersList(genericParametersList);
+					md.setIsAbstract(isAbstract);
+					md.setIsConstructor(node.isConstructor());
 					md.setIsGenericType(binding.isGenericMethod());
+					md.setIsStatic(isStatic);
+					md.setIsVarargs(node.isVarargs());
 					md.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 					md.setName(name.toString());
 					md.setNumberOfCharacters(node.getLength());
 					md.setParametersList(node.parameters());
 					md.setParameterTypesList(parameterTypes);
 					md.setReturnType(binding.getReturnType().getQualifiedName());
-					md.setStatic(isStatic);
-					md.setVarargs(node.isVarargs());
 
 					if(node.thrownExceptionTypes().size() > 0) {
 						for(Object o : node.thrownExceptionTypes()) {
@@ -700,7 +701,7 @@ public class ASTWalker {
 					} catch (EmptyStackException e) {
 						isInnerClass = false;
 					}					
-					temp.setInnerClass(isInnerClass);
+					temp.setIsInnerClass(isInnerClass);
 					
 					temp.setCyclomaticComplexity();
 					fileModel.addJavaClass(temp);					

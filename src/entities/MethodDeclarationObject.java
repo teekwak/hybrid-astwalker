@@ -219,35 +219,35 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		return this.parametersList;
 	}
 	
-	public void setVarargs(boolean iv) {
+	public void setIsVarargs(boolean iv) {
 		this.isVarargs = iv;
 	}
 	
-	public boolean getVarargs() {
+	public boolean getIsVarargs() {
 		return this.isVarargs;
 	}
 	
-	public void setConstructor(boolean ic) {
+	public void setIsConstructor(boolean ic) {
 		this.isConstructor = ic;
 	}
 	
-	public boolean getConstructor() {
+	public boolean getIsConstructor() {
 		return this.isConstructor;
 	}
 	
-	public void setStatic(boolean tf) {
+	public void setIsStatic(boolean tf) {
 		this.isStatic = tf;
 	}
 	
-	public boolean getStatic() {
+	public boolean getIsStatic() {
 		return this.isStatic;
 	}
 	
-	public void setAbstract(boolean tf) {
+	public void setIsAbstract(boolean tf) {
 		this.isAbstract = tf;
 	}
 	
-	public boolean getAbstract() {
+	public boolean getIsAbstract() {
 		return this.isAbstract;
 	}
 	
