@@ -140,6 +140,9 @@ public class IndexManager {
 	public static final String SNIPPET_METHOD_INVOCATION_ARG_TYPES_SHORT_COUNT = "";
 	public static final String SNIPPET_METHOD_INVOCATION_ARG_VALUES = "";
 	
+	public static final String SNIPPET_METHOD_INVOCATION_CALLING_CLASS = "";
+	public static final String SNIPPET_METHOD_INVOCATION_CALLING_CLASS_SHORT = "";
+	
 	public static void traverseUntilJava(File parentNode, String topDirectoryLocation) throws IOException, CoreException, NoHeadException, GitAPIException, ParseException {
 		if(parentNode.isDirectory()) {
 			File childNodes[] = parentNode.listFiles();
@@ -578,16 +581,13 @@ public class IndexManager {
 		methodInvSolrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_NAME_DELIMITED, mio.getName());
 		methodInvSolrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_START, mio.getLineNumber());
 		methodInvSolrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_END, mio.getEndLine());
+
+		methodInvSolrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_CALLING_CLASS, mio.getCallingClass());
 		
-		/*
-		methodInvSolrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_CALLING_CLASS, invocation.Callingclass);
-	
-		if(invocation.Callingclass != null){
-		String[] split2 = invocation.Callingclass.split("[.]");
-		String shortName2 = split2[split2.length-1];
-		methodInvocation.addField(IndexManager.SNIPPET_METHOD_INVOCATION_CALLING_CLASS_SHORT, shortName2);
+		if(!mio.getCallingClass().isEmpty()){
+			String[] parts = mio.getCallingClass().split("[.]");
+			methodInvSolrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_CALLING_CLASS_SHORT, parts[parts.length-1]);
 		}
-		*/
 		
 		methodInvSolrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_DECLARING_CLASS, mio.getDeclaringClass());
 				

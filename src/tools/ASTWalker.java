@@ -432,13 +432,13 @@ public class ASTWalker {
 					}
 					
 					// get calling class
-					String callingClass;
+					String callingClass;			
 					try {
-						callingClass = node.getExpression().toString();
+						callingClass = node.getExpression().resolveTypeBinding().getQualifiedName();
 					} catch (NullPointerException e) {
 						callingClass = "";
 					}
-										
+					
 					MethodInvocationObject mio = new MethodInvocationObject();
 					mio.setName(name.toString());
 					mio.setFullyQualifiedName(fullyQualifiedName);
