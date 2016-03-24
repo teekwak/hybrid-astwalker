@@ -114,6 +114,7 @@ public class IndexManager {
 	
 	public static final String SNIPPET_METHOD_DEC_IS_STATIC = "snippet_method_dec_is_static";
 	public static final String SNIPPET_METHOD_DEC_IS_GENERIC = "snippet_method_dec_is_generic";
+	public static final String SNIPPET_METHOD_DEC_IS_GENERIC_TYPE_PARAMS = "";
 	
 	public static final String SNIPPET_METHOD_DEC_IS_WILDCARD_BOUNDS = "";
 	
@@ -498,13 +499,9 @@ public class IndexManager {
 		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_IS_STATIC, mdo.getStatic());
 		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_IS_GENERIC, mdo.getIsGenericType());
 		
-		/*		
-		
-		for(String typeParam: dec.typeParameters){
-			methodDec.addField(IndexManager.SNIPPET_METHOD_DEC_IS_GENERIC_TYPE_PARAMS,typeParam);
+		for(String typeParam : mdo.getGenericParametersList()) {
+			methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_IS_GENERIC_TYPE_PARAMS, typeParam);
 		}
-		
-		*/
 		
 		for(SuperEntityClass wc : mdo.getWildcardList()) {
 			methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_IS_WILDCARD_BOUNDS, wc.getBound());

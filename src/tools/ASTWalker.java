@@ -325,7 +325,10 @@ public class ASTWalker {
 					inMethod = true;
 
 					SimpleName name = node.getName();
-										
+					boolean isStatic = false;
+					boolean isAbstract = false;				
+					
+					// get fully qualified name
 					String fullyQualifiedName;
 					try {
 						fullyQualifiedName = name.getFullyQualifiedName();
@@ -333,14 +336,13 @@ public class ASTWalker {
 						fullyQualifiedName = name.toString();
 					}
 					
-					boolean isStatic = false;
-					boolean isAbstract = false;
-					
+					// is method declaration abstract?
 					int mod = node.getModifiers();
 					if(Modifier.isAbstract(mod)) {
 						isAbstract = true;
 					}
 					
+					// is method declaration static?
 					if(Modifier.isStatic(mod)) {
 						isStatic = true;
 					}
@@ -360,23 +362,32 @@ public class ASTWalker {
 						parameterTypes.add(fqn);
 					}
 					
+					// get generic parameters
+					List<String> genericParametersList = new ArrayList<>();
+					if(binding.isGenericMethod()) {
+						for(Object o : binding.getTypeParameters()) {
+							genericParametersList.add(o.toString());
+						}
+					}
+					
 					MethodDeclarationObject md = new MethodDeclarationObject();
-					md.setName(name.toString());
+					md.setAbstract(isAbstract);
+					md.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
+					md.setDeclaringClass(binding.getDeclaringClass().getQualifiedName());
+					md.setConstructor(node.isConstructor());
+					md.setEndLine(cu.getLineNumber(node.getStartPosition() + node.getLength()));
 					md.setFullyQualifiedName(fullyQualifiedName);
-					md.setReturnType(binding.getReturnType().getQualifiedName());
+					md.setGenericParametersList(genericParametersList);
+					md.setIsGenericType(binding.isGenericMethod());
+					md.setLineNumber(cu.getLineNumber(name.getStartPosition()));
+					md.setName(name.toString());
+					md.setNumberOfCharacters(node.getLength());
 					md.setParametersList(node.parameters());
 					md.setParameterTypesList(parameterTypes);
-					md.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-					md.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-					md.setNumberOfCharacters(node.getLength());
-					md.setEndLine(cu.getLineNumber(node.getStartPosition() + node.getLength()));
-					md.setConstructor(node.isConstructor());
-					md.setVarargs(node.isVarargs());
+					md.setReturnType(binding.getReturnType().getQualifiedName());
 					md.setStatic(isStatic);
-					md.setAbstract(isAbstract);
-					md.setIsGenericType(binding.isGenericMethod());
-					md.setDeclaringClass(binding.getDeclaringClass().getQualifiedName());
-					
+					md.setVarargs(node.isVarargs());
+
 					if(node.thrownExceptionTypes().size() > 0) {
 						for(Object o : node.thrownExceptionTypes()) {
 							md.addThrowsException(o.toString());
@@ -419,7 +430,16 @@ public class ASTWalker {
 					} catch (NullPointerException e) {
 						declaringClass = "";
 					}										
-									
+					
+					// get calling class
+					String callingClass;			
+					try {
+						callingClass = node.getExpression().resolveTypeBinding().getQualifiedName();
+					} catch (NullPointerException e) {
+						callingClass = "";
+					}
+					
+					// get argument types
 					List<String> argumentTypes = new ArrayList<>();
 					for(Object t : node.arguments()) {
 						ITypeBinding tb = ((Expression)t).resolveTypeBinding();
@@ -429,14 +449,6 @@ public class ASTWalker {
 						} catch (NullPointerException e) {
 							argumentTypes.add("");
 						}
-					}
-					
-					// get calling class
-					String callingClass;			
-					try {
-						callingClass = node.getExpression().resolveTypeBinding().getQualifiedName();
-					} catch (NullPointerException e) {
-						callingClass = "";
 					}
 					
 					MethodInvocationObject mio = new MethodInvocationObject();

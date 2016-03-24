@@ -19,6 +19,7 @@ public class MethodDeclarationObject extends SuperEntityClass {
 	List<String> thrownExceptions;
 	List<?> parametersList;
 	List<String> parameterTypesList;
+	List<String> genericParametersList;
 	
 	List<SuperEntityClass> arrayList;
 	List<SuperEntityClass> catchClauseList;
@@ -46,6 +47,7 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		this.thrownExceptions = new ArrayList<>();
 		this.parametersList = new ArrayList<>();
 		this.parameterTypesList = new ArrayList<>();
+		this.genericParametersList = new ArrayList<>();
 		
 		this.arrayList = new ArrayList<>();
 		this.catchClauseList = new ArrayList<>();
@@ -169,6 +171,14 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		}
 	}
 
+	public void setGenericParametersList(List<String> list) {
+		this.genericParametersList = list;
+	}
+	
+	public List<String> getGenericParametersList() {
+		return this.genericParametersList;
+	}
+	
 	public void setParameterTypesList(List<String> list) {
 		this.parameterTypesList = list;
 	}
