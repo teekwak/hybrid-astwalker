@@ -19,6 +19,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ConditionalExpression;
 import org.eclipse.jdt.core.dom.DoStatement;
 import org.eclipse.jdt.core.dom.EnhancedForStatement;
+import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ForStatement;
 import org.eclipse.jdt.core.dom.IMethodBinding;
@@ -344,14 +345,27 @@ public class ASTWalker {
 						isStatic = true;
 					}
 					
-					IMethodBinding binding = node.resolveBinding();
-					System.out.println(binding.getReturnType().getQualifiedName());
+					IMethodBinding binding = node.resolveBinding();					
+					
+					// get type of each parameter
+					List<String> parameterTypes = new ArrayList<>();
+					for(Object obj : node.parameters()) {						
+						ITypeBinding tb = ((SingleVariableDeclaration) obj).getType().resolveBinding();
+						String fqn;
+						try {
+							fqn = tb.getQualifiedName();
+						} catch (NullPointerException e) {
+							fqn = name.toString();
+						}
+						parameterTypes.add(fqn);
+					}
 					
 					MethodDeclarationObject md = new MethodDeclarationObject();
 					md.setName(name.toString());
 					md.setFullyQualifiedName(fullyQualifiedName);
 					md.setReturnType(binding.getReturnType().getQualifiedName());
 					md.setParametersList(node.parameters());
+					md.setParameterTypesList(parameterTypes);
 					md.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 					md.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
 					md.setNumberOfCharacters(node.getLength());
@@ -361,6 +375,7 @@ public class ASTWalker {
 					md.setStatic(isStatic);
 					md.setAbstract(isAbstract);
 					md.setIsGenericType(binding.isGenericMethod());
+					md.setDeclaringClass(binding.getDeclaringClass().getQualifiedName());
 					
 					if(node.thrownExceptionTypes().size() > 0) {
 						for(Object o : node.thrownExceptionTypes()) {
@@ -398,18 +413,30 @@ public class ASTWalker {
 					
 					// get declaring class
 					IMethodBinding binding = node.resolveMethodBinding();
-					String parentClass;
+					String declaringClass;
 					try {
-						parentClass = binding.getDeclaringClass().getQualifiedName();
+						declaringClass = binding.getDeclaringClass().getQualifiedName();
 					} catch (NullPointerException e) {
-						parentClass = "None";
+						declaringClass = "";
+					}										
+									
+					List<String> argumentTypes = new ArrayList<>();
+					for(Object t : node.arguments()) {
+						ITypeBinding tb = ((Expression)t).resolveTypeBinding();
+						
+						try {
+							argumentTypes.add(tb.getQualifiedName());
+						} catch (NullPointerException e) {
+							argumentTypes.add("");
+						}
 					}
-										
+					
 					MethodInvocationObject mio = new MethodInvocationObject();
 					mio.setName(name.toString());
 					mio.setFullyQualifiedName(fullyQualifiedName);
-					mio.setDeclaringClass(parentClass);
+					mio.setDeclaringClass(declaringClass);
 					mio.setArguments(node.arguments());
+					mio.setArgumentTypes(argumentTypes);
 					mio.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 					mio.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
 					entityStack.peek().addEntity(mio, EntityType.METHOD_INVOCATION);

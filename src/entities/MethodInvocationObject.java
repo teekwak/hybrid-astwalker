@@ -8,6 +8,7 @@ public class MethodInvocationObject extends SuperEntityClass {
 	String declaringClass;
 	String fullyQualifiedName;
 	List<?> argumentsList;
+	List<String> argumentTypesList;
 	
 	public MethodInvocationObject() {
 		this.argumentsList = new ArrayList<>();
@@ -35,6 +36,14 @@ public class MethodInvocationObject extends SuperEntityClass {
 	
 	public List<?> getArguments() {
 		return argumentsList;
+	}
+	
+	public void setArgumentTypes(List<String> at) {
+		this.argumentTypesList = at;
+	}
+	
+	public List<String> getArgumentTypes() {
+		return this.argumentTypesList;
 	}
 	
 	public void printInfo() {

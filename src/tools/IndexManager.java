@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jgit.api.Git;
@@ -98,8 +100,12 @@ public class IndexManager {
 	
 	public static final String SNIPPET_METHOD_DEC_IS_CONSTRUCTOR = "snippet_method_dec_is_constructor";
 	public static final String SNIPPET_METHOD_DEC_IS_VAR_ARGS = "snippet_method_dec_is_var_args";
+	public static final String SNIPPET_METHOD_DEC_DECLARING_CLASS = "";
+	public static final String SNIPPET_METHOD_DEC_DECLARING_CLASS_SHORT = "";
 	
 	public static final String SNIPPET_METHOD_DEC_RETURN_TYPE = "";
+	
+	public static final String SNIPPET_METHOD_DEC_PATH_COMPLEXITY = "";
 	public static final String SNIPPET_METHOD_DEC_NAME = "snippet_method_dec_name";
 	public static final String SNIPPET_METHOD_DEC_NAME_DELIMITED = "snippet_method_dec_name_delimited";
 	public static final String SNIPPET_METHOD_DEC_START = "snippet_method_dec_start";
@@ -109,11 +115,23 @@ public class IndexManager {
 	public static final String SNIPPET_METHOD_DEC_IS_STATIC = "snippet_method_dec_is_static";
 	public static final String SNIPPET_METHOD_DEC_IS_GENERIC = "snippet_method_dec_is_generic";
 	
+	public static final String SNIPPET_METHOD_DEC_IS_WILDCARD_BOUNDS = "";
+	
+	public static final String SNIPPET_METHOD_DEC_PARAMETER_TYPES = "";
+	public static final String SNIPPET_METHOD_DEC_PARAMETER_TYPES_PLACE = "";
+	public static final String SNIPPET_METHOD_DEC_PARAMETER_TYPES_SHORT = "";
+	public static final String SNIPPET_METHOD_DEC_PARAMETER_TYPES_SHORT_PLACE = "";
+	public static final String SNIPPET_METHOD_DEC_PARAMETER_TYPES_COUNT = "";
+	
 	// Method Invocation
 	public static final String SNIPPET_METHOD_INVOCATION_NAME = "";
 	public static final String SNIPPET_METHOD_INVOCATION_NAME_DELIMITED = "";
 	public static final String SNIPPET_METHOD_INVOCATION_START = "";
 	public static final String SNIPPET_METHOD_INVOCATION_END = "";
+	
+	public static final String SNIPPET_METHOD_INVOCATION_DECLARING_CLASS = "";
+	public static final String SNIPPET_METHOD_INVOCATION_DECLARING_CLASS_SHORT = "";
+	
 	
 	public static void traverseUntilJava(File parentNode, String topDirectoryLocation) throws IOException, CoreException, NoHeadException, GitAPIException, ParseException {
 		if(parentNode.isDirectory()) {
@@ -446,24 +464,20 @@ public class IndexManager {
 		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_IS_CONSTRUCTOR, mdo.getConstructor());
 		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_IS_VAR_ARGS, mdo.getVarargs());		
 		
-		/*
-		
-		methodDec.addField(IndexManager.SNIPPET_METHOD_DEC_DECLARING_CLASS, dec.declaringClass);
-		
-		if(dec.declaringClass != null){
-			String[] split2 = dec.declaringClass.split("[.]");
-			String shortName2 = split2[split2.length-1];
-			methodDec.addField(IndexManager.SNIPPET_METHOD_DEC_DECLARING_CLASS_SHORT, shortName2);
+		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_DECLARING_CLASS, mdo.getDeclaringClass());
+		if(!mdo.getDeclaringClass().isEmpty()){
+			String[] split2 = mdo.getDeclaringClass().split("[.]");
+			methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_DECLARING_CLASS_SHORT, split2[split2.length-1]);
 		}
-		
-		*/
 				
 		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_RETURN_TYPE, mdo.getReturnType());
 		
 		/*
 		methodDec.addField(IndexManager.SNIPPET_METHOD_DEC_NUMBER_OF_LOCAL_VARIABLES, dec.numberOfLocalVariables);
-		methodDec.addField(IndexManager.SNIPPET_METHOD_DEC_PATH_COMPLEXITY, dec.pathComplexity);
+		
 		*/
+		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_PATH_COMPLEXITY, Integer.toString(mdo.getCyclomaticComplexity()));
+		
 		
 		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_NAME, mdo.getFullyQualifiedName());
 		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_NAME_DELIMITED, mdo.getName());
@@ -480,58 +494,65 @@ public class IndexManager {
 			methodDec.addField(IndexManager.SNIPPET_METHOD_DEC_IS_GENERIC_TYPE_PARAMS,typeParam);
 		}
 		
-		for(String bound: dec.wildCardBounds){
-			methodDec.addField(IndexManager.SNIPPET_METHOD_DEC_IS_WILDCARD_BOUNDS,bound);
-		}
-		
 		*/
+		
+		for(SuperEntityClass wc : mdo.getWildcardList()) {
+			methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_IS_WILDCARD_BOUNDS, wc.getBound());
+		}
 		
 		methodDecSolrDoc.addField("parent",false);
 		methodDecSolrDoc.addField("is_method_dec_child",true);
 		
-		/*
-		 
-		HashMap<String, Integer> paramCount = new HashMap<String, Integer>();
-		HashMap<String, Integer> paramCountShort = new HashMap<String, Integer>();
+		Map<String, Integer> paramCount = new HashMap<String, Integer>();
+		Map<String, Integer> paramCountShort = new HashMap<String, Integer>();
 		
-		for(int i = 0; i<dec.parameters.size(); i++){
-			String argType = dec.parameters.get(i);
-			methodDec.addField(IndexManager.SNIPPET_METHOD_DEC_PARAMETER_TYPES, argType);
-			methodDec.addField(IndexManager.SNIPPET_METHOD_DEC_PARAMETER_TYPES_PLACE, argType+"_"+i);
+		/*
+		for(int i = 0; i < mdo.getParametersList().size(); i++) {
+			String argType = mdo.getParametersList().get(i).toString();
+			System.out.println(argType.substring(0, argType.lastIndexOf(" ")) + " | " + argType.substring(argType.lastIndexOf(" ") + 1));
+		}
+		*/
+		
+		for(int i = 0; i < mdo.getParameterTypesList().size(); i++) {
+			String argType = mdo.getParameterTypesList().get(i);
 			
-			String[] split2 = dec.parameters.get(i).split("[.]");
+			methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_PARAMETER_TYPES, argType);
+			methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_PARAMETER_TYPES_PLACE, argType+"_"+i);
+			
+			String[] split2 = argType.split("[.]");
 			String shortName2 = split2[split2.length-1];
-			methodDec.addField(IndexManager.SNIPPET_METHOD_DEC_PARAMETER_TYPES_SHORT, shortName2);
-			methodDec.addField(IndexManager.SNIPPET_METHOD_DEC_PARAMETER_TYPES_SHORT_PLACE, shortName2+"_"+i);
+			methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_PARAMETER_TYPES_SHORT, shortName2);
+			methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_PARAMETER_TYPES_SHORT_PLACE, shortName2+"_"+i);
 			
-			if(paramCount.get(argType) == null){
+			
+			if(paramCount.get(argType) == null) {
 				paramCount.put(argType, 1);
-			}else{
-				int count = paramCount.get(argType)+1;
+			}
+			else {
+				int count = paramCount.get(argType) + 1;
 				paramCount.put(argType, count);
 			}
 			
-			if(paramCountShort.get(shortName2) == null){
+			if(paramCountShort.get(shortName2) == null) {
 				paramCountShort.put(shortName2, 1);
-			}else{
-				int count = paramCountShort.get(shortName2)+1;
-				paramCountShort.put(shortName2, count);
 			}
-
+			else {
+				int count = paramCountShort.get(shortName2) + 1;
+				paramCountShort.put(shortName2, count);
+			}  
 		}
 		
 		for(String type: paramCount.keySet()){
 			int count = paramCount.get(type);
-			methodDec.addField(IndexManager.SNIPPET_METHOD_DEC_PARAMETER_TYPES_COUNT, type+"_"+count);
+			methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_PARAMETER_TYPES_COUNT, type+"_"+count);
 		}
 		
 		for(String type: paramCountShort.keySet()){
 			int count = paramCountShort.get(type);
-			methodDec.addField(IndexManager.SNIPPET_METHOD_DEC_PARAMETER_TYPES_SHORT, type+"_"+count);
+			methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_PARAMETER_TYPES_SHORT, type+"_"+count);
 		}
 		
 		CHILD_COUNT++;
-		*/
 		
 		solrDoc.addChildDocument(methodDecSolrDoc);
 		
@@ -566,15 +587,15 @@ public class IndexManager {
 		String shortName2 = split2[split2.length-1];
 		methodInvocation.addField(IndexManager.SNIPPET_METHOD_INVOCATION_CALLING_CLASS_SHORT, shortName2);
 		}
+		*/
 		
-		methodInvocation.addField(IndexManager.SNIPPET_METHOD_INVOCATION_DECLARING_CLASS, invocation.declaringClass);
-		
-		if(invocation.declaringClass != null){
-			String[] split2 = invocation.declaringClass.split("[.]");
-			String shortName2 = split2[split2.length-1];
-			methodInvocation.addField(IndexManager.SNIPPET_METHOD_INVOCATION_DECLARING_CLASS_SHORT, shortName2);
+		methodInvSolrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_DECLARING_CLASS, mio.getDeclaringClass());
+				
+		if(!mio.getDeclaringClass().isEmpty()){
+			String[] split = mio.getDeclaringClass().split("[.]");
+			methodInvSolrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_DECLARING_CLASS_SHORT, split[split.length-1]);
 		}
-		
+		/*
 		HashMap<String, Integer> paramCount = new HashMap<String, Integer>();
 		HashMap<String, Integer> paramCountShort = new HashMap<String, Integer>();
 		
@@ -603,7 +624,9 @@ public class IndexManager {
 			}
 			place++;
 		}
-		
+		*/
+
+		/*
 		for(String type: paramCount.keySet()){
 			int count = paramCount.get(type);
 			methodInvocation.addField(IndexManager.SNIPPET_METHOD_INVOCATION_ARG_TYPES_COUNT, type+"_"+count);
@@ -617,7 +640,9 @@ public class IndexManager {
 		for(String argValue: invocation.argumentValues){
 			methodInvocation.addField(IndexManager.SNIPPET_METHOD_INVOCATION_ARG_VALUES, argValue);
 		}
+		*/
 		
+		/*
 		CHILD_COUNT++;
 		*/
 

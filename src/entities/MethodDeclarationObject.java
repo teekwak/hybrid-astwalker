@@ -13,10 +13,12 @@ public class MethodDeclarationObject extends SuperEntityClass {
 	boolean isStatic;
 	boolean isVarargs;
 	
+	String declaringClass;
 	String wildcardBound;
 	String returnType;
 	List<String> thrownExceptions;
 	List<?> parametersList;
+	List<String> parameterTypesList;
 	
 	List<SuperEntityClass> arrayList;
 	List<SuperEntityClass> catchClauseList;
@@ -43,6 +45,7 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		
 		this.thrownExceptions = new ArrayList<>();
 		this.parametersList = new ArrayList<>();
+		this.parameterTypesList = new ArrayList<>();
 		
 		this.arrayList = new ArrayList<>();
 		this.catchClauseList = new ArrayList<>();
@@ -166,6 +169,22 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		}
 	}
 
+	public void setParameterTypesList(List<String> list) {
+		this.parameterTypesList = list;
+	}
+	
+	public List<String> getParameterTypesList() {
+		return this.parameterTypesList;
+	}
+	
+	public void setDeclaringClass(String s) {
+		this.declaringClass = s;
+	}
+	
+	public String getDeclaringClass() {
+		return this.declaringClass;
+	}
+	
 	public void setBound(String s) {
 		this.wildcardBound = s;
 	}
