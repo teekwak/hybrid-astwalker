@@ -12,6 +12,7 @@ public class SuperEntityClass implements Entity {
 	String name;
 	String fullyQualifiedName;
 	Type type;
+	String bound;
 	int lineNumber;
 	int columnNumber;
 	int numberOfCharacters;
@@ -95,6 +96,14 @@ public class SuperEntityClass implements Entity {
 	
 	public void addEntities(List<SuperEntityClass> listOfEntities, EntityType ET) {
 		entityList.addAll(listOfEntities);
+	}
+
+	public void setBound(String s) {
+		this.bound = s;		
+	}
+	
+	public String getBound() {
+		return this.bound;
 	}
 	
 }

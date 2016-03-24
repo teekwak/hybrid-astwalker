@@ -204,7 +204,7 @@ public class ASTWalker {
 					
 					for(Object v : node.fragments()) {
 						SimpleName name = ((VariableDeclarationFragment) v).getName();
-										
+											
 						// get fully qualified name
 						ITypeBinding binding = node.getType().resolveBinding();
 						String fullyQualifiedName;
@@ -344,6 +344,8 @@ public class ASTWalker {
 						isStatic = true;
 					}
 					
+					IMethodBinding binding = node.resolveBinding();
+					
 					MethodDeclarationObject md = new MethodDeclarationObject();
 					md.setName(name.toString());
 					md.setFullyQualifiedName(fullyQualifiedName);
@@ -356,6 +358,7 @@ public class ASTWalker {
 					md.setVarargs(node.isVarargs());
 					md.setStatic(isStatic);
 					md.setAbstract(isAbstract);
+					md.setIsGenericType(binding.isGenericMethod());
 					
 					if(node.thrownExceptionTypes().size() > 0) {
 						for(Object o : node.thrownExceptionTypes()) {
@@ -437,7 +440,7 @@ public class ASTWalker {
 			public boolean visit(SingleVariableDeclaration node) {			
 				if(inInterface == false) {
 				SimpleName name = node.getName();
-				
+												
 				// get fully qualified name
 				ITypeBinding binding = node.getType().resolveBinding();
 				String fullyQualifiedName;
@@ -582,8 +585,8 @@ public class ASTWalker {
 						classSourceCode.append(scanner.nextLine());
 					scanner.close();
 					
-					ITypeBinding binding = node.resolveBinding();
-										
+					ITypeBinding binding = node.resolveBinding();					
+					
 					// get fully qualified name
 					String fullyQualifiedName;
 					try {
@@ -624,9 +627,7 @@ public class ASTWalker {
 					else {
 						co.setIsAbstract(false);
 					}
-					
-					System.out.println(Modifier.isAbstract(mod));
-					
+										
 					entityStack.push(co);					
 				}
 				
@@ -661,7 +662,7 @@ public class ASTWalker {
 					for(Object v : node.fragments()) {
 						
 						SimpleName name = ((VariableDeclarationFragment) v).getName();
-						
+												
 						// get fully qualified name
 						ITypeBinding binding = node.getType().resolveBinding();
 						String fullyQualifiedName;
@@ -722,7 +723,7 @@ public class ASTWalker {
 					
 					for(Object v : node.fragments()) {
 						SimpleName name = ((VariableDeclarationFragment) v).getName();
-
+						
 						// get fully qualified name
 						ITypeBinding binding = node.getType().resolveBinding();
 						String fullyQualifiedName;
@@ -791,6 +792,15 @@ public class ASTWalker {
 				if(inMethod) {					
 					SuperEntityClass wo = new SuperEntityClass();
 					wo.setName("Wildcard");
+					
+					String bound;
+					try {
+						bound = node.getBound().toString();
+					} catch (NullPointerException e) {
+						bound = "none";
+					}
+					
+					wo.setBound(bound);
 					wo.setType(((ParameterizedType) node.getParent()).getType());
 					wo.setLineNumber(cu.getLineNumber(node.getStartPosition()));
 					wo.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));

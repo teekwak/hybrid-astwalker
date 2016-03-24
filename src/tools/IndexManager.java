@@ -75,12 +75,18 @@ public class IndexManager {
 	public static final String SNIPPET_NUMBER_OF_FIELDS = "snippet_number_of_fields";
 	
 	public static final String SNIPPET_IS_GENERIC = "snippet_is_generic";
-	
+	public static final String SNIPPET_IS_ABSTRACT = "snippet_is_abstract";
 	
 	public static final String SNIPPET_NAME = "snippet_class_name";
 	public static final String SNIPPET_NAME_DELIMITED = "snippet_class_name_delimited";
 	
+	public static final String SNIPPET_VARIABLE_TYPES = "snippet_variable_types";
+	public static final String SNIPPET_VARIABLE_TYPES_SHORT = "snippet_variable_types_short";
+	public static final String SNIPPET_VARIABLE_NAMES = "snippet_variable_names";
+	public static final String SNIPPET_VARIABLE_NAMES_DELIMITED = "snippet_variable_names_delimited";
 	
+	public static final String SNIPPET_IS_WILDCARD = "";
+	public static final String SNIPPET_IS_WILDCARD_BOUNDS = "";
 	
 	// Method Declaration
 	public static final String SNIPPET_METHOD_DEC_WHILE_COUNT = "snippet_method_dec_while_count";
@@ -94,6 +100,14 @@ public class IndexManager {
 	public static final String SNIPPET_METHOD_DEC_IS_CONSTRUCTOR = "snippet_method_dec_is_constructor";
 	public static final String SNIPPET_METHOD_DEC_IS_VAR_ARGS = "snippet_method_dec_is_var_args";
 	
+	
+	public static final String SNIPPET_METHOD_DEC_NAME = "snippet_method_dec_name";
+	public static final String SNIPPET_METHOD_DEC_NAME_DELIMITED = "snippet_method_dec_name_delimited";
+	private static final String SNIPPET_METHOD_DEC_START = "snippet_method_dec_start";
+	private static final String SNIPPET_METHOD_DEC_END = "snippet_method_dec_end";
+	private static final String SNIPPET_METHOD_DEC_IS_ABSTRACT = "snippet_method_dec_is_abstract";
+	
+	private static final String SNIPPET_METHOD_DEC_IS_STATIC = "snippet_method_dec_is_static";
 	
 	public static void traverseUntilJava(File parentNode, String topDirectoryLocation) throws IOException, CoreException, NoHeadException, GitAPIException, ParseException {
 		if(parentNode.isDirectory()) {
@@ -302,6 +316,8 @@ public class IndexManager {
 		
 		/*
 
+		// solr doc
+
 		String githubAddress = this.toGitHubAddres
 				(currentProject.project_owner,currentProject.project_name, file, snippet.thisVersion);
 		snippetDoc.addField(IndexManager.SNIPPET_ADDRESS, githubAddress);
@@ -330,51 +346,71 @@ public class IndexManager {
 		solrDoc.addField(IndexManager.SNIPPET_LAST_UPDATED, headCommit.getSolrDate());
 		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_LINES, Integer.toString(jc.getEndLine() - jc.getLineNumber() + 1));
 		
-		/*
+		// method declaration is right below this current method
+		addVariableListToSolrDoc(jc.getArrayList(), solrDoc);
+		addVariableListToSolrDoc(jc.getGenericsList(), solrDoc);
+		addVariableListToSolrDoc(jc.getPrimitiveList(), solrDoc);
+		addVariableListToSolrDoc(jc.getSimpleList(), solrDoc);
 		
-		for(String variableType: snippet.variableTypes){
-			snippetDoc.addField(IndexManager.SNIPPET_VARIABLE_TYPES, variableType); // for field declarations AND ALL VARIABLES IN METHODS
-			
-			String[] split2 = variableType.split("[.]");
-			String shortName2 = split2[split2.length-1];
-			snippetDoc.addField(IndexManager.SNIPPET_VARIABLE_TYPES_SHORT, shortName2);
-		}
+		// method declaration is right below this current method
+		addVariablesFromMethodDeclaration(jc.getMethodDeclarationList(), solrDoc);		
 		
-		for(String variableName: snippet.variableNames){
-			snippetDoc.addField(IndexManager.SNIPPET_VARIABLE_NAMES, variableName); // for field decs AND ALL VARIABLES IN METHODS
-			
-			snippetDoc.addField(IndexManager.SNIPPET_VARIABLE_NAMES_DELIMITED, variableName);
-			
-		}
-		
-		*/
-		
-		/*
-		
-		snippetDoc.addField(IndexManager.SNIPPET_IS_ABSTRACT,snippet.isAbstract); // do research
-		
-		*/
-		
+		solrDoc.addField(IndexManager.SNIPPET_IS_ABSTRACT, jc.getIsAbstract());
 		solrDoc.addField(IndexManager.SNIPPET_IS_GENERIC, jc.getIsGenericType());
 		
-		/*
-		snippetDoc.addField(IndexManager.SNIPPET_IS_WILDCARD,snippet.isWildCard); // do research
-		
-		for(String bound: snippet.wildCardBounds){
-			snippetDoc.addField(IndexManager.SNIPPET_IS_WILDCARD_BOUNDS,bound);
-		}
+		/* are there any method declarations that have wildcards
 		
 		for(String typeParameter: snippet.typeParameters){
 			snippetDoc.addField(IndexManager.SNIPPET_METHOD_DEC_IS_GENERIC_TYPE_PARAMS,typeParameter);
 		}
 		
+		*/		
 		
-		*/
+		boolean has_wildcard_method = false;
+		for(SuperEntityClass md : jc.getMethodDeclarationList()) {
+			if(((MethodDeclarationObject) md).getWildcardList().size() > 0) {
+				has_wildcard_method =  true;
+				break;
+			}			
+		}
+		solrDoc.addField(IndexManager.SNIPPET_IS_WILDCARD, has_wildcard_method); 
 		
-		// TODO check this
-		solrDoc.addField("parent",true);
+		if(has_wildcard_method == true) {
+			for(SuperEntityClass md : jc.getMethodDeclarationList()) {
+				for(SuperEntityClass wild : ((MethodDeclarationObject)md).getWildcardList()) {
+					solrDoc.addField(IndexManager.SNIPPET_IS_WILDCARD_BOUNDS, wild.getBound());
+				}
+			}
+		}
+	
+		solrDoc.addField("parent", true);
 		
 		return solrDoc;
+	}
+	
+	public static void addVariableListToSolrDoc(List<SuperEntityClass> list, SolrInputDocument solrDoc) {
+		for(SuperEntityClass entity : list) {
+			solrDoc.addField(IndexManager.SNIPPET_VARIABLE_TYPES, entity.getType().toString());
+			String[] split = entity.getFullyQualifiedName().split("[.]");
+			solrDoc.addField(IndexManager.SNIPPET_VARIABLE_TYPES_SHORT, split[split.length-1]);	
+			
+			solrDoc.addField(IndexManager.SNIPPET_VARIABLE_NAMES, entity.getFullyQualifiedName());
+			solrDoc.addField(IndexManager.SNIPPET_VARIABLE_NAMES_DELIMITED, entity.getName());
+		}
+	}
+	
+	public static void addVariablesFromMethodDeclaration(List<SuperEntityClass> methodDeclarationList, SolrInputDocument solrDoc) {
+		for(SuperEntityClass methodDec : methodDeclarationList) {
+			MethodDeclarationObject mdo = (MethodDeclarationObject) methodDec;
+				addVariableListToSolrDoc(mdo.getArrayList() , solrDoc);
+				addVariableListToSolrDoc(mdo.getGenericsList() , solrDoc);
+				addVariableListToSolrDoc(mdo.getPrimitiveList() , solrDoc);
+				addVariableListToSolrDoc(mdo.getSimpleList(), solrDoc);
+				
+			if(mdo.getMethodDeclarationList().size() > 0) {
+				addVariablesFromMethodDeclaration(mdo.getMethodDeclarationList(), solrDoc);
+			}
+		}
 	}
 	
 	public static SolrInputDocument makeMethodDeclarationSolrDoc(SuperEntityClass entity) {
@@ -418,14 +454,19 @@ public class IndexManager {
 		methodDec.addField(IndexManager.SNIPPET_METHOD_DEC_RETURN_TYPE, dec.returnType);
 		methodDec.addField(IndexManager.SNIPPET_METHOD_DEC_NUMBER_OF_LOCAL_VARIABLES, dec.numberOfLocalVariables);
 		methodDec.addField(IndexManager.SNIPPET_METHOD_DEC_PATH_COMPLEXITY, dec.pathComplexity);
-		methodDec.addField(IndexManager.SNIPPET_METHOD_DEC_NAME,dec.methodName);
-		methodDec.addField(IndexManager.SNIPPET_METHOD_DEC_NAME_DELIMITED,dec.methodName);
-		methodDec.addField(IndexManager.SNIPPET_METHOD_DEC_START,dec.startLine);
-		methodDec.addField(IndexManager.SNIPPET_METHOD_DEC_END,dec.endLine);
-		methodDec.addField(IndexManager.SNIPPET_METHOD_DEC_IS_ABSTRACT,dec.isAbstract);
+		*/
 		
-		methodDec.addField(IndexManager.SNIPPET_METHOD_DEC_IS_STATIC,dec.isStatic);
-		methodDec.addField(IndexManager.SNIPPET_METHOD_DEC_IS_GENERIC,dec.isGeneric);
+		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_NAME, mdo.getFullyQualifiedName());
+		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_NAME_DELIMITED, mdo.getName());
+		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_START, mdo.getLineNumber());
+		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_END, mdo.getEndLine());
+		
+		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_IS_ABSTRACT, mdo.getAbstract());
+		
+		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_IS_STATIC, mdo.getStatic());
+		
+		/*
+		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_IS_GENERIC,dec.isGeneric);
 		
 		
 		for(String typeParam: dec.typeParameters){

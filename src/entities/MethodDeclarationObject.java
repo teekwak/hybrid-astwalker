@@ -9,9 +9,11 @@ public class MethodDeclarationObject extends SuperEntityClass {
 	
 	boolean isAbstract;
 	boolean isConstructor;
+	boolean isGeneric;
 	boolean isStatic;
 	boolean isVarargs;
 	
+	String wildcardBound;
 	List<String> thrownExceptions;
 	List<?> parametersList;
 	
@@ -163,6 +165,14 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		}
 	}
 
+	public void setBound(String s) {
+		this.wildcardBound = s;
+	}
+	
+	public String getBound() {
+		return this.wildcardBound;
+	}
+	
 	public void addThrowsException(String s) {
 		this.thrownExceptions.add(s);
 	}
@@ -209,6 +219,14 @@ public class MethodDeclarationObject extends SuperEntityClass {
 	
 	public boolean getAbstract() {
 		return this.isAbstract;
+	}
+	
+	public void setIsGenericType(boolean g) {
+		this.isGeneric = g;
+	}
+	
+	public boolean getIsGenericType() {
+		return this.isGeneric;
 	}
 	
 	public void setSwitchCaseList(List<SuperEntityClass> scl) {
