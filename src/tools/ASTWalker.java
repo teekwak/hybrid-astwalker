@@ -620,25 +620,19 @@ public class ASTWalker {
 					StringBuilder classSourceCode = new StringBuilder();
 					
 					Scanner scanner = new Scanner(sourceCode);
-						// skip lines before class declaration
 						for(int i = 0; i < startLine - 1; i++) {
 							scanner.nextLine();
 						}
 					
-						// get lines and add new line character
 						for(int j = startLine - 1; j < endLine - 1; j++) {
 							classSourceCode.append(scanner.nextLine());
 							classSourceCode.append(System.getProperty("line.separator"));
 						}
 						
-						// get last line without adding new line character
 						classSourceCode.append(scanner.nextLine());
 					scanner.close();
 					
 					ITypeBinding binding = node.resolveBinding();					
-					
-
-					
 					
 					// get fully qualified name
 					String fullyQualifiedName;
@@ -647,21 +641,29 @@ public class ASTWalker {
 					} catch (NullPointerException e) {
 						fullyQualifiedName = node.getName().toString();
 					}
+									
+					// get generic parameters
+					List<String> genericParametersList = new ArrayList<>();
+					if(binding.isGenericType()) {
+						for(Object o : binding.getTypeParameters()) {
+							genericParametersList.add(o.toString());
+						}
+					}
 					
 					JavaClass co = new JavaClass();
-					co.setFileName(fileLocation);
-					co.setName(node.getName().toString());
-					co.setFullyQualifiedName(fullyQualifiedName);
-					co.setLineNumber(startLine);
 					co.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
-					co.setNumberOfCharacters(node.getLength());
 					co.setEndLine(endLine);
-					co.setSourceCode(classSourceCode.toString());
+					co.setLineNumber(startLine);
+					co.setName(node.getName().toString());
+					co.setNumberOfCharacters(node.getLength());
+					co.setFileName(fileLocation);
+					co.setFullyQualifiedName(fullyQualifiedName);
+					co.setGenericParametersList(genericParametersList);
 					co.setHasComments(hasComments);
-					co.setIsGenericType(binding.isGenericType());
-					
-					co.setPackage(packageObject);
 					co.setImportList(importList);
+					co.setIsGenericType(binding.isGenericType());
+					co.setPackage(packageObject);
+					co.setSourceCode(classSourceCode.toString());
 					
 					if(node.getSuperclassType() != null) {
 						co.setSuperClass(node.getSuperclassType().toString());

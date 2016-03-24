@@ -375,14 +375,10 @@ public class IndexManager {
 		solrDoc.addField(IndexManager.SNIPPET_IS_ABSTRACT, jc.getIsAbstract());
 		solrDoc.addField(IndexManager.SNIPPET_IS_GENERIC, jc.getIsGenericType());
 		
-		/* 
-		 		
-		for(String typeParameter: snippet.typeParameters){
-			snippetDoc.addField(IndexManager.SNIPPET_METHOD_DEC_IS_GENERIC_TYPE_PARAMS,typeParameter);
+		for(String typeParameter: jc.getGenericParametersList()){
+			solrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_IS_GENERIC_TYPE_PARAMS, typeParameter);
 		}
-		
-		*/		
-		
+
 		boolean has_wildcard_method = false;
 		for(SuperEntityClass md : jc.getMethodDeclarationList()) {
 			if(((MethodDeclarationObject) md).getWildcardList().size() > 0) {
@@ -485,8 +481,8 @@ public class IndexManager {
 		
 		/*
 		methodDec.addField(IndexManager.SNIPPET_METHOD_DEC_NUMBER_OF_LOCAL_VARIABLES, dec.numberOfLocalVariables);
-		
 		*/
+		
 		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_PATH_COMPLEXITY, Integer.toString(mdo.getCyclomaticComplexity()));
 		
 		

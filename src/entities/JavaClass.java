@@ -13,6 +13,7 @@ public class JavaClass extends SuperEntityClass {
 	boolean isInnerClass;
 	boolean hasComments;
 	List<String> implementsList;
+	List<String> genericParametersList;
 	
 	List<SuperEntityClass> arrayList;
 	List<SuperEntityClass> classList;
@@ -28,6 +29,7 @@ public class JavaClass extends SuperEntityClass {
 
 	public JavaClass() {
 		this.implementsList = new ArrayList<>();
+		this.genericParametersList = new ArrayList<>();
 		
 		this.arrayList = new ArrayList<>();
 		this.classList = new ArrayList<>();
@@ -98,6 +100,14 @@ public class JavaClass extends SuperEntityClass {
 		}
 	}
 
+	public void setGenericParametersList(List<String> list) {
+		this.genericParametersList = list;
+	}
+	
+	public List<String> getGenericParametersList() {
+		return this.genericParametersList;
+	}
+	
 	public void addImplementsInterface(String s) {
 		this.implementsList.add(s);
 	}
