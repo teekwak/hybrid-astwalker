@@ -321,6 +321,7 @@ public class Solrj {
 	 * @param rows is max results
 	 * @return
 	 */
+	@SuppressWarnings("deprecation")
 	public SolrDocumentList query(String query,String collectionName, int rows, int start, int port) {
 		HttpSolrServer server;
 		try {
