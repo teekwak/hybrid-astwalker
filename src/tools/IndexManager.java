@@ -389,8 +389,8 @@ public class IndexManager {
 		JavaClass jc = (JavaClass) entity;
 		
 		solrDoc.addField(IndexManager.SNIPPET_CODE, jc.getSourceCode());
-		solrDoc.addField(IndexManager.SNIPPET_ADDRESS_LOWER_BOUND, Integer.toString(jc.getEndLine()));
-		solrDoc.addField(IndexManager.SNIPPET_ADDRESS_UPPER_BOUND, Integer.toString(jc.getLineNumber()));
+		solrDoc.addField(IndexManager.SNIPPET_ADDRESS_LOWER_BOUND, ((Number)jc.getEndLine()).longValue());
+		solrDoc.addField(IndexManager.SNIPPET_ADDRESS_UPPER_BOUND, ((Number)jc.getLineNumber()).longValue());
 	
 		solrDoc.addField(IndexManager.SNIPPET_IS_INNERCLASS, jc.getIsInnerClass());
 		
@@ -400,7 +400,7 @@ public class IndexManager {
 			String[] split = importStr.getFullyQualifiedName().split("[.]");
 			solrDoc.addField(IndexManager.SNIPPET_IMPORTS_SHORT, split[split.length - 1]);
 		}
-		solrDoc.addField(IndexManager.SNIPPET_IMPORTS_COUNT, Integer.toString(jc.getImportList().size()));
+		solrDoc.addField(IndexManager.SNIPPET_IMPORTS_COUNT, ((Number)jc.getImportList().size()).longValue());
 		
 		for(String interfaceStr : jc.getImplements()) {
 			solrDoc.addField(IndexManager.SNIPPET_IMPLEMENTS, interfaceStr);
@@ -412,7 +412,7 @@ public class IndexManager {
 			solrDoc.addField(IndexManager.SNIPPET_ALL_AUTHORS, author);
 		}
 		
-		solrDoc.addField(IndexManager.SNIPPET_AUTHOR_COUNT, Integer.toString(javaFile.getUniqueAuthors().size()));
+		solrDoc.addField(IndexManager.SNIPPET_AUTHOR_COUNT, ((Number)javaFile.getUniqueAuthors().size()).longValue());
 		
 		for(String email : javaFile.getUniqueEmails()) {
 			solrDoc.addField(IndexManager.SNIPPET_ALL_AUTHOR_EMAILS, email);
@@ -442,16 +442,16 @@ public class IndexManager {
 		solrDoc.addField("month", headCommit.getMonth());
 		solrDoc.addField("day", headCommit.getDay());
 	
-		solrDoc.addField(IndexManager.SNIPPET_PATH_COMPLEXITY_SUM, Integer.toString(jc.getCyclomaticComplexity()));
+		solrDoc.addField(IndexManager.SNIPPET_PATH_COMPLEXITY_SUM, ((Number)jc.getCyclomaticComplexity()).longValue());
 		solrDoc.addField(IndexManager.SNIPPET_HAS_JAVA_COMMENTS, jc.getHasComments());
 		
 		//solrDoc.addField(IndexManager.SNIPPET_HUMAN_LANGUAGE, snippet.humanLanguage);
 		
-		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_FIELDS, Integer.toString(jc.getGlobalList().size()));
-		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_FUNCTIONS, Integer.toString(jc.getMethodDeclarationList().size()));
+		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_FIELDS, ((Number)jc.getGlobalList().size()).longValue());
+		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_FUNCTIONS, ((Number)jc.getMethodDeclarationList().size()).longValue());
 		
-		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_INSERTIONS, Integer.toString(headCommit.getInsertions()));
-		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_DELETIONS, Integer.toString(headCommit.getDeletions()));		
+		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_INSERTIONS, ((Number)headCommit.getInsertions()).longValue());
+		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_DELETIONS, ((Number)headCommit.getDeletions()).longValue());		
 		
 		//solrDoc.addField(IndexManager.SNIPPET_CHANGED_CODE_CHURN, snippet.changedChurn);
 
@@ -494,7 +494,7 @@ public class IndexManager {
 				
 				String containingID= githubAddress+"?start="+innerjc.getLineNumber()+"&end="+innerjc.getEndLine();	
 				solrDoc.addField(SNIPPET_CONTAINING_CLASS_ID, containingID);
-				solrDoc.addField(IndexManager.SNIPPET_CONTAINING_CLASS_COMPLEXITY_SUM, Integer.toString(innerjc.getCyclomaticComplexity()));
+				solrDoc.addField(IndexManager.SNIPPET_CONTAINING_CLASS_COMPLEXITY_SUM, ((Number)innerjc.getCyclomaticComplexity()).longValue());
 			}
 		}
 		
@@ -506,7 +506,7 @@ public class IndexManager {
 			
 		solrDoc.addField(IndexManager.SNIPPET_VERSION_COMMENT, headCommit.getMessage());
 		solrDoc.addField(IndexManager.SNIPPET_LAST_UPDATED, headCommit.getSolrDate());
-		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_LINES, Integer.toString(jc.getEndLine() - jc.getLineNumber() + 1));
+		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_LINES, ((Number)(jc.getEndLine() - jc.getLineNumber() + 1)).longValue());
 		
 		// method declaration is right below this current method
 		addVariableListToSolrDoc(jc.getArrayList(), solrDoc);
@@ -601,13 +601,13 @@ public class IndexManager {
 		methodDec.addField(IndexManager.EXPAND_ID, id);
 		*/
 		
-		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_WHILE_COUNT, Integer.toString(mdo.getWhileStatementList().size()));
-		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_FOR_COUNT, Integer.toString(mdo.getForStatementList().size()));
-		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_IF_COUNT, Integer.toString(mdo.getIfStatementList().size()));
-		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_CASE_COUNT, Integer.toString(mdo.getSwitchCaseList().size()));
-		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_TERNERARY_COUNT, Integer.toString(mdo.getConditionalExpressionList().size()));
-		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_CATCH_COUNT, Integer.toString(mdo.getCatchClauseList().size()));		
-		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_LOGICAL_COUNT, Integer.toString(mdo.getInfixExpressionList().size()));
+		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_WHILE_COUNT, ((Number)mdo.getWhileStatementList().size()).longValue());
+		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_FOR_COUNT, ((Number)mdo.getForStatementList().size()).longValue());
+		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_IF_COUNT, ((Number)mdo.getIfStatementList().size()).longValue());
+		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_CASE_COUNT, ((Number)mdo.getSwitchCaseList().size()).longValue());
+		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_TERNERARY_COUNT, ((Number)mdo.getConditionalExpressionList().size()).longValue());
+		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_CATCH_COUNT, ((Number)mdo.getCatchClauseList().size()).longValue());		
+		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_LOGICAL_COUNT, ((Number)mdo.getInfixExpressionList().size()).longValue());
 		
 		/*
 		methodDec.addField(IndexManager.SNIPPET_METHOD_DEC_IS_RECURSIVE, dec.isRecurisive);
@@ -625,9 +625,9 @@ public class IndexManager {
 		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_RETURN_TYPE, mdo.getReturnType());
 	
 		int localVariableCount = mdo.getArrayList().size() + mdo.getGenericsList().size() + mdo.getPrimitiveList().size() + mdo.getSimpleList().size() - mdo.getParametersList().size();	
-		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_NUMBER_OF_LOCAL_VARIABLES, Integer.toString(localVariableCount));
+		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_NUMBER_OF_LOCAL_VARIABLES, ((Number)localVariableCount).longValue());
 		
-		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_PATH_COMPLEXITY, Integer.toString(mdo.getCyclomaticComplexity()));
+		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_PATH_COMPLEXITY, ((Number)mdo.getCyclomaticComplexity()).longValue());
 		
 		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_NAME, mdo.getFullyQualifiedName());
 		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_NAME_DELIMITED, mdo.getName());
