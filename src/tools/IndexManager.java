@@ -216,6 +216,7 @@ public class IndexManager {
 		}
 	}
 	
+	@SuppressWarnings({ "unused", "unchecked" })
 	public void processRepo(String pathToDirectory, String projectURL) {
 		String htmlURL = "\""+projectURL+"\"";
 		
@@ -381,7 +382,7 @@ public class IndexManager {
 		}
 	}
 	
-	public SolrInputDocument makeClassSolrDoc(SuperEntityClass entity, JavaFile javaFile) {
+	public void makeClassSolrDoc(SuperEntityClass entity, JavaFile javaFile) {
 		SolrInputDocument solrDoc = new SolrInputDocument();
 		
 		File file = new File(javaFile.getFileLocation());
@@ -547,7 +548,14 @@ public class IndexManager {
 			findAllMethodDeclarations((MethodDeclarationObject)md, solrDoc);
 		}
 
-		return solrDoc; // returns solrDoc for class, method declaration, AND method invocation
+		/*
+		Solrj.getInstance().addDoc(solrDoc);
+		
+		// may need to comment out for testing
+		if(Solrj.getInstance().req.getDocuments().size() >= MAXDOC || CHILD_COUNT >= MAX_CHILD_DOC)
+			Solrj.getInstance().commitDocs("CodeExchangeIndex", 9452);
+		*/		
+		
 	}
 	
 	// recursively get method declarations (for those method declarations inside of each other)
@@ -807,8 +815,5 @@ public class IndexManager {
 		traverseUntilJava(inputFolder, topDirectoryLocation);	
 
 		createSolrDocs();
-		
-		// need to commit docs here
-		//Solrj.getInstance().commitDocs("CodeExchangeIndex", 9452);
 	}
 }
