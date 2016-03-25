@@ -45,12 +45,12 @@ public class IndexManager {
 	public static final String AUTHOR_IS_SITE_ADMIN = "snippet_author_site_admin";
 	public static final String AUTHOR_NAME = "snippet_author_name";
 	public static final String AUTHOR_TYPE = "snippet_author_type";
-	
+	public static final String EXPAND_ID = "expand_id";
 	public static final String PROJECT_ADDRESS = "snippet_project_address";
 	public static final String PROJECT_IS_FORK = "snippet_project_is_fork";
 	public static final String PROJECT_NAME = "snippet_project_name";
 	public static final String PROJECT_OWNER = "snippet_project_owner";
-	
+	public static final String SNIPPET_ADDRESS = "snippet_address";
 	public static final String SNIPPET_CODE = "snippet_code";
 	public static final String SNIPPET_ADDRESS_LOWER_BOUND = "snippet_address_lower_bound";
 	public static final String SNIPPET_ADDRESS_UPPER_BOUND ="snippet_address_upper_bound";
@@ -65,6 +65,8 @@ public class IndexManager {
 	public static final String SNIPPET_ALL_AUTHOR_EMAILS = "snippet_all_author_emails";
 	public static final String SNIPPET_ALL_COMMENTS = "snippet_all_version_comments";
 	public static final String SNIPPET_ALL_DATES = "snippet_all_dates";
+	public static final String SNIPPET_CONTAINING_CLASS_ID = "snippet_containing_class_id";
+	public static final String SNIPPET_CONTAINING_CLASS_COMPLEXITY_SUM = "snippet_containing_class_complexity_sum";
 	public static final String SNIPPET_NUMBER_OF_INSERTIONS = "snippet_number_of_insertions";
 	public static final String SNIPPET_NUMBER_OF_DELETIONS = "snippet_number_of_deletions";
 	public static final String SNIPPET_INSERTION_CODE_CHURN = "snippet_insertion_code_churn";
@@ -127,21 +129,21 @@ public class IndexManager {
 	public static final String SNIPPET_METHOD_DEC_PARAMETER_TYPES_COUNT = "snippet_method_dec_parameter_types_count";
 	
 	// Method Invocation
-	public static final String SNIPPET_METHOD_INVOCATION_NAME = "snippet_method_invocation_name";
-	public static final String SNIPPET_METHOD_INVOCATION_NAME_DELIMITED = "snippet_method_invocation_name_delimited";
-	public static final String SNIPPET_METHOD_INVOCATION_START = "snippet_method_invocation_start";
-	public static final String SNIPPET_METHOD_INVOCATION_END = "snippet_method_invocation_end";
-	public static final String SNIPPET_METHOD_INVOCATION_DECLARING_CLASS = "snippet_method_invocation_declaring_class";
-	public static final String SNIPPET_METHOD_INVOCATION_DECLARING_CLASS_SHORT = "snippet_method_invocation_declaring_class_short";
 	public static final String SNIPPET_METHOD_INVOCATION_ARG_TYPES = "snippet_method_invocation_arg_types";
+	public static final String SNIPPET_METHOD_INVOCATION_ARG_TYPES_COUNT = "snippet_method_invocation_arg_types_count";
 	public static final String SNIPPET_METHOD_INVOCATION_ARG_TYPES_PLACE = "snippet_method_invocation_arg_types_place";
 	public static final String SNIPPET_METHOD_INVOCATION_ARG_TYPES_SHORT = "snippet_method_invocation_arg_types_short";
-	public static final String SNIPPET_METHOD_INVOCATION_ARG_TYPES_SHORT_PLACE = "snippet_method_invocation_arg_types_short_place";
-	public static final String SNIPPET_METHOD_INVOCATION_ARG_TYPES_COUNT = "snippet_method_invocation_arg_types_count";
 	public static final String SNIPPET_METHOD_INVOCATION_ARG_TYPES_SHORT_COUNT = "snippet_method_invocation_arg_types_short_count";
+	public static final String SNIPPET_METHOD_INVOCATION_ARG_TYPES_SHORT_PLACE = "snippet_method_invocation_arg_types_short_place";
 	public static final String SNIPPET_METHOD_INVOCATION_ARG_VALUES = "snippet_method_invocation_arg_values";
 	public static final String SNIPPET_METHOD_INVOCATION_CALLING_CLASS = "snippet_method_invocation_calling_class";
 	public static final String SNIPPET_METHOD_INVOCATION_CALLING_CLASS_SHORT = "snippet_method_invocation_calling_class_short";
+	public static final String SNIPPET_METHOD_INVOCATION_DECLARING_CLASS = "snippet_method_invocation_declaring_class";
+	public static final String SNIPPET_METHOD_INVOCATION_DECLARING_CLASS_SHORT = "snippet_method_invocation_declaring_class_short";
+	public static final String SNIPPET_METHOD_INVOCATION_END = "snippet_method_invocation_end";
+	public static final String SNIPPET_METHOD_INVOCATION_NAME = "snippet_method_invocation_name";
+	public static final String SNIPPET_METHOD_INVOCATION_NAME_DELIMITED = "snippet_method_invocation_name_delimited";
+	public static final String SNIPPET_METHOD_INVOCATION_START = "snippet_method_invocation_start";
 	
 	private IndexManager(){
 		
@@ -346,8 +348,20 @@ public class IndexManager {
 		git.close();
 	}
 	
+	public String toGitHubAddress(String owner, String projectName, File file, String thisVersion){
+
+		String gitHubAddress = "https://raw.github.com/"+owner+"/"+projectName+"/"+thisVersion+"/";
+		String path = file.getAbsolutePath();
+
+		int indexOfName = path.indexOf(projectName);
+		String filePath = path.substring(indexOfName+projectName.length()+1);
+		gitHubAddress = gitHubAddress + filePath;
+
+		return gitHubAddress;
+	}
+	
 	// gets all classes, method declarations, and method invocation from each FileModel
-	public static void getFileModelConstructs(/*File file*/) {
+	public static void getFileModelConstructs(String directory) {
 		for(FileModel f : fileModelList) {
 			for(JavaClass jc : f.getJavaClassList()) {
 				JavaFile jf = null;
@@ -361,14 +375,16 @@ public class IndexManager {
 					}
 				}
 				
-				IndexManager.getInstance().makeClassSolrDoc(jc, jf);
+				IndexManager.getInstance().makeClassSolrDoc(jc, jf, directory);
 				
 			}
 		}
 	}
 	
-	public SolrInputDocument makeClassSolrDoc(SuperEntityClass entity, JavaFile javaFile) {
+	public SolrInputDocument makeClassSolrDoc(SuperEntityClass entity, JavaFile javaFile, String directory) {
 		SolrInputDocument solrDoc = new SolrInputDocument();
+		
+		File file = new File(directory);
 		
 		JavaClass jc = (JavaClass) entity;
 		
@@ -464,27 +480,23 @@ public class IndexManager {
 			solrDoc.addField(IndexManager.SNIPPET_PACKAGE_SHORT, split[split.length-1]);
 		}		
 		
-		/*
-
-		// solr doc
-
-		String githubAddress = this.toGitHubAddres
-				(currentProject.project_owner,currentProject.project_name, file, snippet.thisVersion);
-		snippetDoc.addField(IndexManager.SNIPPET_ADDRESS, githubAddress);
+		// TODO
+		String githubAddress = this.toGitHubAddress(currentProject.project_owner,currentProject.project_name, file, headCommit.getHashCode());
+		solrDoc.addField(IndexManager.SNIPPET_ADDRESS, githubAddress);
 		
-		String id = githubAddress+"?start="+snippet.startLine+"&end="+snippet.endLine;
-		snippetDoc.addField("id",id);
-		snippetDoc.addField(IndexManager.EXPAND_ID, id);
+		String id = githubAddress+"?start="+jc.getLineNumber()+"&end="+jc.getEndLine();
+		solrDoc.addField("id",id);
+		solrDoc.addField(IndexManager.EXPAND_ID, id);
 		
-		if(snippet.hasContainingClass){
-			String containingID= githubAddress+"?start="+snippet.containingClassStartLine+
-					"&end="+snippet.containingClassEndLine;
-			snippetDoc.addField(SNIPPET_CONTAINING_CLASS_ID,containingID);
-			snippetDoc.addField(IndexManager.SNIPPET_CONTAINING_CLASS_COMPLEXITY_SUM
-					,snippet.containgClassComplexitySum);
+		if(jc.getClassList().size() > 0){
+			for(SuperEntityClass c : jc.getClassList()) {
+				JavaClass innerjc = (JavaClass) c;
+				
+				String containingID= githubAddress+"?start="+innerjc.getLineNumber()+"&end="+innerjc.getEndLine();	
+				solrDoc.addField(SNIPPET_CONTAINING_CLASS_ID, containingID);
+				solrDoc.addField(IndexManager.SNIPPET_CONTAINING_CLASS_COMPLEXITY_SUM, Integer.toString(innerjc.getCyclomaticComplexity()));
+			}
 		}
-		
-		*/
 		
 		solrDoc.addField(IndexManager.SNIPPET_SIZE, jc.getSourceCode().length());
 		solrDoc.addField(IndexManager.SNIPPET_THIS_VERSION, headCommit.getHashCode());
@@ -614,7 +626,6 @@ public class IndexManager {
 	
 		int localVariableCount = mdo.getArrayList().size() + mdo.getGenericsList().size() + mdo.getPrimitiveList().size() + mdo.getSimpleList().size() - mdo.getParametersList().size();	
 		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_NUMBER_OF_LOCAL_VARIABLES, Integer.toString(localVariableCount));
-		System.out.println(mdo.getName() + " " + localVariableCount);
 		
 		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_PATH_COMPLEXITY, Integer.toString(mdo.getCyclomaticComplexity()));
 		
@@ -794,6 +805,6 @@ public class IndexManager {
 		
 		IndexManager.getInstance().processRepo(topDirectoryLocation, URL);
 		traverseUntilJava(inputFolder, topDirectoryLocation);	
-		getFileModelConstructs();
+		getFileModelConstructs(topDirectoryLocation);
 	}
 }
