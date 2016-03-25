@@ -220,7 +220,7 @@ public class IndexManager {
 		String htmlURL = "\""+projectURL+"\"";
 		
 		currentProject = new ProjectInfo();
-		SolrDocumentList list = Solrj.getInstance().query("id:"+htmlURL, "githubprojects", 1, 0, 9001);
+		SolrDocumentList list = Solrj.getInstance().query("id:"+htmlURL, "githubprojects", 1, 0, 9452);
 		
 		SolrDocument doc = (SolrDocument)list.get(0);
 		File project = null;

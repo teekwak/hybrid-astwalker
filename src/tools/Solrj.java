@@ -54,7 +54,8 @@ public class Solrj {
 			instance = new Solrj();
 		}
 		
-		File file = new File("~/Pass");
+		File file = new File("/home/kwak/Pass");
+		
 		Scanner scan;
 		try {
 			scan = new Scanner(file);
@@ -67,8 +68,6 @@ public class Solrj {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		
 		
 		return instance;
 	}
@@ -329,15 +328,16 @@ public class Solrj {
 			
 			System.out.println("QUERY: "+query);
 		
-			  SolrQuery solrQuery = new  SolrQuery();
+			SolrQuery solrQuery = new SolrQuery();
 					  solrQuery.setQuery(query);
 					  solrQuery.setRows(rows);
 					  solrQuery.setIncludeScore(true);
 					  solrQuery.setStart(start);
 
-			  QueryResponse rsp = server.query(solrQuery);
+			QueryResponse rsp = server.query(solrQuery);
 			SolrDocumentList results = rsp.getResults();
 
+			server.close();
 			
 			return results;
 
