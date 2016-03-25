@@ -220,7 +220,7 @@ public class IndexManager {
 		String htmlURL = "\""+projectURL+"\"";
 		
 		currentProject = new ProjectInfo();
-		SolrDocumentList list = Solrj.getInstance().query("id:"+htmlURL, "githubprojects", 1, 0, 9452);
+		SolrDocumentList list = Solrj.getInstance().query("id:"+htmlURL, "githubprojects", 1, 0, 9001);
 		
 		SolrDocument doc = (SolrDocument)list.get(0);
 		File project = null;
@@ -354,14 +354,14 @@ public class IndexManager {
 		String path = file.getAbsolutePath();
 
 		int indexOfName = path.indexOf(projectName);
-		String filePath = path.substring(indexOfName+projectName.length()+1);
+		String filePath = path.substring(indexOfName + projectName.length()+1);
 		gitHubAddress = gitHubAddress + filePath;
 
 		return gitHubAddress;
 	}
 	
 	// gets all classes, method declarations, and method invocation from each FileModel
-	public static void getFileModelConstructs(String directory) {
+	public static void createSolrDocs() {
 		for(FileModel f : fileModelList) {
 			for(JavaClass jc : f.getJavaClassList()) {
 				JavaFile jf = null;
@@ -375,16 +375,16 @@ public class IndexManager {
 					}
 				}
 				
-				IndexManager.getInstance().makeClassSolrDoc(jc, jf, directory);
+				IndexManager.getInstance().makeClassSolrDoc(jc, jf);
 				
 			}
 		}
 	}
 	
-	public SolrInputDocument makeClassSolrDoc(SuperEntityClass entity, JavaFile javaFile, String directory) {
+	public SolrInputDocument makeClassSolrDoc(SuperEntityClass entity, JavaFile javaFile) {
 		SolrInputDocument solrDoc = new SolrInputDocument();
 		
-		File file = new File(directory);
+		File file = new File(javaFile.getFileLocation());
 		
 		JavaClass jc = (JavaClass) entity;
 		
@@ -805,6 +805,10 @@ public class IndexManager {
 		
 		IndexManager.getInstance().processRepo(topDirectoryLocation, URL);
 		traverseUntilJava(inputFolder, topDirectoryLocation);	
-		getFileModelConstructs(topDirectoryLocation);
+
+		createSolrDocs();
+		
+		// need to commit docs here
+		//Solrj.getInstance().commitDocs("CodeExchangeIndex", 9452);
 	}
 }
