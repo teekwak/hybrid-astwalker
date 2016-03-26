@@ -2,23 +2,14 @@ package tools;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 
-import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
-import org.apache.http.auth.AuthScope;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -29,12 +20,10 @@ import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.apache.solr.client.solrj.request.UpdateRequest;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.UpdateResponse;
-import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.params.ModifiableSolrParams;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Display;
 
 public class Solrj {
@@ -72,7 +61,6 @@ public class Solrj {
 		return instance;
 	}
 
-
 	public Solrj(String queryStr) {
 		this.queryStr = queryStr;
 
@@ -87,15 +75,12 @@ public class Solrj {
           credentials = new UsernamePasswordCredentials(user, pass);
         }
 
- 
-
-
+	@SuppressWarnings("deprecation")
 	public void process(HttpRequest request, HttpContext context)
             throws HttpException, IOException {
           request.addHeader(BasicScheme.authenticate(credentials,"US-ASCII",false));
         }
       }
-
 
     /**
      * create a doc with the same id as the one you want to update and pass for field doc
@@ -203,6 +188,7 @@ public class Solrj {
 	}
 	
 
+	@SuppressWarnings("deprecation")
 	public long queryCountDocs() throws IOException{
 		HttpSolrServer server;
 		
@@ -211,12 +197,15 @@ public class Solrj {
 			ModifiableSolrParams params = new ModifiableSolrParams();
 			params.add("q", "contentID:*");
 			QueryResponse rq = server.query(params);
-		
+			
+			server.close();
+			
 			return rq.getResults().getNumFound(); 
 		} 
 		catch (org.apache.solr.client.solrj.SolrServerException e) { 
-			System.err.println("Query problem"); } 
-		
+			System.err.println("Query problem"); 
+		} 
+				
 		return -1; 
 	}
 	
@@ -269,6 +258,7 @@ public class Solrj {
 	 * @param rows is max results
 	 * @return
 	 */
+	@SuppressWarnings("deprecation")
 	public SolrDocumentList query(String query,String collectionName, int rows) {
 		HttpSolrServer server;
 		try {
@@ -300,6 +290,7 @@ public class Solrj {
 		//	QueryResponse response = server.query(params);
 			SolrDocumentList results = rsp.getResults();
 
+			server.close();
 			
 			return results;
 
@@ -349,8 +340,5 @@ public class Solrj {
 		return null;
 
 	}
-
-
-	
 
 }

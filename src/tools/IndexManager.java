@@ -545,7 +545,7 @@ public class IndexManager {
 		solrDoc.addField("parent", true);
 		
 		for(SuperEntityClass md : jc.getMethodDeclarationList()) {
-			findAllMethodDeclarations((MethodDeclarationObject)md, solrDoc);
+			findAllMethodDeclarations((MethodDeclarationObject)md, solrDoc, id);
 		}
 
 		/*
@@ -560,16 +560,16 @@ public class IndexManager {
 	
 	// recursively get method declarations (for those method declarations inside of each other)
 	// TODO revise to only make one doc, starting from class
-	public static void findAllMethodDeclarations(MethodDeclarationObject mdo, SolrInputDocument solrDoc) {
-		makeMethodDeclarationSolrDoc(mdo, solrDoc);
+	public static void findAllMethodDeclarations(MethodDeclarationObject mdo, SolrInputDocument solrDoc, String id) {
+		makeMethodDeclarationSolrDoc(mdo, solrDoc, id);
 		
 		for(SuperEntityClass mi : mdo.getMethodInvocationList() ) {
-			makeMethodInvocationSolrDoc(mi, solrDoc);
+			makeMethodInvocationSolrDoc(mi, solrDoc, id);
 		}
 		
 		if(mdo.getMethodDeclarationList().size() > 0) {
 			for(SuperEntityClass mdChild : mdo.getMethodDeclarationList()) {
-				findAllMethodDeclarations((MethodDeclarationObject)mdChild, solrDoc);
+				findAllMethodDeclarations((MethodDeclarationObject)mdChild, solrDoc, id);
 			}
 		}
 	}
@@ -599,15 +599,13 @@ public class IndexManager {
 		}
 	}
 	
-	public static void makeMethodDeclarationSolrDoc(SuperEntityClass entity, SolrInputDocument solrDoc) {
+	public static void makeMethodDeclarationSolrDoc(SuperEntityClass entity, SolrInputDocument solrDoc, String id) {
 		SolrInputDocument methodDecSolrDoc = new SolrInputDocument();
 		MethodDeclarationObject mdo = (MethodDeclarationObject) entity;
 		
-		/*
-		String idDec =  id+"&methodStart="+dec.startLine+"&methodEnd="+dec.endLine;
-		methodDec.addField("id", idDec);
-		methodDec.addField(IndexManager.EXPAND_ID, id);
-		*/
+		String idDec =  id + "&methodStart=" + entity.getLineNumber() + "&methodEnd=" + entity.getEndLine();
+		methodDecSolrDoc.addField("id", idDec);
+		methodDecSolrDoc.addField(IndexManager.EXPAND_ID, id);
 		
 		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_WHILE_COUNT, ((Number)mdo.getWhileStatementList().size()).longValue());
 		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_FOR_COUNT, ((Number)mdo.getForStatementList().size()).longValue());
@@ -617,9 +615,7 @@ public class IndexManager {
 		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_CATCH_COUNT, ((Number)mdo.getCatchClauseList().size()).longValue());		
 		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_LOGICAL_COUNT, ((Number)mdo.getInfixExpressionList().size()).longValue());
 		
-		/*
-		methodDec.addField(IndexManager.SNIPPET_METHOD_DEC_IS_RECURSIVE, dec.isRecurisive);
-		*/
+		// methodDec.addField(IndexManager.SNIPPET_METHOD_DEC_IS_RECURSIVE, dec.isRecurisive);
 		
 		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_IS_CONSTRUCTOR, mdo.getIsConstructor());
 		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_IS_VAR_ARGS, mdo.getIsVarargs());		
@@ -700,26 +696,20 @@ public class IndexManager {
 		}
 		
 		CHILD_COUNT++;
-		
 		solrDoc.addChildDocument(methodDecSolrDoc);
 		
 	}
 	
-	public static void makeMethodInvocationSolrDoc(SuperEntityClass entity, SolrInputDocument solrDoc) {
+	public static void makeMethodInvocationSolrDoc(SuperEntityClass entity, SolrInputDocument solrDoc, String id) {
 		SolrInputDocument methodInvSolrDoc = new SolrInputDocument();
 		MethodInvocationObject mio = (MethodInvocationObject) entity;
 		
 		methodInvSolrDoc.addField("parent",false);
 		methodInvSolrDoc.addField("is_method_invocation_child",true);
 		
-		//add child document
-		/*
-		
-		String idInvo = id+"&start="+invocation.start+"&end="+invocation.end;
-		methodInvocation.addField("id", idInvo);
-		methodInvocation.addField(IndexManager.EXPAND_ID, id);
-		
-		*/
+		String idInvo = id + "&start=" + entity.getLineNumber() + "&end=" + entity.getEndLine();
+		methodInvSolrDoc.addField("id", idInvo);
+		methodInvSolrDoc.addField(IndexManager.EXPAND_ID, id);
 		
 		methodInvSolrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_NAME, mio.getFullyQualifiedName());
 		methodInvSolrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_NAME_DELIMITED, mio.getName());
@@ -787,7 +777,6 @@ public class IndexManager {
 		}
 		
 		CHILD_COUNT++;
-
 		solrDoc.addChildDocument(methodInvSolrDoc);
 	}
 	
