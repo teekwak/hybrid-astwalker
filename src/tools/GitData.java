@@ -155,6 +155,22 @@ class JavaFile {
 	public List<CommitData> getCommitDataList() {
 		return this.commitDataList;
 	}
+	
+	public void setNumberOfLines(int n) {
+		this.numberOfLines = n;
+	}
+	
+	public int getNumberOfLines() {
+		return this.numberOfLines;
+	}
+	
+	public void setNumberOfCharacters(int n) {
+		this.numberOfCharacters = n;
+	}
+	
+	public int getNumberOfCharacters() {
+		return this.numberOfCharacters;
+	}
 }
 
 // data for all files in a repo
@@ -197,12 +213,10 @@ public class GitData {
 			while((s = br.readLine()) != null) {
 				if(s.endsWith(".java")){
 					String[] parts = s.split("\t");
-					
-					if(parts.length == 3) { // for some reason, git diff-tree --numstat --root $3 also returns hash code of commit
-						String[] nameParts = parts[2].split("/"); 
-					
+										
+					if(parts.length == 3) { // for some reason, git diff-tree --numstat --root $3 also returns hash code of commit						
 						for(JavaFile j : javaFileList) {
-							if(j.fileLocation.equals(nameParts[nameParts.length - 1])) {
+							if(j.fileLocation.endsWith(parts[2])) {
 								for(CommitData c : j.commitDataList) {
 									if(c.hashCode.equals(entry.getValue())) {
 										c.setInsertions(Integer.parseInt(parts[0]));
@@ -226,7 +240,7 @@ public class GitData {
 		
 		int count = 0;
 		try {			
-			Scanner scanner = new Scanner(file);
+			Scanner scanner = new Scanner(file, "ISO-8859-1");
 		
 			while (scanner.hasNext()) {
 				count++;
@@ -269,10 +283,10 @@ public class GitData {
 		File dir = new File(directoryLocation);
 		
 		// get number of lines in a file
-		javaFileObject.numberOfLines = getLineCountOfFile(javaFileName);
+		javaFileObject.setNumberOfLines(getLineCountOfFile(javaFileName));
 		
 		// get number of characters in a file
-		javaFileObject.numberOfCharacters = getCharacterCountOfFile(javaFileName);
+		javaFileObject.setNumberOfCharacters(getCharacterCountOfFile(javaFileName));
 		
 		// get all commits of a single file
 		ProcessBuilder pb3 = new ProcessBuilder("git", "log", "--follow", javaFileName);
@@ -325,7 +339,6 @@ public class GitData {
 		br3.close();
 		isr3.close();
 		proc3.destroy();
-		
 		
 		for(int i = 0; i < hashCodeList.size(); i++) {
 			CommitData cd = new CommitData();

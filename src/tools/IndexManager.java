@@ -459,15 +459,16 @@ public class IndexManager {
 		//solrDoc.addField(IndexManager.SNIPPET_CHANGED_CODE_CHURN, snippet.changedChurn);
 
 		long calculation = 0;
-		calculation = headCommit.getInsertions() / (jc.getEndLine() - jc.getLineNumber() + 1);
+				
+		calculation = headCommit.getInsertions() / javaFile.getNumberOfLines();
 		solrDoc.addField(IndexManager.SNIPPET_INSERTION_CODE_CHURN, calculation);
-		
-		calculation = headCommit.getDeletions() / (jc.getEndLine() - jc.getLineNumber() + 1);
+				
+		calculation = headCommit.getDeletions() / javaFile.getNumberOfLines();
 		solrDoc.addField(IndexManager.SNIPPET_DELETED_CODE_CHURN, calculation);
-		
-		calculation = (headCommit.getInsertions() + headCommit.getDeletions()) / (jc.getEndLine() - jc.getLineNumber() + 1);
+				
+		calculation = (headCommit.getInsertions() + headCommit.getDeletions()) / javaFile.getNumberOfLines();
 		solrDoc.addField(IndexManager.SNIPPET_INSERTION_DELETION_CODE_CHURN, calculation);
-		
+				
 		solrDoc.addField(IndexManager.SNIPPET_EXTENDS, jc.getSuperClass());
 		if(jc.getSuperClass() != null){
 			String[] split = jc.getSuperClass().split("[.]");
@@ -550,7 +551,7 @@ public class IndexManager {
 		}
 		
 		
-		Solrj.getInstance().addDoc(solrDoc);
+		//Solrj.getInstance().addDoc(solrDoc);
 		
 		// may need to comment out for testing
 		/*
@@ -558,7 +559,7 @@ public class IndexManager {
 			Solrj.getInstance().commitDocs("CodeExchangeIndex", 9452);
 		*/	
 		
-		Solrj.getInstance().commitDocs("MoreLikeThisIndex", 9452);
+		//Solrj.getInstance().commitDocs("MoreLikeThisIndex", 9452);
 		
 	}
 	
@@ -789,10 +790,12 @@ public class IndexManager {
 		gitDataList.clear();
 		
 		//String topDirectoryLocation = args[0];
-		String topDirectoryLocation = "/home/kwak/Desktop/jabber-plugin/";
-		//String topDirectoryLocation = "/home/kwak/Desktop/jgit-test/";
 		
-		String URL = "https://github.com/jenkinsci/jabber-plugin";
+		//String topDirectoryLocation = "/home/kwak/Desktop/jabber-plugin/";		
+		//String URL = "https://github.com/jenkinsci/jabber-plugin";
+		
+		String topDirectoryLocation = "/home/kwak/Desktop/ReSender/";
+		String URL = "https://github.com/Gilevich/ReSender";
 		
 		/* 
 		 * given name of directory
