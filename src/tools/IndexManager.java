@@ -157,7 +157,6 @@ public class IndexManager {
 		return instance;
 	}
 	
-
 	class AuthorInfo {
 
 		public String name = null;
@@ -551,7 +550,7 @@ public class IndexManager {
 		}
 		
 		
-		//Solrj.getInstance().addDoc(solrDoc);
+		Solrj.getInstance().addDoc(solrDoc);
 		
 		// may need to comment out for testing
 		/*
@@ -559,7 +558,7 @@ public class IndexManager {
 			Solrj.getInstance().commitDocs("CodeExchangeIndex", 9452);
 		*/	
 		
-		//Solrj.getInstance().commitDocs("MoreLikeThisIndex", 9452);
+		Solrj.getInstance().commitDocs("MoreLikeThisIndex", 9452);
 		
 	}
 	

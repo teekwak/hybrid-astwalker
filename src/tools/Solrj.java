@@ -165,6 +165,7 @@ public class Solrj {
 
 	}
 
+	@SuppressWarnings("deprecation")
 	public void commitDocs(String collectionName, int port){
 		System.out.println("===uploading ["+req.getDocuments().size()+"] docs to codeexchange===");
 		HttpSolrServer server;
