@@ -579,11 +579,11 @@ public class IndexManager {
 	
 	public static void addVariableListToSolrDoc(List<SuperEntityClass> list, SolrInputDocument solrDoc) {
 		for(SuperEntityClass entity : list) {
-			solrDoc.addField(IndexManager.SNIPPET_VARIABLE_TYPES, entity.getType().toString());
+			solrDoc.addField(IndexManager.SNIPPET_VARIABLE_TYPES, entity.getFullyQualifiedName());
 			String[] split = entity.getFullyQualifiedName().split("[.]");
 			solrDoc.addField(IndexManager.SNIPPET_VARIABLE_TYPES_SHORT, split[split.length-1]);	
 			
-			solrDoc.addField(IndexManager.SNIPPET_VARIABLE_NAMES, entity.getFullyQualifiedName());
+			solrDoc.addField(IndexManager.SNIPPET_VARIABLE_NAMES, entity.getName());
 			solrDoc.addField(IndexManager.SNIPPET_VARIABLE_NAMES_DELIMITED, entity.getName());
 		}
 	}
