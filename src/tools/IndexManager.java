@@ -547,14 +547,17 @@ public class IndexManager {
 		for(SuperEntityClass md : jc.getMethodDeclarationList()) {
 			findAllMethodDeclarations((MethodDeclarationObject)md, solrDoc, id);
 		}
-
-		/*
+		
+		
 		Solrj.getInstance().addDoc(solrDoc);
 		
 		// may need to comment out for testing
+		/*
 		if(Solrj.getInstance().req.getDocuments().size() >= MAXDOC || CHILD_COUNT >= MAX_CHILD_DOC)
 			Solrj.getInstance().commitDocs("CodeExchangeIndex", 9452);
-		*/		
+		*/	
+		
+		Solrj.getInstance().commitDocs("MoreLikeThisIndex", 9452);
 		
 	}
 	
