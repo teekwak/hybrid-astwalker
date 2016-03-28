@@ -638,8 +638,8 @@ public class IndexManager {
 		
 		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_NAME, mdo.getFullyQualifiedName());
 		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_NAME_DELIMITED, mdo.getName());
-		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_START, mdo.getLineNumber());
-		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_END, mdo.getEndLine());
+		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_START, ((Number)mdo.getLineNumber()).longValue());
+		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_END, ((Number)mdo.getEndLine()).longValue());
 		
 		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_IS_ABSTRACT, mdo.getIsAbstract());
 		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_IS_STATIC, mdo.getIsStatic());
@@ -716,8 +716,8 @@ public class IndexManager {
 		
 		methodInvSolrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_NAME, mio.getFullyQualifiedName());
 		methodInvSolrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_NAME_DELIMITED, mio.getName());
-		methodInvSolrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_START, mio.getLineNumber());
-		methodInvSolrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_END, mio.getEndLine());
+		methodInvSolrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_START, ((Number)mio.getLineNumber()).longValue());
+		methodInvSolrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_END, ((Number)mio.getEndLine()).longValue());
 
 		methodInvSolrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_CALLING_CLASS, mio.getCallingClass());
 		
@@ -796,11 +796,11 @@ public class IndexManager {
 		
 		//String topDirectoryLocation = args[0];
 		
-		//String topDirectoryLocation = "/home/kwak/Desktop/jabber-plugin/";		
-		//String URL = "https://github.com/jenkinsci/jabber-plugin";
+		String topDirectoryLocation = "/home/kwak/Desktop/jabber-plugin/";		
+		String URL = "https://github.com/jenkinsci/jabber-plugin";
 		
-		String topDirectoryLocation = "/home/kwak/Desktop/ReSender/";
-		String URL = "https://github.com/Gilevich/ReSender";
+		//String topDirectoryLocation = "/home/kwak/Desktop/ReSender/";
+		//String URL = "https://github.com/Gilevich/ReSender";
 		
 		/* 
 		 * given name of directory
