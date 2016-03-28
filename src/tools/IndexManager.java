@@ -549,7 +549,7 @@ public class IndexManager {
 		}
 		
 		
-		Solrj.getInstance().addDoc(solrDoc);
+		//Solrj.getInstance().addDoc(solrDoc);
 		
 		// may need to comment out for testing
 		/*
@@ -557,7 +557,7 @@ public class IndexManager {
 			Solrj.getInstance().commitDocs("CodeExchangeIndex", 9452);
 		*/	
 		
-		Solrj.getInstance().commitDocs("MoreLikeThisIndex", 9452);
+		//Solrj.getInstance().commitDocs("MoreLikeThisIndex", 9452);
 		
 	}
 	
@@ -738,6 +738,7 @@ public class IndexManager {
 
 		int place = 0;
 		for(String argType: mio.getArgumentTypes()){
+			
 			methodInvSolrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_ARG_TYPES, argType);
 			methodInvSolrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_ARG_TYPES_PLACE, argType + "_" + place);
 			

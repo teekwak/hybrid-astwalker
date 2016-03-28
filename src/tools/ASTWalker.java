@@ -460,6 +460,7 @@ public class ASTWalker {
 					mio.setArguments(node.arguments());
 					mio.setArgumentTypes(argumentTypes);
 					mio.setLineNumber(cu.getLineNumber(name.getStartPosition()));
+					mio.setEndLine(cu.getLineNumber(node.getStartPosition() + node.getLength()));
 					mio.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
 					entityStack.peek().addEntity(mio, EntityType.METHOD_INVOCATION);
 				}
