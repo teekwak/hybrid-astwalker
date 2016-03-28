@@ -122,6 +122,7 @@ public class IndexManager {
 	public static final String SNIPPET_METHOD_DEC_PARAMETER_TYPES_PLACE = "snippet_method_dec_parameter_types_place";
 	public static final String SNIPPET_METHOD_DEC_PARAMETER_TYPES_SHORT = "snippet_method_dec_parameter_types_short";
 	public static final String SNIPPET_METHOD_DEC_PARAMETER_TYPES_SHORT_PLACE = "snippet_method_dec_parameter_types_short_place";
+	public static final String SNIPPET_METHOD_DEC_PARAMETER_TYPES_SHORT_COUNT = "snippet_method_dec_parameter_types_short_count";
 	public static final String SNIPPET_METHOD_DEC_PATH_COMPLEXITY = "snippet_method_dec_path_complexity_method";	
 	public static final String SNIPPET_METHOD_DEC_RETURN_TYPE = "snippet_method_dec_return_type";
 	public static final String SNIPPET_METHOD_DEC_START = "snippet_method_dec_start";
@@ -296,15 +297,16 @@ public class IndexManager {
 			}
 		}
 		else {
-			/*
+			
 			if(parentNode.getName().endsWith(".java")) {	
 				runASTandGitData(parentNode, topDirectoryLocation);
 			}
-			*/
+			/*
 			if(parentNode.getName().equals("JabberConnectionDebugger.java")) {
 			//if(parentNode.getName().equals("java1.java")) {
 				runASTandGitData(parentNode, topDirectoryLocation);
 			}
+			*/
 		}
 	}
 	
@@ -481,7 +483,6 @@ public class IndexManager {
 			solrDoc.addField(IndexManager.SNIPPET_PACKAGE_SHORT, split[split.length-1]);
 		}		
 		
-		// TODO
 		String githubAddress = this.toGitHubAddress(currentProject.project_owner,currentProject.project_name, file, headCommit.getHashCode());
 		solrDoc.addField(IndexManager.SNIPPET_ADDRESS, githubAddress);
 		
@@ -549,7 +550,7 @@ public class IndexManager {
 		}
 		
 		
-		//Solrj.getInstance().addDoc(solrDoc);
+		Solrj.getInstance().addDoc(solrDoc);
 		
 		// may need to comment out for testing
 		/*
@@ -557,12 +558,11 @@ public class IndexManager {
 			Solrj.getInstance().commitDocs("CodeExchangeIndex", 9452);
 		*/	
 		
-		//Solrj.getInstance().commitDocs("MoreLikeThisIndex", 9452);
+		Solrj.getInstance().commitDocs("MoreLikeThisIndex", 9452);
 		
 	}
 	
 	// recursively get method declarations (for those method declarations inside of each other)
-	// TODO revise to only make one doc, starting from class
 	public static void findAllMethodDeclarations(MethodDeclarationObject mdo, SolrInputDocument solrDoc, String id) {
 		makeMethodDeclarationSolrDoc(mdo, solrDoc, id);
 		
@@ -695,7 +695,7 @@ public class IndexManager {
 		
 		for(String type: paramCountShort.keySet()){
 			int count = paramCountShort.get(type);
-			methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_PARAMETER_TYPES_SHORT, type+"_"+count);
+			methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_PARAMETER_TYPES_SHORT_COUNT, type+"_"+count);
 		}
 		
 		CHILD_COUNT++;

@@ -333,9 +333,9 @@ public class GitData {
 			// format date
 			Date javaDate = new SimpleDateFormat("EEE MMM d HH:mm:ss yyyy Z").parse(dateList.get(i));
 			cd.setSolrDate(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(javaDate));
-			cd.setDay(new SimpleDateFormat("yyyy").format(javaDate));
+			cd.setDay(new SimpleDateFormat("dd").format(javaDate));
 			cd.setMonth(new SimpleDateFormat("MM").format(javaDate));
-			cd.setYear(new SimpleDateFormat("dd").format(javaDate));
+			cd.setYear(new SimpleDateFormat("yyyy").format(javaDate));
 			
 			// add everything else
 			cd.setAuthor(authorList.get(i));
