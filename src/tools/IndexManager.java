@@ -729,7 +729,13 @@ public class IndexManager {
 		methodInvSolrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_DECLARING_CLASS, mio.getDeclaringClass());
 				
 		if(!mio.getDeclaringClass().isEmpty()){
-			String[] split = mio.getDeclaringClass().split("[.]");
+			String declaringClass = mio.getDeclaringClass();
+			
+			if(declaringClass.indexOf('<') > -1) {
+				declaringClass = declaringClass.split("<")[0];
+			}
+			
+			String[] split = declaringClass.split("[.]");
 			methodInvSolrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_DECLARING_CLASS_SHORT, split[split.length-1]);
 		}
 

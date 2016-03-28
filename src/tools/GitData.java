@@ -262,7 +262,7 @@ public class GitData {
 		int count = 0;
 		
 		try {			
-			Scanner scanner = new Scanner(file);
+			Scanner scanner = new Scanner(file, "ISO-8859-1");
 		
 			while (scanner.hasNextLine()) {
 				count += scanner.nextLine().length();
