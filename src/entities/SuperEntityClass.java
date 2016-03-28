@@ -15,6 +15,8 @@ public class SuperEntityClass implements Entity {
 	String bound;
 	int lineNumber;
 	int columnNumber;
+	int startCharacter;
+	int endCharacter;
 	int numberOfCharacters;
 	int endLine;
 	int cyclomaticComplexity;
@@ -31,6 +33,22 @@ public class SuperEntityClass implements Entity {
 		this.name = n;
 	}
 
+	public void setStartCharacter(int n) {
+		this.startCharacter = n;
+	}
+	
+	public int getStartCharacter() {
+		return this.startCharacter;
+	}
+	
+	public void setEndCharacter(int n) {
+		this.endCharacter = n;
+	}
+	
+	public int getEndCharacter() {
+		return this.endCharacter;
+	} 
+	
 	public void setLineNumber(int n) {
 		this.lineNumber = n;
 	}

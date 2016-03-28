@@ -476,7 +476,7 @@ public class IndexManager {
 		
 		solrDoc.addField(IndexManager.SNIPPET_GRANULARITY, "Class"); // String => Class, Method, Method Invocation
 		
-		solrDoc.addField(IndexManager.SNIPPET_PACKAGE, jc.getPackage());
+		solrDoc.addField(IndexManager.SNIPPET_PACKAGE, jc.getPackage().getFullyQualifiedName());
 		
 		if(jc.getPackage().getFullyQualifiedName() != null){
 			String[] split = jc.getPackage().getFullyQualifiedName().split("[.]");
@@ -486,8 +486,8 @@ public class IndexManager {
 		String githubAddress = this.toGitHubAddress(currentProject.project_owner,currentProject.project_name, file, headCommit.getHashCode());
 		solrDoc.addField(IndexManager.SNIPPET_ADDRESS, githubAddress);
 		
-		String id = githubAddress+"?start="+jc.getLineNumber()+"&end="+jc.getEndLine();
-		solrDoc.addField("id",id);
+		String id = githubAddress+"?start="+jc.getStartCharacter()+"&end="+jc.getEndCharacter();
+		solrDoc.addField("id", id);
 		solrDoc.addField(IndexManager.EXPAND_ID, id);
 		
 		if(jc.getClassList().size() > 0){
@@ -606,7 +606,7 @@ public class IndexManager {
 		SolrInputDocument methodDecSolrDoc = new SolrInputDocument();
 		MethodDeclarationObject mdo = (MethodDeclarationObject) entity;
 		
-		String idDec =  id + "&methodStart=" + entity.getLineNumber() + "&methodEnd=" + entity.getEndLine();
+		String idDec =  id + "&methodStart=" + entity.getStartCharacter() + "&methodEnd=" + entity.getEndCharacter();
 		methodDecSolrDoc.addField("id", idDec);
 		methodDecSolrDoc.addField(IndexManager.EXPAND_ID, id);
 		
@@ -710,7 +710,7 @@ public class IndexManager {
 		methodInvSolrDoc.addField("parent",false);
 		methodInvSolrDoc.addField("is_method_invocation_child",true);
 		
-		String idInvo = id + "&start=" + entity.getLineNumber() + "&end=" + entity.getEndLine();
+		String idInvo = id + "&start=" + entity.getStartCharacter() + "&end=" + entity.getEndCharacter();
 		methodInvSolrDoc.addField("id", idInvo);
 		methodInvSolrDoc.addField(IndexManager.EXPAND_ID, id);
 		

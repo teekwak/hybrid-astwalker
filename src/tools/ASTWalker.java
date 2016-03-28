@@ -374,7 +374,8 @@ public class ASTWalker {
 
 					md.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
 					md.setDeclaringClass(binding.getDeclaringClass().getQualifiedName());
-					md.setEndLine(cu.getLineNumber(node.getStartPosition() + node.getLength()));
+					md.setEndCharacter(node.getStartPosition() + node.getLength() - 1);
+					md.setEndLine(cu.getLineNumber(node.getStartPosition() + node.getLength() - 1));
 					md.setFullyQualifiedName(fullyQualifiedName);
 					md.setGenericParametersList(genericParametersList);
 					md.setIsAbstract(isAbstract);
@@ -388,7 +389,8 @@ public class ASTWalker {
 					md.setParametersList(node.parameters());
 					md.setParameterTypesList(parameterTypes);
 					md.setReturnType(binding.getReturnType().getQualifiedName());
-
+					md.setStartCharacter(name.getStartPosition());
+					
 					if(node.thrownExceptionTypes().size() > 0) {
 						for(Object o : node.thrownExceptionTypes()) {
 							md.addThrowsException(o.toString());
@@ -460,7 +462,9 @@ public class ASTWalker {
 					mio.setArguments(node.arguments());
 					mio.setArgumentTypes(argumentTypes);
 					mio.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-					mio.setEndLine(cu.getLineNumber(node.getStartPosition() + node.getLength()));
+					mio.setEndLine(cu.getLineNumber(node.getStartPosition() + node.getLength() - 1));
+					mio.setStartCharacter(name.getStartPosition());
+					mio.setEndCharacter(node.getStartPosition() + node.getLength() - 1);
 					mio.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
 					entityStack.peek().addEntity(mio, EntityType.METHOD_INVOCATION);
 				}
@@ -616,8 +620,8 @@ public class ASTWalker {
 					inInterface = false;
 					
 					int startLine = cu.getLineNumber(node.getStartPosition());
-					int endLine = cu.getLineNumber(node.getStartPosition() + node.getLength());
-					
+					int endLine = cu.getLineNumber(node.getStartPosition() + node.getLength() - 1);
+										
 					// get source code
 					StringBuilder classSourceCode = new StringBuilder();
 					
@@ -666,6 +670,8 @@ public class ASTWalker {
 					co.setIsGenericType(binding.isGenericType());
 					co.setPackage(packageObject);
 					co.setSourceCode(classSourceCode.toString());
+					co.setStartCharacter(node.getStartPosition());
+					co.setEndCharacter(node.getStartPosition() + node.getLength() - 1);
 					
 					if(node.getSuperclassType() != null) {
 						co.setSuperClass(node.getSuperclassType().toString());
