@@ -1,6 +1,9 @@
 package tools;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -203,6 +206,7 @@ public class IndexManager {
 		String htmlURL = "\""+projectURL+"\"";
 		
 		currentProject = new ProjectInfo();
+		
 		SolrDocumentList list = Solrj.getInstance().query("id:"+htmlURL, "githubprojects", 1, 0, 9001);
 		
 		SolrDocument doc = (SolrDocument)list.get(0);
@@ -270,30 +274,6 @@ public class IndexManager {
 			currentProject.type = userType;
 		}
 
-	}
-	
-	public static void traverseUntilJava(File parentNode, String topDirectoryLocation) throws IOException, CoreException, NoHeadException, GitAPIException, ParseException {
-		if(parentNode.isDirectory()) {
-			File childNodes[] = parentNode.listFiles();
-						
-			for(File c : childNodes) {
-				if(!c.getName().startsWith(".")) {
-					traverseUntilJava(c, topDirectoryLocation);
-				}
-			}
-		}
-		else {
-			
-			if(parentNode.getName().endsWith(".java")) {	
-				runASTandGitData(parentNode, topDirectoryLocation);
-			}
-			/*
-			if(parentNode.getName().equals("JabberUtil.java")) {
-			//if(parentNode.getName().equals("java1.java")) {
-				runASTandGitData(parentNode, topDirectoryLocation);
-			}
-			*/	
-		}
 	}
 	
 	/*
@@ -555,14 +535,9 @@ public class IndexManager {
 		
 		Solrj.getInstance().addDoc(solrDoc);
 		
-		// may need to comment out for testing
-		/*
-		if(Solrj.getInstance().req.getDocuments().size() >= MAXDOC || CHILD_COUNT >= MAX_CHILD_DOC)
-			Solrj.getInstance().commitDocs("CodeExchangeIndex", 9452);
-		*/	
-		
-		Solrj.getInstance().commitDocs("MoreLikeThisIndex", 9452);
-		
+		if(Solrj.getInstance().req.getDocuments().size() >= MAXDOC || CHILD_COUNT >= MAX_CHILD_DOC) {
+			Solrj.getInstance().commitDocs("CodeExchangeIndex", 9452);	
+		}
 	}
 	
 	// recursively get method declarations (for those method declarations inside of each other)
@@ -823,32 +798,75 @@ public class IndexManager {
 		return digest;
 	}
 	
-	public static void main(String[] args) throws IOException, CoreException, NoHeadException, GitAPIException, ParseException {
+	public static void traverseUntilJava(File parentNode, String topDirectoryLocation) throws IOException, CoreException, NoHeadException, GitAPIException, ParseException {
+		if(parentNode.isDirectory()) {
+			File childNodes[] = parentNode.listFiles();
+						
+			for(File c : childNodes) {
+				if(!c.getName().startsWith(".")) {
+					traverseUntilJava(c, topDirectoryLocation);
+				}
+			}
+		}
+		else {
+			
+			if(parentNode.getName().endsWith(".java")) {	
+				runASTandGitData(parentNode, topDirectoryLocation);
+			}
+		}
+	}
+	
+	public static void processRepository(String topDirectoryLocation, String URL) throws NoHeadException, IOException, CoreException, GitAPIException, ParseException {
 		fileModelList.clear();
 		gitDataList.clear();
 		
-		//String topDirectoryLocation = args[0];
-		//String URL = "??";
-		
-		String topDirectoryLocation = "/home/kwak/Desktop/jabber-plugin/";		
-		String URL = "https://github.com/jenkinsci/jabber-plugin";
-		
-		//String topDirectoryLocation = "/home/kwak/Desktop/ReSender/";
-		//String URL = "https://github.com/Gilevich/ReSender";
-		
-		/* 
-		 * given name of directory
-		 * match directory AND author to find url
-		 * 
-		 * use URL to run processRepo
-		 * THEN process each class, method dec, method inv
-		 */
-		
-		File inputFolder = new File( topDirectoryLocation );
-		
 		IndexManager.getInstance().processRepo(topDirectoryLocation, URL);
-		traverseUntilJava(inputFolder, topDirectoryLocation);	
+		traverseUntilJava(new File(topDirectoryLocation), topDirectoryLocation);	
+		
+		// runs after file models and git data are collected
+		createSolrDocs();		
+	}
+	
+	public static void readMapFile(File file) throws NoHeadException, CoreException, GitAPIException, ParseException {
+        boolean path = false;
+        boolean url = false;
+        String[] arr = {"", ""};
 
-		createSolrDocs();
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(file));
+
+            for(String line; (line = br.readLine()) != null; ) {
+                if (line.startsWith("'")) {
+                    arr[0] = line.replace("'", "") + "/";
+                    path = true;
+                } else if (line.startsWith("http")) {
+                    arr[1] = line;
+                    url = true;
+                }
+                
+                if(path == true && url == true) {
+                    path = false;
+                    url = false;
+
+                    processRepository(arr[0], arr[1]);
+                }
+            }
+
+            br.close();
+
+        } catch (FileNotFoundException e) {
+            System.err.println("File not found!");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+	}
+	
+	public static void main(String[] args) throws IOException, CoreException, NoHeadException, GitAPIException, ParseException {
+		// given location of directory and URL
+		File pathToURLMap = new File("/home/kwak/Desktop/testMap.txt");
+		
+		readMapFile(pathToURLMap);
+		
+		Solrj.getInstance().commitDocs("MoreLikeThisIndex", 9452);
 	}
 }

@@ -166,7 +166,11 @@ public class ASTWalker {
 			public boolean visit(ConditionalExpression node){
 				if(inMethod) {
 					SuperEntityClass ceo = new SuperEntityClass();
-					ceo.setName(node.getExpression().toString());
+					try {
+						ceo.setName(node.getExpression().toString());						
+					} catch (NullPointerException e) {
+						ceo.setName("");
+					}
 					ceo.setLineNumber(cu.getLineNumber(node.getStartPosition()));
 					ceo.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
 					entityStack.peek().addEntity(ceo, EntityType.CONDITIONAL_EXPRESSION);
@@ -178,7 +182,11 @@ public class ASTWalker {
 			public boolean visit(DoStatement node) {
 				if(inMethod) {					
 					SuperEntityClass dso = new SuperEntityClass();
-					dso.setName(node.getExpression().toString());
+					try {
+						dso.setName(node.getExpression().toString());						
+					} catch (NullPointerException e) {
+						dso.setName("");
+					}
 					dso.setLineNumber(cu.getLineNumber(node.getStartPosition()));
 					dso.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));		
 					entityStack.peek().addEntity(dso, EntityType.DO_STATEMENT);
@@ -189,7 +197,11 @@ public class ASTWalker {
 			public boolean visit(EnhancedForStatement node) {
 				if(inMethod) {
 					SuperEntityClass fso = new SuperEntityClass();
-					fso.setName(node.getExpression().toString());
+					try {
+						fso.setName(node.getExpression().toString());						
+					} catch (NullPointerException e) {
+						fso.setName("");
+					}
 					fso.setLineNumber(cu.getLineNumber(node.getStartPosition()));
 					fso.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
 					entityStack.peek().addEntity(fso, EntityType.FOR_STATEMENT);	
@@ -267,7 +279,13 @@ public class ASTWalker {
 			public boolean visit(ForStatement node) {
 				if(inMethod) {
 					SuperEntityClass fso = new SuperEntityClass();
-					fso.setName(node.getExpression().toString());
+					
+					try {
+						fso.setName(node.getExpression().toString());
+					} catch (NullPointerException e) {
+						fso.setName("");
+					}
+					
 					fso.setLineNumber(cu.getLineNumber(node.getStartPosition()));
 					fso.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
 					entityStack.peek().addEntity(fso, EntityType.FOR_STATEMENT);				
@@ -279,7 +297,11 @@ public class ASTWalker {
 			public boolean visit(IfStatement node) {
 				if(inMethod) {
 					SuperEntityClass iso = new SuperEntityClass();
-					iso.setName(node.getExpression().toString());
+					try {
+						iso.setName(node.getExpression().toString());						
+					} catch (NullPointerException e) {
+						iso.setName("");
+					}
 					iso.setLineNumber(cu.getLineNumber(node.getStartPosition()));
 					iso.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
 					entityStack.peek().addEntity(iso, EntityType.IF_STATEMENT);
@@ -563,7 +585,11 @@ public class ASTWalker {
 
 				if(inMethod) {
 					SuperEntityClass sso = new SuperEntityClass();
-					sso.setName(node.getExpression().toString());
+					try {
+						sso.setName(node.getExpression().toString());						
+					} catch (NullPointerException e) {
+						sso.setName("");
+					}
 					sso.setLineNumber(cu.getLineNumber(node.getStartPosition()));
 					sso.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
 					
@@ -597,7 +623,11 @@ public class ASTWalker {
 			public boolean visit(ThrowStatement node) {
 				if(inMethod) {
 					SuperEntityClass to = new SuperEntityClass();
-					to.setName(node.getExpression().toString());
+					try {
+						to.setName(node.getExpression().toString());						
+					} catch (NullPointerException e) {
+						to.setName("");
+					}
 					to.setLineNumber(cu.getLineNumber(node.getStartPosition()));
 					to.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));	
 					entityStack.peek().addEntity(to, EntityType.THROW_STATEMENT);
@@ -610,7 +640,11 @@ public class ASTWalker {
 					String tryBody = "Try Statement";
 
 					SuperEntityClass tso = new SuperEntityClass();
-					tso.setName(tryBody);
+					try {
+						tso.setName(tryBody);						
+					} catch (NullPointerException e) {
+						tso.setName("");
+					}
 					tso.setLineNumber(cu.getLineNumber(node.getStartPosition()));
 					tso.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
 					entityStack.peek().addEntity(tso, EntityType.TRY_STATEMENT);
@@ -852,7 +886,11 @@ public class ASTWalker {
 			public boolean visit(WhileStatement node){
 				if(inMethod) {
 					SuperEntityClass wso = new SuperEntityClass();
-					wso.setName(node.getExpression().toString());
+					try {
+						wso.setName(node.getExpression().toString());						
+					} catch (NullPointerException e) {
+						wso.setName("");
+					}
 					wso.setLineNumber(cu.getLineNumber(node.getStartPosition()));
 					wso.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));	
 					entityStack.peek().addEntity(wso, EntityType.WHILE_STATEMENT);
