@@ -271,7 +271,6 @@ public class IndexManager {
 
 	}
 	
-	
 	public static void traverseUntilJava(File parentNode, String topDirectoryLocation) throws IOException, CoreException, NoHeadException, GitAPIException, ParseException {
 		if(parentNode.isDirectory()) {
 			File childNodes[] = parentNode.listFiles();
@@ -288,11 +287,11 @@ public class IndexManager {
 				runASTandGitData(parentNode, topDirectoryLocation);
 			}
 			/*
-			if(parentNode.getName().equals("JabberConnectionDebugger.java")) {
+			if(parentNode.getName().equals("JabberUtil.java")) {
 			//if(parentNode.getName().equals("java1.java")) {
 				runASTandGitData(parentNode, topDirectoryLocation);
 			}
-			*/
+			*/	
 		}
 	}
 	
@@ -376,7 +375,7 @@ public class IndexManager {
 		File file = new File(javaFile.getFileLocation());
 		
 		JavaClass jc = (JavaClass) entity;
-		
+				
 		solrDoc.addField(IndexManager.SNIPPET_NAME, jc.getFullyQualifiedName());
 		solrDoc.addField(IndexManager.SNIPPET_NAME_DELIMITED, jc.getName());
 		
@@ -402,10 +401,10 @@ public class IndexManager {
 		}
 		
 		solrDoc.addField(IndexManager.SNIPPET_IS_WILDCARD, has_wildcard_method); 
-		
+				
 		for(SuperEntityClass importStr : jc.getImportList()) {
 			solrDoc.addField(IndexManager.SNIPPET_IMPORTS, importStr.getFullyQualifiedName());
-			
+						
 			String[] split = importStr.getFullyQualifiedName().split("[.]");
 			solrDoc.addField(IndexManager.SNIPPET_IMPORTS_SHORT, split[split.length - 1]);
 		}
@@ -794,8 +793,6 @@ public class IndexManager {
 	public static String makeGravaterURL(String authorEmail) {
 		String email = authorEmail;
 		String url = "";
-
-		System.out.println("[email to md5]"+email);
 
 		if(email == null)
 			return url;
