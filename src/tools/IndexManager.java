@@ -57,6 +57,7 @@ public class IndexManager {
 	public static final String SNIPPET_ADDRESS_LOWER_BOUND = "snippet_address_lower_bound";
 	public static final String SNIPPET_ADDRESS_UPPER_BOUND ="snippet_address_upper_bound";
 	public static final String SNIPPET_ALL_AUTHORS = "snippet_all_authors";
+	public static final String SNIPPET_ALL_AUTHOR_AVATARS = "snippet_all_author_avatars";
 	public static final String SNIPPET_ALL_AUTHOR_EMAILS = "snippet_all_author_emails";
 	public static final String SNIPPET_ALL_COMMENTS = "snippet_all_version_comments";
 	public static final String SNIPPET_ALL_DATES = "snippet_all_dates";
@@ -455,6 +456,7 @@ public class IndexManager {
 		solrDoc.addField(IndexManager.SNIPPET_AUTHOR_COUNT, ((Number)javaFile.getUniqueAuthors().size()).longValue());
 		
 		for(String email : javaFile.getUniqueEmails()) {
+			solrDoc.addField(IndexManager.SNIPPET_ALL_AUTHOR_AVATARS, makeGravaterURL(email));
 			solrDoc.addField(IndexManager.SNIPPET_ALL_AUTHOR_EMAILS, email);
 		}
 

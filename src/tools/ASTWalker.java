@@ -380,6 +380,15 @@ public class ASTWalker {
 					md.setGenericParametersList(genericParametersList);
 					md.setIsAbstract(isAbstract);
 					md.setIsConstructor(node.isConstructor());
+					
+					// to avoid API from setting constructor return type to void
+					if(node.isConstructor()) {
+						md.setReturnType(null);
+					}
+					else {
+						md.setReturnType(binding.getReturnType().getQualifiedName());						
+					}
+					
 					md.setIsGenericType(binding.isGenericMethod());
 					md.setIsStatic(isStatic);
 					md.setIsVarargs(node.isVarargs());
@@ -388,7 +397,7 @@ public class ASTWalker {
 					md.setNumberOfCharacters(node.getLength());
 					md.setParametersList(node.parameters());
 					md.setParameterTypesList(parameterTypes);
-					md.setReturnType(binding.getReturnType().getQualifiedName());
+
 					md.setStartCharacter(name.getStartPosition());
 					
 					if(node.thrownExceptionTypes().size() > 0) {
