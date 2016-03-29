@@ -31,7 +31,8 @@ class CommitData {
 	int deletions;
 	
 	CommitData() {
-	
+		this.insertions = 0;
+		this.deletions = 0;
 	}
 	
 	public void setSolrDate(String sd) {

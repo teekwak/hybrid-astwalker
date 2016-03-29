@@ -390,11 +390,31 @@ public class IndexManager {
 		
 		JavaClass jc = (JavaClass) entity;
 		
+		solrDoc.addField(IndexManager.SNIPPET_NAME, jc.getFullyQualifiedName());
+		solrDoc.addField(IndexManager.SNIPPET_NAME_DELIMITED, jc.getName());
+		
+		solrDoc.addField(IndexManager.SNIPPET_GRANULARITY, "Class"); // String => Class, Method, Method Invocation
+		solrDoc.addField("parent", true);
+		
 		solrDoc.addField(IndexManager.SNIPPET_CODE, jc.getSourceCode());
 		solrDoc.addField(IndexManager.SNIPPET_ADDRESS_LOWER_BOUND, ((Number)jc.getEndLine()).longValue());
 		solrDoc.addField(IndexManager.SNIPPET_ADDRESS_UPPER_BOUND, ((Number)jc.getLineNumber()).longValue());
 	
+		solrDoc.addField(IndexManager.SNIPPET_HAS_JAVA_COMMENTS, jc.getHasComments());
+		
+		solrDoc.addField(IndexManager.SNIPPET_IS_ABSTRACT, jc.getIsAbstract());
+		solrDoc.addField(IndexManager.SNIPPET_IS_GENERIC, jc.getIsGenericType());
 		solrDoc.addField(IndexManager.SNIPPET_IS_INNERCLASS, jc.getIsInnerClass());
+		
+		boolean has_wildcard_method = false;
+		for(SuperEntityClass md : jc.getMethodDeclarationList()) {
+			if(((MethodDeclarationObject) md).getWildcardList().size() > 0) {
+				has_wildcard_method =  true;
+				break;
+			}			
+		}
+		
+		solrDoc.addField(IndexManager.SNIPPET_IS_WILDCARD, has_wildcard_method); 
 		
 		for(SuperEntityClass importStr : jc.getImportList()) {
 			solrDoc.addField(IndexManager.SNIPPET_IMPORTS, importStr.getFullyQualifiedName());
@@ -409,6 +429,38 @@ public class IndexManager {
 			String[] split = interfaceStr.split("[.]");
 			solrDoc.addField(IndexManager.SNIPPET_IMPLEMENTS_SHORT, split[split.length - 1]);
 		}	
+		
+		solrDoc.addField(IndexManager.SNIPPET_EXTENDS, jc.getSuperClass());
+		if(jc.getSuperClass() != null){
+			String[] split = jc.getSuperClass().split("[.]");
+			solrDoc.addField(IndexManager.SNIPPET_EXTENDS_SHORT, split[split.length-1]);
+		}
+		
+		solrDoc.addField(IndexManager.SNIPPET_PACKAGE, jc.getPackage().getFullyQualifiedName());
+		
+		if(jc.getPackage().getFullyQualifiedName() != null){
+			String[] split = jc.getPackage().getFullyQualifiedName().split("[.]");
+			solrDoc.addField(IndexManager.SNIPPET_PACKAGE_SHORT, split[split.length-1]);
+		}	
+		
+		solrDoc.addField(IndexManager.SNIPPET_PATH_COMPLEXITY_SUM, ((Number)jc.getCyclomaticComplexity()).longValue());
+		
+		//solrDoc.addField(IndexManager.SNIPPET_HUMAN_LANGUAGE, snippet.humanLanguage);
+		
+		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_FIELDS, ((Number)jc.getGlobalList().size()).longValue());
+		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_FUNCTIONS, ((Number)jc.getMethodDeclarationList().size()).longValue());
+		
+		if(has_wildcard_method == true) {
+			for(SuperEntityClass md : jc.getMethodDeclarationList()) {
+				for(SuperEntityClass wild : ((MethodDeclarationObject)md).getWildcardList()) {
+					solrDoc.addField(IndexManager.SNIPPET_IS_WILDCARD_BOUNDS, wild.getBound());
+				}
+			}
+		}
+	
+		for(String typeParameter: jc.getGenericParametersList()){
+			solrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_IS_GENERIC_TYPE_PARAMS, typeParameter);
+		}
 		
 		for(String author : javaFile.getUniqueAuthors()) {
 			solrDoc.addField(IndexManager.SNIPPET_ALL_AUTHORS, author);
@@ -440,48 +492,36 @@ public class IndexManager {
 			solrDoc.addField(IndexManager.SNIPPET_ALL_VERSIONS, cd.getHashCode());
 		}
 		
-		solrDoc.addField("year", headCommit.getYear());
 		solrDoc.addField("month", headCommit.getMonth());
 		solrDoc.addField("day", headCommit.getDay());
-	
-		solrDoc.addField(IndexManager.SNIPPET_PATH_COMPLEXITY_SUM, ((Number)jc.getCyclomaticComplexity()).longValue());
-		solrDoc.addField(IndexManager.SNIPPET_HAS_JAVA_COMMENTS, jc.getHasComments());
+		solrDoc.addField("year", headCommit.getYear());
 		
-		//solrDoc.addField(IndexManager.SNIPPET_HUMAN_LANGUAGE, snippet.humanLanguage);
+		int totalInsertions = 0;
+		int totalDeletions = 0;
 		
-		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_FIELDS, ((Number)jc.getGlobalList().size()).longValue());
-		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_FUNCTIONS, ((Number)jc.getMethodDeclarationList().size()).longValue());
+		for(CommitData cd : javaFile.getCommitDataList()) {
+			totalInsertions += cd.getInsertions();
+			totalDeletions += cd.getDeletions();
+		}
 		
-		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_INSERTIONS, ((Number)headCommit.getInsertions()).longValue());
-		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_DELETIONS, ((Number)headCommit.getDeletions()).longValue());		
+		solrDoc.addField(IndexManager.SNIPPET_SIZE, jc.getSourceCode().length());
+		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_LINES, ((Number)(jc.getEndLine() - jc.getLineNumber() + 1)).longValue());
+		
+		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_INSERTIONS, ((Number)totalInsertions).longValue());
+		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_DELETIONS, ((Number)totalDeletions).longValue());		
 		
 		//solrDoc.addField(IndexManager.SNIPPET_CHANGED_CODE_CHURN, snippet.changedChurn);
 
-		long calculation = 0;
-				
-		calculation = headCommit.getInsertions() / javaFile.getNumberOfLines();
+		double calculation = 0;
+		
+		calculation = (double)totalInsertions / (double)javaFile.getNumberOfLines();
 		solrDoc.addField(IndexManager.SNIPPET_INSERTION_CODE_CHURN, calculation);
 				
-		calculation = headCommit.getDeletions() / javaFile.getNumberOfLines();
+		calculation = (double)totalDeletions / (double)javaFile.getNumberOfLines();
 		solrDoc.addField(IndexManager.SNIPPET_DELETED_CODE_CHURN, calculation);
 				
-		calculation = (headCommit.getInsertions() + headCommit.getDeletions()) / javaFile.getNumberOfLines();
-		solrDoc.addField(IndexManager.SNIPPET_INSERTION_DELETION_CODE_CHURN, calculation);
-				
-		solrDoc.addField(IndexManager.SNIPPET_EXTENDS, jc.getSuperClass());
-		if(jc.getSuperClass() != null){
-			String[] split = jc.getSuperClass().split("[.]");
-			solrDoc.addField(IndexManager.SNIPPET_EXTENDS_SHORT, split[split.length-1]);
-		}
-		
-		solrDoc.addField(IndexManager.SNIPPET_GRANULARITY, "Class"); // String => Class, Method, Method Invocation
-		
-		solrDoc.addField(IndexManager.SNIPPET_PACKAGE, jc.getPackage().getFullyQualifiedName());
-		
-		if(jc.getPackage().getFullyQualifiedName() != null){
-			String[] split = jc.getPackage().getFullyQualifiedName().split("[.]");
-			solrDoc.addField(IndexManager.SNIPPET_PACKAGE_SHORT, split[split.length-1]);
-		}		
+		calculation = (double)(totalInsertions + totalDeletions) / (double)javaFile.getNumberOfLines();
+		solrDoc.addField(IndexManager.SNIPPET_INSERTION_DELETION_CODE_CHURN, calculation);	
 		
 		String githubAddress = this.toGitHubAddress(currentProject.project_owner,currentProject.project_name, file, headCommit.getHashCode());
 		solrDoc.addField(IndexManager.SNIPPET_ADDRESS, githubAddress);
@@ -500,15 +540,10 @@ public class IndexManager {
 			}
 		}
 		
-		solrDoc.addField(IndexManager.SNIPPET_SIZE, jc.getSourceCode().length());
 		solrDoc.addField(IndexManager.SNIPPET_THIS_VERSION, headCommit.getHashCode());
-		
-		solrDoc.addField(IndexManager.SNIPPET_NAME, jc.getFullyQualifiedName());
-		solrDoc.addField(IndexManager.SNIPPET_NAME_DELIMITED, jc.getName());
 			
 		solrDoc.addField(IndexManager.SNIPPET_VERSION_COMMENT, headCommit.getMessage());
 		solrDoc.addField(IndexManager.SNIPPET_LAST_UPDATED, headCommit.getSolrDate());
-		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_LINES, ((Number)(jc.getEndLine() - jc.getLineNumber() + 1)).longValue());
 		
 		// method declaration is right below this current method
 		addVariableListToSolrDoc(jc.getArrayList(), solrDoc);
@@ -519,36 +554,9 @@ public class IndexManager {
 		// method declaration is right below this current method
 		addVariablesFromMethodDeclaration(jc.getMethodDeclarationList(), solrDoc);		
 		
-		solrDoc.addField(IndexManager.SNIPPET_IS_ABSTRACT, jc.getIsAbstract());
-		solrDoc.addField(IndexManager.SNIPPET_IS_GENERIC, jc.getIsGenericType());
-		
-		for(String typeParameter: jc.getGenericParametersList()){
-			solrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_IS_GENERIC_TYPE_PARAMS, typeParameter);
-		}
-
-		boolean has_wildcard_method = false;
-		for(SuperEntityClass md : jc.getMethodDeclarationList()) {
-			if(((MethodDeclarationObject) md).getWildcardList().size() > 0) {
-				has_wildcard_method =  true;
-				break;
-			}			
-		}
-		solrDoc.addField(IndexManager.SNIPPET_IS_WILDCARD, has_wildcard_method); 
-		
-		if(has_wildcard_method == true) {
-			for(SuperEntityClass md : jc.getMethodDeclarationList()) {
-				for(SuperEntityClass wild : ((MethodDeclarationObject)md).getWildcardList()) {
-					solrDoc.addField(IndexManager.SNIPPET_IS_WILDCARD_BOUNDS, wild.getBound());
-				}
-			}
-		}
-	
-		solrDoc.addField("parent", true);
-		
 		for(SuperEntityClass md : jc.getMethodDeclarationList()) {
 			findAllMethodDeclarations((MethodDeclarationObject)md, solrDoc, id);
 		}
-		
 		
 		Solrj.getInstance().addDoc(solrDoc);
 		
@@ -610,6 +618,22 @@ public class IndexManager {
 		methodDecSolrDoc.addField("id", idDec);
 		methodDecSolrDoc.addField(IndexManager.EXPAND_ID, id);
 		
+		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_NAME, mdo.getFullyQualifiedName());
+		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_NAME_DELIMITED, mdo.getName());
+		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_START, ((Number)mdo.getLineNumber()).longValue());
+		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_END, ((Number)mdo.getEndLine()).longValue());
+		
+		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_IS_ABSTRACT, mdo.getIsAbstract());
+		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_IS_CONSTRUCTOR, mdo.getIsConstructor());
+		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_IS_GENERIC, mdo.getIsGenericType());
+		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_IS_STATIC, mdo.getIsStatic());
+		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_IS_VAR_ARGS, mdo.getIsVarargs());		
+		
+		methodDecSolrDoc.addField("parent",false);
+		methodDecSolrDoc.addField("is_method_dec_child",true);
+		
+		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_PATH_COMPLEXITY, ((Number)mdo.getCyclomaticComplexity()).longValue());
+		
 		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_WHILE_COUNT, ((Number)mdo.getWhileStatementList().size()).longValue());
 		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_FOR_COUNT, ((Number)mdo.getForStatementList().size()).longValue());
 		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_IF_COUNT, ((Number)mdo.getIfStatementList().size()).longValue());
@@ -619,9 +643,6 @@ public class IndexManager {
 		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_LOGICAL_COUNT, ((Number)mdo.getInfixExpressionList().size()).longValue());
 		
 		// methodDec.addField(IndexManager.SNIPPET_METHOD_DEC_IS_RECURSIVE, dec.isRecurisive);
-		
-		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_IS_CONSTRUCTOR, mdo.getIsConstructor());
-		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_IS_VAR_ARGS, mdo.getIsVarargs());		
 		
 		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_DECLARING_CLASS, mdo.getDeclaringClass());
 		if(!mdo.getDeclaringClass().isEmpty()){
@@ -634,17 +655,6 @@ public class IndexManager {
 		int localVariableCount = mdo.getArrayList().size() + mdo.getGenericsList().size() + mdo.getPrimitiveList().size() + mdo.getSimpleList().size() - mdo.getParametersList().size();	
 		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_NUMBER_OF_LOCAL_VARIABLES, ((Number)localVariableCount).longValue());
 		
-		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_PATH_COMPLEXITY, ((Number)mdo.getCyclomaticComplexity()).longValue());
-		
-		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_NAME, mdo.getFullyQualifiedName());
-		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_NAME_DELIMITED, mdo.getName());
-		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_START, ((Number)mdo.getLineNumber()).longValue());
-		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_END, ((Number)mdo.getEndLine()).longValue());
-		
-		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_IS_ABSTRACT, mdo.getIsAbstract());
-		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_IS_STATIC, mdo.getIsStatic());
-		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_IS_GENERIC, mdo.getIsGenericType());
-		
 		for(String typeParam : mdo.getGenericParametersList()) {
 			methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_IS_GENERIC_TYPE_PARAMS, typeParam);
 		}
@@ -652,9 +662,6 @@ public class IndexManager {
 		for(SuperEntityClass wc : mdo.getWildcardList()) {
 			methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_IS_WILDCARD_BOUNDS, wc.getBound());
 		}
-		
-		methodDecSolrDoc.addField("parent",false);
-		methodDecSolrDoc.addField("is_method_dec_child",true);
 		
 		Map<String, Integer> paramCount = new HashMap<String, Integer>();
 		Map<String, Integer> paramCountShort = new HashMap<String, Integer>();
@@ -795,6 +802,7 @@ public class IndexManager {
 		gitDataList.clear();
 		
 		//String topDirectoryLocation = args[0];
+		//String URL = "??";
 		
 		String topDirectoryLocation = "/home/kwak/Desktop/jabber-plugin/";		
 		String URL = "https://github.com/jenkinsci/jabber-plugin";
