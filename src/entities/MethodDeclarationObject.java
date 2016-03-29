@@ -38,6 +38,7 @@ public class MethodDeclarationObject extends SuperEntityClass {
 	List<SuperEntityClass> switchStatementList;
 	List<SuperEntityClass> throwStatementList;
 	List<SuperEntityClass> tryStatementList;
+	List<SuperEntityClass> unionList;
 	List<SuperEntityClass> whileStatementList;
 	List<SuperEntityClass> wildcardList;
 	
@@ -66,6 +67,7 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		this.switchStatementList = new ArrayList<>();
 		this.throwStatementList = new ArrayList<>();
 		this.tryStatementList = new ArrayList<>();
+		this.unionList = new ArrayList<>();
 		this.whileStatementList = new ArrayList<>();
 		this.wildcardList = new ArrayList<>();
 	}
@@ -159,6 +161,10 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		}
 		
 		for(Entity e : tryStatementList) {
+			e.printInfo();
+		}
+		
+		for(Entity e : unionList) {
 			e.printInfo();
 		}
 		
@@ -339,6 +345,10 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		return this.tryStatementList;
 	}
 	
+	public List<SuperEntityClass> getUnionList() {
+		return this.unionList;
+	}
+	
 	public List<SuperEntityClass> getWhileStatementList() {
 		return this.whileStatementList;
 	}
@@ -397,6 +407,9 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		}
 		else if(ET == EntityType.TRY_STATEMENT) {
 			this.tryStatementList.add(entity);
+		}
+		else if(ET == EntityType.UNION) {
+			this.unionList.add(entity);
 		}
 		else if(ET == EntityType.WHILE_STATEMENT) {
 			this.whileStatementList.add(entity);

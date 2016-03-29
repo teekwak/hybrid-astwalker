@@ -383,23 +383,19 @@ public class ASTWalker {
 						}
 						parameterTypes.add(fqn);
 					}
-					
-					// get generic parameters
-					List<String> genericParametersList = new ArrayList<>();
-					if(binding.isGenericMethod()) {
-						for(Object o : binding.getTypeParameters()) {
-							genericParametersList.add(o.toString());
-						}
-					}
-					
+				
 					MethodDeclarationObject md = new MethodDeclarationObject();
 
 					md.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-					md.setDeclaringClass(binding.getDeclaringClass().getQualifiedName());
+					try {
+						md.setDeclaringClass(binding.getDeclaringClass().getQualifiedName());						
+					} catch (NullPointerException e) {
+						md.setDeclaringClass(null);
+					}
 					md.setEndCharacter(node.getStartPosition() + node.getLength() - 1);
 					md.setEndLine(cu.getLineNumber(node.getStartPosition() + node.getLength() - 1));
 					md.setFullyQualifiedName(fullyQualifiedName);
-					md.setGenericParametersList(genericParametersList);
+
 					md.setIsAbstract(isAbstract);
 					md.setIsConstructor(node.isConstructor());
 					
@@ -408,10 +404,27 @@ public class ASTWalker {
 						md.setReturnType(null);
 					}
 					else {
-						md.setReturnType(binding.getReturnType().getQualifiedName());						
+						try {
+							md.setReturnType(binding.getReturnType().getQualifiedName());								
+						} catch (NullPointerException e) {
+							md.setReturnType(null);
+						}
 					}
 					
-					md.setIsGenericType(binding.isGenericMethod());
+					// get generic parameters
+					List<String> genericParametersList = new ArrayList<>();
+					try {
+						if(binding.isGenericMethod()) {
+							md.setIsGenericType(binding.isGenericMethod());
+							for(Object o : binding.getTypeParameters()) {
+								genericParametersList.add(o.toString());
+							}
+						}						
+					} catch (NullPointerException e) {
+						md.setIsGenericType(false);
+					}
+					
+					md.setGenericParametersList(genericParametersList);
 					md.setIsStatic(isStatic);
 					md.setIsVarargs(node.isVarargs());
 					md.setLineNumber(cu.getLineNumber(name.getStartPosition()));
@@ -573,6 +586,15 @@ public class ASTWalker {
 					so.setLineNumber(cu.getLineNumber(name.getStartPosition()));
 					so.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
 					entityStack.peek().addEntity(so, EntityType.SIMPLE);
+				}
+				else if(node.getType().isUnionType()) {
+					SuperEntityClass uo = new SuperEntityClass();
+					uo.setName(name.toString());
+					uo.setFullyQualifiedName(fullyQualifiedName);
+					uo.setType(node.getType());
+					uo.setLineNumber(cu.getLineNumber(name.getStartPosition()));
+					uo.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
+					entityStack.peek().addEntity(uo, EntityType.UNION);
 				}
 				else {
 					System.out.println("Something is missing " + node.getType());

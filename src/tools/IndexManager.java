@@ -536,7 +536,7 @@ public class IndexManager {
 		Solrj.getInstance().addDoc(solrDoc);
 		
 		if(Solrj.getInstance().req.getDocuments().size() >= MAXDOC || CHILD_COUNT >= MAX_CHILD_DOC) {
-			Solrj.getInstance().commitDocs("CodeExchangeIndex", 9452);	
+			Solrj.getInstance().commitDocs("MoreLikeThisIndex", 9452);	
 		}
 	}
 	
@@ -863,6 +863,7 @@ public class IndexManager {
 	
 	public static void main(String[] args) throws IOException, CoreException, NoHeadException, GitAPIException, ParseException {
 		// given location of directory and URL
+		//File pathToURLMap = new File("/home/kwak/Desktop/testMap.txt");
 		File pathToURLMap = new File("/home/kwak/Desktop/testMap.txt");
 		
 		readMapFile(pathToURLMap);
