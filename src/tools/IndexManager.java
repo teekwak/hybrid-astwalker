@@ -2,6 +2,9 @@ package tools;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,7 +31,6 @@ import org.apache.solr.common.SolrInputDocument;
 
 public class IndexManager {
 	ProjectInfo currentProject = new ProjectInfo();
-	AuthorInfo authorInfo = new AuthorInfo();
 	
 	private static IndexManager instance;
 	
@@ -50,6 +52,7 @@ public class IndexManager {
 	public static final String PROJECT_IS_FORK = "snippet_project_is_fork";
 	public static final String PROJECT_NAME = "snippet_project_name";
 	public static final String PROJECT_OWNER = "snippet_project_owner";
+	public static final String PROJECT_OWNER_AVATAR = "snippet_project_owner_avatar";
 	public static final String SNIPPET_ADDRESS = "snippet_address";
 	public static final String SNIPPET_ADDRESS_LOWER_BOUND = "snippet_address_lower_bound";
 	public static final String SNIPPET_ADDRESS_UPPER_BOUND ="snippet_address_upper_bound";
@@ -92,6 +95,8 @@ public class IndexManager {
 	public static final String SNIPPET_PATH_COMPLEXITY_SUM = "snippet_path_complexity_class_sum";
 	public static final String SNIPPET_SIZE = "snippet_size";
 	public static final String SNIPPET_THIS_VERSION = "snippet_this_version";
+	public static final String SNIPPET_TOTAL_DELETIONS = "snippet_total_deletions";
+	public static final String SNIPPET_TOTAL_INSERTIONS = "snippet_total_insertions";
 	public static final String SNIPPET_VARIABLE_TYPES = "snippet_variable_types";
 	public static final String SNIPPET_VARIABLE_TYPES_SHORT = "snippet_variable_types_short";
 	public static final String SNIPPET_VARIABLE_NAMES = "snippet_variable_names";
@@ -157,39 +162,15 @@ public class IndexManager {
 		return instance;
 	}
 	
-	class AuthorInfo {
-
-		public String name = null;
-		public String avatar = null;
-		public String type = null;
-		public String email = null;
-		public String siteAdmin = null;
-		
-		public String toString(){
-			return name+" "+avatar+" "+type+" "+email+" "+siteAdmin;
-		}
-		
-		public String getAvatar() {
-			return avatar;
-		}
-		
-		public String getType() {
-			return type;
-		}
-		
-		public String getSiteAdmin() {
-			return siteAdmin;
-		}
-	}
-	
 	class ProjectInfo {
 		public String project_owner;
 		public String project_name;
-		
 		public String project_address;
-		
+		public String project_owner_avatar;
 		public String private_project;
 		public String fork;
+		public String siteAdmin;
+		public String type;
 		
 		public ArrayList<String> langauge_count = new ArrayList<String>();
 		public ArrayList<String> languages = new ArrayList<String>();
@@ -225,6 +206,16 @@ public class IndexManager {
 		
 		SolrDocument doc = (SolrDocument)list.get(0);
 		File project = null;
+		
+		if(doc.getFieldValue("htmlURL") != null) {
+			String projectAddress = doc.getFieldValue("htmlURL").toString();
+			currentProject.project_address = projectAddress;
+		}
+		
+		if(doc.getFieldValue("avatarURL") != null) {
+			String avatarURL = doc.getFieldValue("avatarURL").toString();
+			currentProject.project_owner_avatar = avatarURL;
+		}
 		
 		if(doc.getFieldValue("description") != null){
 			String description = doc.getFieldValue("description").toString();
@@ -263,25 +254,21 @@ public class IndexManager {
 			project = new File(pathToDirectory);
 		}
 		
-		AuthorInfo author = new AuthorInfo();
-		
 		if(doc.getFieldValue("siteAdmin") != null){
 			String siteAdmin = doc.getFieldValue("siteAdmin").toString();
-			author.siteAdmin = siteAdmin;
+			currentProject.siteAdmin = siteAdmin;
 		}
 
 		if(doc.getFieldValue("userName") != null){
 			String userName = doc.getFieldValue("userName").toString();
 			currentProject.project_owner = userName;
-			author.name = userName;
 		}
 
 		if(doc.getFieldValue("userType") != null){
 			String userType = doc.getFieldValue("userType").toString();
-			author.type = userType;
+			currentProject.type = userType;
 		}
 
-		author.avatar = doc.getFieldValue("avatarURL").toString();		
 	}
 	
 	
@@ -472,18 +459,22 @@ public class IndexManager {
 			solrDoc.addField(IndexManager.SNIPPET_ALL_AUTHOR_EMAILS, email);
 		}
 
+		// order from newest to oldest
+		Collections.reverse(javaFile.getCommitDataList());
+		
 		CommitData headCommit = javaFile.getCommitDataList().get(javaFile.getCommitDataList().size() - 1);
 		
 		solrDoc.addField(IndexManager.AUTHOR_NAME, headCommit.getAuthor());
 		solrDoc.addField(IndexManager.AUTHOR_EMAIL, headCommit.getEmail());
 		
-		solrDoc.addField(IndexManager.AUTHOR_AVATAR, authorInfo.getAvatar());
-		solrDoc.addField(IndexManager.AUTHOR_IS_SITE_ADMIN, authorInfo.getSiteAdmin());
-		solrDoc.addField(IndexManager.AUTHOR_TYPE, authorInfo.getType());
+		solrDoc.addField(IndexManager.AUTHOR_AVATAR, makeGravaterURL(headCommit.getEmail()));
 		
+		solrDoc.addField(IndexManager.AUTHOR_IS_SITE_ADMIN, currentProject.siteAdmin);
+		solrDoc.addField(IndexManager.AUTHOR_TYPE, currentProject.type);
 		solrDoc.addField(IndexManager.PROJECT_ADDRESS, currentProject.project_address);
 		solrDoc.addField(IndexManager.PROJECT_NAME, currentProject.project_name);
 		solrDoc.addField(IndexManager.PROJECT_OWNER, currentProject.project_owner);
+		solrDoc.addField(IndexManager.PROJECT_OWNER_AVATAR, currentProject.project_owner_avatar);
 		solrDoc.addField(IndexManager.PROJECT_IS_FORK, currentProject.fork);
 		
 		for(CommitData cd : javaFile.getCommitDataList()) {
@@ -507,20 +498,23 @@ public class IndexManager {
 		solrDoc.addField(IndexManager.SNIPPET_SIZE, jc.getSourceCode().length());
 		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_LINES, ((Number)(jc.getEndLine() - jc.getLineNumber() + 1)).longValue());
 		
-		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_INSERTIONS, ((Number)totalInsertions).longValue());
-		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_DELETIONS, ((Number)totalDeletions).longValue());		
+		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_INSERTIONS, ((Number)headCommit.getInsertions()).longValue());
+		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_DELETIONS, ((Number)headCommit.getDeletions()).longValue());		
+		
+		solrDoc.addField(IndexManager.SNIPPET_TOTAL_INSERTIONS, totalInsertions);
+		solrDoc.addField(IndexManager.SNIPPET_TOTAL_DELETIONS, totalDeletions);
 		
 		//solrDoc.addField(IndexManager.SNIPPET_CHANGED_CODE_CHURN, snippet.changedChurn);
 
 		double calculation = 0;
 		
-		calculation = (double)totalInsertions / (double)javaFile.getNumberOfLines();
+		calculation = (double)headCommit.getInsertions() / (double)javaFile.getNumberOfLines();
 		solrDoc.addField(IndexManager.SNIPPET_INSERTION_CODE_CHURN, calculation);
 				
-		calculation = (double)totalDeletions / (double)javaFile.getNumberOfLines();
+		calculation = (double)headCommit.getDeletions() / (double)javaFile.getNumberOfLines();
 		solrDoc.addField(IndexManager.SNIPPET_DELETED_CODE_CHURN, calculation);
 				
-		calculation = (double)(totalInsertions + totalDeletions) / (double)javaFile.getNumberOfLines();
+		calculation = (double)(headCommit.getInsertions() + headCommit.getDeletions()) / (double)javaFile.getNumberOfLines();
 		solrDoc.addField(IndexManager.SNIPPET_INSERTION_DELETION_CODE_CHURN, calculation);	
 		
 		String githubAddress = this.toGitHubAddress(currentProject.project_owner,currentProject.project_name, file, headCommit.getHashCode());
@@ -795,6 +789,39 @@ public class IndexManager {
 		
 		CHILD_COUNT++;
 		solrDoc.addChildDocument(methodInvSolrDoc);
+	}
+	
+	public static String makeGravaterURL(String authorEmail) {
+		String email = authorEmail;
+		String url = "";
+
+		System.out.println("[email to md5]"+email);
+
+		if(email == null)
+			return url;
+
+		String md5 = md5Java(email);
+		url = "http://www.gravatar.com/avatar/"+md5;
+		return url;
+	}
+
+	public static String md5Java(String message){
+		String digest = null;
+		try {
+			MessageDigest md = MessageDigest.getInstance("MD5");
+
+			byte[] hash = md.digest(message.getBytes("UTF-8")); //converting byte array to Hexadecimal
+			StringBuilder sb = new StringBuilder(2*hash.length);
+			for(byte b : hash){
+				sb.append(String.format("%02x", b&0xff));
+			}
+			digest = sb.toString();
+			} catch (UnsupportedEncodingException ex) {
+				ex.printStackTrace();
+			} catch (NoSuchAlgorithmException ex) {
+				ex.printStackTrace();
+			}
+		return digest;
 	}
 	
 	public static void main(String[] args) throws IOException, CoreException, NoHeadException, GitAPIException, ParseException {
