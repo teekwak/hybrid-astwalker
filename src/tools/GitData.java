@@ -302,11 +302,15 @@ public class GitData {
 		List<String> emailList = new ArrayList<>();
 		List<String> dateList = new ArrayList<>();
 		List<String> messageList = new ArrayList<>();
-			
+						
 		String s = null;
-		while((s = br3.readLine()) != null) {
-				
-			if(s.startsWith("commit")) {
+		while((s = br3.readLine()) != null) {	
+			
+			if(s.startsWith("commit") && hashCodeList.size() == messageList.size()) {
+				hashCodeList.add(s.split(" ")[1]);
+			}
+			else if(s.startsWith("commit") && hashCodeList.size() != messageList.size()) {
+				messageList.add("");
 				hashCodeList.add(s.split(" ")[1]);
 			}
 			else if(s.startsWith("Author")) {
@@ -336,7 +340,7 @@ public class GitData {
 				messageList.add(s.trim());
 			}
 		}
-		
+				
 		br3.close();
 		isr3.close();
 		proc3.destroy();
@@ -355,7 +359,11 @@ public class GitData {
 			cd.setAuthor(authorList.get(i));
 			cd.setEmail(emailList.get(i));
 			cd.setHashCode(hashCodeList.get(i));
-			cd.setMessage(messageList.get(i));
+			try {
+				cd.setMessage(messageList.get(i));				
+			} catch (IndexOutOfBoundsException e) {
+				cd.setMessage("");
+			}
 			
 			// add object to list
 			javaFileObject.commitDataList.add(cd);

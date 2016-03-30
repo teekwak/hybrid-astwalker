@@ -615,7 +615,8 @@ public class IndexManager {
 		// methodDec.addField(IndexManager.SNIPPET_METHOD_DEC_IS_RECURSIVE, dec.isRecurisive);
 		
 		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_DECLARING_CLASS, mdo.getDeclaringClass());
-		if(!mdo.getDeclaringClass().isEmpty()){
+		// TODO
+		if(mdo.getDeclaringClass() != null){
 			String[] split2 = mdo.getDeclaringClass().split("[.]");
 			methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_DECLARING_CLASS_SHORT, split2[split2.length-1]);
 		}
@@ -825,6 +826,8 @@ public class IndexManager {
 		
 		// runs after file models and git data are collected
 		createSolrDocs();		
+		
+		//System.out.println(topDirectoryLocation + " -> " + URL);
 	}
 	
 	public static void readMapFile(File file) throws NoHeadException, CoreException, GitAPIException, ParseException {
@@ -838,6 +841,11 @@ public class IndexManager {
             for(String line; (line = br.readLine()) != null; ) {
                 if (line.startsWith("'")) {
                     arr[0] = line.replace("'", "") + "/";
+                    
+                	// just for testing purposes 
+                    arr[0] = arr[0].replaceFirst("./", "/home/kwak/Desktop/clones/");
+                	// end testing
+                    
                     path = true;
                 } else if (line.startsWith("http")) {
                     arr[1] = line;
