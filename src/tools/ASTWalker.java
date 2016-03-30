@@ -67,7 +67,6 @@ public class ASTWalker {
 	public SuperEntityClass packageObject = new SuperEntityClass();
 	public List<SuperEntityClass> importList = new ArrayList<>();
 	public boolean inMethod = false;
-	public boolean inInterface = false; // ignoring interfaces
 	public boolean hasComments = false;
 
 	// find comments
@@ -127,6 +126,8 @@ public class ASTWalker {
 	public FileModel parseFile(String fileLocation) throws IOException, CoreException {
 		this.fileModel = new FileModel();
 
+		System.out.println("Building AST for " + fileLocation);
+		
 		String sourceCode = readFileToCharArray(fileLocation);
 		
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
@@ -210,66 +211,63 @@ public class ASTWalker {
 				return true;
 			}
 
-			public boolean visit(FieldDeclaration node) {
-				if(inInterface == false) {
+			public boolean visit(FieldDeclaration node) {					
+				Type nodeType = node.getType();
 					
-					Type nodeType = node.getType();
-					
-					for(Object v : node.fragments()) {
-						SimpleName name = ((VariableDeclarationFragment) v).getName();
+				for(Object v : node.fragments()) {
+					SimpleName name = ((VariableDeclarationFragment) v).getName();
 											
-						// get fully qualified name
-						ITypeBinding binding = node.getType().resolveBinding();
-						String fullyQualifiedName;
-						try {
-							fullyQualifiedName = binding.getQualifiedName();
-						} catch (NullPointerException e) {
-							fullyQualifiedName = name.toString();
-						}
+					// get fully qualified name
+					ITypeBinding binding = node.getType().resolveBinding();
+					String fullyQualifiedName;
+					try {
+						fullyQualifiedName = binding.getQualifiedName();
+					} catch (NullPointerException e) {
+						fullyQualifiedName = name.toString();
+					}
 						
-						if(nodeType.isArrayType()) {
-							SuperEntityClass ao = new SuperEntityClass();
-							ao.setName(name.toString());
-							ao.setFullyQualifiedName(fullyQualifiedName);
-							ao.setType(nodeType);
-							ao.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-							ao.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-							entityStack.peek().addEntity(ao, EntityType.ARRAY);
-							entityStack.peek().addEntity(ao, EntityType.GLOBAL);
-						}
-						else if(nodeType.isParameterizedType()) {
-							SuperEntityClass go = new SuperEntityClass();
-							go.setName(name.toString());
-							go.setFullyQualifiedName(fullyQualifiedName);
-							go.setType(nodeType);
-							go.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-							go.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-							entityStack.peek().addEntity(go, EntityType.GENERICS);
-							entityStack.peek().addEntity(go, EntityType.GLOBAL);
-						}
-						else if(nodeType.isPrimitiveType()) {
-							SuperEntityClass po = new SuperEntityClass();
-							po.setName(name.toString());
-							po.setFullyQualifiedName(fullyQualifiedName);
-							po.setType(nodeType);
-							po.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-							po.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-							entityStack.peek().addEntity(po, EntityType.PRIMITIVE);
-							entityStack.peek().addEntity(po, EntityType.GLOBAL);
-						}
-						else if(nodeType.isSimpleType()) {
-							SuperEntityClass so = new SuperEntityClass();
-							so.setName(name.toString());
-							so.setFullyQualifiedName(fullyQualifiedName);
-							so.setType(nodeType);
-							so.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-							so.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-							entityStack.peek().addEntity(so, EntityType.SIMPLE);
-							entityStack.peek().addEntity(so, EntityType.GLOBAL);
-						}
-						else {
-							System.out.println("Something is missing " + nodeType);
-						}
+					if(nodeType.isArrayType()) {
+						SuperEntityClass ao = new SuperEntityClass();
+						ao.setName(name.toString());
+						ao.setFullyQualifiedName(fullyQualifiedName);
+						ao.setType(nodeType);
+						ao.setLineNumber(cu.getLineNumber(name.getStartPosition()));
+						ao.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
+						entityStack.peek().addEntity(ao, EntityType.ARRAY);
+						entityStack.peek().addEntity(ao, EntityType.GLOBAL);
+					}
+					else if(nodeType.isParameterizedType()) {
+						SuperEntityClass go = new SuperEntityClass();
+						go.setName(name.toString());
+						go.setFullyQualifiedName(fullyQualifiedName);
+						go.setType(nodeType);
+						go.setLineNumber(cu.getLineNumber(name.getStartPosition()));
+						go.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
+						entityStack.peek().addEntity(go, EntityType.GENERICS);
+						entityStack.peek().addEntity(go, EntityType.GLOBAL);
+					}
+					else if(nodeType.isPrimitiveType()) {
+						SuperEntityClass po = new SuperEntityClass();
+						po.setName(name.toString());
+						po.setFullyQualifiedName(fullyQualifiedName);
+						po.setType(nodeType);
+						po.setLineNumber(cu.getLineNumber(name.getStartPosition()));
+						po.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
+						entityStack.peek().addEntity(po, EntityType.PRIMITIVE);
+						entityStack.peek().addEntity(po, EntityType.GLOBAL);
+					}
+					else if(nodeType.isSimpleType()) {
+						SuperEntityClass so = new SuperEntityClass();
+						so.setName(name.toString());
+						so.setFullyQualifiedName(fullyQualifiedName);
+						so.setType(nodeType);
+						so.setLineNumber(cu.getLineNumber(name.getStartPosition()));
+						so.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
+						entityStack.peek().addEntity(so, EntityType.SIMPLE);
+						entityStack.peek().addEntity(so, EntityType.GLOBAL);
+					}
+					else {
+						System.out.println("Something is missing " + nodeType);
 					}
 				}
 				
@@ -343,115 +341,110 @@ public class ASTWalker {
 			}
 		
 			public boolean visit(MethodDeclaration node) {
-				if(inInterface == false) {
-					inMethod = true;
+				inMethod = true;
 
-					SimpleName name = node.getName();
-					boolean isStatic = false;
-					boolean isAbstract = false;				
-					
-					// get fully qualified name
-					String fullyQualifiedName;
-					try {
-						fullyQualifiedName = name.getFullyQualifiedName();
-					} catch (NullPointerException e) {
-						fullyQualifiedName = name.toString();
-					}
-					
-					// is method declaration abstract?
-					int mod = node.getModifiers();
-					if(Modifier.isAbstract(mod)) {
-						isAbstract = true;
-					}
-					
-					// is method declaration static?
-					if(Modifier.isStatic(mod)) {
-						isStatic = true;
-					}
-					
-					IMethodBinding binding = node.resolveBinding();					
-					
-					// get type of each parameter
-					List<String> parameterTypes = new ArrayList<>();
-					for(Object obj : node.parameters()) {						
-						ITypeBinding tb = ((SingleVariableDeclaration) obj).getType().resolveBinding();
-						String fqn;
-						try {
-							fqn = tb.getQualifiedName();
-						} catch (NullPointerException e) {
-							fqn = name.toString();
-						}
-						parameterTypes.add(fqn);
-					}
+				SimpleName name = node.getName();
+				boolean isStatic = false;
+				boolean isAbstract = false;				
 				
-					MethodDeclarationObject md = new MethodDeclarationObject();
-
-					md.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
+				// get fully qualified name
+				String fullyQualifiedName;
+				try {
+					fullyQualifiedName = name.getFullyQualifiedName();
+				} catch (NullPointerException e) {
+					fullyQualifiedName = name.toString();
+				}
+				
+				// is method declaration abstract?
+				int mod = node.getModifiers();
+				if(Modifier.isAbstract(mod)) {
+					isAbstract = true;
+				}
+				
+				// is method declaration static?
+				if(Modifier.isStatic(mod)) {
+					isStatic = true;
+				}
+				
+				IMethodBinding binding = node.resolveBinding();					
+				
+				// get type of each parameter
+				List<String> parameterTypes = new ArrayList<>();
+				for(Object obj : node.parameters()) {						
+					ITypeBinding tb = ((SingleVariableDeclaration) obj).getType().resolveBinding();
+					String fqn;
 					try {
-						md.setDeclaringClass(binding.getDeclaringClass().getQualifiedName());						
+						fqn = tb.getQualifiedName();
 					} catch (NullPointerException e) {
-						md.setDeclaringClass(null);
+						fqn = name.toString();
 					}
-					md.setEndCharacter(node.getStartPosition() + node.getLength() - 1);
-					md.setEndLine(cu.getLineNumber(node.getStartPosition() + node.getLength() - 1));
-					md.setFullyQualifiedName(fullyQualifiedName);
+					parameterTypes.add(fqn);
+				}
+			
+				MethodDeclarationObject md = new MethodDeclarationObject();
+				md.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
+				try {
+					md.setDeclaringClass(binding.getDeclaringClass().getQualifiedName());						
+				} catch (NullPointerException e) {
+					md.setDeclaringClass(null);
+				}
+				md.setEndCharacter(node.getStartPosition() + node.getLength() - 1);
+				md.setEndLine(cu.getLineNumber(node.getStartPosition() + node.getLength() - 1));
+				md.setFullyQualifiedName(fullyQualifiedName);
 
-					md.setIsAbstract(isAbstract);
-					md.setIsConstructor(node.isConstructor());
+				md.setIsAbstract(isAbstract);
+				md.setIsConstructor(node.isConstructor());
 					
-					// to avoid API from setting constructor return type to void
-					if(node.isConstructor()) {
+				// to avoid API from setting constructor return type to void
+				if(node.isConstructor()) {
+					md.setReturnType(null);
+				}
+				else {
+					try {
+						md.setReturnType(binding.getReturnType().getQualifiedName());								
+					} catch (NullPointerException e) {
 						md.setReturnType(null);
 					}
-					else {
-						try {
-							md.setReturnType(binding.getReturnType().getQualifiedName());								
-						} catch (NullPointerException e) {
-							md.setReturnType(null);
-						}
-					}
-					
-					// get generic parameters
-					List<String> genericParametersList = new ArrayList<>();
-					try {
-						if(binding.isGenericMethod()) {
-							md.setIsGenericType(binding.isGenericMethod());
-							for(Object o : binding.getTypeParameters()) {
-								genericParametersList.add(o.toString());
-							}
-						}						
-					} catch (NullPointerException e) {
-						md.setIsGenericType(false);
-					}
-					
-					md.setGenericParametersList(genericParametersList);
-					md.setIsStatic(isStatic);
-					md.setIsVarargs(node.isVarargs());
-					md.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-					md.setName(name.toString());
-					md.setNumberOfCharacters(node.getLength());
-					md.setParametersList(node.parameters());
-					md.setParameterTypesList(parameterTypes);
-
-					md.setStartCharacter(name.getStartPosition());
-					
-					if(node.thrownExceptionTypes().size() > 0) {
-						for(Object o : node.thrownExceptionTypes()) {
-							md.addThrowsException(o.toString());
-						}
-					}
-					
-					entityStack.push(md);			
 				}
+					
+				// get generic parameters
+				List<String> genericParametersList = new ArrayList<>();
+				try {
+					if(binding.isGenericMethod()) {
+						md.setIsGenericType(binding.isGenericMethod());
+						for(Object o : binding.getTypeParameters()) {
+							genericParametersList.add(o.toString());
+						}
+					}						
+				} catch (NullPointerException e) {
+					md.setIsGenericType(false);
+				}
+					
+				md.setGenericParametersList(genericParametersList);
+				md.setIsStatic(isStatic);
+				md.setIsVarargs(node.isVarargs());
+				md.setLineNumber(cu.getLineNumber(name.getStartPosition()));
+				md.setName(name.toString());
+				md.setNumberOfCharacters(node.getLength());
+				md.setParametersList(node.parameters());
+				md.setParameterTypesList(parameterTypes);
+				md.setStartCharacter(name.getStartPosition());
+					
+				if(node.thrownExceptionTypes().size() > 0) {
+					for(Object o : node.thrownExceptionTypes()) {
+						md.addThrowsException(o.toString());
+					}
+				}
+					
+				entityStack.push(md);			
+				
 				return true;
 			}
 
 			public void endVisit(MethodDeclaration node) {
-				if(inInterface == false) {
-					MethodDeclarationObject temp = (MethodDeclarationObject) entityStack.pop();
-					temp.setCyclomaticComplexity();
-					entityStack.peek().addEntity(temp, EntityType.METHOD_DECLARATION);					
-				}
+				MethodDeclarationObject temp = (MethodDeclarationObject) entityStack.pop();
+				temp.setCyclomaticComplexity();
+				entityStack.peek().addEntity(temp, EntityType.METHOD_DECLARATION);					
 				
 				inMethod = false;
 			}
@@ -538,7 +531,6 @@ public class ASTWalker {
 			}
 			
 			public boolean visit(SingleVariableDeclaration node) {			
-				if(inInterface == false) {
 				SimpleName name = node.getName();
 												
 				// get fully qualified name
@@ -599,7 +591,7 @@ public class ASTWalker {
 				else {
 					System.out.println("Something is missing " + node.getType());
 				}
-				}
+				
 				return true;
 			}
 
@@ -678,12 +670,10 @@ public class ASTWalker {
 			public boolean visit(TypeDeclaration node) {
 
 				if(node.isInterface()) {
-					inInterface = true;
+					return false;
 				}
 				
 				else {
-					inInterface = false;
-					
 					int startLine = cu.getLineNumber(node.getStartPosition());
 					int endLine = cu.getLineNumber(node.getStartPosition() + node.getLength() - 1);
 										
@@ -712,14 +702,6 @@ public class ASTWalker {
 					} catch (NullPointerException e) {
 						fullyQualifiedName = node.getName().toString();
 					}
-									
-					// get generic parameters
-					List<String> genericParametersList = new ArrayList<>();
-					if(binding.isGenericType()) {
-						for(Object o : binding.getTypeParameters()) {
-							genericParametersList.add(o.toString());
-						}
-					}
 					
 					JavaClass co = new JavaClass();
 					co.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
@@ -729,10 +711,23 @@ public class ASTWalker {
 					co.setNumberOfCharacters(node.getLength());
 					co.setFileName(fileLocation);
 					co.setFullyQualifiedName(fullyQualifiedName);
+					
+					// get generic parameters
+					List<String> genericParametersList = new ArrayList<>();
+					try {
+						if(binding.isGenericType()) {
+							co.setIsGenericType(binding.isGenericType());
+							for(Object o : binding.getTypeParameters()) {
+								genericParametersList.add(o.toString());
+							}
+						}						
+					} catch (NullPointerException e) {
+						co.setIsGenericType(false);
+					}
 					co.setGenericParametersList(genericParametersList);
+					
 					co.setHasComments(hasComments);
 					co.setImportList(importList);
-					co.setIsGenericType(binding.isGenericType());
 					co.setPackage(packageObject);
 					co.setSourceCode(classSourceCode.toString());
 					co.setStartCharacter(node.getStartPosition());
@@ -762,10 +757,10 @@ public class ASTWalker {
 				return true;
 			}
 
-			public void endVisit(TypeDeclaration node) {				
-				if(inInterface == false) {
+			public void endVisit(TypeDeclaration node) {			
+				if(!node.isInterface()) {
 					JavaClass temp = (JavaClass) entityStack.pop();
-										
+					
 					// check if inner class
 					boolean isInnerClass = true;
 					try {
@@ -774,134 +769,130 @@ public class ASTWalker {
 						isInnerClass = false;
 					}					
 					temp.setIsInnerClass(isInnerClass);
-					
+						
 					temp.setCyclomaticComplexity();
-					fileModel.addJavaClass(temp);					
+					fileModel.addJavaClass(temp);						
 				}
 				
 				hasComments = false;
-				inInterface = false;
 			}
 			
 			public boolean visit(VariableDeclarationStatement node) {
-				if(inInterface == false) {
-					Type nodeType = node.getType();
+				Type nodeType = node.getType();
 					
-					for(Object v : node.fragments()) {
+				for(Object v : node.fragments()) {
 						
-						SimpleName name = ((VariableDeclarationFragment) v).getName();
+					SimpleName name = ((VariableDeclarationFragment) v).getName();
 												
-						// get fully qualified name
-						ITypeBinding binding = node.getType().resolveBinding();
-						String fullyQualifiedName;
-						try {
-							fullyQualifiedName = binding.getQualifiedName();
-						} catch (NullPointerException e) {
-							fullyQualifiedName = name.toString();
-						}
-						
-						if(nodeType.isArrayType()) {
-							SuperEntityClass ao = new SuperEntityClass();
-							ao.setName(name.toString());
-							ao.setFullyQualifiedName(fullyQualifiedName);
-							ao.setType(nodeType);
-							ao.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-							ao.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-							entityStack.peek().addEntity(ao, EntityType.ARRAY);
-						}
-						else if(nodeType.isParameterizedType()) {
-							SuperEntityClass go = new SuperEntityClass();
-							go.setName(name.toString());
-							go.setFullyQualifiedName(fullyQualifiedName);
-							go.setType(nodeType);
-							go.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-							go.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-							entityStack.peek().addEntity(go, EntityType.GENERICS);
-						}
-						else if(nodeType.isPrimitiveType()) {
-							SuperEntityClass po = new SuperEntityClass();
-							po.setName(name.toString());
-							po.setFullyQualifiedName(fullyQualifiedName);
-							po.setType(nodeType);
-							po.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-							po.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-							entityStack.peek().addEntity(po, EntityType.PRIMITIVE);
-						}
-						else if(nodeType.isSimpleType()) {
-							SuperEntityClass so = new SuperEntityClass();
-							so.setName(name.toString());
-							so.setFullyQualifiedName(fullyQualifiedName);
-							so.setType(nodeType);
-							so.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-							so.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-							entityStack.peek().addEntity(so, EntityType.SIMPLE);
-						}
-						else {
-							System.out.println("Something is missing " + nodeType);
-						}
+					// get fully qualified name
+					ITypeBinding binding = node.getType().resolveBinding();
+					String fullyQualifiedName;
+					try {
+						fullyQualifiedName = binding.getQualifiedName();
+					} catch (NullPointerException e) {
+						fullyQualifiedName = name.toString();
 					}
-				
+						
+					if(nodeType.isArrayType()) {
+						SuperEntityClass ao = new SuperEntityClass();
+						ao.setName(name.toString());
+						ao.setFullyQualifiedName(fullyQualifiedName);
+						ao.setType(nodeType);
+						ao.setLineNumber(cu.getLineNumber(name.getStartPosition()));
+						ao.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
+						entityStack.peek().addEntity(ao, EntityType.ARRAY);
+					}
+					else if(nodeType.isParameterizedType()) {
+						SuperEntityClass go = new SuperEntityClass();
+						go.setName(name.toString());
+						go.setFullyQualifiedName(fullyQualifiedName);
+						go.setType(nodeType);
+						go.setLineNumber(cu.getLineNumber(name.getStartPosition()));
+						go.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
+						entityStack.peek().addEntity(go, EntityType.GENERICS);
+					}
+					else if(nodeType.isPrimitiveType()) {
+						SuperEntityClass po = new SuperEntityClass();
+						po.setName(name.toString());
+						po.setFullyQualifiedName(fullyQualifiedName);
+						po.setType(nodeType);
+						po.setLineNumber(cu.getLineNumber(name.getStartPosition()));
+						po.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
+						entityStack.peek().addEntity(po, EntityType.PRIMITIVE);
+					}
+					else if(nodeType.isSimpleType()) {
+						SuperEntityClass so = new SuperEntityClass();
+						so.setName(name.toString());
+						so.setFullyQualifiedName(fullyQualifiedName);
+						so.setType(nodeType);
+						so.setLineNumber(cu.getLineNumber(name.getStartPosition()));
+						so.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
+						entityStack.peek().addEntity(so, EntityType.SIMPLE);
+					}
+					else {
+						System.out.println("Something is missing " + nodeType);
+					}
 				}
+					
 				return true;
 			}
 
 			public boolean visit(VariableDeclarationExpression node) {
-				if(inInterface == false) {
-					Type nodeType = node.getType();
+				Type nodeType = node.getType();
 					
-					for(Object v : node.fragments()) {
-						SimpleName name = ((VariableDeclarationFragment) v).getName();
+				for(Object v : node.fragments()) {
+					SimpleName name = ((VariableDeclarationFragment) v).getName();
 						
-						// get fully qualified name
-						ITypeBinding binding = node.getType().resolveBinding();
-						String fullyQualifiedName;
-						try {
-							fullyQualifiedName = binding.getQualifiedName();
-						} catch (NullPointerException e) {
-							fullyQualifiedName = name.toString();
-						}
+					// get fully qualified name
+					ITypeBinding binding = node.getType().resolveBinding();
+					String fullyQualifiedName;
+					try {
+						fullyQualifiedName = binding.getQualifiedName();
+					} catch (NullPointerException e) {
+						fullyQualifiedName = name.toString();
+					}
 						
-						if(nodeType.isArrayType()) {
-							SuperEntityClass ao = new SuperEntityClass();
-							ao.setName(name.toString());
-							ao.setFullyQualifiedName(fullyQualifiedName);
-							ao.setType(nodeType);
-							ao.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-							ao.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-							entityStack.peek().addEntity(ao, EntityType.ARRAY);
-						}
-						else if(nodeType.isParameterizedType()) {
-							SuperEntityClass go = new SuperEntityClass();
-							go.setName(name.toString());
-							go.setFullyQualifiedName(fullyQualifiedName);
-							go.setType(nodeType);
-							go.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-							go.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-							entityStack.peek().addEntity(go, EntityType.GENERICS);
-						}
-						else if(nodeType.isPrimitiveType()) {
-							SuperEntityClass po = new SuperEntityClass();
-							po.setName(name.toString());
-							po.setFullyQualifiedName(fullyQualifiedName);
-							po.setType(nodeType);
-							po.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-							po.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-							entityStack.peek().addEntity(po, EntityType.PRIMITIVE);
-						}
-						else if(nodeType.isSimpleType()) {
-							SuperEntityClass so = new SuperEntityClass();
-							so.setName(name.toString());
-							so.setFullyQualifiedName(fullyQualifiedName);
-							so.setType(nodeType);
-							so.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-							so.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-							entityStack.peek().addEntity(so, EntityType.SIMPLE);
-						}
-						else {
-							System.out.println("Something is missing " + nodeType);
-						}
+					if(nodeType.isArrayType()) {
+						SuperEntityClass ao = new SuperEntityClass();
+						ao.setName(name.toString());
+						ao.setFullyQualifiedName(fullyQualifiedName);
+						ao.setType(nodeType);
+						ao.setLineNumber(cu.getLineNumber(name.getStartPosition()));
+						ao.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
+						entityStack.peek().addEntity(ao, EntityType.ARRAY);
+					}
+					else if(nodeType.isParameterizedType()) {
+						SuperEntityClass go = new SuperEntityClass();
+						go.setName(name.toString());
+						go.setFullyQualifiedName(fullyQualifiedName);
+						go.setType(nodeType);
+						go.setLineNumber(cu.getLineNumber(name.getStartPosition()));
+						go.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
+						entityStack.peek().addEntity(go, EntityType.GENERICS);
+					}
+					else if(nodeType.isPrimitiveType()) {
+						SuperEntityClass po = new SuperEntityClass();
+						po.setName(name.toString());
+						po.setFullyQualifiedName(fullyQualifiedName);
+						po.setType(nodeType);
+						po.setLineNumber(cu.getLineNumber(name.getStartPosition()));
+						po.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
+						entityStack.peek().addEntity(po, EntityType.PRIMITIVE);
+					}
+					else if(nodeType.isSimpleType()) {
+						SuperEntityClass so = new SuperEntityClass();
+						so.setName(name.toString());
+						so.setFullyQualifiedName(fullyQualifiedName);
+						so.setType(nodeType);
+						so.setLineNumber(cu.getLineNumber(name.getStartPosition()));
+						so.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
+						entityStack.peek().addEntity(so, EntityType.SIMPLE);
+					}
+					else {
+						System.out.println("Something is missing " + nodeType);
 					}
 				}
+				
 				return true;
 			}
 

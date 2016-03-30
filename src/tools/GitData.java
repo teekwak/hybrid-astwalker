@@ -188,9 +188,10 @@ public class GitData {
 	public void addHashCodePairsToMap(List<RevCommit> commitHistory) {
 		this.hashCodePairs.put("--root", commitHistory.get(0).name());
 		
-		for(int i = 0; i < commitHistory.size() - 1; i++) {
+		int commitHistorySize = commitHistory.size();
+		for(int i = 0; i < commitHistorySize - 1; i++) {
 			this.hashCodePairs.put(commitHistory.get(i).name(), commitHistory.get(i + 1).name());
-		}			
+		}
 	}
 	
 	public List<JavaFile> getJavaFileList() {
@@ -330,6 +331,7 @@ public class GitData {
 			else if (s.startsWith("Date")) {
 				String[] parts = s.split(" ");
 				List<String> dateParts = new ArrayList<>();
+				
 				for(int i = 3; i < parts.length; i++) {
 					dateParts.add(parts[i]);
 				}
@@ -345,7 +347,8 @@ public class GitData {
 		isr3.close();
 		proc3.destroy();
 		
-		for(int i = 0; i < hashCodeList.size(); i++) {
+		int hashCodeListSize = hashCodeList.size();
+		for(int i = 0; i < hashCodeListSize; i++) {
 			CommitData cd = new CommitData();
 			
 			// format date
@@ -373,6 +376,5 @@ public class GitData {
 		javaFileObject.setUniqueEmails(emailList);
 		javaFileList.add(javaFileObject);
 		
-	}
-	
+	}	
 }

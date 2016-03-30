@@ -86,7 +86,8 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		
 		s.append("(");
 	
-		for(int i = 0; i < this.parametersList.size(); i++) {
+		int parametersListSize = this.parametersList.size();
+		for(int i = 0; i < parametersListSize; i++) {
 			if(i == this.parametersList.size() - 1) {
 				s.append(this.parametersList.get(i));
 			}

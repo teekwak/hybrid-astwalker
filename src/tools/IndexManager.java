@@ -184,21 +184,6 @@ public class IndexManager {
 		public ArrayList<String> allAuthorIDs = new ArrayList<String>();
 		
 		public String project_description;
-		
-		public String getCommentForVersion(String version){
-			
-			
-			int index = 0;
-			
-			for(int i = 0 ; i< versions.size(); i++){
-				if(versions.get(i).equals(version)){
-					index = i;
-					break;
-				}
-			}
-			
-			return comments.get(index);
-		}
 	}
 	
 	@SuppressWarnings({ "unused", "unchecked" })
@@ -274,47 +259,6 @@ public class IndexManager {
 			currentProject.type = userType;
 		}
 
-	}
-	
-	/*
-	 * fileModel holds all AST information
-	 * 
-	 * gitData.javaFileList has a list of Java file objects with data on each commit
-	 * gitData.getCommitDataPerFile() creates commit objects
-	 * gitData.addHashCodePairsToMap() populates hash codes
-	 * gitData.getDiff() gets insertions and deletions for all commits
-	 * 
-	 * to get the insertions/deletions at each commit, stored in CommitData object
-	 * 
-	 * for(JavaFile j : gitData.javaFileList) {
-	 *     for(CommitData c : j.commitDataList) {
-	 *         System.out.println(j.name + " +" + c.insertions + " -" + c.deletions);
-	 *     }
-	 * }
-	 * 
-	 */
-	public static void runASTandGitData(File parentNode, String topDirectoryLocation) throws IOException, CoreException, NoHeadException, GitAPIException, ParseException {
-		FileModel fileModel = new FileModel();
-		fileModel = fileModel.parseDeclarations(parentNode.getAbsolutePath());
-		//fileModel.printAll();
-		fileModelList.add(fileModel);
-		
-		GitData gitData = new GitData();
-		Git git = Git.open( new File (topDirectoryLocation + ".git") );
-		
-		List<RevCommit> commitHistory = new ArrayList<>();
-		for(RevCommit commit : git.log().call()) {
-			commitHistory.add(commit);
-		}
-		Collections.reverse(commitHistory);
-		
-		gitData.getCommitDataPerFile(topDirectoryLocation, parentNode.getAbsolutePath());
-		gitData.addHashCodePairsToMap(commitHistory);
-		gitData.getDiff(topDirectoryLocation, gitData.hashCodePairs);
-		
-		gitDataList.add(gitData);
-		
-		git.close();
 	}
 	
 	public String toGitHubAddress(String owner, String projectName, File file, String thisVersion){
@@ -533,11 +477,13 @@ public class IndexManager {
 			findAllMethodDeclarations((MethodDeclarationObject)md, solrDoc, id);
 		}
 		
-		Solrj.getInstance().addDoc(solrDoc);
 		
+		Solrj.getInstance().addDoc(solrDoc);
+		/*
 		if(Solrj.getInstance().req.getDocuments().size() >= MAXDOC || CHILD_COUNT >= MAX_CHILD_DOC) {
 			Solrj.getInstance().commitDocs("MoreLikeThisIndex", 9452);	
 		}
+		*/
 	}
 	
 	// recursively get method declarations (for those method declarations inside of each other)
@@ -637,7 +583,8 @@ public class IndexManager {
 		Map<String, Integer> paramCount = new HashMap<String, Integer>();
 		Map<String, Integer> paramCountShort = new HashMap<String, Integer>();
 		
-		for(int i = 0; i < mdo.getParameterTypesList().size(); i++) {
+		int parameterTypesListSize = mdo.getParameterTypesList().size(); 
+		for(int i = 0; i < parameterTypesListSize; i++) {
 			String argType = mdo.getParameterTypesList().get(i);
 			
 			methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_PARAMETER_TYPES, argType);
@@ -799,6 +746,54 @@ public class IndexManager {
 		return digest;
 	}
 	
+	/*
+	 * fileModel holds all AST information
+	 * 
+	 * gitData.javaFileList has a list of Java file objects with data on each commit
+	 * gitData.getCommitDataPerFile() creates commit objects
+	 * gitData.addHashCodePairsToMap() populates hash codes
+	 * gitData.getDiff() gets insertions and deletions for all commits
+	 * 
+	 * to get the insertions/deletions at each commit, stored in CommitData object
+	 * 
+	 * for(JavaFile j : gitData.javaFileList) {
+	 *     for(CommitData c : j.commitDataList) {
+	 *         System.out.println(j.name + " +" + c.insertions + " -" + c.deletions);
+	 *     }
+	 * }
+	 * 
+	 */
+	public static void runASTandGitData(File parentNode, String topDirectoryLocation) throws IOException, CoreException, NoHeadException, GitAPIException, ParseException {
+		FileModel fileModel = new FileModel();
+		fileModel = fileModel.parseDeclarations(parentNode.getAbsolutePath());
+		//fileModel.printAll();
+		fileModelList.add(fileModel);
+		
+		GitData gitData = new GitData();
+		Git git = Git.open( new File (topDirectoryLocation + ".git") );
+		
+		List<RevCommit> commitHistory = new ArrayList<>();
+		for(RevCommit commit : git.log().call()) {
+			commitHistory.add(commit);
+		}
+		Collections.reverse(commitHistory);
+		
+		gitData.getCommitDataPerFile(topDirectoryLocation, parentNode.getAbsolutePath());
+		gitData.addHashCodePairsToMap(commitHistory);
+		gitData.getDiff(topDirectoryLocation, gitData.hashCodePairs);
+		
+		gitDataList.add(gitData);
+		
+		git.close();
+	
+		// create solr doc
+		// clear lists
+		
+		// createSolrDocs();
+		fileModelList.clear();
+		gitDataList.clear();
+	}
+	
 	public static void traverseUntilJava(File parentNode, String topDirectoryLocation) throws IOException, CoreException, NoHeadException, GitAPIException, ParseException {
 		if(parentNode.isDirectory()) {
 			File childNodes[] = parentNode.listFiles();
@@ -810,7 +805,6 @@ public class IndexManager {
 			}
 		}
 		else {
-			
 			if(parentNode.getName().endsWith(".java")) {	
 				runASTandGitData(parentNode, topDirectoryLocation);
 			}
@@ -818,14 +812,10 @@ public class IndexManager {
 	}
 	
 	public static void processRepository(String topDirectoryLocation, String URL) throws NoHeadException, IOException, CoreException, GitAPIException, ParseException {
-		fileModelList.clear();
-		gitDataList.clear();
-		
-		IndexManager.getInstance().processRepo(topDirectoryLocation, URL);
-		traverseUntilJava(new File(topDirectoryLocation), topDirectoryLocation);	
-		
-		// runs after file models and git data are collected
-		createSolrDocs();		
+		// process repo runs only once
+		//IndexManager.getInstance().currentProject = null;
+		//IndexManager.getInstance().processRepo(topDirectoryLocation, URL);
+		traverseUntilJava(new File(topDirectoryLocation), topDirectoryLocation);					
 		
 		//System.out.println(topDirectoryLocation + " -> " + URL);
 	}
@@ -870,12 +860,16 @@ public class IndexManager {
 	}
 	
 	public static void main(String[] args) throws IOException, CoreException, NoHeadException, GitAPIException, ParseException {
+		fileModelList.clear();
+		gitDataList.clear();
+		
 		// given location of directory and URL
 		//File pathToURLMap = new File("/home/kwak/Desktop/testMap.txt");
 		File pathToURLMap = new File("/home/kwak/Desktop/testMap.txt");
 		
+		// use this for testing
 		readMapFile(pathToURLMap);
-		
-		Solrj.getInstance().commitDocs("MoreLikeThisIndex", 9452);
+				
+		//Solrj.getInstance().commitDocs("MoreLikeThisIndex", 9452);
 	}
 }
