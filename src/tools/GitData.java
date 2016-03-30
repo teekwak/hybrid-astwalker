@@ -178,11 +178,11 @@ class JavaFile {
 public class GitData {
 
 	Map<String, String> hashCodePairs;		// stores pairs of commit hash codes
-	List<JavaFile> javaFileList;
+	JavaFile javaFile;
 	
 	public GitData() {
 		hashCodePairs = new LinkedHashMap<>();
-		javaFileList = new ArrayList<>();
+		javaFile = null;
 	}
 	
 	public void addHashCodePairsToMap(List<RevCommit> commitHistory) {
@@ -194,8 +194,8 @@ public class GitData {
 		}
 	}
 	
-	public List<JavaFile> getJavaFileList() {
-		return this.javaFileList;
+	public JavaFile getJavaFile() {
+		return this.javaFile;
 	}
 	
 	/*
@@ -217,13 +217,11 @@ public class GitData {
 					String[] parts = s.split("\t");
 										
 					if(parts.length == 3) { // for some reason, git diff-tree --numstat --root $3 also returns hash code of commit						
-						for(JavaFile j : javaFileList) {
-							if(j.fileLocation.endsWith(parts[2])) {
-								for(CommitData c : j.commitDataList) {
-									if(c.hashCode.equals(entry.getValue())) {
-										c.setInsertions(Integer.parseInt(parts[0]));
-										c.setDeletions(Integer.parseInt(parts[1]));
-									}
+						if(javaFile.fileLocation.endsWith(parts[2])) {
+							for(CommitData c : javaFile.commitDataList) {
+								if(c.hashCode.equals(entry.getValue())) {
+									c.setInsertions(Integer.parseInt(parts[0]));
+									c.setDeletions(Integer.parseInt(parts[1]));
 								}
 							}
 						}
@@ -374,7 +372,9 @@ public class GitData {
 		
 		javaFileObject.setUniqueAuthors(authorList);
 		javaFileObject.setUniqueEmails(emailList);
-		javaFileList.add(javaFileObject);
 		
+		// set GitData javaFile
+		javaFile = javaFileObject;
+	
 	}	
 }

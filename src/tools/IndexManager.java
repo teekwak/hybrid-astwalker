@@ -37,8 +37,8 @@ public class IndexManager {
 	
 	private static IndexManager instance;
 	
-	public static List<FileModel> fileModelList = new ArrayList<>();
-	public static List<GitData> gitDataList = new ArrayList<>();
+	public static FileModel fileModel = null;
+	public static GitData gitData = null;
 	
 	private static int MAXDOC = 300;
 	private static int MAX_CHILD_DOC = 4000;
@@ -273,27 +273,6 @@ public class IndexManager {
 		return gitHubAddress;
 	}
 	
-	// gets all classes, method declarations, and method invocation from each FileModel
-	public static void createSolrDocs() {
-		for(FileModel f : fileModelList) {
-			for(JavaClass jc : f.getJavaClassList()) {
-				JavaFile jf = null;
-				
-				// match JavaFile with JavaClass
-				for(GitData g : gitDataList) {
-					for(JavaFile temp : g.getJavaFileList()) {
-						if(temp.getFileLocation().equals(jc.getFileName())) {
-							jf = temp;
-						}
-					}
-				}
-				
-				IndexManager.getInstance().makeClassSolrDoc(jc, jf);
-				
-			}
-		}
-	}
-	
 	public void makeClassSolrDoc(SuperEntityClass entity, JavaFile javaFile) {
 		SolrInputDocument solrDoc = new SolrInputDocument();
 		
@@ -479,11 +458,11 @@ public class IndexManager {
 		
 		
 		Solrj.getInstance().addDoc(solrDoc);
-		/*
+		
 		if(Solrj.getInstance().req.getDocuments().size() >= MAXDOC || CHILD_COUNT >= MAX_CHILD_DOC) {
 			Solrj.getInstance().commitDocs("MoreLikeThisIndex", 9452);	
 		}
-		*/
+		
 	}
 	
 	// recursively get method declarations (for those method declarations inside of each other)
@@ -561,7 +540,7 @@ public class IndexManager {
 		// methodDec.addField(IndexManager.SNIPPET_METHOD_DEC_IS_RECURSIVE, dec.isRecurisive);
 		
 		methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_DECLARING_CLASS, mdo.getDeclaringClass());
-		// TODO
+
 		if(mdo.getDeclaringClass() != null){
 			String[] split2 = mdo.getDeclaringClass().split("[.]");
 			methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_DECLARING_CLASS_SHORT, split2[split2.length-1]);
@@ -695,7 +674,6 @@ public class IndexManager {
 			}
 			place++;
 		}
-
 		
 		for(String type: paramCount.keySet()){
 			int count = paramCount.get(type);
@@ -746,6 +724,15 @@ public class IndexManager {
 		return digest;
 	}
 	
+	// gets all classes, method declarations, and method invocation from each FileModel
+	public static void createSolrDocs() {
+		for(JavaClass jc : fileModel.getJavaClassList()) {
+			JavaFile jf = gitData.getJavaFile();
+				
+			IndexManager.getInstance().makeClassSolrDoc(jc, jf);
+		}
+	}
+	
 	/*
 	 * fileModel holds all AST information
 	 * 
@@ -764,12 +751,10 @@ public class IndexManager {
 	 * 
 	 */
 	public static void runASTandGitData(File parentNode, String topDirectoryLocation) throws IOException, CoreException, NoHeadException, GitAPIException, ParseException {
-		FileModel fileModel = new FileModel();
+		fileModel = new FileModel();
 		fileModel = fileModel.parseDeclarations(parentNode.getAbsolutePath());
-		//fileModel.printAll();
-		fileModelList.add(fileModel);
 		
-		GitData gitData = new GitData();
+		gitData = new GitData();
 		Git git = Git.open( new File (topDirectoryLocation + ".git") );
 		
 		List<RevCommit> commitHistory = new ArrayList<>();
@@ -781,17 +766,15 @@ public class IndexManager {
 		gitData.getCommitDataPerFile(topDirectoryLocation, parentNode.getAbsolutePath());
 		gitData.addHashCodePairsToMap(commitHistory);
 		gitData.getDiff(topDirectoryLocation, gitData.hashCodePairs);
-		
-		gitDataList.add(gitData);
-		
+				
 		git.close();
 	
 		// create solr doc
 		// clear lists
 		
-		// createSolrDocs();
-		fileModelList.clear();
-		gitDataList.clear();
+		createSolrDocs();
+		fileModel = null;
+		gitData = null;
 	}
 	
 	public static void traverseUntilJava(File parentNode, String topDirectoryLocation) throws IOException, CoreException, NoHeadException, GitAPIException, ParseException {
@@ -813,8 +796,8 @@ public class IndexManager {
 	
 	public static void processRepository(String topDirectoryLocation, String URL) throws NoHeadException, IOException, CoreException, GitAPIException, ParseException {
 		// process repo runs only once
-		//IndexManager.getInstance().currentProject = null;
-		//IndexManager.getInstance().processRepo(topDirectoryLocation, URL);
+		IndexManager.getInstance().currentProject = null;
+		IndexManager.getInstance().processRepo(topDirectoryLocation, URL);
 		traverseUntilJava(new File(topDirectoryLocation), topDirectoryLocation);					
 		
 		//System.out.println(topDirectoryLocation + " -> " + URL);
@@ -860,8 +843,8 @@ public class IndexManager {
 	}
 	
 	public static void main(String[] args) throws IOException, CoreException, NoHeadException, GitAPIException, ParseException {
-		fileModelList.clear();
-		gitDataList.clear();
+		fileModel = null;
+		gitData = null;
 		
 		// given location of directory and URL
 		//File pathToURLMap = new File("/home/kwak/Desktop/testMap.txt");
@@ -870,6 +853,6 @@ public class IndexManager {
 		// use this for testing
 		readMapFile(pathToURLMap);
 				
-		//Solrj.getInstance().commitDocs("MoreLikeThisIndex", 9452);
+		Solrj.getInstance().commitDocs("MoreLikeThisIndex", 9452);
 	}
 }
