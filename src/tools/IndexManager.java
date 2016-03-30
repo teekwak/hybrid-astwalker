@@ -465,7 +465,13 @@ public class IndexManager {
 		
 	}
 	
-	// recursively get method declarations (for those method declarations inside of each other)
+	/**
+	 * recursively get method declarations (for those method declarations inside of each other)
+	 * 
+	 * @param mdo
+	 * @param solrDoc
+	 * @param id
+	 */
 	public static void findAllMethodDeclarations(MethodDeclarationObject mdo, SolrInputDocument solrDoc, String id) {
 		makeMethodDeclarationSolrDoc(mdo, solrDoc, id);
 		
@@ -724,7 +730,9 @@ public class IndexManager {
 		return digest;
 	}
 	
-	// gets all classes, method declarations, and method invocation from each FileModel
+	/**
+	 * Gets all classes, method declarations, and method invocation from FileModel
+	 */
 	public static void createSolrDocs() {
 		for(JavaClass jc : fileModel.getJavaClassList()) {
 			JavaFile jf = gitData.getJavaFile();
@@ -733,22 +741,12 @@ public class IndexManager {
 		}
 	}
 	
-	/*
-	 * fileModel holds all AST information
+	/**
+	 * Creates AST and gathers Git data for each file
+	 * Runs createSolrDoc() method
 	 * 
-	 * gitData.javaFileList has a list of Java file objects with data on each commit
-	 * gitData.getCommitDataPerFile() creates commit objects
-	 * gitData.addHashCodePairsToMap() populates hash codes
-	 * gitData.getDiff() gets insertions and deletions for all commits
-	 * 
-	 * to get the insertions/deletions at each commit, stored in CommitData object
-	 * 
-	 * for(JavaFile j : gitData.javaFileList) {
-	 *     for(CommitData c : j.commitDataList) {
-	 *         System.out.println(j.name + " +" + c.insertions + " -" + c.deletions);
-	 *     }
-	 * }
-	 * 
+	 * @param parentNode
+	 * @param topDirectoryLocation
 	 */
 	public static void runASTandGitData(File parentNode, String topDirectoryLocation) throws IOException, CoreException, NoHeadException, GitAPIException, ParseException {
 		fileModel = new FileModel();
@@ -769,14 +767,19 @@ public class IndexManager {
 				
 		git.close();
 	
-		// create solr doc
-		// clear lists
-		
 		createSolrDocs();
 		fileModel = null;
 		gitData = null;
 	}
 	
+	/**
+	 * Looks for files that end with .java
+	 * Recursively travels down directories
+	 * Ignores invisible directories
+	 * 
+	 * @param parentNode
+	 * @param topDirectoryLocation
+	 */
 	public static void traverseUntilJava(File parentNode, String topDirectoryLocation) throws IOException, CoreException, NoHeadException, GitAPIException, ParseException {
 		if(parentNode.isDirectory()) {
 			File childNodes[] = parentNode.listFiles();
@@ -794,8 +797,13 @@ public class IndexManager {
 		}
 	}
 	
+	/**
+	 * Resets IndexManager, gathers information about the repo, and then traverses the repo to find Java files
+	 * 
+	 * @param topDirectoryLocation
+	 * @param URL
+	 */
 	public static void processRepository(String topDirectoryLocation, String URL) throws NoHeadException, IOException, CoreException, GitAPIException, ParseException {
-		// process repo runs only once
 		IndexManager.getInstance().currentProject = null;
 		IndexManager.getInstance().processRepo(topDirectoryLocation, URL);
 		traverseUntilJava(new File(topDirectoryLocation), topDirectoryLocation);					
@@ -803,6 +811,11 @@ public class IndexManager {
 		//System.out.println(topDirectoryLocation + " -> " + URL);
 	}
 	
+	/**
+	 * Takes in the path + URL map file and pairs the path with the URL
+	 * 
+	 * @param file
+	 */
 	public static void readMapFile(File file) throws NoHeadException, CoreException, GitAPIException, ParseException {
         boolean path = false;
         boolean url = false;
@@ -847,10 +860,9 @@ public class IndexManager {
 		gitData = null;
 		
 		// given location of directory and URL
-		//File pathToURLMap = new File("/home/kwak/Desktop/testMap.txt");
+		// use this for testing
 		File pathToURLMap = new File("/home/kwak/Desktop/testMap.txt");
 		
-		// use this for testing
 		readMapFile(pathToURLMap);
 				
 		Solrj.getInstance().commitDocs("MoreLikeThisIndex", 9452);
