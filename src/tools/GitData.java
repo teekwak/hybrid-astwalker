@@ -9,13 +9,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
-
-import org.eclipse.jgit.revwalk.RevCommit;
 
 // data for each commit
 class CommitData {
@@ -177,62 +173,14 @@ class JavaFile {
 // data for all files in a repo
 public class GitData {
 
-	Map<String, String> hashCodePairs;		// stores pairs of commit hash codes
 	JavaFile javaFile;
 	
 	public GitData() {
-		hashCodePairs = new LinkedHashMap<>();
 		javaFile = null;
-	}
-	
-	public void addHashCodePairsToMap(List<RevCommit> commitHistory) {
-		this.hashCodePairs.put("--root", commitHistory.get(0).name());
-		
-		int commitHistorySize = commitHistory.size();
-		for(int i = 0; i < commitHistorySize - 1; i++) {
-			this.hashCodePairs.put(commitHistory.get(i).name(), commitHistory.get(i + 1).name());
-		}
 	}
 	
 	public JavaFile getJavaFile() {
 		return this.javaFile;
-	}
-	
-	/*
-	 * gets insertions and deletions for all commits
-	 * parses and adds insertions/deletions based on hash code and file name
-	 */
-	public void getDiff(String directoryLocation, Map<String, String> hashCodePairs) throws IOException {					
-		for(Map.Entry<String, String> entry : hashCodePairs.entrySet()) {				
-			ProcessBuilder pb = new ProcessBuilder("git", "diff-tree", "--numstat", entry.getKey(), entry.getValue(), directoryLocation);
-			pb.directory( new File(directoryLocation) );
-		
-			Process proc = pb.start();
-			InputStreamReader isr = new InputStreamReader(proc.getInputStream());
-			BufferedReader br = new BufferedReader(isr);
-			
-			String s = null;
-			while((s = br.readLine()) != null) {
-				if(s.endsWith(".java")){
-					String[] parts = s.split("\t");
-										
-					if(parts.length == 3) { // for some reason, git diff-tree --numstat --root $3 also returns hash code of commit						
-						if(javaFile.fileLocation.endsWith(parts[2])) {
-							for(CommitData c : javaFile.commitDataList) {
-								if(c.hashCode.equals(entry.getValue())) {
-									c.setInsertions(Integer.parseInt(parts[0]));
-									c.setDeletions(Integer.parseInt(parts[1]));
-								}
-							}
-						}
-					}
-				}
-			}
-						
-			br.close();
-			isr.close();
-			proc.destroy();
-		}
 	}
 
 	public static int getLineCountOfFile(String javaFileName) {
@@ -289,7 +237,7 @@ public class GitData {
 		javaFileObject.setNumberOfCharacters(getCharacterCountOfFile(javaFileName));
 		
 		// get all commits of a single file
-        ProcessBuilder pb = new ProcessBuilder("git", "log", "--stat", "--format=format:Commit: %H%nAuthor: %an%nEmail: %ae%nDate: %ad%nMessage: %s", javaFileName);
+        ProcessBuilder pb = new ProcessBuilder("git", "log", "--reverse", "--numstat", "--format=format:Commit: %H%nAuthor: %an%nEmail: %ae%nDate: %ad%nMessage: %s", javaFileName);
 		pb.directory(dir);
 			
 		Process proc = pb.start();
@@ -301,16 +249,29 @@ public class GitData {
 		List<String> emailList = new ArrayList<>();
 		List<String> dateList = new ArrayList<>();
 		List<String> messageList = new ArrayList<>();
+		List<Integer> insertionList = new ArrayList<>();
+		List<Integer> deletionList = new ArrayList<>();
 								
 		String s = null;
 				
 		while((s = br.readLine()) != null) {				
-            if(s.startsWith("Commit") && hashCodeList.size() == messageList.size()) {
+            if(s.startsWith("Commit") && hashCodeList.size() == messageList.size() && hashCodeList.size() == insertionList.size()) {
                 hashCodeList.add(s.split(" ")[1]);
             }
-            else if(s.startsWith("Commit") && hashCodeList.size() != messageList.size()) {
+            else if(s.startsWith("Commit") && hashCodeList.size() == messageList.size() && hashCodeList.size() != insertionList.size()) {
+            	insertionList.add(0);
+            	deletionList.add(0);
+            	hashCodeList.add(s.split(" ")[1]);
+            }
+            else if(s.startsWith("Commit") && hashCodeList.size() != messageList.size() && hashCodeList.size() == insertionList.size()) {
                 messageList.add("");
                 hashCodeList.add(s.split(" ")[1]);
+            }
+            else if(s.startsWith("Commit") && hashCodeList.size() != messageList.size() && hashCodeList.size() != insertionList.size()) {
+                messageList.add("");
+            	insertionList.add(0);
+            	deletionList.add(0);
+            	hashCodeList.add(s.split(" ")[1]);
             }
             else if(s.startsWith("Author")) {
                 authorList.add(s.split(" ")[1]);
@@ -323,6 +284,12 @@ public class GitData {
             }
             else if (s.startsWith("Message")){
                 messageList.add(s.split(" ", 2)[1]);
+            }
+            else if(s.length() > 0 && Character.isDigit(s.charAt(0))) {
+                String[] numParts = s.split("\t");
+                insertionList.add(Integer.valueOf(numParts[0]));
+                deletionList.add(Integer.valueOf(numParts[1]));
+                
             }
 		}
 				
@@ -350,6 +317,8 @@ public class GitData {
 			} catch (IndexOutOfBoundsException e) {
 				cd.setMessage("");
 			}
+			cd.setInsertions(insertionList.get(i).intValue());
+			cd.setDeletions(deletionList.get(i).intValue());
 			
 			// add object to list
 			javaFileObject.commitDataList.add(cd);

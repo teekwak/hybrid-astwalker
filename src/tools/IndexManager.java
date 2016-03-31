@@ -10,16 +10,11 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.api.errors.NoHeadException;
-import org.eclipse.jgit.revwalk.RevCommit;
 
 import entities.JavaClass;
 import entities.MethodDeclarationObject;
@@ -362,9 +357,6 @@ public class IndexManager {
 			solrDoc.addField(IndexManager.SNIPPET_ALL_AUTHOR_AVATARS, makeGravaterURL(email));
 			solrDoc.addField(IndexManager.SNIPPET_ALL_AUTHOR_EMAILS, email);
 		}
-
-		// order from newest to oldest
-		Collections.reverse(javaFile.getCommitDataList());
 		
 		CommitData headCommit = javaFile.getCommitDataList().get(javaFile.getCommitDataList().size() - 1);
 		
@@ -746,25 +738,13 @@ public class IndexManager {
 	 * @param parentNode
 	 * @param topDirectoryLocation
 	 */
-	public static void runASTandGitData(File parentNode, String topDirectoryLocation) throws IOException, CoreException, NoHeadException, GitAPIException, ParseException {
+	public static void runASTandGitData(File parentNode, String topDirectoryLocation) throws IOException, CoreException, ParseException {
 		fileModel = new FileModel();
 		fileModel = fileModel.parseDeclarations(parentNode.getAbsolutePath());
 		
 		gitData = new GitData();
-		Git git = Git.open( new File (topDirectoryLocation + ".git") );
-		
-		List<RevCommit> commitHistory = new ArrayList<>();
-		for(RevCommit commit : git.log().call()) {
-			commitHistory.add(commit);
-		}
-		Collections.reverse(commitHistory);
-		
 		gitData.getCommitDataPerFile(topDirectoryLocation, parentNode.getAbsolutePath());
-		gitData.addHashCodePairsToMap(commitHistory);
-		gitData.getDiff(topDirectoryLocation, gitData.hashCodePairs);
 				
-		git.close();
-	
 		if(fileModel.getJavaClassList().size() > 0) {
 			createSolrDocs();			
 		}
@@ -781,7 +761,7 @@ public class IndexManager {
 	 * @param parentNode
 	 * @param topDirectoryLocation
 	 */
-	public static void traverseUntilJava(File parentNode, String topDirectoryLocation) throws IOException, CoreException, NoHeadException, GitAPIException, ParseException {
+	public static void traverseUntilJava(File parentNode, String topDirectoryLocation) throws IOException, CoreException, ParseException {
 		if(parentNode.isDirectory()) {
 			File childNodes[] = parentNode.listFiles();
 						
@@ -794,6 +774,7 @@ public class IndexManager {
 		else {
 			if(parentNode.getName().endsWith(".java")) {	
 				System.out.println("Checking: " + parentNode.getName());
+				
 				runASTandGitData(parentNode, topDirectoryLocation);
 			}
 		}
@@ -805,10 +786,12 @@ public class IndexManager {
 	 * @param topDirectoryLocation
 	 * @param URL
 	 */
-	public static void processRepository(String topDirectoryLocation, String URL) throws NoHeadException, IOException, CoreException, GitAPIException, ParseException {
-		IndexManager.getInstance().currentProject = null;
+	public static void processRepository(String topDirectoryLocation, String URL) throws IOException, CoreException, ParseException {
 		IndexManager.getInstance().processRepo(topDirectoryLocation, URL);
-		traverseUntilJava(new File(topDirectoryLocation), topDirectoryLocation);							
+		
+		traverseUntilJava(new File(topDirectoryLocation), topDirectoryLocation);	
+		
+		IndexManager.getInstance().currentProject = null;
 	}
 	
 	/**
@@ -816,7 +799,7 @@ public class IndexManager {
 	 * 
 	 * @param file
 	 */
-	public static void readMapFile(File file) throws NoHeadException, CoreException, GitAPIException, ParseException {
+	public static void readMapFile(File file) throws CoreException, ParseException {
         boolean path = false;
         boolean url = false;
         String[] arr = {"", ""};
@@ -854,10 +837,11 @@ public class IndexManager {
             e.printStackTrace();
         }
 	}
-	
-	public static void main(String[] args) throws IOException, CoreException, NoHeadException, GitAPIException, ParseException {
+			
+	public static void main(String[] args) throws IOException, CoreException, ParseException {
 		fileModel = null;
 		gitData = null;
+		IndexManager.getInstance().currentProject = null;
 		
 		// given location of directory and URL
 		// use this for testing
