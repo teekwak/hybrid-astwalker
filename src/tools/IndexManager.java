@@ -34,6 +34,7 @@ public class IndexManager {
 	
 	public static FileModel fileModel = null;
 	public static GitData gitData = null;
+	public static int count = 0;
 	
 	private static int MAXDOC = 300;
 	private static int MAX_CHILD_DOC = 4000;
@@ -742,10 +743,9 @@ public class IndexManager {
 		fileModel = new FileModel();
 		fileModel = fileModel.parseDeclarations(parentNode.getAbsolutePath());
 		
-		gitData = new GitData();
-		gitData.getCommitDataPerFile(topDirectoryLocation, parentNode.getAbsolutePath());
-				
 		if(fileModel.getJavaClassList().size() > 0) {
+			gitData = new GitData();
+			gitData.getCommitDataPerFile(topDirectoryLocation, parentNode.getAbsolutePath());
 			createSolrDocs();			
 		}
 				
@@ -772,8 +772,10 @@ public class IndexManager {
 			}
 		}
 		else {
-			if(parentNode.getName().endsWith(".java")) {	
-				System.out.println("Checking: " + parentNode.getName());
+			if(parentNode.getName().endsWith(".java")) {
+				//TODO
+				count++;
+				System.out.println("Checking: " + parentNode.getName() + " " + count);
 				
 				runASTandGitData(parentNode, topDirectoryLocation);
 			}
@@ -847,8 +849,20 @@ public class IndexManager {
 		// use this for testing
 		File pathToURLMap = new File("/home/kwak/Desktop/testMap.txt");
 		
+		Long a, b;
+		
+		//TODO
+		a = System.currentTimeMillis();
+		
 		readMapFile(pathToURLMap);
-				
+		
 		Solrj.getInstance().commitDocs("MoreLikeThisIndex", 9452);
+	
+		//TODO
+		b = System.currentTimeMillis();
+		
+		System.out.println("-------------------------------------");
+		System.out.println("Looked at " + count + " files in " + (b-a) / 1000 + " seconds");
+		System.out.println("-------------------------------------");
 	}
 }

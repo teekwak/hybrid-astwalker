@@ -256,7 +256,7 @@ public class GitData {
 				
 		while((s = br.readLine()) != null) {				
             if(s.startsWith("Commit") && hashCodeList.size() == messageList.size() && hashCodeList.size() == insertionList.size()) {
-                hashCodeList.add(s.split(" ")[1]);
+            	hashCodeList.add(s.split(" ")[1]);
             }
             else if(s.startsWith("Commit") && hashCodeList.size() == messageList.size() && hashCodeList.size() != insertionList.size()) {
             	insertionList.add(0);
@@ -274,22 +274,33 @@ public class GitData {
             	hashCodeList.add(s.split(" ")[1]);
             }
             else if(s.startsWith("Author")) {
-                authorList.add(s.split(" ")[1]);
+            	try {
+                    authorList.add(s.split(" ")[1]);            		
+            	} catch (ArrayIndexOutOfBoundsException e) {
+            		authorList.add("");
+            	}
             }
             else if(s.startsWith("Email")) {
-                emailList.add(s.split(" ")[1]);
+            	try {
+                    emailList.add(s.split(" ")[1]);            		
+            	} catch (ArrayIndexOutOfBoundsException e) {
+            		emailList.add("");
+            	}
             }
             else if (s.startsWith("Date")) {
                 dateList.add(s.split(" ", 2)[1]);
             }
             else if (s.startsWith("Message")){
-                messageList.add(s.split(" ", 2)[1]);
+            	try {
+                    messageList.add(s.split(" ", 2)[1]);            		
+            	} catch (ArrayIndexOutOfBoundsException e) {
+            		messageList.add("");
+            	}
             }
             else if(s.length() > 0 && Character.isDigit(s.charAt(0))) {
                 String[] numParts = s.split("\t");
                 insertionList.add(Integer.valueOf(numParts[0]));
-                deletionList.add(Integer.valueOf(numParts[1]));
-                
+                deletionList.add(Integer.valueOf(numParts[1]));   
             }
 		}
 				
@@ -312,14 +323,31 @@ public class GitData {
 			cd.setAuthor(authorList.get(i));
 			cd.setEmail(emailList.get(i));
 			cd.setHashCode(hashCodeList.get(i));
+			
 			try {
 				cd.setMessage(messageList.get(i));				
 			} catch (IndexOutOfBoundsException e) {
 				cd.setMessage("");
 			}
-			cd.setInsertions(insertionList.get(i).intValue());
-			cd.setDeletions(deletionList.get(i).intValue());
 			
+			try {
+				cd.setInsertions(insertionList.get(i).intValue());				
+			} catch (IndexOutOfBoundsException e) {
+				
+			}
+
+			try {
+				cd.setInsertions(insertionList.get(i).intValue());				
+			} catch (IndexOutOfBoundsException e) {
+				cd.setInsertions(0);	
+			}
+			
+			try {
+				cd.setDeletions(deletionList.get(i).intValue());		
+			} catch (IndexOutOfBoundsException e) {
+				cd.setDeletions(0);
+			}			
+						
 			// add object to list
 			javaFileObject.commitDataList.add(cd);
 		}
