@@ -421,6 +421,11 @@ public class IndexManager {
 		calculation = (double)(headCommit.getInsertions() + headCommit.getDeletions()) / (double)javaFile.getNumberOfLines();
 		solrDoc.addField(IndexManager.SNIPPET_INSERTION_DELETION_CODE_CHURN, calculation);	
 		
+		solrDoc.addField(IndexManager.SNIPPET_THIS_VERSION, headCommit.getHashCode());
+		
+		solrDoc.addField(IndexManager.SNIPPET_VERSION_COMMENT, headCommit.getMessage());
+		solrDoc.addField(IndexManager.SNIPPET_LAST_UPDATED, headCommit.getSolrDate());
+		
 		String githubAddress = this.toGitHubAddress(currentProject.project_owner,currentProject.project_name, file, headCommit.getHashCode());
 		solrDoc.addField(IndexManager.SNIPPET_ADDRESS, githubAddress);
 		
@@ -438,11 +443,6 @@ public class IndexManager {
 			}
 		}
 		
-		solrDoc.addField(IndexManager.SNIPPET_THIS_VERSION, headCommit.getHashCode());
-			
-		solrDoc.addField(IndexManager.SNIPPET_VERSION_COMMENT, headCommit.getMessage());
-		solrDoc.addField(IndexManager.SNIPPET_LAST_UPDATED, headCommit.getSolrDate());
-		
 		// method declaration is right below this current method
 		addVariableListToSolrDoc(jc.getArrayList(), solrDoc);
 		addVariableListToSolrDoc(jc.getGenericsList(), solrDoc);
@@ -456,13 +456,11 @@ public class IndexManager {
 			findAllMethodDeclarations((MethodDeclarationObject)md, solrDoc, id);
 		}
 		
-		
 		Solrj.getInstance().addDoc(solrDoc);
 		
 		if(Solrj.getInstance().req.getDocuments().size() >= MAXDOC || CHILD_COUNT >= MAX_CHILD_DOC) {
 			Solrj.getInstance().commitDocs("MoreLikeThisIndex", 9452);	
 		}
-		
 	}
 	
 	/**
@@ -767,7 +765,10 @@ public class IndexManager {
 				
 		git.close();
 	
-		createSolrDocs();
+		if(fileModel.getJavaClassList().size() > 0) {
+			createSolrDocs();			
+		}
+				
 		fileModel = null;
 		gitData = null;
 	}
@@ -792,6 +793,7 @@ public class IndexManager {
 		}
 		else {
 			if(parentNode.getName().endsWith(".java")) {	
+				System.out.println("Checking: " + parentNode.getName());
 				runASTandGitData(parentNode, topDirectoryLocation);
 			}
 		}
@@ -806,9 +808,7 @@ public class IndexManager {
 	public static void processRepository(String topDirectoryLocation, String URL) throws NoHeadException, IOException, CoreException, GitAPIException, ParseException {
 		IndexManager.getInstance().currentProject = null;
 		IndexManager.getInstance().processRepo(topDirectoryLocation, URL);
-		traverseUntilJava(new File(topDirectoryLocation), topDirectoryLocation);					
-		
-		//System.out.println(topDirectoryLocation + " -> " + URL);
+		traverseUntilJava(new File(topDirectoryLocation), topDirectoryLocation);							
 	}
 	
 	/**

@@ -203,7 +203,7 @@ public class GitData {
 	 * parses and adds insertions/deletions based on hash code and file name
 	 */
 	public void getDiff(String directoryLocation, Map<String, String> hashCodePairs) throws IOException {					
-		for(Map.Entry<String, String> entry : hashCodePairs.entrySet()) {								
+		for(Map.Entry<String, String> entry : hashCodePairs.entrySet()) {				
 			ProcessBuilder pb = new ProcessBuilder("git", "diff-tree", "--numstat", entry.getKey(), entry.getValue(), directoryLocation);
 			pb.directory( new File(directoryLocation) );
 		
@@ -228,7 +228,7 @@ public class GitData {
 					}
 				}
 			}
-			
+						
 			br.close();
 			isr.close();
 			proc.destroy();
@@ -279,7 +279,7 @@ public class GitData {
 	
 	public void getCommitDataPerFile(String directoryLocation, String javaFileName) throws IOException, ParseException {				
 		JavaFile javaFileObject = new JavaFile(javaFileName);
-		
+				
 		File dir = new File(directoryLocation);
 		
 		// get number of lines in a file
@@ -289,61 +289,46 @@ public class GitData {
 		javaFileObject.setNumberOfCharacters(getCharacterCountOfFile(javaFileName));
 		
 		// get all commits of a single file
-		ProcessBuilder pb3 = new ProcessBuilder("git", "log", "--follow", javaFileName);
-		pb3.directory(dir);
+        ProcessBuilder pb = new ProcessBuilder("git", "log", "--stat", "--format=format:Commit: %H%nAuthor: %an%nEmail: %ae%nDate: %ad%nMessage: %s", javaFileName);
+		pb.directory(dir);
 			
-		Process proc3 = pb3.start();
-		InputStreamReader isr3 = new InputStreamReader(proc3.getInputStream());
-		BufferedReader br3 = new BufferedReader(isr3);
+		Process proc = pb.start();
+		InputStreamReader isr = new InputStreamReader(proc.getInputStream());
+		BufferedReader br = new BufferedReader(isr);
 						
 		List<String> hashCodeList = new ArrayList<>();
 		List<String> authorList = new ArrayList<>();
 		List<String> emailList = new ArrayList<>();
 		List<String> dateList = new ArrayList<>();
 		List<String> messageList = new ArrayList<>();
-						
+								
 		String s = null;
-		while((s = br3.readLine()) != null) {	
-			
-			if(s.startsWith("commit") && hashCodeList.size() == messageList.size()) {
-				hashCodeList.add(s.split(" ")[1]);
-			}
-			else if(s.startsWith("commit") && hashCodeList.size() != messageList.size()) {
-				messageList.add("");
-				hashCodeList.add(s.split(" ")[1]);
-			}
-			else if(s.startsWith("Author")) {
-				String[] parts = s.split(" ");
-				List<String> authorParts = new ArrayList<>();
-					
-				for(int i = 1; i < parts.length; i++) {
-					if(!parts[i].startsWith("<")) {
-						authorParts.add(parts[i]);
-					}
-					else {
-						emailList.add(parts[i].replace("<", "").replace(">", ""));
-					}
-				}
-				authorList.add(String.join(" ", authorParts).trim());
-			}
-			else if (s.startsWith("Date")) {
-				String[] parts = s.split(" ");
-				List<String> dateParts = new ArrayList<>();
 				
-				for(int i = 3; i < parts.length; i++) {
-					dateParts.add(parts[i]);
-				}
-					
-				dateList.add(String.join(" ", dateParts).trim());
-			}
-			else if (!s.isEmpty()){
-				messageList.add(s.trim());
-			}
+		while((s = br.readLine()) != null) {				
+            if(s.startsWith("Commit") && hashCodeList.size() == messageList.size()) {
+                hashCodeList.add(s.split(" ")[1]);
+            }
+            else if(s.startsWith("Commit") && hashCodeList.size() != messageList.size()) {
+                messageList.add("");
+                hashCodeList.add(s.split(" ")[1]);
+            }
+            else if(s.startsWith("Author")) {
+                authorList.add(s.split(" ")[1]);
+            }
+            else if(s.startsWith("Email")) {
+                emailList.add(s.split(" ")[1]);
+            }
+            else if (s.startsWith("Date")) {
+                dateList.add(s.split(" ", 2)[1]);
+            }
+            else if (s.startsWith("Message")){
+                messageList.add(s.split(" ", 2)[1]);
+            }
 		}
 				
-		br3.close();
-		isr3.close();
-		proc3.destroy();
+		br.close();
+		isr.close();
+		proc.destroy();
 		
 		int hashCodeListSize = hashCodeList.size();
 		for(int i = 0; i < hashCodeListSize; i++) {
