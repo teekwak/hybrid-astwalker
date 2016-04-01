@@ -780,7 +780,27 @@ public class IndexManager {
 				System.out.println("Checking: " + parentNode.getName() + " " + count);
 				
 				if(GitData.getLineCountOfFile(parentNode.getAbsolutePath()) <= 50000) {
-					runASTandGitData(parentNode, topDirectoryLocation);					
+					try {
+						runASTandGitData(parentNode, topDirectoryLocation);		
+					} catch (Exception e) {
+						try {				
+							// TODO fix file path
+							File file = new File("/home/kwak/Desktop/crashList.txt");
+							
+							if(!file.exists()) {
+								file.createNewFile();
+							}
+							
+							FileWriter fw = new FileWriter(file, true);
+							BufferedWriter bw = new BufferedWriter(fw);
+							bw.write(parentNode.getAbsolutePath() + "\n");
+							bw.close();
+							fw.close();
+							
+						} catch (IOException e2) {
+							e2.printStackTrace();
+						}
+					}			
 				}
 				else {
 					try {				
