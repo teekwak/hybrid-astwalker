@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -36,8 +37,9 @@ public class IndexManager {
 	
 	public static FileModel fileModel = null;
 	public static GitData gitData = null;
-	public static int count = 0;
-	public static long bytesLeft = 375000000;
+	public static String crashListFileName = null;
+	public static int pathToURLMapLineNumber = 0;
+	public static int fileCount = 0;
 	
 	private static int MAXDOC = 300;
 	private static int MAX_CHILD_DOC = 4000;
@@ -197,23 +199,19 @@ public class IndexManager {
 		File project = null;
 		
 		if(doc.getFieldValue("htmlURL") != null) {
-			String projectAddress = doc.getFieldValue("htmlURL").toString();
-			currentProject.project_address = projectAddress;
+			currentProject.project_address = doc.getFieldValue("htmlURL").toString();
 		}
 		
 		if(doc.getFieldValue("avatarURL") != null) {
-			String avatarURL = doc.getFieldValue("avatarURL").toString();
-			currentProject.project_owner_avatar = avatarURL;
+			currentProject.project_owner_avatar = doc.getFieldValue("avatarURL").toString();
 		}
 		
 		if(doc.getFieldValue("description") != null){
-			String description = doc.getFieldValue("description").toString();
-			currentProject.project_description = description;
+			currentProject.project_description = doc.getFieldValue("description").toString();
 		}
 		
 		if(doc.getFieldValue("fork") != null){
-			String fork = doc.getFieldValue("fork").toString();
-			currentProject.fork = fork;
+			currentProject.fork = doc.getFieldValue("fork").toString();
 		}
 		
 		if(doc.getFieldValue("languageCount") != null){
@@ -238,30 +236,25 @@ public class IndexManager {
 		}
 
 		if(doc.getFieldValue("projectName") != null){
-			String projectName = doc.getFieldValue("projectName").toString();
-			currentProject.project_name = projectName;
+			currentProject.project_name = doc.getFieldValue("projectName").toString();
 			project = new File(pathToDirectory);
 		}
 		
 		if(doc.getFieldValue("siteAdmin") != null){
-			String siteAdmin = doc.getFieldValue("siteAdmin").toString();
-			currentProject.siteAdmin = siteAdmin;
+			currentProject.siteAdmin = doc.getFieldValue("siteAdmin").toString();
 		}
 
 		if(doc.getFieldValue("userName") != null){
-			String userName = doc.getFieldValue("userName").toString();
-			currentProject.project_owner = userName;
+			currentProject.project_owner = doc.getFieldValue("userName").toString();
 		}
 
 		if(doc.getFieldValue("userType") != null){
-			String userType = doc.getFieldValue("userType").toString();
-			currentProject.type = userType;
+			currentProject.type = doc.getFieldValue("userType").toString();
 		}
 
 	}
 	
 	public String toGitHubAddress(String owner, String projectName, File file, String thisVersion){
-
 		String gitHubAddress = "https://raw.github.com/"+owner+"/"+projectName+"/"+thisVersion+"/";
 		String path = file.getAbsolutePath();
 
@@ -456,7 +449,6 @@ public class IndexManager {
 		
 		if(Solrj.getInstance().req.getDocuments().size() >= MAXDOC || CHILD_COUNT >= MAX_CHILD_DOC) {
 			Solrj.getInstance().commitDocs("MoreLikeThisIndex", 9452);	
-			bytesLeft = 375000000;
 		}
 	}
 	
@@ -605,7 +597,6 @@ public class IndexManager {
 		
 		CHILD_COUNT++;
 		solrDoc.addChildDocument(methodDecSolrDoc);
-		
 	}
 	
 	public static void makeMethodInvocationSolrDoc(SuperEntityClass entity, SolrInputDocument solrDoc, String id) {
@@ -777,61 +768,9 @@ public class IndexManager {
 		}
 		else {
 			if(parentNode.getName().endsWith(".java")) {
-				if(parentNode.length() * 2 <= bytesLeft) {
-					try {
-						//TODO
-						count++;
-						System.out.println("Checking: " + parentNode.getName() + " " + count);
-						
-						bytesLeft -= parentNode.length() * 2;
-						runASTandGitData(parentNode, topDirectoryLocation);		
-					} catch (Exception e) {
-						try {				
-							// TODO fix file path
-							File file = new File("/home/kwak/Desktop/crashList.txt");
-							
-							if(!file.exists()) {
-								file.createNewFile();
-							}
-							
-							FileWriter fw = new FileWriter(file, true);
-							BufferedWriter bw = new BufferedWriter(fw);
-							bw.write(parentNode.getAbsolutePath() + "\n");
-							bw.close();
-							fw.close();
-							
-						} catch (IOException e1) {
-							e1.printStackTrace();
-						} 
-					}			
-				}
-				else {
-					Solrj.getInstance().commitDocs("MoreLikeThisIndex", 9452);	
-					bytesLeft = 375000000;
-					
-					if(parentNode.length() * 2 < bytesLeft) {
-						traverseUntilJava(parentNode, topDirectoryLocation);
-					}
-					else {
-						try {				
-							// TODO fix file path
-							File file = new File("/home/kwak/Desktop/largeFileList.txt");
-							
-							if(!file.exists()) {
-								file.createNewFile();
-							}
-							
-							FileWriter fw = new FileWriter(file, true);
-							BufferedWriter bw = new BufferedWriter(fw);
-							bw.write(parentNode.getAbsolutePath() + "\n");
-							bw.close();
-							fw.close();
-							
-						} catch (IOException e) {
-							e.printStackTrace();
-						}	
-					}
-				}
+				fileCount++;
+				System.out.println("Checking: " + parentNode.getName() + " | " + fileCount);
+				runASTandGitData(parentNode, topDirectoryLocation);	
 			}
 		}
 	}
@@ -844,8 +783,40 @@ public class IndexManager {
 	 */
 	public static void processRepository(String topDirectoryLocation, String URL) throws IOException, CoreException, ParseException {
 		IndexManager.getInstance().processRepo(topDirectoryLocation, URL);
-		
-		traverseUntilJava(new File(topDirectoryLocation), topDirectoryLocation);	
+		try {
+
+			pathToURLMapLineNumber += 2;
+			
+			// write repo URL line number to file
+			try {
+				FileWriter fw = new FileWriter(new File(crashListFileName), true);
+				BufferedWriter bw = new BufferedWriter(fw);
+				bw.write(pathToURLMapLineNumber + " ");
+				bw.close();
+				fw.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			traverseUntilJava(new File(topDirectoryLocation), topDirectoryLocation);	
+			
+			// delete repo URL line number from file if successful
+			RandomAccessFile randomAccessFile = new RandomAccessFile(crashListFileName, "rw");
+			byte b;
+			long length = randomAccessFile.length() ;
+			if (length != 0) {
+			    do {
+			        length -= 1;
+			        randomAccessFile.seek(length);
+			        b = randomAccessFile.readByte();
+			    } while (b != 10 && length > 0);
+			    randomAccessFile.setLength(length);
+			    randomAccessFile.close();
+			}
+			
+		} catch (Exception e) {
+			// continue;
+		}
 		
 		IndexManager.getInstance().currentProject = null;
 	}
@@ -894,28 +865,37 @@ public class IndexManager {
 	}
 			
 	public static void main(String[] args) throws IOException, CoreException, ParseException {
+		// arg[0] = start line in pathToURLMap
+		// arg[1] = end line in pathToURLMap
+		// arg[2] = if not null, start here
+		
 		fileModel = null;
 		gitData = null;
+		crashListFileName = null;
+		
 		IndexManager.getInstance().currentProject = null;
 		
-		// TODO fix pathToURLMap path
+		// TODO fix crashList path, pathToURLMap, remove timing, remove print statements
+		
+		crashListFileName = "/home/kwak/Desktop/crashList_" + System.currentTimeMillis() / 1000L + ".txt";
+		
+		File file = new File(crashListFileName);
+		file.createNewFile();
+		
 		File pathToURLMap = new File("/home/kwak/Desktop/testMap.txt");
 		
 		Long a, b;
 		
-		// TODO remove timing
 		a = System.currentTimeMillis();
 		
 		readMapFile(pathToURLMap);
 		
 		Solrj.getInstance().commitDocs("MoreLikeThisIndex", 9452);
 	
-		// TODO remove timing
 		b = System.currentTimeMillis();
 		
-		// TODO remove print statements
 		System.out.println("-------------------------------------");
-		System.out.println("Looked at " + count + " files in " + (b-a) / 1000 + " seconds");
+		System.out.println("Looked at " + fileCount + " files in " + (b-a) / 1000 + " seconds");
 		System.out.println("-------------------------------------");
 	}
 }

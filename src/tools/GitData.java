@@ -357,6 +357,6 @@ public class GitData {
 		
 		// set GitData javaFile
 		javaFile = javaFileObject;
-	
+		
 	}	
 }

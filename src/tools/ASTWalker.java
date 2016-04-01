@@ -1,10 +1,11 @@
 package tools;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.List;
-import java.util.Scanner;
 import java.util.Stack;
 
 import org.apache.commons.io.FileUtils;
@@ -102,7 +103,9 @@ public class ASTWalker {
 	public FileModel parseFile(String fileLocation) throws IOException, CoreException {
 		this.fileModel = new FileModel();
 				
-		String sourceCode = FileUtils.readFileToString(new File(fileLocation));
+		File file = new File(fileLocation);
+		
+		String sourceCode = FileUtils.readFileToString(file);
 		
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
 
@@ -652,20 +655,25 @@ public class ASTWalker {
 					int endLine = cu.getLineNumber(node.getStartPosition() + node.getLength() - 1);
 										
 					// get source code
-					StringBuilder classSourceCode = new StringBuilder();
-					
-					Scanner scanner = new Scanner(sourceCode);
+					StringBuilder classSourceCode = new StringBuilder();					
+					try {
+						BufferedReader br = new BufferedReader(new FileReader(file));
+						
 						for(int i = 0; i < startLine - 1; i++) {
-							scanner.nextLine();
+							br.readLine();
 						}
-					
+						
 						for(int j = startLine - 1; j < endLine - 1; j++) {
-							classSourceCode.append(scanner.nextLine());
+							classSourceCode.append(br.readLine());
 							classSourceCode.append(System.getProperty("line.separator"));
 						}
 						
-						classSourceCode.append(scanner.nextLine());
-					scanner.close();
+						classSourceCode.append(br.readLine());
+						
+						br.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 					
 					ITypeBinding binding = node.resolveBinding();					
 					
@@ -908,9 +916,11 @@ public class ASTWalker {
 			}
 
 		});
-
+				
+		sourceCode = null;
+		
 		return fileModel;
-
+	
 	}
 
 }

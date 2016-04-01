@@ -191,7 +191,7 @@ public class Solrj {
 
 	@SuppressWarnings("deprecation")
 	public long queryCountDocs() throws IOException{
-		HttpSolrServer server;
+		HttpSolrServer server = null;
 		
 		try { 
 			server = new HttpSolrServer("http://"+host+":9452/solr");
@@ -205,7 +205,9 @@ public class Solrj {
 		} 
 		catch (org.apache.solr.client.solrj.SolrServerException e) { 
 			System.err.println("Query problem"); 
-		} 
+		} finally {
+			server.close();
+		}
 				
 		return -1; 
 	}
