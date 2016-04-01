@@ -769,7 +769,7 @@ public class IndexManager {
 		else {
 			if(parentNode.getName().endsWith(".java")) {
 				fileCount++;
-				System.out.println("Checking: " + parentNode.getName() + " | " + fileCount);
+				//System.out.println("Checking: " + parentNode.getName() + " | " + fileCount);
 				runASTandGitData(parentNode, topDirectoryLocation);	
 			}
 		}
@@ -826,15 +826,22 @@ public class IndexManager {
 	 * 
 	 * @param file
 	 */
-	public static void readMapFile(File file) throws CoreException, ParseException {
+	public static void readMapFile(File file, int start, int end) throws CoreException, ParseException {
         boolean path = false;
         boolean url = false;
         String[] arr = {"", ""};
 
         try {
             BufferedReader br = new BufferedReader(new FileReader(file));
-
-            for(String line; (line = br.readLine()) != null; ) {
+            
+            int count = 0;
+            
+            for(int i = 0; i < start; i++) {
+            	br.readLine();
+            	count++;
+            }
+                        
+            for(String line; (line = br.readLine()) != null && count <= end;) {
                 if (line.startsWith("'")) {
                     arr[0] = line.replace("'", "") + "/";
                     
@@ -842,9 +849,11 @@ public class IndexManager {
                     arr[0] = arr[0].replaceFirst("./", "/home/kwak/Desktop/clones/");
                     
                     path = true;
+                    count++;
                 } else if (line.startsWith("http")) {
                     arr[1] = line;
                     url = true;
+                    count++;
                 }
                 
                 if(path == true && url == true) {
@@ -869,6 +878,11 @@ public class IndexManager {
 		// arg[1] = end line in pathToURLMap
 		// arg[2] = if not null, start here
 		
+		// needs to start on an odd number, end on an even number
+		int start = 11;
+		int end = 20;
+		int optionalStart = 13;
+		
 		fileModel = null;
 		gitData = null;
 		crashListFileName = null;
@@ -877,25 +891,27 @@ public class IndexManager {
 		
 		// TODO fix crashList path, pathToURLMap, remove timing, remove print statements
 		
+		// create crashList file
 		crashListFileName = "/home/kwak/Desktop/crashList_" + System.currentTimeMillis() / 1000L + ".txt";
-		
 		File file = new File(crashListFileName);
 		file.createNewFile();
 		
+		// set path to URL map
 		File pathToURLMap = new File("/home/kwak/Desktop/testMap.txt");
+			
+		// used if crashed somewhere 
+		if(optionalStart > start) {
+			start = optionalStart;
+		}
 		
-		Long a, b;
+		// start everything
+		readMapFile(pathToURLMap, start, end);
 		
-		a = System.currentTimeMillis();
-		
-		readMapFile(pathToURLMap);
-		
+		// add remaining Solr documents
 		Solrj.getInstance().commitDocs("MoreLikeThisIndex", 9452);
-	
-		b = System.currentTimeMillis();
-		
+			
 		System.out.println("-------------------------------------");
-		System.out.println("Looked at " + fileCount + " files in " + (b-a) / 1000 + " seconds");
+		System.out.println("Finished");
 		System.out.println("-------------------------------------");
 	}
 }
