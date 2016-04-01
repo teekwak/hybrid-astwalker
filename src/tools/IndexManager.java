@@ -815,7 +815,8 @@ public class IndexManager {
 			}
 			
 		} catch (Exception e) {
-			// continue;
+			e.printStackTrace();
+			System.exit(-1);
 		}
 		
 		IndexManager.getInstance().currentProject = null;
@@ -874,14 +875,71 @@ public class IndexManager {
 	}
 			
 	public static void main(String[] args) throws IOException, CoreException, ParseException {
-		// arg[0] = start line in pathToURLMap
-		// arg[1] = end line in pathToURLMap
-		// arg[2] = if not null, start here
+		// arg[0] = process #
+		// arg[1] = number of processes (45)
+		// arg[2] = alternate start (optional)
+		// arg[3] = alternate end (optional)
+
+		//args = new String[]{};
+		args = new String[]{"4", "45", "201", "500000"};
 		
-		// needs to start on an odd number, end on an even number
-		int start = 11;
-		int end = 20;
-		int optionalStart = 13;
+		// catch if not enough inputs
+		if(args.length < 2) {
+			throw new IllegalArgumentException("Process number and total number of processes required!");
+		}
+		
+		for(String s : args) {
+			if(Integer.parseInt(s) < 0) {
+				throw new IllegalArgumentException("Negative arguments are not allowed!");
+			}
+		}
+		
+		// catch if process number is greater than number of processes (depends on what number your processes start at)
+		if(Integer.parseInt(args[0]) > Integer.parseInt(args[1])) {
+			throw new IllegalArgumentException("Process number cannot exceed total number of processes!");
+		}
+		
+		// math to calculate start/end lines [must start on odd number and end on even number]
+		final int PATH_TO_URL_MAP_LINE_COUNT = 576478;
+		int linesPerProcess = Math.round(PATH_TO_URL_MAP_LINE_COUNT / Integer.parseInt(args[1]) + 2) / 2 * 2;
+		int startLineNumber = (linesPerProcess * Integer.parseInt(args[0])) + 1;
+		int endLineNumber = linesPerProcess * (Integer.parseInt(args[0]) + 1);
+		
+		// set alternate starting line
+		if(args.length > 2) {
+			try {
+				int arg_2 = Integer.parseInt(args[2]);				
+				if(arg_2 % 2 == 1 && arg_2 < endLineNumber) {	
+					startLineNumber = arg_2;
+				}
+				else {
+					throw new IllegalArgumentException("Something is wrong with the alternate starting line!");
+				}
+			} catch (NumberFormatException e) {
+				// do nothing
+			}
+		}
+		
+		// set alternate ending line
+		if(args.length > 3) {
+			try {
+				int arg_3 = Integer.parseInt(args[3]);
+				if(arg_3 % 2 == 0 && arg_3 > startLineNumber && arg_3 < PATH_TO_URL_MAP_LINE_COUNT) {
+					endLineNumber = arg_3;
+				}
+				else {
+					throw new IllegalArgumentException("Something is wrong with the alternate ending line!");
+				}				
+			} catch (NumberFormatException e) {
+				// do nothing
+			}
+		}
+		
+		System.out.println("start:\t" + startLineNumber);
+		System.out.println("end:\t" + endLineNumber);
+		System.out.println("per:\t" + linesPerProcess);
+		
+		System.exit(0);
 		
 		fileModel = null;
 		gitData = null;
@@ -898,14 +956,9 @@ public class IndexManager {
 		
 		// set path to URL map
 		File pathToURLMap = new File("/home/kwak/Desktop/testMap.txt");
-			
-		// used if crashed somewhere 
-		if(optionalStart > start) {
-			start = optionalStart;
-		}
 		
 		// start everything
-		readMapFile(pathToURLMap, start, end);
+		readMapFile(pathToURLMap, startLineNumber, endLineNumber);
 		
 		// add remaining Solr documents
 		Solrj.getInstance().commitDocs("MoreLikeThisIndex", 9452);
