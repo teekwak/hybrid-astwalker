@@ -774,8 +774,7 @@ public class IndexManager {
 			}
 		}
 		else {
-			if(parentNode.getName().equals("AmazonEC2Stub.java")) {
-			//if(parentNode.getName().endsWith(".java")) {
+			if(parentNode.getName().endsWith(".java")) {
 				//TODO
 				count++;
 				System.out.println("Checking: " + parentNode.getName() + " " + count);
