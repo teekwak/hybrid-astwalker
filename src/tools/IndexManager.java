@@ -37,6 +37,7 @@ public class IndexManager {
 	public static FileModel fileModel = null;
 	public static GitData gitData = null;
 	public static int count = 0;
+	public static long bytesLeft = 375000000;
 	
 	private static int MAXDOC = 300;
 	private static int MAX_CHILD_DOC = 4000;
@@ -455,6 +456,7 @@ public class IndexManager {
 		
 		if(Solrj.getInstance().req.getDocuments().size() >= MAXDOC || CHILD_COUNT >= MAX_CHILD_DOC) {
 			Solrj.getInstance().commitDocs("MoreLikeThisIndex", 9452);	
+			bytesLeft = 375000000;
 		}
 	}
 	
@@ -775,12 +777,13 @@ public class IndexManager {
 		}
 		else {
 			if(parentNode.getName().endsWith(".java")) {
-				//TODO
-				count++;
-				System.out.println("Checking: " + parentNode.getName() + " " + count);
-				
-				if(GitData.getLineCountOfFile(parentNode.getAbsolutePath()) <= 50000) {
+				if(parentNode.length() * 2 <= bytesLeft) {
 					try {
+						//TODO
+						count++;
+						System.out.println("Checking: " + parentNode.getName() + " " + count);
+						
+						bytesLeft -= parentNode.length() * 2;
 						runASTandGitData(parentNode, topDirectoryLocation);		
 					} catch (Exception e) {
 						try {				
@@ -797,28 +800,36 @@ public class IndexManager {
 							bw.close();
 							fw.close();
 							
-						} catch (IOException e2) {
-							e2.printStackTrace();
-						}
+						} catch (IOException e1) {
+							e1.printStackTrace();
+						} 
 					}			
 				}
 				else {
-					try {				
-						// TODO fix file path
-						File file = new File("/home/kwak/Desktop/largeFileList.txt");
-						
-						if(!file.exists()) {
-							file.createNewFile();
-						}
-						
-						FileWriter fw = new FileWriter(file, true);
-						BufferedWriter bw = new BufferedWriter(fw);
-						bw.write(parentNode.getAbsolutePath() + "\n");
-						bw.close();
-						fw.close();
-						
-					} catch (IOException e) {
-						e.printStackTrace();
+					Solrj.getInstance().commitDocs("MoreLikeThisIndex", 9452);	
+					bytesLeft = 375000000;
+					
+					if(parentNode.length() * 2 < bytesLeft) {
+						traverseUntilJava(parentNode, topDirectoryLocation);
+					}
+					else {
+						try {				
+							// TODO fix file path
+							File file = new File("/home/kwak/Desktop/largeFileList.txt");
+							
+							if(!file.exists()) {
+								file.createNewFile();
+							}
+							
+							FileWriter fw = new FileWriter(file, true);
+							BufferedWriter bw = new BufferedWriter(fw);
+							bw.write(parentNode.getAbsolutePath() + "\n");
+							bw.close();
+							fw.close();
+							
+						} catch (IOException e) {
+							e.printStackTrace();
+						}	
 					}
 				}
 			}
