@@ -1,9 +1,11 @@
 package tools;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -772,12 +774,34 @@ public class IndexManager {
 			}
 		}
 		else {
-			if(parentNode.getName().endsWith(".java")) {
+			if(parentNode.getName().equals("AmazonEC2Stub.java")) {
+			//if(parentNode.getName().endsWith(".java")) {
 				//TODO
 				count++;
 				System.out.println("Checking: " + parentNode.getName() + " " + count);
 				
-				runASTandGitData(parentNode, topDirectoryLocation);
+				if(GitData.getLineCountOfFile(parentNode.getAbsolutePath()) <= 50000) {
+					runASTandGitData(parentNode, topDirectoryLocation);					
+				}
+				else {
+					try {				
+						// TODO fix file path
+						File file = new File("/home/kwak/Desktop/largeFileList.txt");
+						
+						if(!file.exists()) {
+							file.createNewFile();
+						}
+						
+						FileWriter fw = new FileWriter(file, true);
+						BufferedWriter bw = new BufferedWriter(fw);
+						bw.write(parentNode.getAbsolutePath() + "\n");
+						bw.close();
+						fw.close();
+						
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
 			}
 		}
 	}
@@ -813,9 +837,8 @@ public class IndexManager {
                 if (line.startsWith("'")) {
                     arr[0] = line.replace("'", "") + "/";
                     
-                	// just for testing purposes 
+                    // TODO remove this line
                     arr[0] = arr[0].replaceFirst("./", "/home/kwak/Desktop/clones/");
-                	// end testing
                     
                     path = true;
                 } else if (line.startsWith("http")) {
@@ -845,22 +868,22 @@ public class IndexManager {
 		gitData = null;
 		IndexManager.getInstance().currentProject = null;
 		
-		// given location of directory and URL
-		// use this for testing
+		// TODO fix pathToURLMap path
 		File pathToURLMap = new File("/home/kwak/Desktop/testMap.txt");
 		
 		Long a, b;
 		
-		//TODO
+		// TODO remove timing
 		a = System.currentTimeMillis();
 		
 		readMapFile(pathToURLMap);
 		
 		Solrj.getInstance().commitDocs("MoreLikeThisIndex", 9452);
 	
-		//TODO
+		// TODO remove timing
 		b = System.currentTimeMillis();
 		
+		// TODO remove print statements
 		System.out.println("-------------------------------------");
 		System.out.println("Looked at " + count + " files in " + (b-a) / 1000 + " seconds");
 		System.out.println("-------------------------------------");
