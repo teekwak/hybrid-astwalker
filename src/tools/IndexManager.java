@@ -53,6 +53,7 @@ public class IndexManager {
 	public static final String AUTHOR_TYPE = "snippet_author_type";
 	public static final String EXPAND_ID = "expand_id";
 	public static final String PROJECT_ADDRESS = "snippet_project_address";
+	public static final String PROJECT_DESCRIPTION = "snippet_project_description";
 	public static final String PROJECT_IS_FORK = "snippet_project_is_fork";
 	public static final String PROJECT_NAME = "snippet_project_name";
 	public static final String PROJECT_OWNER = "snippet_project_owner";
@@ -376,6 +377,7 @@ public class IndexManager {
 		solrDoc.addField(IndexManager.PROJECT_OWNER, currentProject.project_owner);
 		solrDoc.addField(IndexManager.PROJECT_OWNER_AVATAR, currentProject.project_owner_avatar);
 		solrDoc.addField(IndexManager.PROJECT_IS_FORK, currentProject.fork);
+		solrDoc.addField(IndexManager.PROJECT_DESCRIPTION, currentProject.project_description);
 		
 		for(CommitData cd : javaFile.getCommitDataList()) {
 			solrDoc.addField(IndexManager.SNIPPET_ALL_COMMENTS, cd.getMessage());			
@@ -573,7 +575,6 @@ public class IndexManager {
 			String shortName2 = split2[split2.length-1];
 			methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_PARAMETER_TYPES_SHORT, shortName2);
 			methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_PARAMETER_TYPES_SHORT_PLACE, shortName2+"_"+i);
-			
 			
 			if(paramCount.get(argType) == null) {
 				paramCount.put(argType, 1);
