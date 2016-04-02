@@ -442,9 +442,14 @@ public class MethodDeclarationObject extends SuperEntityClass {
 				}
 			}
 		}
-						
+					
+		int innerMethodDecComplexity = 0;
+		for(SuperEntityClass mdo : this.getMethodDeclarationList()) {
+			innerMethodDecComplexity += ((MethodDeclarationObject) mdo).getCyclomaticComplexity();
+		}
+		
 		this.cyclomaticComplexity = 1 + ifStatementList.size() + forStatementList.size() + whileStatementList.size() + switchCaseCount 
-		+ catchClauseList.size() + operatorCount + conditionalExpressionList.size();
+		+ catchClauseList.size() + operatorCount + conditionalExpressionList.size() + innerMethodDecComplexity;
 	}
 	
 	public int getCyclomaticComplexity() {
