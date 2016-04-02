@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.LineNumberReader;
 import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -38,7 +39,6 @@ public class IndexManager {
 	public static FileModel fileModel = null;
 	public static GitData gitData = null;
 	public static String crashListFileName = null;
-	public static int pathToURLMapLineNumber = 0;
 	public static int fileCount = 0;
 	
 	private static int MAXDOC = 300;
@@ -188,14 +188,21 @@ public class IndexManager {
 	}
 	
 	@SuppressWarnings({ "unused", "unchecked" })
-	public void processRepo(String pathToDirectory, String projectURL) {
+	public void processRepo(String pathToDirectory, String projectURL) throws Exception {
 		String htmlURL = "\""+projectURL+"\"";
 		
 		currentProject = new ProjectInfo();
 		
 		SolrDocumentList list = Solrj.getInstance().query("id:"+htmlURL, "githubprojects", 1, 0, 9001);
 		
+		// TODO
+		
+		if(list.isEmpty()) {
+			throw new Exception(); 
+		}
+		
 		SolrDocument doc = (SolrDocument)list.get(0);
+	
 		File project = null;
 		
 		if(doc.getFieldValue("htmlURL") != null) {
@@ -769,7 +776,7 @@ public class IndexManager {
 		else {
 			if(parentNode.getName().endsWith(".java")) {
 				fileCount++;
-				//System.out.println("Checking: " + parentNode.getName() + " | " + fileCount);
+				System.out.println("Checking: " + parentNode.getName() + " | " + fileCount);
 				runASTandGitData(parentNode, topDirectoryLocation);	
 			}
 		}
@@ -782,25 +789,48 @@ public class IndexManager {
 	 * @param URL
 	 */
 	public static void processRepository(String topDirectoryLocation, String URL) throws IOException, CoreException, ParseException {
-		IndexManager.getInstance().processRepo(topDirectoryLocation, URL);
 		try {
-
-			pathToURLMapLineNumber += 2;
+			IndexManager.getInstance().processRepo(topDirectoryLocation, URL);
 			
-			// write repo URL line number to file
+			traverseUntilJava(new File(topDirectoryLocation), topDirectoryLocation);	
+			
+			// delete repo URL line number from file if successful
 			try {
-				FileWriter fw = new FileWriter(new File(crashListFileName), true);
+				// get number of lines in a file
+				// actual number = lnr.getLineNumber() + 1
+				LineNumberReader lnr = new LineNumberReader(new FileReader(new File(crashListFileName)));
+				lnr.skip(Long.MAX_VALUE);
+				
+				BufferedReader br = new BufferedReader(new FileReader(new File(crashListFileName)));
+				StringBuilder sb = new StringBuilder();
+				
+				String line = null;
+				int count = 1;
+				
+				while((line = br.readLine()) != null && count < lnr.getLineNumber()) {
+					sb.append(line);
+					sb.append(System.getProperty("line.separator"));
+					count++;
+				}
+		
+				lnr.close();
+				br.close();
+				
+				FileWriter fw = new FileWriter(new File(crashListFileName));
 				BufferedWriter bw = new BufferedWriter(fw);
-				bw.write(pathToURLMapLineNumber + " ");
+
+				bw.write(sb.toString());
+				
 				bw.close();
 				fw.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			
-			traverseUntilJava(new File(topDirectoryLocation), topDirectoryLocation);	
 			
-			// delete repo URL line number from file if successful
+			
+			
+			/*
 			RandomAccessFile randomAccessFile = new RandomAccessFile(crashListFileName, "rw");
 			byte b;
 			long length = randomAccessFile.length() ;
@@ -813,10 +843,11 @@ public class IndexManager {
 			    randomAccessFile.setLength(length);
 			    randomAccessFile.close();
 			}
+			*/
+			
 			
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.exit(-1);
 		}
 		
 		IndexManager.getInstance().currentProject = null;
@@ -835,15 +866,14 @@ public class IndexManager {
         try {
             BufferedReader br = new BufferedReader(new FileReader(file));
             
-            int count = 0;
+            int count = start;
             
-            for(int i = 0; i < start; i++) {
+            for(int i = 0; i < start - 1; i++) {
             	br.readLine();
-            	count++;
             }
-                        
+            
             for(String line; (line = br.readLine()) != null && count <= end;) {
-                if (line.startsWith("'")) {
+            	if (line.startsWith("'")) {
                     arr[0] = line.replace("'", "") + "/";
                     
                     // TODO remove this line
@@ -854,6 +884,18 @@ public class IndexManager {
                 } else if (line.startsWith("http")) {
                     arr[1] = line;
                     url = true;
+                    
+        			// write repo URL line number to file
+        			try {
+        				FileWriter fw = new FileWriter(new File(crashListFileName), true);
+        				BufferedWriter bw = new BufferedWriter(fw);
+        				bw.write(count + "\n");
+        				bw.close();
+        				fw.close();
+        			} catch (IOException e) {
+        				e.printStackTrace();
+        			}
+        			
                     count++;
                 }
                 
@@ -875,42 +917,48 @@ public class IndexManager {
 	}
 			
 	public static void main(String[] args) throws IOException, CoreException, ParseException {
-		// arg[0] = process #
-		// arg[1] = number of processes (45)
-		// arg[2] = alternate start (optional)
-		// arg[3] = alternate end (optional)
+		// arg[0] = path to pathToURLMap.txt file
+		// arg[1] = path to place crash file
+		// arg[2] = process #
+		// arg[3] = number of processes (45)
+		// arg[4] = alternate start (optional)
+		// arg[5] = alternate end (optional)
 
 		//args = new String[]{};
-		args = new String[]{"4", "45", "201", "500000"};
+		args = new String[]{"/home/kwak/Desktop/testMap.txt", "/home/kwak/Desktop/", "1", "45", "9", "22"};
 		
 		// catch if not enough inputs
-		if(args.length < 2) {
-			throw new IllegalArgumentException("Process number and total number of processes required!");
+		if(args.length < 4) {
+			throw new IllegalArgumentException("Not enough arguments!");
 		}
 		
 		for(String s : args) {
-			if(Integer.parseInt(s) < 0) {
-				throw new IllegalArgumentException("Negative arguments are not allowed!");
+			try {
+				if(Integer.parseInt(s) < 0) {
+					throw new IllegalArgumentException("Negative arguments are not allowed!");
+				}				
+			} catch (NumberFormatException e) {
+				// first two arguments will be caught here
 			}
 		}
 		
 		// catch if process number is greater than number of processes (depends on what number your processes start at)
-		if(Integer.parseInt(args[0]) > Integer.parseInt(args[1])) {
+		if(Integer.parseInt(args[2]) > Integer.parseInt(args[3])) {
 			throw new IllegalArgumentException("Process number cannot exceed total number of processes!");
 		}
 		
 		// math to calculate start/end lines [must start on odd number and end on even number]
 		final int PATH_TO_URL_MAP_LINE_COUNT = 576478;
-		int linesPerProcess = Math.round(PATH_TO_URL_MAP_LINE_COUNT / Integer.parseInt(args[1]) + 2) / 2 * 2;
-		int startLineNumber = (linesPerProcess * Integer.parseInt(args[0])) + 1;
-		int endLineNumber = linesPerProcess * (Integer.parseInt(args[0]) + 1);
+		int linesPerProcess = Math.round(PATH_TO_URL_MAP_LINE_COUNT / Integer.parseInt(args[3]) + 2) / 2 * 2;
+		int startLineNumber = (linesPerProcess * Integer.parseInt(args[2])) + 1;
+		int endLineNumber = linesPerProcess * (Integer.parseInt(args[2]) + 1);
 		
 		// set alternate starting line
-		if(args.length > 2) {
+		if(args.length > 4) {
 			try {
-				int arg_2 = Integer.parseInt(args[2]);				
-				if(arg_2 % 2 == 1 && arg_2 < endLineNumber) {	
-					startLineNumber = arg_2;
+				int arg_4 = Integer.parseInt(args[4]);				
+				if(arg_4 % 2 == 1 && arg_4 < endLineNumber) {	
+					startLineNumber = arg_4;
 				}
 				else {
 					throw new IllegalArgumentException("Something is wrong with the alternate starting line!");
@@ -921,11 +969,11 @@ public class IndexManager {
 		}
 		
 		// set alternate ending line
-		if(args.length > 3) {
+		if(args.length > 5) {
 			try {
-				int arg_3 = Integer.parseInt(args[3]);
-				if(arg_3 % 2 == 0 && arg_3 > startLineNumber && arg_3 < PATH_TO_URL_MAP_LINE_COUNT) {
-					endLineNumber = arg_3;
+				int arg_5 = Integer.parseInt(args[5]);
+				if(arg_5 % 2 == 0 && arg_5 > startLineNumber && arg_5 < PATH_TO_URL_MAP_LINE_COUNT) {
+					endLineNumber = arg_5;
 				}
 				else {
 					throw new IllegalArgumentException("Something is wrong with the alternate ending line!");
@@ -934,12 +982,6 @@ public class IndexManager {
 				// do nothing
 			}
 		}
-		
-		System.out.println("start:\t" + startLineNumber);
-		System.out.println("end:\t" + endLineNumber);
-		System.out.println("per:\t" + linesPerProcess);
-		
-		System.exit(0);
 		
 		fileModel = null;
 		gitData = null;
@@ -950,12 +992,12 @@ public class IndexManager {
 		// TODO fix crashList path, pathToURLMap, remove timing, remove print statements
 		
 		// create crashList file
-		crashListFileName = "/home/kwak/Desktop/crashList_" + System.currentTimeMillis() / 1000L + ".txt";
+		crashListFileName = args[1] + "crashList_" + System.currentTimeMillis() / 1000L + ".txt";
 		File file = new File(crashListFileName);
 		file.createNewFile();
 		
 		// set path to URL map
-		File pathToURLMap = new File("/home/kwak/Desktop/testMap.txt");
+		File pathToURLMap = new File(args[0]);
 		
 		// start everything
 		readMapFile(pathToURLMap, startLineNumber, endLineNumber);
