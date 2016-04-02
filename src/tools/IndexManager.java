@@ -877,7 +877,7 @@ public class IndexManager {
                     arr[0] = line.replace("'", "") + "/";
                     
                     // TODO remove this line
-                    arr[0] = arr[0].replaceFirst("./", "/home/kwak/Desktop/clones/");
+                    arr[0] = arr[0].replaceFirst("./", "/home/pi/12tb/projects/");
                     
                     path = true;
                     count++;
@@ -925,7 +925,7 @@ public class IndexManager {
 		// arg[5] = alternate end (optional)
 
 		//args = new String[]{};
-		args = new String[]{"/home/kwak/Desktop/testMap.txt", "/home/kwak/Desktop/", "1", "45", "9", "22"};
+		//args = new String[]{"/home/kwak/Desktop/testMap.txt", "/home/kwak/Desktop/", "1", "45", "9", "22"};
 		
 		// catch if not enough inputs
 		if(args.length < 4) {

@@ -43,7 +43,7 @@ public class Solrj {
 			instance = new Solrj();
 		}
 		
-		File file = new File("/home/kwak/Pass");
+		File file = new File("./Pass");
 		
 		Scanner scan;
 		try {
