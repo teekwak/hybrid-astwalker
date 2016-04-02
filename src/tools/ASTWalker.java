@@ -100,10 +100,10 @@ public class ASTWalker {
 	 * @throws IOException, CoreException
 	 */
 	@SuppressWarnings("unchecked")
-	public FileModel parseFile(String fileLocation) throws IOException, CoreException {
+	public FileModel parseFile(final String fileLocation) throws IOException, CoreException {
 		this.fileModel = new FileModel();
 				
-		File file = new File(fileLocation);
+		final File file = new File(fileLocation);
 		
 		String sourceCode = FileUtils.readFileToString(file);
 		
