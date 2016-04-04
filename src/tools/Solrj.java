@@ -38,12 +38,12 @@ public class Solrj {
 	private Solrj() {
 	}
 	
-	public static Solrj getInstance(){
+	public static Solrj getInstance(String passwordFilePath){
 		if(instance == null){
 			instance = new Solrj();
 		}
 		
-		File file = new File("./Pass");
+		File file = new File(passwordFilePath);
 		
 		Scanner scan;
 		try {

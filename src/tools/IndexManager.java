@@ -39,6 +39,7 @@ public class IndexManager {
 	public static GitData gitData = null;
 	public static String crashListFileName = null;
 	public static int fileCount = 0;
+	public static String passwordFilePath = null;
 	
 	private static int MAXDOC = 300;
 	private static int MAX_CHILD_DOC = 4000;
@@ -193,7 +194,7 @@ public class IndexManager {
 		
 		currentProject = new ProjectInfo();
 		
-		SolrDocumentList list = Solrj.getInstance().query("id:"+htmlURL, "githubprojects", 1, 0, 9001);
+		SolrDocumentList list = Solrj.getInstance(passwordFilePath).query("id:"+htmlURL, "githubprojects", 1, 0, 9001);
 		
 		// TODO
 		
@@ -453,10 +454,10 @@ public class IndexManager {
 			findAllMethodDeclarations((MethodDeclarationObject)md, solrDoc, id);
 		}
 		
-		Solrj.getInstance().addDoc(solrDoc);
+		Solrj.getInstance(passwordFilePath).addDoc(solrDoc);
 		
-		if(Solrj.getInstance().req.getDocuments().size() >= MAXDOC || CHILD_COUNT >= MAX_CHILD_DOC) {
-			Solrj.getInstance().commitDocs("MoreLikeThisIndex", 9452);	
+		if(Solrj.getInstance(passwordFilePath).req.getDocuments().size() >= MAXDOC || CHILD_COUNT >= MAX_CHILD_DOC) {
+			Solrj.getInstance(passwordFilePath).commitDocs("MoreLikeThisIndex", 9452);	
 		}
 	}
 	
@@ -858,7 +859,7 @@ public class IndexManager {
 	 * 
 	 * @param file
 	 */
-	public static void readMapFile(File file, int start, int end) throws CoreException, ParseException {
+	public static void readMapFile(File file, String pathToClonedRepos, int start, int end) throws CoreException, ParseException {
         boolean path = false;
         boolean url = false;
         String[] arr = {"", ""};
@@ -877,7 +878,7 @@ public class IndexManager {
                     arr[0] = line.replace("'", "") + "/";
                     
                     // TODO remove this line
-                    arr[0] = arr[0].replaceFirst("./", "/home/pi/12tb/projects/");
+                    arr[0] = arr[0].replaceFirst("./", pathToClonedRepos);
                     
                     path = true;
                     count++;
@@ -917,70 +918,93 @@ public class IndexManager {
 	}
 			
 	public static void main(String[] args) throws IOException, CoreException, ParseException {
-		// arg[0] = path to pathToURLMap.txt file
-		// arg[1] = path to place crash file
-		// arg[2] = process #
-		// arg[3] = number of processes (45)
-		// arg[4] = alternate start (optional)
-		// arg[5] = alternate end (optional)
-
-		//args = new String[]{};
-		//args = new String[]{"/home/kwak/Desktop/testMap.txt", "/home/kwak/Desktop/", "1", "45", "9", "22"};
 		
-		// catch if not enough inputs
-		if(args.length < 4) {
-			throw new IllegalArgumentException("Not enough arguments!");
+		args = new String[]{"/home/kwak/Desktop/config.txt"};
+		
+		File configFile = new File(args[0]);
+		
+		String pathToURLMapPath = "";
+		String pathToClonedRepos = "";
+		String crashListPath = "";
+		int processNumber = -1;
+		int totalNumberOfProcesses = -1;
+		int alternateStartLine = -1;
+		int alternateEndLine = -1;
+		
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(configFile));
+			 
+			for(String line; (line = br.readLine()) != null;) {
+				if(line.startsWith("pass_path")) {
+					passwordFilePath = line.split(": ")[1];
+				}
+				else if(line.startsWith("repo_path")) {
+					pathToClonedRepos = line.split(": ")[1];
+				}
+				else if(line.startsWith("pathToURLMap.txt_path")) {
+					pathToURLMapPath = line.split(": ")[1];
+				}
+				else if(line.startsWith("crashList.txt_path")) {
+					crashListPath = line.split(": ")[1];
+				}
+				else if(line.startsWith("process_number")) {
+					processNumber = Integer.parseInt(line.split(": ")[1]);
+				}
+				else if(line.startsWith("total_number_of_processes")) {
+					totalNumberOfProcesses = Integer.parseInt(line.split(": ")[1]);
+				}
+				else if(line.startsWith("alternate_start_line")) {
+					alternateStartLine = Integer.parseInt(line.split(": ")[1]);
+				}
+				else if(line.startsWith("alternate_end_line")) {
+					alternateEndLine = Integer.parseInt(line.split(": ")[1]);
+				}
+			}
+			
+			br.close();
+		} catch (IOException e) {
+			
 		}
 		
-		for(String s : args) {
-			try {
-				if(Integer.parseInt(s) < 0) {
-					throw new IllegalArgumentException("Negative arguments are not allowed!");
-				}				
-			} catch (NumberFormatException e) {
-				// first two arguments will be caught here
-			}
+		// make sure all required fields are defined in config.txt
+		if(passwordFilePath.isEmpty() || pathToURLMapPath.isEmpty() || pathToClonedRepos.isEmpty() || crashListPath.isEmpty() || processNumber == -1 || totalNumberOfProcesses == -1) {
+			throw new IllegalArgumentException("Not enough arguments defined in config.txt!");
+		}
+		
+		// catch any negative numbers
+		if(processNumber < 0 || totalNumberOfProcesses < 0) {
+			throw new IllegalArgumentException("Negative arguments are not allowed!");
 		}
 		
 		// catch if process number is greater than number of processes (depends on what number your processes start at)
-		if(Integer.parseInt(args[2]) > Integer.parseInt(args[3])) {
-			throw new IllegalArgumentException("Process number cannot exceed total number of processes!");
+		if(processNumber > totalNumberOfProcesses) {
+			throw new IllegalArgumentException("Process number cannot exceed total number of processes!");			
 		}
 		
 		// math to calculate start/end lines [must start on odd number and end on even number]
 		final int PATH_TO_URL_MAP_LINE_COUNT = 576478;
-		int linesPerProcess = Math.round(PATH_TO_URL_MAP_LINE_COUNT / Integer.parseInt(args[3]) + 2) / 2 * 2;
-		int startLineNumber = (linesPerProcess * Integer.parseInt(args[2])) + 1;
-		int endLineNumber = linesPerProcess * (Integer.parseInt(args[2]) + 1);
-		
+		int linesPerProcess = Math.round(PATH_TO_URL_MAP_LINE_COUNT / totalNumberOfProcesses + 2) / 2 * 2;
+		int startLineNumber = (linesPerProcess * processNumber) + 1;
+		int endLineNumber = linesPerProcess * (processNumber + 1);
+				
 		// set alternate starting line
-		if(args.length > 4) {
-			try {
-				int arg_4 = Integer.parseInt(args[4]);				
-				if(arg_4 % 2 == 1 && arg_4 < endLineNumber) {	
-					startLineNumber = arg_4;
-				}
-				else {
-					throw new IllegalArgumentException("Something is wrong with the alternate starting line!");
-				}
-			} catch (NumberFormatException e) {
-				// do nothing
+		if(alternateStartLine > 0) {
+			if(alternateStartLine % 2 == 1 && alternateStartLine < endLineNumber) {	
+				startLineNumber = alternateStartLine;
+			}
+			else {
+				throw new IllegalArgumentException("Something is wrong with the alternate starting line!");
 			}
 		}
 		
 		// set alternate ending line
-		if(args.length > 5) {
-			try {
-				int arg_5 = Integer.parseInt(args[5]);
-				if(arg_5 % 2 == 0 && arg_5 > startLineNumber && arg_5 < PATH_TO_URL_MAP_LINE_COUNT) {
-					endLineNumber = arg_5;
-				}
-				else {
-					throw new IllegalArgumentException("Something is wrong with the alternate ending line!");
-				}				
-			} catch (NumberFormatException e) {
-				// do nothing
+		if(alternateEndLine > 0) {
+			if(alternateEndLine % 2 == 0 && alternateEndLine > startLineNumber && alternateEndLine < PATH_TO_URL_MAP_LINE_COUNT) {
+				endLineNumber = alternateEndLine;
 			}
+			else {
+				throw new IllegalArgumentException("Something is wrong with the alternate ending line!");
+			}				
 		}
 		
 		fileModel = null;
@@ -988,25 +1012,23 @@ public class IndexManager {
 		crashListFileName = null;
 		
 		IndexManager.getInstance().currentProject = null;
-		
-		// TODO fix crashList path, pathToURLMap, remove timing, remove print statements
-		
+				
 		// create crashList file
-		crashListFileName = args[1] + "crashList_" + System.currentTimeMillis() / 1000L + ".txt";
+		crashListFileName = crashListPath + "crashList_" + System.currentTimeMillis() / 1000L + ".txt";
 		File file = new File(crashListFileName);
 		file.createNewFile();
 		
 		// set path to URL map
-		File pathToURLMap = new File(args[0]);
-		
+		File pathToURLMap = new File(pathToURLMapPath);
+				
 		// start everything
-		readMapFile(pathToURLMap, startLineNumber, endLineNumber);
+		readMapFile(pathToURLMap, pathToClonedRepos, startLineNumber, endLineNumber);
 		
 		// add remaining Solr documents
-		Solrj.getInstance().commitDocs("MoreLikeThisIndex", 9452);
+		Solrj.getInstance(passwordFilePath).commitDocs("MoreLikeThisIndex", 9452);
 			
 		System.out.println("-------------------------------------");
-		System.out.println("Finished");
+		System.out.println("Finished " + fileCount + " files");
 		System.out.println("-------------------------------------");
 	}
 }
