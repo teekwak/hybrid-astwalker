@@ -859,8 +859,10 @@ public class IndexManager {
             	if (line.startsWith("'")) {
                     arr[0] = line.replace("'", "") + "/";
                     
-                    arr[0] = arr[0].replaceFirst("./", pathToClonedRepos);
-                    
+                    if(cloneRepo == false) {
+                        arr[0] = arr[0].replaceFirst("./", pathToClonedRepos);                    	
+                    }
+
                     path = true;
                     count++;
                 } else if (line.startsWith("http")) {
@@ -887,17 +889,20 @@ public class IndexManager {
                     
                     if(cloneRepo == true) {
                         new File("./clones/").mkdirs();
-                    	String[] name = arr[0].split("/");                    	
-                    	ProcessBuilder pb = new ProcessBuilder("git", "clone", arr[1] + ".git", name[name.length - 1].replace("/", "") );
+                    	String[] name = arr[0].split("/");     
+                    	ProcessBuilder pb = new ProcessBuilder("git", "clone", arr[1] + ".git", "./" + name[name.length - 1].replace("/", "") );
                     	pb.directory(new File("./clones/"));
                     	
                     	try {
                         	Process proc = pb.start();
+                        	System.out.println("Downloading " + name[name.length - 1].replace("/", ""));
                         	proc.waitFor();
                         	proc.destroy();                    		
                     	} catch (InterruptedException e) {
 							e.printStackTrace();
-						}
+						}         
+                    	
+                    	arr[0] = arr[0].replaceFirst("./", "./clones/");
                     }
                     
                     processRepository(arr[0], arr[1]);
@@ -968,9 +973,7 @@ public class IndexManager {
 		} catch (IOException e) {
 			
 		}
-		
-		System.out.println(cloneRepo);
-		
+				
 		// make sure all required fields are defined in config.txt
 		if(passwordFilePath.isEmpty() || pathToURLMapPath.isEmpty() || pathToClonedRepos.isEmpty() || crashListPath.isEmpty() || processNumber == -1 || totalNumberOfProcesses == -1) {
 			throw new IllegalArgumentException("Not enough arguments defined in config.txt!");
