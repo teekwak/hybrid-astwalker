@@ -26,6 +26,7 @@ import entities.SuperEntityClass;
 import tools.FileModel;
 import tools.GitData;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
@@ -828,25 +829,6 @@ public class IndexManager {
 				e.printStackTrace();
 			}
 			
-			
-			
-			
-			/*
-			RandomAccessFile randomAccessFile = new RandomAccessFile(crashListFileName, "rw");
-			byte b;
-			long length = randomAccessFile.length() ;
-			if (length != 0) {
-			    do {
-			        length -= 1;
-			        randomAccessFile.seek(length);
-			        b = randomAccessFile.readByte();
-			    } while (b != 10 && length > 0);
-			    randomAccessFile.setLength(length);
-			    randomAccessFile.close();
-			}
-			*/
-			
-			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -859,7 +841,7 @@ public class IndexManager {
 	 * 
 	 * @param file
 	 */
-	public static void readMapFile(File file, String pathToClonedRepos, int start, int end) throws CoreException, ParseException {
+	public static void readMapFile(File file, String pathToClonedRepos, int start, int end, boolean cloneRepo) throws CoreException, ParseException {
         boolean path = false;
         boolean url = false;
         String[] arr = {"", ""};
@@ -877,7 +859,6 @@ public class IndexManager {
             	if (line.startsWith("'")) {
                     arr[0] = line.replace("'", "") + "/";
                     
-                    // TODO remove this line
                     arr[0] = arr[0].replaceFirst("./", pathToClonedRepos);
                     
                     path = true;
@@ -903,8 +884,27 @@ public class IndexManager {
                 if(path == true && url == true) {
                     path = false;
                     url = false;
-
+                    
+                    if(cloneRepo == true) {
+                        new File("./clones/").mkdirs();
+                    	String[] name = arr[0].split("/");                    	
+                    	ProcessBuilder pb = new ProcessBuilder("git", "clone", arr[1] + ".git", name[name.length - 1].replace("/", "") );
+                    	pb.directory(new File("./clones/"));
+                    	
+                    	try {
+                        	Process proc = pb.start();
+                        	proc.waitFor();
+                        	proc.destroy();                    		
+                    	} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+                    }
+                    
                     processRepository(arr[0], arr[1]);
+                    
+                    if(cloneRepo == true) {
+                        FileUtils.deleteDirectory(new File("./clones/"));
+                    }
                 }
             }
 
@@ -918,8 +918,11 @@ public class IndexManager {
 	}
 			
 	public static void main(String[] args) throws IOException, CoreException, ParseException {
+		args = new String[]{"/home/kwak/Desktop/config.txt"};
+		
 		File configFile = new File(args[0]);
 		
+		boolean cloneRepo = false;
 		String pathToURLMapPath = "";
 		String pathToClonedRepos = "";
 		String crashListPath = "";
@@ -934,6 +937,9 @@ public class IndexManager {
 			for(String line; (line = br.readLine()) != null;) {
 				if(line.startsWith("pass_path")) {
 					passwordFilePath = line.split(": ")[1];
+				}
+				else if(line.startsWith("clone_flag")) {
+					cloneRepo = Boolean.parseBoolean(line.split(": ")[1]);
 				}
 				else if(line.startsWith("repo_path")) {
 					pathToClonedRepos = line.split(": ")[1];
@@ -962,6 +968,8 @@ public class IndexManager {
 		} catch (IOException e) {
 			
 		}
+		
+		System.out.println(cloneRepo);
 		
 		// make sure all required fields are defined in config.txt
 		if(passwordFilePath.isEmpty() || pathToURLMapPath.isEmpty() || pathToClonedRepos.isEmpty() || crashListPath.isEmpty() || processNumber == -1 || totalNumberOfProcesses == -1) {
@@ -1019,7 +1027,7 @@ public class IndexManager {
 		File pathToURLMap = new File(pathToURLMapPath);
 				
 		// start everything
-		readMapFile(pathToURLMap, pathToClonedRepos, startLineNumber, endLineNumber);
+		readMapFile(pathToURLMap, pathToClonedRepos, startLineNumber, endLineNumber, cloneRepo);
 		
 		// add remaining Solr documents
 		Solrj.getInstance(passwordFilePath).commitDocs("MoreLikeThisIndex", 9452);

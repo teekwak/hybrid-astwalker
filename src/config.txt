@@ -4,6 +4,7 @@
  * Please note the paths end with / and those that do not
  *
  * pass_path (required): the absolute/relative path to the password file
+ * clone_flag (required): flag to clone the repository (true) or look for repo in the 12tb folder (false)
  * repo_path (required): the absolute/relative path to the directory with the cloned repositories
  * pathToURLMap.txt_path (required): the absolute/relative path to the pathToURLMap.txt file
  * crashList.txt_path (required): the absolute/relative path to create the crash list
@@ -14,6 +15,7 @@
  */
 
 pass_path: /home/kwak/Desktop/Pass
+clone_flag: false
 repo_path: /home/kwak/Desktop/clones/
 pathToURLMap.txt_path: /home/kwak/Desktop/testMap.txt
 crashList.txt_path: /home/kwak/Desktop/
