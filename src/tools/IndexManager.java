@@ -905,20 +905,17 @@ public class IndexManager {
                     	
                     	arr[0] = arr[0].replaceFirst("./", "./clones/");
                     }
-                    
-                    
-                    repoCount++;
-                    
+                  
                     Long a, b;
                     
                     a = System.currentTimeMillis();
                     processRepository(arr[0], arr[1]);
                     b = System.currentTimeMillis();
                     
-                    totalTime = (b-a);
-                    
-                    System.out.println(arr[0] + " | " + (b-a) * 1000 + " seconds to process | Average repo/min: " + repoCount / totalTime / 60000);
-                    
+                    repoCount++;
+                    totalTime += (b-a);
+                                        
+                    System.out.println(arr[0] + " | " + (b-a) / 1000 + " seconds to process | Average repo/second: " + (double)repoCount / ((double)totalTime / 1000));
                     
                     if(cloneRepo == true) {
                         FileUtils.deleteDirectory(new File("./clones/"));
