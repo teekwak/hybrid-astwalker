@@ -39,7 +39,8 @@ public class IndexManager {
 	public static FileModel fileModel = null;
 	public static GitData gitData = null;
 	public static String crashListFileName = null;
-	public static int fileCount = 0;
+	public static int repoCount = 0;
+	public static long totalTime = 0;
 	public static String passwordFilePath = null;
 	
 	private static int MAXDOC = 300;
@@ -777,8 +778,7 @@ public class IndexManager {
 		}
 		else {
 			if(parentNode.getName().endsWith(".java")) {
-				fileCount++;
-				System.out.println("Checking: " + parentNode.getName() + " | " + fileCount);
+				//System.out.println("Checking: " + parentNode.getName());
 				runASTandGitData(parentNode, topDirectoryLocation);	
 			}
 		}
@@ -889,8 +889,9 @@ public class IndexManager {
                     
                     if(cloneRepo == true) {
                         new File("./clones/").mkdirs();
+                        String[] httpParts = arr[1].split("//", 2);
                     	String[] name = arr[0].split("/");     
-                    	ProcessBuilder pb = new ProcessBuilder("git", "clone", arr[1] + ".git", "./" + name[name.length - 1].replace("/", "") );
+                    	ProcessBuilder pb = new ProcessBuilder("git", "clone", httpParts[0] + "//test:test@" + httpParts[1] + ".git", "./" + name[name.length - 1].replace("/", "") );
                     	pb.directory(new File("./clones/"));
                     	
                     	try {
@@ -905,7 +906,19 @@ public class IndexManager {
                     	arr[0] = arr[0].replaceFirst("./", "./clones/");
                     }
                     
+                    
+                    repoCount++;
+                    
+                    Long a, b;
+                    
+                    a = System.currentTimeMillis();
                     processRepository(arr[0], arr[1]);
+                    b = System.currentTimeMillis();
+                    
+                    totalTime = (b-a);
+                    
+                    System.out.println(arr[0] + " | " + (b-a) * 1000 + " seconds to process | Average repo/min: " + repoCount / totalTime / 60000);
+                    
                     
                     if(cloneRepo == true) {
                         FileUtils.deleteDirectory(new File("./clones/"));
@@ -931,6 +944,7 @@ public class IndexManager {
 		String pathToURLMapPath = "";
 		String pathToClonedRepos = "";
 		String crashListPath = "";
+		passwordFilePath = "";
 		int processNumber = -1;
 		int totalNumberOfProcesses = -1;
 		int alternateStartLine = -1;
@@ -975,8 +989,28 @@ public class IndexManager {
 		}
 				
 		// make sure all required fields are defined in config.txt
-		if(passwordFilePath.isEmpty() || pathToURLMapPath.isEmpty() || pathToClonedRepos.isEmpty() || crashListPath.isEmpty() || processNumber == -1 || totalNumberOfProcesses == -1) {
-			throw new IllegalArgumentException("Not enough arguments defined in config.txt!");
+		if(passwordFilePath.isEmpty()) {
+			throw new IllegalArgumentException("Password file path is not defined!");
+		}
+		
+		if(pathToURLMapPath.isEmpty()) {
+			throw new IllegalArgumentException("PathToURLMap path is not defined!");
+		}
+		
+		if(pathToClonedRepos.isEmpty()) {
+			throw new IllegalArgumentException("Cloned Repo path is not defined!");
+		}
+		
+		if(crashListPath.isEmpty()) {
+			throw new IllegalArgumentException("Crash list path is not defined!");
+		}
+		
+		if(processNumber == -1) {
+			throw new IllegalArgumentException("Process number is not defined!");
+		}
+		
+		if(totalNumberOfProcesses == -1) {
+			throw new IllegalArgumentException("Total number of processes is not defined!");
 		}
 		
 		// catch any negative numbers
@@ -994,7 +1028,7 @@ public class IndexManager {
 		int linesPerProcess = Math.round(PATH_TO_URL_MAP_LINE_COUNT / totalNumberOfProcesses + 2) / 2 * 2;
 		int startLineNumber = (linesPerProcess * processNumber) + 1;
 		int endLineNumber = linesPerProcess * (processNumber + 1);
-				
+		
 		// set alternate starting line
 		if(alternateStartLine > 0) {
 			if(alternateStartLine % 2 == 1 && alternateStartLine < endLineNumber) {	
@@ -1036,7 +1070,7 @@ public class IndexManager {
 		Solrj.getInstance(passwordFilePath).commitDocs("MoreLikeThisIndex", 9452);
 			
 		System.out.println("-------------------------------------");
-		System.out.println("Finished " + fileCount + " files");
+		System.out.println("Finished " + repoCount + " repositories");
 		System.out.println("-------------------------------------");
 	}
 }

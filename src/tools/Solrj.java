@@ -269,7 +269,7 @@ public class Solrj {
 
 		//	  System.out.println("QUERY: "+query);
 			
-			System.out.println("QUERY: "+query);
+			//System.out.println("QUERY: "+query);
 		
 			  SolrQuery solrQuery = new  SolrQuery();
 					  solrQuery.setQuery(query);
