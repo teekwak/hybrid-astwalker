@@ -918,9 +918,6 @@ public class IndexManager {
 	}
 			
 	public static void main(String[] args) throws IOException, CoreException, ParseException {
-		
-		args = new String[]{"/home/kwak/Desktop/config.txt"};
-		
 		File configFile = new File(args[0]);
 		
 		String pathToURLMapPath = "";
