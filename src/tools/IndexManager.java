@@ -891,7 +891,9 @@ public class IndexManager {
                     a = System.currentTimeMillis();
                     
                     if(cloneRepo == true) {
-                        new File("./clones/").mkdirs();
+         
+                        File dir = new File("./clones/");
+                        dir.mkdirs();
                         String[] httpParts = arr[1].split("//", 2);
                     	String[] name = arr[0].split("/");     
                     	ProcessBuilder pb = new ProcessBuilder("git", "clone", httpParts[0] + "//test:test@" + httpParts[1] + ".git", "./" + name[name.length - 1].replace("/", "") );
@@ -907,18 +909,28 @@ public class IndexManager {
 						}         
                     	
                     	arr[0] = arr[0].replaceFirst("./", "./clones/");
+                        processRepository(arr[0], arr[1]);
+                        
+                        ProcessBuilder pb2 = new ProcessBuilder("rm", "-rf", dir.getAbsolutePath());
+                        try {
+                            Process proc2 = pb2.start();
+                            proc2.waitFor();
+                            proc2.destroy();                        	
+                        } catch (InterruptedException e) {
+                        	e.printStackTrace();
+                        }                
+                        
                     }
-                    processRepository(arr[0], arr[1]);
+                    else {
+                        processRepository(arr[0], arr[1]);                    	
+                    }
+                    
                     b = System.currentTimeMillis();
                     
                     repoCount++;
                     totalTime += (b-a);
                                         
                     System.out.println(arr[0] + " | [" + repoCount + "] | " + (b-a) / 1000 + " seconds to process | Average repo/second: " + (double)repoCount / ((double)totalTime / 1000) + " | Total time: " + (double)totalTime / 1000);
-                    
-                    if(cloneRepo == true) {
-                        FileUtils.deleteDirectory(new File("./clones/"));
-                    }
                 }
             }
 
