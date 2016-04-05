@@ -769,7 +769,7 @@ public class IndexManager {
 	public static void traverseUntilJava(File parentNode, String topDirectoryLocation) throws IOException, CoreException, ParseException {
 		if(parentNode.isDirectory()) {
 			File childNodes[] = parentNode.listFiles();
-						
+			
 			for(File c : childNodes) {
 				if(!c.getName().startsWith(".")) {
 					traverseUntilJava(c, topDirectoryLocation);
@@ -887,6 +887,9 @@ public class IndexManager {
                     path = false;
                     url = false;
                     
+                    Long a, b;
+                    a = System.currentTimeMillis();
+                    
                     if(cloneRepo == true) {
                         new File("./clones/").mkdirs();
                         String[] httpParts = arr[1].split("//", 2);
@@ -905,17 +908,13 @@ public class IndexManager {
                     	
                     	arr[0] = arr[0].replaceFirst("./", "./clones/");
                     }
-                  
-                    Long a, b;
-                    
-                    a = System.currentTimeMillis();
                     processRepository(arr[0], arr[1]);
                     b = System.currentTimeMillis();
                     
                     repoCount++;
                     totalTime += (b-a);
                                         
-                    System.out.println(arr[0] + " | " + (b-a) / 1000 + " seconds to process | Average repo/second: " + (double)repoCount / ((double)totalTime / 1000));
+                    System.out.println(arr[0] + " | [" + repoCount + "] | " + (b-a) / 1000 + " seconds to process | Average repo/second: " + (double)repoCount / ((double)totalTime / 1000) + " | Total time: " + (double)totalTime / 1000);
                     
                     if(cloneRepo == true) {
                         FileUtils.deleteDirectory(new File("./clones/"));
@@ -927,6 +926,7 @@ public class IndexManager {
 
         } catch (FileNotFoundException e) {
             System.err.println("File not found!");
+            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -1066,8 +1066,8 @@ public class IndexManager {
 		// add remaining Solr documents
 		Solrj.getInstance(passwordFilePath).commitDocs("MoreLikeThisIndex", 9452);
 			
-		System.out.println("-------------------------------------");
-		System.out.println("Finished " + repoCount + " repositories");
-		System.out.println("-------------------------------------");
+		System.out.println("----------------------------------------------------------");
+		System.out.println("Finished " + repoCount + " repositories in " + totalTime / 1000  + " seconds");
+		System.out.println("----------------------------------------------------------");
 	}
 }
