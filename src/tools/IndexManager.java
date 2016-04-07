@@ -26,7 +26,6 @@ import entities.SuperEntityClass;
 import tools.FileModel;
 import tools.GitData;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
@@ -42,6 +41,9 @@ public class IndexManager {
 	public static int repoCount = 0;
 	public static long totalTime = 0;
 	public static String passwordFilePath = null;
+	public static String hostName = null;
+	public static String collectionName = null;
+	public static int portNumber = -1;
 	
 	private static int MAXDOC = 300;
 	private static int MAX_CHILD_DOC = 4000;
@@ -196,7 +198,7 @@ public class IndexManager {
 		
 		currentProject = new ProjectInfo();
 		
-		SolrDocumentList list = Solrj.getInstance(passwordFilePath).query("id:"+htmlURL, "githubprojects", 1, 0, 9001);
+		SolrDocumentList list = Solrj.getInstance(passwordFilePath).query("id:"+htmlURL, "codeexchange.ics.uci.edu", 9001, "githubprojects", 1);
 		
 		// TODO
 		
@@ -459,7 +461,7 @@ public class IndexManager {
 		Solrj.getInstance(passwordFilePath).addDoc(solrDoc);
 		
 		if(Solrj.getInstance(passwordFilePath).req.getDocuments().size() >= MAXDOC || CHILD_COUNT >= MAX_CHILD_DOC) {
-			Solrj.getInstance(passwordFilePath).commitDocs("MoreLikeThisIndex", 9452);	
+			Solrj.getInstance(passwordFilePath).commitDocs(hostName, portNumber, collectionName);	
 		}
 	}
 	
@@ -945,7 +947,7 @@ public class IndexManager {
 	}
 			
 	public static void main(String[] args) throws IOException, CoreException, ParseException {
-		args = new String[]{"/home/kwak/Desktop/config.txt"};
+		//args = new String[]{"/home/kwak/Desktop/config.txt"};
 		
 		File configFile = new File(args[0]);
 		
@@ -954,6 +956,7 @@ public class IndexManager {
 		String pathToClonedRepos = "";
 		String crashListPath = "";
 		passwordFilePath = "";
+		
 		int processNumber = -1;
 		int totalNumberOfProcesses = -1;
 		int alternateStartLine = -1;
@@ -963,7 +966,16 @@ public class IndexManager {
 			BufferedReader br = new BufferedReader(new FileReader(configFile));
 			 
 			for(String line; (line = br.readLine()) != null;) {
-				if(line.startsWith("pass_path")) {
+				if(line.startsWith("host_name")) {
+					hostName = line.split(": ")[1];
+				}
+				else if(line.startsWith("collection_name")) {
+					collectionName = line.split(": ")[1];
+				}
+				else if(line.startsWith("port_number")) {
+					portNumber = Integer.parseInt(line.split(": ")[1]);
+				}
+				else if(line.startsWith("pass_path")) {
 					passwordFilePath = line.split(": ")[1];
 				}
 				else if(line.startsWith("clone_flag")) {
@@ -998,6 +1010,18 @@ public class IndexManager {
 		}
 				
 		// make sure all required fields are defined in config.txt
+		if(hostName.isEmpty()) {
+			throw new IllegalArgumentException("Host name is not defined!");
+		}
+		
+		if(collectionName.isEmpty()) {
+			throw new IllegalArgumentException("Core name is not defined!");
+		}
+		
+		if(portNumber == -1) {
+			throw new IllegalArgumentException("Port number is not defined!");
+		}
+		
 		if(passwordFilePath.isEmpty()) {
 			throw new IllegalArgumentException("Password file path is not defined!");
 		}
@@ -1076,7 +1100,7 @@ public class IndexManager {
 		readMapFile(pathToURLMap, pathToClonedRepos, startLineNumber, endLineNumber, cloneRepo);
 		
 		// add remaining Solr documents
-		Solrj.getInstance(passwordFilePath).commitDocs("MoreLikeThisIndex", 9452);
+		Solrj.getInstance(passwordFilePath).commitDocs(hostName, portNumber, collectionName);
 			
 		System.out.println("----------------------------------------------------------");
 		System.out.println("Finished " + repoCount + " repositories in " + totalTime / 1000  + " seconds");

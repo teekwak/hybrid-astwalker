@@ -12,7 +12,6 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.AbstractHttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.HttpContext;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -32,7 +31,6 @@ public class Solrj {
 	private static Solrj instance = null;
 	private SolrDocumentList recommendations = new SolrDocumentList();
 	private static String pass;
-	private String host = "codeexchange.ics.uci.edu";
 	public UpdateRequest req = new UpdateRequest();
 	
 	private Solrj() {
@@ -54,7 +52,6 @@ public class Solrj {
 			}
 			
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -65,7 +62,6 @@ public class Solrj {
 		this.queryStr = queryStr;
 
 		System.out.println("okay");
-
 	} 
 
     protected class PreEmptiveBasicAuthenticator implements HttpRequestInterceptor {
@@ -144,10 +140,8 @@ public class Solrj {
 //		
 //			  
 //		} catch (SolrServerException e) {
-//			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		} catch (IOException e) {
-//			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
 //
@@ -158,7 +152,6 @@ public class Solrj {
 		if(doc == null)
 			return;
 
-
 			  req.setAction( UpdateRequest.ACTION.COMMIT, false, false );
 			  req.add( doc );	
 			  req.getDocuments().size();
@@ -166,10 +159,10 @@ public class Solrj {
 	}
 
 	@SuppressWarnings("deprecation")
-	public void commitDocs(String collectionName, int port){
+	public void commitDocs(String hostName, int portNumber, String collectionName){
 		System.out.println("===uploading ["+req.getDocuments().size()+"] docs to codeexchange===");
 		HttpSolrServer server;
-		  server = new HttpSolrServer("http://"+host+":"+port+"/solr/"+collectionName);
+		  server = new HttpSolrServer("http://"+hostName+":"+portNumber+"/solr/"+collectionName);
 		  
 		  AbstractHttpClient httpClient = (AbstractHttpClient) server.getHttpClient(); 
 	      httpClient.addRequestInterceptor(new PreEmptiveBasicAuthenticator("admin",pass));  
@@ -183,18 +176,17 @@ public class Solrj {
 			IndexManager.getInstance().CHILD_COUNT = 0;
 
 		} catch (SolrServerException | IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
 
 	@SuppressWarnings("deprecation")
-	public long queryCountDocs() throws IOException{
+	public long queryCountDocs(String hostName, int portNumber) throws IOException{
 		HttpSolrServer server = null;
 		
 		try { 
-			server = new HttpSolrServer("http://"+host+":9452/solr");
+			server = new HttpSolrServer("http://"+hostName+":"+portNumber+"/solr");
 			ModifiableSolrParams params = new ModifiableSolrParams();
 			params.add("q", "contentID:*");
 			QueryResponse rq = server.query(params);
@@ -212,9 +204,7 @@ public class Solrj {
 		return -1; 
 	}
 	
-	public SolrDocumentList queryFavorites(String collectionName){
-
-		
+	public SolrDocumentList queryFavorites(String hostName, int portNumber, String collectionName){
 		File file = new File("data/favorites");
 
 		ArrayList<String> IDs = new ArrayList<String>();
@@ -226,7 +216,6 @@ public class Solrj {
 				IDs.add(id);
 			}
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}finally{
 			scan.close();
@@ -248,7 +237,7 @@ public class Solrj {
 			return null;
 		else
 		
-		return query(query,collectionName,100);
+		return query(query,hostName, portNumber, collectionName,100);
 		
 	}
 	
@@ -262,15 +251,13 @@ public class Solrj {
 	 * @return
 	 */
 	@SuppressWarnings("deprecation")
-	public SolrDocumentList query(String query,String collectionName, int rows) {
+	public SolrDocumentList query(String query, String hostName, int portNumber, String collectionName, int rows) {
 		HttpSolrServer server;
 		try {
-			server = new HttpSolrServer("http://"+host+":9452/solr/"+collectionName);
+			server = new HttpSolrServer("http://"+hostName+":"+portNumber+"/solr/"+collectionName);
 
 		//	  System.out.println("QUERY: "+query);
-			
-			//System.out.println("QUERY: "+query);
-		
+					
 			  SolrQuery solrQuery = new  SolrQuery();
 					  solrQuery.setQuery(query);
 					  solrQuery.setRows(rows);
@@ -316,10 +303,10 @@ public class Solrj {
 	 * @return
 	 */
 	@SuppressWarnings("deprecation")
-	public SolrDocumentList query(String query,String collectionName, int rows, int start, int port) {
+	public SolrDocumentList query(String query, String hostName, int portNumber, String collectionName, int rows, int start) {
 		HttpSolrServer server;
 		try {
-			server = new HttpSolrServer("http://"+host+":"+port+"/solr/"+collectionName);
+			server = new HttpSolrServer("http://"+hostName+":"+portNumber+"/solr/"+collectionName);
 			
 			//System.out.println("QUERY: "+query);
 		
