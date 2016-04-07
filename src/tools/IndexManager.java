@@ -899,7 +899,7 @@ public class IndexManager {
                         String[] httpParts = arr[1].split("//", 2);
                     	String[] name = arr[0].split("/");     
                     	ProcessBuilder pb = new ProcessBuilder("git", "clone", httpParts[0] + "//test:test@" + httpParts[1] + ".git", "./" + name[name.length - 1].replace("/", "") );
-                    	pb.directory(new File("./clones/"));
+                    	pb.directory(dir);
                     	
                     	try {
                         	Process proc = pb.start();
