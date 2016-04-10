@@ -39,11 +39,11 @@ public class IndexManager {
 	public static GitData gitData = null;
 	public static String crashListFileName = null;
 	public static int repoCount = 0;
-	public static long totalTime = 0;
 	public static String passwordFilePath = null;
 	public static String hostName = null;
 	public static String collectionName = null;
 	public static int portNumber = -1;
+	public static boolean successfulUpload = true;
 	
 	private static int MAXDOC = 300;
 	private static int MAX_CHILD_DOC = 4000;
@@ -72,6 +72,7 @@ public class IndexManager {
 	public static final String SNIPPET_ALL_DATES = "snippet_all_dates";
 	public static final String SNIPPET_ALL_VERSIONS = "snippet_all_versions";
 	public static final String SNIPPET_AUTHOR_COUNT = "snippet_author_count";
+	public static final String SNIPPET_COMPLEXITY_DENSITY = "snippet_complexity_density";
 	public static final String SNIPPET_CONTAINING_CLASS_ID = "snippet_containing_class_id";
 	public static final String SNIPPET_CONTAINING_CLASS_COMPLEXITY_SUM = "snippet_containing_class_complexity_sum";
 	public static final String SNIPPET_CODE = "snippet_code";
@@ -199,8 +200,6 @@ public class IndexManager {
 		currentProject = new ProjectInfo();
 		
 		SolrDocumentList list = Solrj.getInstance(passwordFilePath).query("id:"+htmlURL, "codeexchange.ics.uci.edu", 9001, "githubprojects", 1);
-		
-		// TODO
 		
 		if(list.isEmpty()) {
 			throw new Exception(); 
@@ -337,7 +336,21 @@ public class IndexManager {
 			solrDoc.addField(IndexManager.SNIPPET_PACKAGE_SHORT, split[split.length-1]);
 		}	
 		
-		solrDoc.addField(IndexManager.SNIPPET_PATH_COMPLEXITY_SUM, ((Number)jc.getCyclomaticComplexity()).longValue());
+		int complexity = jc.getCyclomaticComplexity();
+		
+		solrDoc.addField(IndexManager.SNIPPET_PATH_COMPLEXITY_SUM, ((Number)complexity).longValue());
+		
+		int methodInvCount = jc.getTotalMethodInvocationCount();
+		int codeSize = jc.getSourceCode().length();
+		
+		if(methodInvCount == 0) {
+			methodInvCount = 1;
+		}
+		if(codeSize == 0) {
+			codeSize = 1;
+		}
+		
+		solrDoc.addField(IndexManager.SNIPPET_COMPLEXITY_DENSITY, (double)jc.getCyclomaticComplexity() * (1 / (double)methodInvCount) * (1 / (double)codeSize));
 		
 		//solrDoc.addField(IndexManager.SNIPPET_HUMAN_LANGUAGE, snippet.humanLanguage);
 		
@@ -460,8 +473,14 @@ public class IndexManager {
 		
 		Solrj.getInstance(passwordFilePath).addDoc(solrDoc);
 		
-		if(Solrj.getInstance(passwordFilePath).req.getDocuments().size() >= MAXDOC || CHILD_COUNT >= MAX_CHILD_DOC) {
-			Solrj.getInstance(passwordFilePath).commitDocs(hostName, portNumber, collectionName);	
+		try {
+			if(Solrj.getInstance(passwordFilePath).req.getDocuments().size() >= MAXDOC || CHILD_COUNT >= MAX_CHILD_DOC) {
+				Solrj.getInstance(passwordFilePath).commitDocs(hostName, portNumber, collectionName);	
+			}			
+		} catch (Exception e) {
+        	Solrj.getInstance(passwordFilePath).clearDocs();
+        	successfulUpload = false;
+        	return;
 		}
 	}
 	
@@ -734,8 +753,14 @@ public class IndexManager {
 	public static void createSolrDocs() {
 		for(JavaClass jc : fileModel.getJavaClassList()) {
 			JavaFile jf = gitData.getJavaFile();
-				
-			IndexManager.getInstance().makeClassSolrDoc(jc, jf);
+			
+			// TODO
+			if(successfulUpload == true) {
+				IndexManager.getInstance().makeClassSolrDoc(jc, jf);				
+			}
+			else {
+				return;
+			}
 		}
 	}
 	
@@ -750,10 +775,21 @@ public class IndexManager {
 		fileModel = new FileModel();
 		fileModel = fileModel.parseDeclarations(parentNode.getAbsolutePath());
 		
+		if(fileModel == null) {
+			successfulUpload = false;
+			return;
+		}
+		
 		if(fileModel.getJavaClassList().size() > 0) {
 			gitData = new GitData();
 			gitData.getCommitDataPerFile(topDirectoryLocation, parentNode.getAbsolutePath());
-			createSolrDocs();			
+			// TODO
+			if(successfulUpload == true) {
+				createSolrDocs();					
+			}
+			else {
+				return;
+			}
 		}
 				
 		fileModel = null;
@@ -780,8 +816,12 @@ public class IndexManager {
 		}
 		else {
 			if(parentNode.getName().endsWith(".java")) {
-				//System.out.println("Checking: " + parentNode.getName());
-				runASTandGitData(parentNode, topDirectoryLocation);	
+				if(successfulUpload == true) {
+					runASTandGitData(parentNode, topDirectoryLocation);	
+				}
+				else {
+					return;
+				}
 			}
 		}
 	}
@@ -798,39 +838,40 @@ public class IndexManager {
 			
 			traverseUntilJava(new File(topDirectoryLocation), topDirectoryLocation);	
 			
-			// delete repo URL line number from file if successful
-			try {
-				// get number of lines in a file
-				// actual number = lnr.getLineNumber() + 1
-				LineNumberReader lnr = new LineNumberReader(new FileReader(new File(crashListFileName)));
-				lnr.skip(Long.MAX_VALUE);
-				
-				BufferedReader br = new BufferedReader(new FileReader(new File(crashListFileName)));
-				StringBuilder sb = new StringBuilder();
-				
-				String line = null;
-				int count = 1;
-				
-				while((line = br.readLine()) != null && count < lnr.getLineNumber()) {
-					sb.append(line);
-					sb.append(System.getProperty("line.separator"));
-					count++;
-				}
-		
-				lnr.close();
-				br.close();
-				
-				FileWriter fw = new FileWriter(new File(crashListFileName));
-				BufferedWriter bw = new BufferedWriter(fw);
-
-				bw.write(sb.toString());
-				
-				bw.close();
-				fw.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			// TODO			
+			if(successfulUpload == true) {
+				// delete repo URL line number from file if successful
+				try {
+					// get number of lines in a file
+					// actual number = lnr.getLineNumber() + 1
+					LineNumberReader lnr = new LineNumberReader(new FileReader(new File(crashListFileName)));
+					lnr.skip(Long.MAX_VALUE);
+					
+					BufferedReader br = new BufferedReader(new FileReader(new File(crashListFileName)));
+					StringBuilder sb = new StringBuilder();
+					
+					String line = null;
+					int count = 1;
+					
+					while((line = br.readLine()) != null && count < lnr.getLineNumber()) {
+						sb.append(line);
+						sb.append(System.getProperty("line.separator"));
+						count++;
+					}
 			
+					lnr.close();
+					br.close();
+					
+					FileWriter fw = new FileWriter(new File(crashListFileName));
+					BufferedWriter bw = new BufferedWriter(fw);
+	
+					bw.write(sb.toString());					
+					bw.close();
+					fw.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -889,9 +930,6 @@ public class IndexManager {
                     path = false;
                     url = false;
                     
-                    Long a, b;
-                    a = System.currentTimeMillis();
-                    
                     if(cloneRepo == true) {
          
                         File dir = new File("./clones/");
@@ -903,7 +941,7 @@ public class IndexManager {
                     	
                     	try {
                         	Process proc = pb.start();
-                        	System.out.println("Downloading " + name[name.length - 1].replace("/", ""));
+                        	//System.out.println("Downloading " + name[name.length - 1].replace("/", ""));
                         	proc.waitFor();
                         	proc.destroy();                    		
                     	} catch (InterruptedException e) {
@@ -911,6 +949,9 @@ public class IndexManager {
 						}         
                     	
                     	arr[0] = arr[0].replaceFirst("./", "./clones/");
+                    	
+                    	// TODO
+                    	successfulUpload = true;
                         processRepository(arr[0], arr[1]);
                         
                         ProcessBuilder pb2 = new ProcessBuilder("rm", "-rf", dir.getAbsolutePath());
@@ -922,17 +963,41 @@ public class IndexManager {
                         	e.printStackTrace();
                         }                
                         
+                        // TODO
+                        if(successfulUpload == true) {
+	                        // run bash script to increment online counter
+	                        ProcessBuilder onlinepb = new ProcessBuilder("./incrementCounter.sh");
+	                        try {
+	                        	Process proc = onlinepb.start();
+	                        	proc.waitFor();
+	                        	proc.destroy();
+	                        } catch (InterruptedException e) {
+	                        	e.printStackTrace();
+	                        }
+                        }
                     }
                     else {
+                    	successfulUpload = true;
                         processRepository(arr[0], arr[1]);                    	
                     }
-                    
-                    b = System.currentTimeMillis();
-                    
-                    repoCount++;
-                    totalTime += (b-a);
                                         
-                    System.out.println(arr[0] + " | [" + repoCount + "] | " + (b-a) / 1000 + " seconds to process | Average repo/second: " + (double)repoCount / ((double)totalTime / 1000) + " | Total time: " + (double)totalTime / 1000);
+            		// add remaining Solr documents
+                    // TODO
+                    try {
+                		Solrj.getInstance(passwordFilePath).commitDocs(hostName, portNumber, collectionName);                    	
+                    } catch (Exception e) {
+                    	Solrj.getInstance(passwordFilePath).clearDocs();
+                    	successfulUpload = false;
+                    }
+                    
+                    // TODO
+                    if(successfulUpload == true) {
+                        repoCount++;             
+                        //System.out.println(arr[0] + " | [" + repoCount + "]");
+                    }
+                    else {
+                    	System.out.println(arr[0] + " failed to process");
+                    }
                 }
             }
 
@@ -946,9 +1011,7 @@ public class IndexManager {
         }
 	}
 			
-	public static void main(String[] args) throws IOException, CoreException, ParseException {
-		//args = new String[]{"/home/kwak/Desktop/config.txt"};
-		
+	public static void main(String[] args) throws IOException, CoreException, ParseException {		
 		File configFile = new File(args[0]);
 		
 		boolean cloneRepo = false;
@@ -1098,12 +1161,9 @@ public class IndexManager {
 				
 		// start everything
 		readMapFile(pathToURLMap, pathToClonedRepos, startLineNumber, endLineNumber, cloneRepo);
-		
-		// add remaining Solr documents
-		Solrj.getInstance(passwordFilePath).commitDocs(hostName, portNumber, collectionName);
 			
 		System.out.println("----------------------------------------------------------");
-		System.out.println("Finished " + repoCount + " repositories in " + totalTime / 1000  + " seconds");
+		System.out.println("Finished " + repoCount + " repositories");
 		System.out.println("----------------------------------------------------------");
 	}
 }

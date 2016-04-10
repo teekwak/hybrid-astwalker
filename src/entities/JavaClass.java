@@ -21,6 +21,7 @@ public class JavaClass extends SuperEntityClass {
 	List<SuperEntityClass> globalList;
 	List<SuperEntityClass> importList;
 	List<SuperEntityClass> methodDeclarationList;
+	List<SuperEntityClass> methodInvocationList;
 	List<SuperEntityClass> primitiveList;
 	List<SuperEntityClass> simpleList;
 	List<SuperEntityClass> wildcardList;
@@ -37,6 +38,7 @@ public class JavaClass extends SuperEntityClass {
 		this.globalList = new ArrayList<>();
 		this.importList = new ArrayList<>();
 		this.methodDeclarationList = new ArrayList<>();
+		this.methodInvocationList = new ArrayList<>();
 		this.primitiveList = new ArrayList<>();
 		this.simpleList = new ArrayList<>();
 		this.wildcardList = new ArrayList<>();
@@ -52,52 +54,8 @@ public class JavaClass extends SuperEntityClass {
 		return this.superClass;
 	}
 	
-	public void printInfo() {
-		StringBuilder s = new StringBuilder();
-		s.append("ClassObject " + this.getName());
-				
-		if(this.getSuperClass() != null) {
-			s.append(" extends " + this.getSuperClass());
-		}
-		
-		if(this.getImplements().size() > 0) {
-			s.append(" implements");
-			for(String imp : this.getImplements()) {
-				s.append(" " + imp);
-			}
-		}
-
-		s.append(" [" + this.lineNumber + " | " + this.columnNumber + "]");
-		
-		System.out.println(s.toString());
-		
-		for(Entity e : this.classList) {
-			e.printInfo();
-		}
-		
-		for(Entity e : methodDeclarationList) {
-			e.printInfo();
-		}		
-		
-		for(Entity e : arrayList) {
-			e.printInfo();
-		}
-		
-		for(Entity e : genericsList) {
-			e.printInfo();
-		}
-		
-		for(Entity e : primitiveList) {
-			e.printInfo();
-		}
-		
-		for(Entity e : simpleList) {
-			e.printInfo();
-		}
-		
-		for(Entity e : wildcardList) {
-			e.printInfo();
-		}
+	public List<SuperEntityClass> getMethodInvocationList() {
+		return this.methodInvocationList;
 	}
 
 	public void setGenericParametersList(List<String> list) {
@@ -232,6 +190,9 @@ public class JavaClass extends SuperEntityClass {
 		else if(ET == EntityType.METHOD_DECLARATION) {
 			this.methodDeclarationList.add(entity);
 		}
+		else if(ET == EntityType.METHOD_INVOCATION) {
+			this.methodInvocationList.add(entity);
+		}
 		else if(ET == EntityType.PRIMITIVE) {
 			this.primitiveList.add(entity);
 		}
@@ -243,16 +204,38 @@ public class JavaClass extends SuperEntityClass {
 		}
 	}
 	
-	public void setCyclomaticComplexity() {
-		int count = 0;
-		for(SuperEntityClass md : this.methodDeclarationList) {
-			count += ((MethodDeclarationObject) md).getCyclomaticComplexity();
+	public void setComplexities() {
+		int cycloCount = 0;
+		int methodInvCount = this.methodInvocationList.size();
+		
+		for(SuperEntityClass cl : this.classList) {
+			cycloCount += ((JavaClass) cl).getCyclomaticComplexity();
+			methodInvCount += ((JavaClass) cl).getMethodInvocationList().size();
+			
+			for(SuperEntityClass md : ((JavaClass) cl).getMethodDeclarationList()) {
+				cycloCount += ((MethodDeclarationObject) md).getCyclomaticComplexity();
+				methodInvCount += ((MethodDeclarationObject) md).getTotalMethodInvocationCount();
+			}
 		}
-		this.cyclomaticComplexity = count;
+		
+		for(SuperEntityClass mdo : this.methodDeclarationList) {
+			cycloCount += ((MethodDeclarationObject) mdo).getCyclomaticComplexity();
+			methodInvCount += ((MethodDeclarationObject) mdo).getTotalMethodInvocationCount();
+		}
+		
+		this.cyclomaticComplexity = cycloCount;
+		this.totalMethodInvocationCount = methodInvCount;
 	}
 	
 	public int getCyclomaticComplexity() {
 		return this.cyclomaticComplexity;
 	}
 	
+	public int getTotalMethodInvocationCount() {
+		return this.totalMethodInvocationCount;
+	}
+	
+	public double getClassComplexity() {
+		return (double)this.cyclomaticComplexity * (1 / ((double)this.totalMethodInvocationCount)) * (1 / (double)this.getSourceCode().length());
+	}
 }

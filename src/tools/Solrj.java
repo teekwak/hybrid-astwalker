@@ -63,6 +63,10 @@ public class Solrj {
 
 		System.out.println("okay");
 	} 
+	
+	public void clearDocs() {
+		req.clear();
+	}
 
     protected class PreEmptiveBasicAuthenticator implements HttpRequestInterceptor {
         private final UsernamePasswordCredentials credentials;
@@ -78,75 +82,6 @@ public class Solrj {
         }
       }
 
-    /**
-     * create a doc with the same id as the one you want to update and pass for field doc
-     * ids must be unique in your solr collection
-     * @param field
-     * @param value
-     * @param doc
-     * @param collectionName
-     */
-//    public void updateDocList(String field, List<String> value, SolrInputDocument doc,String collectionName){
-//    	
-//    	Map<String, List<String>> partialUpdate = new HashMap<String, List<String>>();
-//    	//use set to update a value, add to add a value (
-//    	//To update a multi-valued field with multiple values, create a Map<String, List<A>>)
-//    	//, and inc to increment a value
-//    	partialUpdate.put("set", value);
-//    	doc.addField(field, partialUpdate);
-//    	
-//    //	System.out.println("found doc! "+ doc.getFieldValue("id") +" "+doc.getFieldValue(field));
-//    	
-//    	//now upload
-//    	addDoc(doc,collectionName);
-//    }
-//    
-//    public void updateDoc(String field, String value, SolrInputDocument doc,String collectionName){
-//    	
-//    	Map<String, String> partialUpdate = new HashMap<String, String>();
-//    	//use set to update a value, add to add a value (
-//    	//To update a multi-valued field with multiple values, create a Map<String, List<A>>)
-//    	//, and inc to increment a value
-//    	partialUpdate.put("set", value);
-//    	doc.addField(field, partialUpdate);
-//    	
-//    //	System.out.println("found doc! "+ doc.getFieldValue("id") +" "+doc.getFieldValue(field));
-//    	
-//    	//now upload
-//    	addDoc(doc,collectionName);
-//    }
-    
-//	public void addDoc(SolrInputDocument doc,String collectionName) {
-//		if(doc == null)
-//			return;
-//		HttpSolrServer server;
-//		server = new HttpSolrServer("http://"+host+":9000/solr/"+collectionName);
-//		try {
-//
-//			
-//	    //    AbstractHttpClient httpClient = (AbstractHttpClient) server.getHttpClient(); 
-//	   //    httpClient.addRequestInterceptor(new PreEmptiveBasicAuthenticator("admin",""));
-//
-//	        AbstractHttpClient httpClient = (AbstractHttpClient) server.getHttpClient(); 
-//	       httpClient.addRequestInterceptor(new PreEmptiveBasicAuthenticator("admin",pass));
-//	       
-//			  server.add(doc);
-//			 
-//			  req.setAction( UpdateRequest.ACTION.COMMIT, false, false );
-//			  req.add( doc );
-//			  UpdateResponse rsp = req.process( server );
-//			  
-//		//	  System.out.println(rsp.getResponse());
-//		
-//			  
-//		} catch (SolrServerException e) {
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//
-//	}
-	
 	public void addDoc(SolrInputDocument doc) {
 		
 		if(doc == null)
@@ -160,7 +95,7 @@ public class Solrj {
 
 	@SuppressWarnings("deprecation")
 	public void commitDocs(String hostName, int portNumber, String collectionName){
-		System.out.println("===uploading ["+req.getDocuments().size()+"] docs to codeexchange===");
+		//System.out.println("===uploading ["+req.getDocuments().size()+"] docs to codeexchange===");
 		HttpSolrServer server;
 		  server = new HttpSolrServer("http://"+hostName+":"+portNumber+"/solr/"+collectionName);
 		  
@@ -171,8 +106,8 @@ public class Solrj {
 		  try {
 			UpdateResponse rsp = req.process( server );
 			req.clear();
-			System.out.println("--- documents remaining after clear:["+req.getDocuments().size()+"]");
-			System.out.println("--- child:["+IndexManager.getInstance().CHILD_COUNT+"]");
+			//System.out.println("--- documents remaining after clear:["+req.getDocuments().size()+"]");
+			//System.out.println("--- child:["+IndexManager.getInstance().CHILD_COUNT+"]");
 			IndexManager.getInstance().CHILD_COUNT = 0;
 
 		} catch (SolrServerException | IOException e) {
@@ -263,21 +198,8 @@ public class Solrj {
 					  solrQuery.setRows(rows);
 					  solrQuery.setIncludeScore(true);
 					  
-					  
-//					  if(fq !=null && fq.length() > 0)
-//						  solrQuery.addFilterQuery(fq);
-					  
 			  QueryResponse rsp = server.query(solrQuery);
 			 
-		//	ModifiableSolrParams params = new ModifiableSolrParams();
-
-	
-//			params.add("q", query);
-//		
-//			params.set("start", "0");
-//			params.set("rows", 20);
-
-		//	QueryResponse response = server.query(params);
 			SolrDocumentList results = rsp.getResults();
 
 			server.close();

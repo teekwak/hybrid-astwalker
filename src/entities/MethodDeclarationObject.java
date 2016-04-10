@@ -12,7 +12,7 @@ public class MethodDeclarationObject extends SuperEntityClass {
 	boolean isGeneric;
 	boolean isStatic;
 	boolean isVarargs;
-	
+		
 	String declaringClass;
 	String wildcardBound;
 	String returnType;
@@ -49,7 +49,7 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		this.parametersList = new ArrayList<>();
 		this.parameterTypesList = new ArrayList<>();
 		this.genericParametersList = new ArrayList<>();
-		
+				
 		this.arrayList = new ArrayList<>();
 		this.catchClauseList = new ArrayList<>();
 		this.classList = new ArrayList<>();
@@ -70,112 +70,6 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		this.unionList = new ArrayList<>();
 		this.whileStatementList = new ArrayList<>();
 		this.wildcardList = new ArrayList<>();
-	}
-	
-	@Override
-	public void printInfo() {
-		StringBuilder s = new StringBuilder();
-		s.append("MethodDeclarationObject " + this.getName());
-				
-		if(this.thrownExceptions.size() > 0) {
-			s.append(" throws");
-			for(String ex : this.thrownExceptions) {
-				s.append(" " + ex);
-			}
-		}
-		
-		s.append("(");
-	
-		int parametersListSize = this.parametersList.size();
-		for(int i = 0; i < parametersListSize; i++) {
-			if(i == this.parametersList.size() - 1) {
-				s.append(this.parametersList.get(i));
-			}
-			else {
-				s.append(this.parametersList.get(i) + ", ");
-			}	
-		}
-		
-		s.append(")");
-		s.append(" [" + this.lineNumber + " | " + this.columnNumber + "]");
-		
-		System.out.println(s.toString());
-		
-		for(Entity e : arrayList) {
-			e.printInfo();
-		}
-		
-		for(Entity e : classList) {
-			e.printInfo();
-		}
-		
-		for(Entity e : catchClauseList) {
-			e.printInfo();
-		}
-		
-		for(Entity e : conditionalExpressionList) {
-			e.printInfo();
-		}
-		
-		for(Entity e : doStatementList) {
-			e.printInfo();
-		}
-		
-		for(Entity e : forStatementList) {
-			e.printInfo();
-		}
-		
-		for(Entity e : genericsList) {
-			e.printInfo();
-		}
-		
-		for(Entity e : ifStatementList) {
-			e.printInfo();
-		}
-		
-		for(Entity e : infixExpressionList) {
-			e.printInfo();
-		}
-
-		for(Entity e : methodDeclarationList) {
-			e.printInfo();
-		}
-		
-		for(Entity e : methodInvocationList) {
-			e.printInfo();
-		}
-		
-		for(Entity e : primitiveList) {
-			e.printInfo();
-		}
-		
-		for(Entity e : simpleList) {
-			e.printInfo();
-		}
-		
-		for(Entity e : switchStatementList) {
-			e.printInfo();
-		}
-		
-		for(Entity e : throwStatementList) {
-			e.printInfo();
-		}
-		
-		for(Entity e : tryStatementList) {
-			e.printInfo();
-		}
-		
-		for(Entity e : unionList) {
-			e.printInfo();
-		}
-		
-		for(Entity e : whileStatementList) {
-			e.printInfo();
-		}
-		
-		for(Entity e : wildcardList) {
-			e.printInfo();
-		}
 	}
 
 	public void setGenericParametersList(List<String> list) {
@@ -425,34 +319,46 @@ public class MethodDeclarationObject extends SuperEntityClass {
 			this.switchCaseList.addAll(listOfEntities);
 		}
 	}
-	
-	public void setCyclomaticComplexity() {
-		int operatorCount = 0;
+
+	public void setComplexities() {
+		int cycloCount = 0;
+		int methodInvCount = this.methodInvocationList.size();
+		
 		for(SuperEntityClass e : infixExpressionList) {
 			if(e.getName().equals("&&") || e.getName().equals("||")) {
-				operatorCount++;
+				cycloCount++;
 			}
 		}
 		
-		int switchCaseCount = 0;
 		for(SuperEntityClass e : switchStatementList) {
 			for(Entity f : e.getEntityList()) {
 				if(!f.getName().equals("Default")) {
-					switchCaseCount++;
+					cycloCount++;
 				}
 			}
 		}
-					
-		int innerMethodDecComplexity = 0;
-		for(SuperEntityClass mdo : this.getMethodDeclarationList()) {
-			innerMethodDecComplexity += ((MethodDeclarationObject) mdo).getCyclomaticComplexity();
+				
+		for(SuperEntityClass cl : this.getClassList()) {
+			cycloCount += ((JavaClass) cl).getCyclomaticComplexity();
+			methodInvCount += ((JavaClass) cl).getTotalMethodInvocationCount();
 		}
 		
-		this.cyclomaticComplexity = 1 + ifStatementList.size() + forStatementList.size() + whileStatementList.size() + switchCaseCount 
-		+ catchClauseList.size() + operatorCount + conditionalExpressionList.size() + innerMethodDecComplexity;
+		for(SuperEntityClass mdo : this.getMethodDeclarationList()) {
+			cycloCount += ((MethodDeclarationObject) mdo).getCyclomaticComplexity();
+			methodInvCount += ((MethodDeclarationObject) mdo).getTotalMethodInvocationCount();
+		}
+		
+		// cyclomatic complexity = 1 + if + for + while + switch case + catch + and + or + ternary + inner cyclomatic complexities
+		this.cyclomaticComplexity = 1 + ifStatementList.size() + forStatementList.size() + whileStatementList.size() 
+		+ catchClauseList.size() + conditionalExpressionList.size() + cycloCount;	
+		this.totalMethodInvocationCount = methodInvCount;
 	}
 	
 	public int getCyclomaticComplexity() {
 		return this.cyclomaticComplexity;
+	}
+	
+	public int getTotalMethodInvocationCount() {
+		return this.totalMethodInvocationCount;
 	}
 }

@@ -20,6 +20,7 @@ public class SuperEntityClass implements Entity {
 	int numberOfCharacters;
 	int endLine;
 	int cyclomaticComplexity;
+	int totalMethodInvocationCount;
 	
 	public SuperEntityClass() {
 		entityList = new ArrayList<>();
