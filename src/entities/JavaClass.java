@@ -1,7 +1,9 @@
 package entities;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class JavaClass extends SuperEntityClass {
 
@@ -17,8 +19,8 @@ public class JavaClass extends SuperEntityClass {
 	List<String> implementsList;
 	List<String> genericParametersList;
 	
-	List<String> methodDeclarationNames;
-	List<String> methodInvocationNames;
+	Set<String> methodDeclarationNames;
+	Set<String> methodInvocationNames;
 	
 	List<SuperEntityClass> arrayList;
 	List<SuperEntityClass> classList;
@@ -37,8 +39,8 @@ public class JavaClass extends SuperEntityClass {
 		this.implementsList = new ArrayList<>();
 		this.genericParametersList = new ArrayList<>();
 		
-		this.methodDeclarationNames = new ArrayList<>();
-		this.methodInvocationNames = new ArrayList<>();
+		this.methodDeclarationNames = new HashSet<>();
+		this.methodInvocationNames = new HashSet<>();
 		
 		this.arrayList = new ArrayList<>();
 		this.classList = new ArrayList<>();
@@ -238,7 +240,7 @@ public class JavaClass extends SuperEntityClass {
 		}
 	}
 	
-	public List<String> getMethodDeclarationNames() {
+	public Set<String> getMethodDeclarationNames() {
 		return this.methodDeclarationNames;
 	}
 	
@@ -252,7 +254,7 @@ public class JavaClass extends SuperEntityClass {
 		}
 	}
 	
-	public List<String> getMethodInvocationNames() {
+	public Set<String> getMethodInvocationNames() {
 		return this.methodInvocationNames;
 	}
 	

@@ -14,8 +14,10 @@ import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
 
@@ -387,11 +389,19 @@ public class IndexManager {
 		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_FIELDS, ((Number)jc.getGlobalList().size()).longValue());
 		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_FUNCTIONS, ((Number)jc.getMethodDeclarationList().size()).longValue());
 		
+		Set<String> methodDecNames = new HashSet<>();
 		for(String name : jc.getMethodDeclarationNames()) {
+			methodDecNames.add(name);
+		}
+		for(String name : methodDecNames) {
 			solrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_NAMES, name);
 		}
 		
+		Set<String> methodInvNames = new HashSet<>();
 		for(String name : jc.getMethodInvocationNames()) {
+			methodInvNames.add(name);
+		}
+		for(String name : methodInvNames) {
 			solrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_NAMES, name);
 		}
 		
@@ -503,13 +513,28 @@ public class IndexManager {
 		}
 		
 		// method declaration is right below this current method
-		addVariableListToSolrDoc(jc.getArrayList(), solrDoc);
-		addVariableListToSolrDoc(jc.getGenericsList(), solrDoc);
-		addVariableListToSolrDoc(jc.getPrimitiveList(), solrDoc);
-		addVariableListToSolrDoc(jc.getSimpleList(), solrDoc);
+		Set<String> variableTypes = new HashSet<>();
+		Set<String> variableTypesShort = new HashSet<>();
+		Set<String> variableNames = new HashSet<>();
+		
+		addVariableListToSolrDoc(jc.getArrayList(), variableTypes, variableTypesShort, variableNames, solrDoc);
+		addVariableListToSolrDoc(jc.getArrayList(), variableTypes, variableTypesShort, variableNames, solrDoc);
+		addVariableListToSolrDoc(jc.getArrayList(), variableTypes, variableTypesShort, variableNames, solrDoc);
+		addVariableListToSolrDoc(jc.getArrayList(), variableTypes, variableTypesShort, variableNames, solrDoc);
 		
 		// method declaration is right below this current method
-		addVariablesFromMethodDeclaration(jc.getMethodDeclarationList(), solrDoc);		
+		addVariablesFromMethodDeclaration(jc.getMethodDeclarationList(), variableTypes, variableTypesShort, variableNames, solrDoc);		
+		
+		for(String t : variableTypes) {
+			solrDoc.addField(IndexManager.SNIPPET_VARIABLE_TYPES, t);
+		}
+		for(String ts : variableTypesShort) {
+			solrDoc.addField(IndexManager.SNIPPET_VARIABLE_TYPES_SHORT, ts);			
+		}
+		for(String n : variableNames) {
+			solrDoc.addField(IndexManager.SNIPPET_VARIABLE_NAMES, n);
+			solrDoc.addField(IndexManager.SNIPPET_VARIABLE_NAMES_DELIMITED, n);
+		}
 		
 		for(SuperEntityClass md : jc.getMethodDeclarationList()) {
 			findAllMethodDeclarations((MethodDeclarationObject)md, solrDoc, id);
@@ -549,36 +574,36 @@ public class IndexManager {
 		}
 	}
 	
-	public static void addVariableListToSolrDoc(List<SuperEntityClass> list, SolrInputDocument solrDoc) {
+	// TODO
+	public static void addVariableListToSolrDoc(List<SuperEntityClass> list, Set<String> variableTypes, Set<String> variableTypesShort, Set<String> variableNames, SolrInputDocument solrDoc) {
 		for(SuperEntityClass entity : list) {
-			solrDoc.addField(IndexManager.SNIPPET_VARIABLE_TYPES, entity.getFullyQualifiedName());
+			variableNames.add(entity.getName());
 			
 			String fqn = entity.getFullyQualifiedName();
+			variableTypes.add(fqn);
+			
 			if(fqn.indexOf('<') > -1) {
 				String[] split1 = fqn.split("<", 2);
 				String[] split2 = split1[0].split("[.]");
-				solrDoc.addField(IndexManager.SNIPPET_VARIABLE_TYPES_SHORT, split2[split2.length - 1] + "<" + split1[split1.length - 1]);
+				variableTypesShort.add(split2[split2.length - 1] + "<" + split1[split1.length - 1]);
 			}
 			else {
 				String[] split = fqn.split("[.]");
-				solrDoc.addField(IndexManager.SNIPPET_VARIABLE_TYPES_SHORT, split[split.length-1]);				
+				variableTypesShort.add(split[split.length-1]);				
 			}
-						
-			solrDoc.addField(IndexManager.SNIPPET_VARIABLE_NAMES, entity.getName());
-			solrDoc.addField(IndexManager.SNIPPET_VARIABLE_NAMES_DELIMITED, entity.getName());
 		}
 	}
 	
-	public static void addVariablesFromMethodDeclaration(List<SuperEntityClass> methodDeclarationList, SolrInputDocument solrDoc) {
+	public static void addVariablesFromMethodDeclaration(List<SuperEntityClass> methodDeclarationList, Set<String> variableTypes, Set<String> variableTypesShort, Set<String> variableNames, SolrInputDocument solrDoc) {
 		for(SuperEntityClass methodDec : methodDeclarationList) {
 			MethodDeclarationObject mdo = (MethodDeclarationObject) methodDec;
-				addVariableListToSolrDoc(mdo.getArrayList() , solrDoc);
-				addVariableListToSolrDoc(mdo.getGenericsList() , solrDoc);
-				addVariableListToSolrDoc(mdo.getPrimitiveList() , solrDoc);
-				addVariableListToSolrDoc(mdo.getSimpleList(), solrDoc);
+				addVariableListToSolrDoc(mdo.getArrayList(), variableTypes, variableTypesShort, variableNames, solrDoc);
+				addVariableListToSolrDoc(mdo.getGenericsList(), variableTypes, variableTypesShort, variableNames, solrDoc);
+				addVariableListToSolrDoc(mdo.getPrimitiveList(), variableTypes, variableTypesShort, variableNames, solrDoc);
+				addVariableListToSolrDoc(mdo.getSimpleList(), variableTypes, variableTypesShort, variableNames, solrDoc);
 				
 			if(mdo.getMethodDeclarationList().size() > 0) {
-				addVariablesFromMethodDeclaration(mdo.getMethodDeclarationList(), solrDoc);
+				addVariablesFromMethodDeclaration(mdo.getMethodDeclarationList(), variableTypes, variableTypesShort, variableNames, solrDoc);
 			}
 		}
 	}
