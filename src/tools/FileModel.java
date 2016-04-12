@@ -13,12 +13,6 @@ public class FileModel {
 	
 	List<JavaClass> javaClassList;
 	
-	public void printAll() {
-		for(JavaClass co : javaClassList) {		
-			co.printInfo();
-		}
-	}
-	
 	public void addJavaClass(JavaClass co) {
 		javaClassList.add(co);
 	}

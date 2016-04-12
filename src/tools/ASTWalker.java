@@ -13,6 +13,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
 import org.eclipse.jdt.core.dom.BlockComment;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.Comment;
@@ -69,6 +70,7 @@ public class ASTWalker {
 	public List<SuperEntityClass> importList = new ArrayList<>();
 	public boolean inMethod = false;
 	public boolean hasComments = false;
+	public String parentClass = "";
 
 	// find comments
 	class CommentVisitor extends ASTVisitor {
@@ -128,6 +130,85 @@ public class ASTWalker {
 			// alphabetical order
 			cu.accept(new ASTVisitor() {
 	
+				public boolean visit(AnonymousClassDeclaration node) {
+					ITypeBinding binding = node.resolveBinding();
+					
+					int startLine = cu.getLineNumber(node.getStartPosition());
+					int endLine = cu.getLineNumber(node.getStartPosition() + node.getLength() - 1);
+					// get source code
+					StringBuilder classSourceCode = new StringBuilder();					
+					try {
+						BufferedReader br = new BufferedReader(new FileReader(file));
+						
+						for(int i = 0; i < startLine - 1; i++) {
+							br.readLine();
+						}
+						
+						for(int j = startLine - 1; j < endLine - 1; j++) {
+							classSourceCode.append(br.readLine());
+							classSourceCode.append(System.getProperty("line.separator"));
+						}
+						
+						classSourceCode.append(br.readLine());
+						
+						br.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					JavaClass co = new JavaClass();
+					co.setIsAnonymous(binding.isAnonymous());
+					co.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
+					co.setEndLine(endLine);
+					co.setLineNumber(startLine);
+					co.setNumberOfCharacters(node.getLength());
+					co.setFileName(fileLocation);
+					// get generic parameters
+					List<String> genericParametersList = new ArrayList<>();
+					try {
+						if(binding.isGenericType()) {
+							co.setIsGenericType(binding.isGenericType());
+							for(Object o : binding.getTypeParameters()) {
+								genericParametersList.add(o.toString());
+							}
+						}						
+					} catch (NullPointerException e) {
+						co.setIsGenericType(false);
+					}
+					co.setGenericParametersList(genericParametersList);
+					
+					co.setHasComments(hasComments);
+					co.setSourceCode(classSourceCode.toString());
+					co.setStartCharacter(node.getStartPosition());
+					co.setEndCharacter(node.getStartPosition() + node.getLength() - 1);				
+					co.setImportList(importList);
+					co.setPackage(packageObject);
+					co.setIsAnonymous(true);
+					
+					entityStack.push(co);
+					
+					return true;
+				}
+				
+				public void endVisit(AnonymousClassDeclaration node) {
+					JavaClass temp = (JavaClass) entityStack.pop();
+						
+					temp.setIsInnerClass(true);
+							
+					temp.setComplexities();
+					temp.setMethodDeclarationNames();
+					temp.setMethodInvocationNames();
+						
+					try {
+						entityStack.peek().addEntity(temp, EntityType.CLASS);
+					} catch (EmptyStackException e) {
+						// should not be possible
+					}
+					
+					fileModel.addJavaClass(temp);						
+					
+					hasComments = false;
+				}
+				
 				public boolean visit(CatchClause node) {
 					if(inMethod) {
 						SimpleName name = node.getException().getName();
@@ -425,6 +506,8 @@ public class ASTWalker {
 					// TODO
 					// merge these two methods together
 					temp.setComplexities();
+					temp.setMethodDeclarationNames();
+					temp.setMethodInvocationNames();
 					entityStack.peek().addEntity(temp, EntityType.METHOD_DECLARATION);					
 					
 					inMethod = false;
@@ -485,7 +568,6 @@ public class ASTWalker {
 					mio.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
 					entityStack.peek().addEntity(mio, EntityType.METHOD_INVOCATION);
 					
-	
 					return true;
 				}
 	
@@ -688,7 +770,12 @@ public class ASTWalker {
 							fullyQualifiedName = node.getName().toString();
 						}
 						
+						if(parentClass.isEmpty()) {
+							parentClass = node.getName().toString();
+						}
+						
 						JavaClass co = new JavaClass();
+						co.setIsAnonymous(binding.isAnonymous());
 						co.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
 						co.setEndLine(endLine);
 						co.setLineNumber(startLine);
@@ -754,8 +841,24 @@ public class ASTWalker {
 							isInnerClass = false;
 						}					
 						temp.setIsInnerClass(isInnerClass);
-							
+						
+						if(!parentClass.isEmpty()) {
+							temp.setParentClass(parentClass);	
+						} else {
+							parentClass = "";
+						}
+						
 						temp.setComplexities();
+						temp.setMethodDeclarationNames();
+						temp.setMethodInvocationNames();
+						
+						try {
+							entityStack.peek().addEntity(temp, EntityType.CLASS);
+							
+						} catch (EmptyStackException e) {
+							// most outer class
+						}
+						
 						fileModel.addJavaClass(temp);						
 					}
 					

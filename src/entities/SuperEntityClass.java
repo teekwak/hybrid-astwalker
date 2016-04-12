@@ -124,5 +124,4 @@ public class SuperEntityClass implements Entity {
 	public String getBound() {
 		return this.bound;
 	}
-	
 }

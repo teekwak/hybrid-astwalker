@@ -8,12 +8,17 @@ public class JavaClass extends SuperEntityClass {
 	String fileName;
 	String superClass;
 	String sourceCode;
+	String parentClass;
 	boolean isAbstract;
 	boolean isGenericType;
 	boolean isInnerClass;
+	boolean isAnonymous;
 	boolean hasComments;
 	List<String> implementsList;
 	List<String> genericParametersList;
+	
+	List<String> methodDeclarationNames;
+	List<String> methodInvocationNames;
 	
 	List<SuperEntityClass> arrayList;
 	List<SuperEntityClass> classList;
@@ -31,6 +36,9 @@ public class JavaClass extends SuperEntityClass {
 	public JavaClass() {
 		this.implementsList = new ArrayList<>();
 		this.genericParametersList = new ArrayList<>();
+		
+		this.methodDeclarationNames = new ArrayList<>();
+		this.methodInvocationNames = new ArrayList<>();
 		
 		this.arrayList = new ArrayList<>();
 		this.classList = new ArrayList<>();
@@ -114,6 +122,14 @@ public class JavaClass extends SuperEntityClass {
 		return this.isInnerClass;
 	}
 	
+	public void setIsAnonymous(boolean ia) {
+		this.isAnonymous = ia;
+	}
+	
+	public boolean getIsAnonymous() {
+		return this.isAnonymous;
+	}
+	
 	public void setSourceCode(String s) {
 		this.sourceCode = s;
 	}
@@ -136,6 +152,14 @@ public class JavaClass extends SuperEntityClass {
 	
 	public boolean getIsAbstract() {
 		return this.isAbstract;
+	}
+	
+	public void setParentClass(String pc) {
+		this.parentClass = pc;
+	}
+	
+	public String getParentClass() {
+		return this.parentClass;
 	}
 	
 	public List<SuperEntityClass> getArrayList() {
@@ -204,6 +228,34 @@ public class JavaClass extends SuperEntityClass {
 		}
 	}
 	
+	public void setMethodDeclarationNames() {
+		for(SuperEntityClass cl : this.classList) {
+			this.methodDeclarationNames.addAll(((JavaClass) cl).getMethodDeclarationNames());			
+		}
+		
+		for(SuperEntityClass mdo : this.methodDeclarationList) {
+			this.methodDeclarationNames.addAll(((MethodDeclarationObject) mdo).getMethodDeclarationNames());
+		}
+	}
+	
+	public List<String> getMethodDeclarationNames() {
+		return this.methodDeclarationNames;
+	}
+	
+	public void setMethodInvocationNames() {
+		for(SuperEntityClass cl : this.classList) {
+			this.methodInvocationNames.addAll(((JavaClass) cl).getMethodInvocationNames());			
+		}
+		
+		for(SuperEntityClass mdo : this.methodDeclarationList) {
+			this.methodInvocationNames.addAll(((MethodDeclarationObject) mdo).getMethodInvocationNames());
+		}
+	}
+	
+	public List<String> getMethodInvocationNames() {
+		return this.methodInvocationNames;
+	}
+	
 	public void setComplexities() {
 		int cycloCount = 0;
 		int methodInvCount = this.methodInvocationList.size();
@@ -211,11 +263,6 @@ public class JavaClass extends SuperEntityClass {
 		for(SuperEntityClass cl : this.classList) {
 			cycloCount += ((JavaClass) cl).getCyclomaticComplexity();
 			methodInvCount += ((JavaClass) cl).getMethodInvocationList().size();
-			
-			for(SuperEntityClass md : ((JavaClass) cl).getMethodDeclarationList()) {
-				cycloCount += ((MethodDeclarationObject) md).getCyclomaticComplexity();
-				methodInvCount += ((MethodDeclarationObject) md).getTotalMethodInvocationCount();
-			}
 		}
 		
 		for(SuperEntityClass mdo : this.methodDeclarationList) {

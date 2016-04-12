@@ -21,6 +21,9 @@ public class MethodDeclarationObject extends SuperEntityClass {
 	List<String> parameterTypesList;
 	List<String> genericParametersList;
 	
+	List<String> methodDeclarationNames;
+	List<String> methodInvocationNames;
+	
 	List<SuperEntityClass> arrayList;
 	List<SuperEntityClass> catchClauseList;
 	List<SuperEntityClass> classList;
@@ -44,6 +47,8 @@ public class MethodDeclarationObject extends SuperEntityClass {
 	
 	public MethodDeclarationObject() {
 		this.entityList = new ArrayList<>();
+		this.methodDeclarationNames = new ArrayList<>();
+		this.methodInvocationNames = new ArrayList<>();
 		
 		this.thrownExceptions = new ArrayList<>();
 		this.parametersList = new ArrayList<>();
@@ -319,7 +324,37 @@ public class MethodDeclarationObject extends SuperEntityClass {
 			this.switchCaseList.addAll(listOfEntities);
 		}
 	}
-
+	
+	public void setMethodDeclarationNames() {
+		this.methodDeclarationNames.add(this.getName());
+		
+		for(SuperEntityClass cl : this.classList) {
+			this.methodDeclarationNames.addAll(((JavaClass) cl).getMethodDeclarationNames());			
+		}
+		
+		for(SuperEntityClass mdo : this.methodDeclarationList) {
+			this.methodDeclarationNames.addAll(((MethodDeclarationObject) mdo).getMethodDeclarationNames());
+		}
+	}
+	
+	public List<String> getMethodDeclarationNames() {
+		return this.methodDeclarationNames;
+	}
+	
+	public void setMethodInvocationNames() {
+		for(SuperEntityClass cl : this.classList) {
+			this.methodInvocationNames.addAll(((JavaClass) cl).getMethodInvocationNames());			
+		}
+		
+		for(SuperEntityClass mdo : this.methodDeclarationList) {
+			this.methodInvocationNames.addAll(((MethodDeclarationObject) mdo).getMethodInvocationNames());
+		}
+	}
+	
+	public List<String> getMethodInvocationNames() {
+		return this.methodInvocationNames;
+	}
+	
 	public void setComplexities() {
 		int cycloCount = 0;
 		int methodInvCount = this.methodInvocationList.size();
