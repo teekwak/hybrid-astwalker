@@ -342,6 +342,10 @@ public class MethodDeclarationObject extends SuperEntityClass {
 	}
 	
 	public void setMethodInvocationNames() {
+		for(SuperEntityClass mio : this.getMethodInvocationList()) {
+			this.methodInvocationNames.add(mio.getName());
+		}
+		
 		for(SuperEntityClass cl : this.classList) {
 			this.methodInvocationNames.addAll(((JavaClass) cl).getMethodInvocationNames());			
 		}
