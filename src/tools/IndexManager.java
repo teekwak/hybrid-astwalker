@@ -490,15 +490,14 @@ public class IndexManager {
 		solrDoc.addField(IndexManager.EXPAND_ID, id);
 		
 		for(JavaClass cl : fileModel.getJavaClassList()) {
-			// null pointer exception for when there is no parent class
 			try {
-				if(cl.getName().equals(jc.getParentClass())) {
+				if(cl.getName() != null && cl.getName().equals(jc.getContainingClass())) {
 					String containingID= githubAddress+"?start="+cl.getLineNumber()+"&end="+cl.getEndLine();	
 					solrDoc.addField(SNIPPET_CONTAINING_CLASS_ID, containingID);
 					solrDoc.addField(IndexManager.SNIPPET_CONTAINING_CLASS_COMPLEXITY_SUM, ((Number)cl.getCyclomaticComplexity()).longValue());
 					break;
 				}				
-			} catch (NullPointerException e) {
+			} catch (NullPointerException e) {				
 				String containingID= githubAddress+"?start="+jc.getLineNumber()+"&end="+jc.getEndLine();	
 				solrDoc.addField(SNIPPET_CONTAINING_CLASS_ID, containingID);
 				solrDoc.addField(IndexManager.SNIPPET_CONTAINING_CLASS_COMPLEXITY_SUM, ((Number)jc.getCyclomaticComplexity()).longValue());	

@@ -8,7 +8,7 @@ public class JavaClass extends SuperEntityClass {
 	String fileName;
 	String superClass;
 	String sourceCode;
-	String parentClass;
+	String containingClass;
 	boolean isAbstract;
 	boolean isGenericType;
 	boolean isInnerClass;
@@ -154,12 +154,12 @@ public class JavaClass extends SuperEntityClass {
 		return this.isAbstract;
 	}
 	
-	public void setParentClass(String pc) {
-		this.parentClass = pc;
+	public void setContainingClass(String pc) {
+		this.containingClass = pc;
 	}
 	
-	public String getParentClass() {
-		return this.parentClass;
+	public String getContainingClass() {
+		return this.containingClass;
 	}
 	
 	public List<SuperEntityClass> getArrayList() {

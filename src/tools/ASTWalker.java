@@ -70,7 +70,7 @@ public class ASTWalker {
 	public List<SuperEntityClass> importList = new ArrayList<>();
 	public boolean inMethod = false;
 	public boolean hasComments = false;
-	public String parentClass = "";
+	public String containingClass = "";
 
 	// find comments
 	class CommentVisitor extends ASTVisitor {
@@ -198,6 +198,10 @@ public class ASTWalker {
 					temp.setMethodDeclarationNames();
 					temp.setMethodInvocationNames();
 						
+					if(!containingClass.isEmpty()) {
+						temp.setContainingClass(containingClass);	
+					}
+					
 					try {
 						entityStack.peek().addEntity(temp, EntityType.CLASS);
 					} catch (EmptyStackException e) {
@@ -770,8 +774,8 @@ public class ASTWalker {
 							fullyQualifiedName = node.getName().toString();
 						}
 						
-						if(parentClass.isEmpty()) {
-							parentClass = node.getName().toString();
+						if(containingClass.isEmpty()) {
+							containingClass = node.getName().toString();
 						}
 						
 						JavaClass co = new JavaClass();
@@ -842,21 +846,18 @@ public class ASTWalker {
 						}					
 						temp.setIsInnerClass(isInnerClass);
 						
-						if(!parentClass.isEmpty()) {
-							temp.setParentClass(parentClass);	
-						} else {
-							parentClass = "";
-						}
-						
 						temp.setComplexities();
 						temp.setMethodDeclarationNames();
 						temp.setMethodInvocationNames();
 						
 						try {
+							if(!containingClass.isEmpty()) {
+								temp.setContainingClass(containingClass);	
+							}
 							entityStack.peek().addEntity(temp, EntityType.CLASS);
 							
 						} catch (EmptyStackException e) {
-							// most outer class
+							containingClass = "";
 						}
 						
 						fileModel.addJavaClass(temp);						
