@@ -78,96 +78,100 @@ public class ASTStandalone {
 				
 			public boolean visit(CatchClause node) {
 				SimpleName name = node.getException().getName();
-				//System.out.println("CatchClause of '" + name + "' at line " + cu.getLineNumber(name.getStartPosition()) + " " + cu.getColumnNumber(name.getStartPosition()));
+				System.out.println("CatchClause of '" + name + "' at line " + cu.getLineNumber(name.getStartPosition()) + " " + cu.getColumnNumber(name.getStartPosition()));
 				return true; // false = do not continue to avoid usage info?
 			}
 
 			public boolean visit(ConditionalExpression node){
-				//System.out.println("ConditionalExpression of '" + node.getExpression() + "' at line " + cu.getLineNumber(node.getStartPosition()) + " " + cu.getColumnNumber(node.getStartPosition()));
+				System.out.println("ConditionalExpression of '" + node.getExpression() + "' at line " + cu.getLineNumber(node.getStartPosition()) + " " + cu.getColumnNumber(node.getStartPosition()));
 				return true;
 			}
 
 			public boolean visit(DoStatement node) {
-				//System.out.println("DoStatement of '" + node.getExpression() + "' at line " + cu.getLineNumber(node.getStartPosition()) + " " + cu.getColumnNumber(node.getStartPosition()));
+				System.out.println("DoStatement of '" + node.getExpression() + "' at line " + cu.getLineNumber(node.getStartPosition()) + " " + cu.getColumnNumber(node.getStartPosition()));
 				return true;
 			}
 
 			public boolean visit(EnhancedForStatement node) {
 				SimpleName name = node.getParameter().getName();
-				//System.out.println("EnhancedForStatement of '" + name  + "' at line " + cu.getLineNumber(name.getStartPosition()) + " " + cu.getColumnNumber(name.getStartPosition()));
+				System.out.println("EnhancedForStatement of '" + name  + "' at line " + cu.getLineNumber(name.getStartPosition()) + " " + cu.getColumnNumber(name.getStartPosition()));
 				return true;
 			}
 
 			public boolean visit(ForStatement node) {
-				//System.out.println("ForStatement of '" + node.getExpression() + "' at line " + cu.getLineNumber(node.getStartPosition()) + " " + cu.getColumnNumber(node.getStartPosition()));
+				System.out.println("ForStatement of '" + node.getExpression() + "' at line " + cu.getLineNumber(node.getStartPosition()) + " " + cu.getColumnNumber(node.getStartPosition()));
 				return true;
 			}
 
 			public boolean visit(IfStatement node) {
-				//System.out.println("IfStatement of '" + node.getExpression() + "' at line " + cu.getLineNumber(node.getStartPosition()) + " " + cu.getColumnNumber(node.getStartPosition()));
+				System.out.println("IfStatement of '" + node.getExpression() + "' at line " + cu.getLineNumber(node.getStartPosition()) + " " + cu.getColumnNumber(node.getStartPosition()));
 				return true;
 			}
 
 			public boolean visit(ImportDeclaration node){
 				Name name = node.getName();
-				//System.out.println("ImportDeclaration of '" + name  + "' at line " + cu.getLineNumber(name.getStartPosition()) + " " + cu.getColumnNumber(name.getStartPosition()));
+				System.out.println("ImportDeclaration of '" + name  + "' at line " + cu.getLineNumber(name.getStartPosition()) + " " + cu.getColumnNumber(name.getStartPosition()));
 				return true;
 			}
 
 			public boolean visit(InfixExpression node){
 				String name = node.getOperator().toString();
-				//System.out.println("InfixExpression of '" + name  + "' at line " + cu.getLineNumber(node.getLeftOperand().getStartPosition()) + " " + (cu.getColumnNumber(node.getLeftOperand().getStartPosition()) + cu.getColumnNumber(node.getRightOperand().getStartPosition())) / 2);
+				System.out.println("InfixExpression of '" + name  + "' at line " + cu.getLineNumber(node.getLeftOperand().getStartPosition()) + " " + (cu.getColumnNumber(node.getLeftOperand().getStartPosition()) + cu.getColumnNumber(node.getRightOperand().getStartPosition())) / 2);
 				return true;
 			}
 
 			public boolean visit(MethodDeclaration node) {
 				SimpleName name = node.getName();
-				//System.out.println("MethodDeclaration of '" + name + "' at line " + cu.getLineNumber(name.getStartPosition()) + " " + cu.getColumnNumber(name.getStartPosition()));
+				System.out.println("MethodDeclaration of '" + name + "' at line " + cu.getLineNumber(name.getStartPosition()) + " " + cu.getColumnNumber(name.getStartPosition()));
 				return true;
 			}
 
+			public void endVisit(MethodDeclaration node) {
+				System.out.println("Exited MethodDeclaration of " + node.getName());
+			}
+			
 			public boolean visit(MethodInvocation node) {
 				SimpleName name = node.getName();
-				//System.out.println("MethodInvocation of '" + name + "' at line " + cu.getLineNumber(name.getStartPosition()) + " " + cu.getColumnNumber(name.getStartPosition()));
+				System.out.println("MethodInvocation of '" + name + "' at line " + cu.getLineNumber(name.getStartPosition()) + " " + cu.getColumnNumber(name.getStartPosition()));
 				return true;
 			}
 
 			public boolean visit(PackageDeclaration node){
 				Name name = node.getName();
-				//System.out.println("PackageDeclaration of '" + name  + "' at line " + cu.getLineNumber(name.getStartPosition()) + " " + cu.getColumnNumber(name.getStartPosition()));
+				System.out.println("PackageDeclaration of '" + name  + "' at line " + cu.getLineNumber(name.getStartPosition()) + " " + cu.getColumnNumber(name.getStartPosition()));
 				return true;
 			}
 
 			// called on parameters of function
 			public boolean visit(SingleVariableDeclaration node) {
 				SimpleName name = node.getName();
-				//System.out.println("SingleVariableDeclaration of '" + name + "' of type '" + node.getType() + "' at line " + cu.getLineNumber(name.getStartPosition()) + " " + cu.getColumnNumber(name.getStartPosition()));
+				System.out.println("SingleVariableDeclaration of '" + name + "' of type '" + node.getType() + "' at line " + cu.getLineNumber(name.getStartPosition()) + " " + cu.getColumnNumber(name.getStartPosition()));
 				return true;
 			}
 
 			public boolean visit(SwitchCase node) {
 				try {
-					//System.out.println("SwitchCase of '" + node.getExpression() + "' at line " + cu.getLineNumber(node.getStartPosition()) + " " + cu.getColumnNumber(node.getStartPosition()));
+					System.out.println("SwitchCase of '" + node.getExpression() + "' at line " + cu.getLineNumber(node.getStartPosition()) + " " + cu.getColumnNumber(node.getStartPosition()));
 				} catch (NullPointerException e) {
 					// default case
-					//System.out.println("SwitchCase of default at line " + cu.getLineNumber(node.getStartPosition()) + " " + cu.getColumnNumber(node.getStartPosition()));
+					System.out.println("SwitchCase of default at line " + cu.getLineNumber(node.getStartPosition()) + " " + cu.getColumnNumber(node.getStartPosition()));
 				}
 				return true;
 			}
 
 			public boolean visit(SwitchStatement node) {
-				//System.out.println("SwitchStatement of '" + node.getExpression() + "' at line " + cu.getLineNumber(node.getStartPosition()) + " " + cu.getColumnNumber(node.getStartPosition()));
+				System.out.println("SwitchStatement of '" + node.getExpression() + "' at line " + cu.getLineNumber(node.getStartPosition()) + " " + cu.getColumnNumber(node.getStartPosition()));
 				return true;
 			}
 
 
 			public boolean visit(ThrowStatement node) {
-				//System.out.println("ThrowStatement of '" + node.getExpression() + "' at line " + cu.getLineNumber(node.getStartPosition()) + " " + cu.getColumnNumber(node.getStartPosition()));
+				System.out.println("ThrowStatement of '" + node.getExpression() + "' at line " + cu.getLineNumber(node.getStartPosition()) + " " + cu.getColumnNumber(node.getStartPosition()));
 				return true;
 			}
 
 			public boolean visit(TryStatement node) {
-				//System.out.println("TryStatement at line " + cu.getLineNumber(node.getStartPosition()) + " " + cu.getColumnNumber(node.getStartPosition()));
+				System.out.println("TryStatement at line " + cu.getLineNumber(node.getStartPosition()) + " " + cu.getColumnNumber(node.getStartPosition()));
 				return true;
 			}
 
@@ -193,27 +197,31 @@ public class ASTStandalone {
 
 				s.append("at line " + cu.getLineNumber(name.getStartPosition()) + " " + cu.getColumnNumber(name.getStartPosition()));
 
-				//System.out.println(s.toString());
+				System.out.println(s.toString());
 
 				return true;
 			}
 
+			public void endVisit(TypeDeclaration node) {
+				System.out.println("Exited class of " + node.getName());
+			}
+			
 			public boolean visit(VariableDeclarationFragment node) {
 				SimpleName name = node.getName();
 				String[] type = node.getParent().toString().split(" ");
-				//System.out.println("VariableDeclarationFragment of '" + name + "' of type '" + type[0] + "' at line " + cu.getLineNumber(name.getStartPosition()) + " " + cu.getColumnNumber(name.getStartPosition()));
+				System.out.println("VariableDeclarationFragment of '" + name + "' of type '" + type[0] + "' at line " + cu.getLineNumber(name.getStartPosition()) + " " + cu.getColumnNumber(name.getStartPosition()));
 
 				return true;
 			}
 
 			public boolean visit(WhileStatement node){
-				//System.out.println("WhileStatement of '" + node.getExpression() + "' at line " + cu.getLineNumber(node.getStartPosition()) + " " + cu.getColumnNumber(node.getStartPosition()));
+				System.out.println("WhileStatement of '" + node.getExpression() + "' at line " + cu.getLineNumber(node.getStartPosition()) + " " + cu.getColumnNumber(node.getStartPosition()));
 				return true;
 			}
 
 			// weird case. returns Type
 			public boolean visit(WildcardType node) {
-				//System.out.println("WildcardType of " + node.getBound() + " at line " + cu.getLineNumber(node.getStartPosition()) + " " + cu.getColumnNumber(node.getStartPosition()));
+				System.out.println("WildcardType of " + node.getBound() + " at line " + cu.getLineNumber(node.getStartPosition()) + " " + cu.getColumnNumber(node.getStartPosition()));
 				return true;
 			}
 		});

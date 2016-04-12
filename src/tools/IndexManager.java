@@ -387,9 +387,6 @@ public class IndexManager {
 		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_FIELDS, ((Number)jc.getGlobalList().size()).longValue());
 		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_FUNCTIONS, ((Number)jc.getMethodDeclarationList().size()).longValue());
 		
-		// TODO
-		//System.out.println("this" + jc.getMethodDeclarationNames());		
-		
 		for(String name : jc.getMethodDeclarationNames()) {
 			solrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_NAMES, name);
 		}
@@ -851,7 +848,6 @@ public class IndexManager {
 		for(JavaClass jc : fileModel.getJavaClassList()) {
 			JavaFile jf = gitData.getJavaFile();
 			
-			// TODO
 			if(successfulUpload == true) {
 				IndexManager.getInstance().makeClassSolrDoc(jc, jf);				
 			}
@@ -880,7 +876,6 @@ public class IndexManager {
 		if(fileModel.getJavaClassList().size() > 0) {
 			gitData = new GitData();
 			gitData.getCommitDataPerFile(topDirectoryLocation, parentNode.getAbsolutePath());
-			// TODO
 			if(successfulUpload == true) {
 				createSolrDocs();					
 			}
@@ -935,7 +930,6 @@ public class IndexManager {
 			
 			traverseUntilJava(new File(topDirectoryLocation), topDirectoryLocation);	
 			
-			// TODO			
 			if(successfulUpload == true) {
 				// delete repo URL line number from file if successful
 				try {
@@ -1047,7 +1041,6 @@ public class IndexManager {
                     	
                     	arr[0] = arr[0].replaceFirst("./", "./clones/");
                     	
-                    	// TODO
                     	successfulUpload = true;
                         processRepository(arr[0], arr[1]);
                         
@@ -1063,8 +1056,6 @@ public class IndexManager {
                         // TODO
                         if(successfulUpload == true) {
 	                        // run bash script to increment online counter
-                        	//TODO
-                        	/*
 	                        ProcessBuilder onlinepb = new ProcessBuilder("./incrementCounter.sh");
 	                        try {
 	                        	Process proc = onlinepb.start();
@@ -1073,7 +1064,6 @@ public class IndexManager {
 	                        } catch (InterruptedException e) {
 	                        	e.printStackTrace();
 	                        }
-	                        */
                         }
                     }
                     else {
@@ -1082,7 +1072,6 @@ public class IndexManager {
                     }
                                         
             		// add remaining Solr documents
-                    // TODO
                     try {
                 		Solrj.getInstance(passwordFilePath).commitDocs(hostName, portNumber, collectionName);   
                     } catch (Exception e) {
@@ -1091,7 +1080,6 @@ public class IndexManager {
                     	successfulUpload = false;
                     }
                     
-                    // TODO
                     if(successfulUpload == true) {
                         repoCount++;             
                         //System.out.println(arr[0] + " | [" + repoCount + "]");
@@ -1221,7 +1209,7 @@ public class IndexManager {
 		}
 		
 		// math to calculate start/end lines [must start on odd number and end on even number]
-		final int PATH_TO_URL_MAP_LINE_COUNT = 576478;
+		final int PATH_TO_URL_MAP_LINE_COUNT = 576474;
 		int linesPerProcess = Math.round(PATH_TO_URL_MAP_LINE_COUNT / totalNumberOfProcesses + 2) / 2 * 2;
 		int startLineNumber = (linesPerProcess * processNumber) + 1;
 		int endLineNumber = linesPerProcess * (processNumber + 1);
