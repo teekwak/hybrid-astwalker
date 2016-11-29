@@ -1,8 +1,5 @@
 package tools;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.List;
@@ -10,45 +7,7 @@ import java.util.Stack;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jdt.core.dom.AST;
-import org.eclipse.jdt.core.dom.ASTParser;
-import org.eclipse.jdt.core.dom.ASTVisitor;
-import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
-import org.eclipse.jdt.core.dom.BlockComment;
-import org.eclipse.jdt.core.dom.CatchClause;
-import org.eclipse.jdt.core.dom.Comment;
-import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.ConditionalExpression;
-import org.eclipse.jdt.core.dom.DoStatement;
-import org.eclipse.jdt.core.dom.EnhancedForStatement;
-import org.eclipse.jdt.core.dom.Expression;
-import org.eclipse.jdt.core.dom.FieldDeclaration;
-import org.eclipse.jdt.core.dom.ForStatement;
-import org.eclipse.jdt.core.dom.IMethodBinding;
-import org.eclipse.jdt.core.dom.ITypeBinding;
-import org.eclipse.jdt.core.dom.IfStatement;
-import org.eclipse.jdt.core.dom.ImportDeclaration;
-import org.eclipse.jdt.core.dom.InfixExpression;
-import org.eclipse.jdt.core.dom.LineComment;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.MethodInvocation;
-import org.eclipse.jdt.core.dom.Modifier;
-import org.eclipse.jdt.core.dom.Name;
-import org.eclipse.jdt.core.dom.PackageDeclaration;
-import org.eclipse.jdt.core.dom.ParameterizedType;
-import org.eclipse.jdt.core.dom.SimpleName;
-import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
-import org.eclipse.jdt.core.dom.SwitchCase;
-import org.eclipse.jdt.core.dom.SwitchStatement;
-import org.eclipse.jdt.core.dom.ThrowStatement;
-import org.eclipse.jdt.core.dom.TryStatement;
-import org.eclipse.jdt.core.dom.Type;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
-import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
-import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
-import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
-import org.eclipse.jdt.core.dom.WhileStatement;
-import org.eclipse.jdt.core.dom.WildcardType;
+import org.eclipse.jdt.core.dom.*;
 
 import entities.JavaClass;
 import entities.MethodDeclarationObject;
@@ -57,12 +16,14 @@ import entities.SuperEntityClass;
 import entities.Entity;
 import entities.Entity.EntityType;
 
+import entities.*;
+
 /**
  * Walks Java source code and parses constructs
  *
  * @author Thomas Kwak
  */
-public class ASTWalker {
+class ASTWalker {
 
 	private FileModel fileModel;
 	private Stack<Entity> entityStack = new Stack<>();
@@ -77,7 +38,7 @@ public class ASTWalker {
 		CompilationUnit cu;
 		String source;
 	 
-		public CommentVisitor(CompilationUnit cu, String source) {
+		CommentVisitor(CompilationUnit cu, String source) {
 			super();
 			this.cu = cu;
 			this.source = source;
@@ -102,14 +63,14 @@ public class ASTWalker {
 	 * @throws IOException, CoreException
 	 */
 	@SuppressWarnings("unchecked")
-	public FileModel parseFile(final String fileLocation) throws IOException, CoreException {
+	FileModel parseFile(final String fileLocation) throws IOException, CoreException {
 		try {
 		
 			this.fileModel = new FileModel();
 					
 			final File file = new File(fileLocation);
 			
-			String sourceCode = FileUtils.readFileToString(file);
+			String sourceCode = FileUtils.readFileToString(file, "UTF-8");
 			
 			ASTParser parser = ASTParser.newParser(AST.JLS8);
 	
@@ -137,9 +98,7 @@ public class ASTWalker {
 					int endLine = cu.getLineNumber(node.getStartPosition() + node.getLength() - 1);
 					// get source code
 					StringBuilder classSourceCode = new StringBuilder();					
-					try {
-						BufferedReader br = new BufferedReader(new FileReader(file));
-						
+					try(BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "ISO-8859-1"))) {
 						for(int i = 0; i < startLine - 1; i++) {
 							br.readLine();
 						}
@@ -150,8 +109,6 @@ public class ASTWalker {
 						}
 						
 						classSourceCode.append(br.readLine());
-						
-						br.close();
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -679,7 +636,7 @@ public class ASTWalker {
 							if(s instanceof SwitchCase) {
 								SuperEntityClass switchCase = new SuperEntityClass();
 								
-								String expression = "";
+								String expression;
 								try {
 									expression = ((SwitchCase) s).getExpression().toString();
 								} catch (NullPointerException e) {
@@ -745,9 +702,7 @@ public class ASTWalker {
 											
 						// get source code
 						StringBuilder classSourceCode = new StringBuilder();					
-						try {
-							BufferedReader br = new BufferedReader(new FileReader(file));
-							
+						try(BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "ISO-8859-1"))) {
 							for(int i = 0; i < startLine - 1; i++) {
 								br.readLine();
 							}
@@ -758,8 +713,6 @@ public class ASTWalker {
 							}
 							
 							classSourceCode.append(br.readLine());
-							
-							br.close();
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
@@ -1023,9 +976,7 @@ public class ASTWalker {
 				}
 	
 			});
-					
-			sourceCode = null;
-			
+
 			return fileModel;
 		
 		} catch (Exception e) {

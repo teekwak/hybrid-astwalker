@@ -1,23 +1,10 @@
 package tools;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.LineNumberReader;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
+import java.util.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
 
@@ -186,12 +173,12 @@ public class IndexManager {
 		public String siteAdmin;
 		public String type;
 		
-		public ArrayList<String> langauge_count = new ArrayList<String>();
-		public ArrayList<String> languages = new ArrayList<String>();
-		public ArrayList<String> versions = new ArrayList<String>();
-		public ArrayList<String> comments = new ArrayList<String>();
-		public ArrayList<String> authors = new ArrayList<String>();
-		public ArrayList<String> allAuthorIDs = new ArrayList<String>();
+		public ArrayList<String> language_count = new ArrayList<>();
+		public ArrayList<String> languages = new ArrayList<>();
+		public ArrayList<String> versions = new ArrayList<>();
+		public ArrayList<String> comments = new ArrayList<>();
+		public ArrayList<String> authors = new ArrayList<>();
+		public ArrayList<String> allAuthorIDs = new ArrayList<>();
 		
 		public String project_description;
 	}
@@ -208,7 +195,7 @@ public class IndexManager {
 			throw new Exception(); 
 		}
 		
-		SolrDocument doc = (SolrDocument)list.get(0);
+		SolrDocument doc = list.get(0);
 	
 		File project = null;
 		
@@ -236,7 +223,7 @@ public class IndexManager {
 				languageCount.add(count.toString());
 			}
 
-			currentProject.langauge_count.addAll(languageCount);
+			currentProject.language_count.addAll(languageCount);
 		}
 
 		if(doc.getFieldValue("languages") != null){
@@ -265,7 +252,6 @@ public class IndexManager {
 		if(doc.getFieldValue("userType") != null){
 			currentProject.type = doc.getFieldValue("userType").toString();
 		}
-
 	}
 	
 	public String toGitHubAddress(String owner, String projectName, File file, String thisVersion){
@@ -497,13 +483,13 @@ public class IndexManager {
 		for(JavaClass cl : fileModel.getJavaClassList()) {
 			try {
 				if(cl.getName() != null && cl.getName().equals(jc.getContainingClass())) {
-					String containingID= githubAddress+"?start="+cl.getLineNumber()+"&end="+cl.getEndLine();	
+					String containingID = githubAddress + "?start=" + cl.getLineNumber() + "&end=" + cl.getEndLine();
 					solrDoc.addField(SNIPPET_CONTAINING_CLASS_ID, containingID);
 					solrDoc.addField(IndexManager.SNIPPET_CONTAINING_CLASS_COMPLEXITY_SUM, ((Number)cl.getCyclomaticComplexity()).longValue());
 					break;
 				}				
 			} catch (NullPointerException e) {				
-				String containingID= githubAddress+"?start="+jc.getLineNumber()+"&end="+jc.getEndLine();	
+				String containingID = githubAddress + "?start=" + jc.getLineNumber() + "&end=" + jc.getEndLine();
 				solrDoc.addField(SNIPPET_CONTAINING_CLASS_ID, containingID);
 				solrDoc.addField(IndexManager.SNIPPET_CONTAINING_CLASS_COMPLEXITY_SUM, ((Number)jc.getCyclomaticComplexity()).longValue());	
 				break;
@@ -834,15 +820,11 @@ public class IndexManager {
 	}
 	
 	public static String makeGravaterURL(String authorEmail) {
-		String email = authorEmail;
-		String url = "";
+		if(authorEmail == null)
+			return "";
 
-		if(email == null)
-			return url;
-
-		String md5 = md5Java(email);
-		url = "http://www.gravatar.com/avatar/"+md5;
-		return url;
+		String md5 = md5Java(authorEmail);
+		return "http://www.gravatar.com/avatar/"+md5;
 	}
 
 	public static String md5Java(String message){
@@ -871,7 +853,7 @@ public class IndexManager {
 		for(JavaClass jc : fileModel.getJavaClassList()) {
 			JavaFile jf = gitData.getJavaFile();
 			
-			if(successfulUpload == true) {
+			if(successfulUpload) {
 				IndexManager.getInstance().makeClassSolrDoc(jc, jf);				
 			}
 			else {
@@ -899,7 +881,7 @@ public class IndexManager {
 		if(fileModel.getJavaClassList().size() > 0) {
 			gitData = new GitData();
 			gitData.getCommitDataPerFile(topDirectoryLocation, parentNode.getAbsolutePath());
-			if(successfulUpload == true) {
+			if(successfulUpload) {
 				createSolrDocs();					
 			}
 			else {
@@ -922,20 +904,19 @@ public class IndexManager {
 	public static void traverseUntilJava(File parentNode, String topDirectoryLocation) throws IOException, CoreException, ParseException {
 		if(parentNode.isDirectory()) {
 			File childNodes[] = parentNode.listFiles();
-			
-			for(File c : childNodes) {
-				if(!c.getName().startsWith(".")) {
-					traverseUntilJava(c, topDirectoryLocation);
+
+			if(childNodes != null) {
+				for(File c : childNodes) {
+					if(!c.getName().startsWith(".")) {
+						traverseUntilJava(c, topDirectoryLocation);
+					}
 				}
 			}
 		}
 		else {
 			if(parentNode.getName().endsWith(".java")) {
-				if(successfulUpload == true) {
+				if(successfulUpload) {
 					runASTandGitData(parentNode, topDirectoryLocation);	
-				}
-				else {
-					return;
 				}
 			}
 		}
@@ -953,7 +934,7 @@ public class IndexManager {
 			
 			traverseUntilJava(new File(topDirectoryLocation), topDirectoryLocation);	
 			
-			if(successfulUpload == true) {
+			if(successfulUpload) {
 				// delete repo URL line number from file if successful
 				try {
 					// get number of lines in a file
@@ -964,7 +945,7 @@ public class IndexManager {
 					BufferedReader br = new BufferedReader(new FileReader(new File(crashListFileName)));
 					StringBuilder sb = new StringBuilder();
 					
-					String line = null;
+					String line;
 					int count = 1;
 					
 					while((line = br.readLine()) != null && count < lnr.getLineNumber()) {
@@ -1016,7 +997,7 @@ public class IndexManager {
             	if (line.startsWith("'")) {
                     arr[0] = line.replace("'", "") + "/";
                     
-                    if(cloneRepo == false) {
+                    if(!cloneRepo) {
                         arr[0] = arr[0].replaceFirst("./", pathToClonedRepos);                    	
                     }
 
@@ -1040,11 +1021,11 @@ public class IndexManager {
                     count++;
                 }
                 
-                if(path == true && url == true) {
+                if(path && url) {
                     path = false;
                     url = false;
                     
-                    if(cloneRepo == true) {
+                    if(cloneRepo) {
          
                         File dir = new File("./clones/");
                         dir.mkdirs();
@@ -1077,7 +1058,7 @@ public class IndexManager {
                         }  
                         
                         // TODO
-                        if(successfulUpload == true) {
+                        if(successfulUpload) {
 	                        // run bash script to increment online counter
 	                        ProcessBuilder onlinepb = new ProcessBuilder("./incrementCounter.sh");
 	                        try {
@@ -1103,7 +1084,7 @@ public class IndexManager {
                     	successfulUpload = false;
                     }
                     
-                    if(successfulUpload == true) {
+                    if(successfulUpload) {
                         repoCount++;             
                         //System.out.println(arr[0] + " | [" + repoCount + "]");
                     }
@@ -1122,7 +1103,7 @@ public class IndexManager {
             e.printStackTrace();
         }
 	}
-			
+
 	public static void main(String[] args) throws IOException, CoreException, ParseException {		
 		File configFile = new File(args[0]);
 		
@@ -1183,52 +1164,52 @@ public class IndexManager {
 		} catch (IOException e) {
 			
 		}
-				
+
 		// make sure all required fields are defined in config.txt
 		if(hostName.isEmpty()) {
 			throw new IllegalArgumentException("Host name is not defined!");
 		}
-		
+
 		if(collectionName.isEmpty()) {
 			throw new IllegalArgumentException("Core name is not defined!");
 		}
-		
+
 		if(portNumber == -1) {
 			throw new IllegalArgumentException("Port number is not defined!");
 		}
-		
+
 		if(passwordFilePath.isEmpty()) {
 			throw new IllegalArgumentException("Password file path is not defined!");
 		}
-		
+
 		if(pathToURLMapPath.isEmpty()) {
 			throw new IllegalArgumentException("PathToURLMap path is not defined!");
 		}
-		
+
 		if(pathToClonedRepos.isEmpty()) {
 			throw new IllegalArgumentException("Cloned Repo path is not defined!");
 		}
-		
+
 		if(crashListPath.isEmpty()) {
 			throw new IllegalArgumentException("Crash list path is not defined!");
 		}
-		
+
 		if(processNumber == -1) {
 			throw new IllegalArgumentException("Process number is not defined!");
 		}
-		
+
 		if(totalNumberOfProcesses == -1) {
 			throw new IllegalArgumentException("Total number of processes is not defined!");
 		}
-		
+
 		// catch any negative numbers
 		if(processNumber < 0 || totalNumberOfProcesses < 0) {
 			throw new IllegalArgumentException("Negative arguments are not allowed!");
 		}
-		
+
 		// catch if process number is greater than number of processes (depends on what number your processes start at)
 		if(processNumber > totalNumberOfProcesses) {
-			throw new IllegalArgumentException("Process number cannot exceed total number of processes!");			
+			throw new IllegalArgumentException("Process number cannot exceed total number of processes!");
 		}
 		
 		// math to calculate start/end lines [must start on odd number and end on even number]
