@@ -3,7 +3,6 @@ package tools;
 import java.io.*;
 import java.util.*;
 
-import org.apache.commons.httpclient.HttpException;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;

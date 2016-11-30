@@ -254,7 +254,7 @@ public class IndexManager {
 		}
 	}
 	
-	public String toGitHubAddress(String owner, String projectName, File file, String thisVersion){
+	private String toGitHubAddress(String owner, String projectName, File file, String thisVersion){
 		String gitHubAddress = "https://raw.github.com/"+owner+"/"+projectName+"/"+thisVersion+"/";
 		String path = file.getAbsolutePath();
 
@@ -265,7 +265,7 @@ public class IndexManager {
 		return gitHubAddress;
 	}
 	
-	public void makeClassSolrDoc(SuperEntityClass entity, JavaFile javaFile) {
+	private void makeClassSolrDoc(SuperEntityClass entity, JavaFile javaFile) {
 		SolrInputDocument solrDoc = new SolrInputDocument();
 		
 		File file = new File(javaFile.getFileLocation());
@@ -457,7 +457,7 @@ public class IndexManager {
 		
 		//solrDoc.addField(IndexManager.SNIPPET_CHANGED_CODE_CHURN, snippet.changedChurn);
 
-		double calculation = 0;
+		double calculation;
 		
 		calculation = (double)headCommit.getInsertions() / (double)javaFile.getNumberOfLines();
 		solrDoc.addField(IndexManager.SNIPPET_INSERTION_CODE_CHURN, calculation);
@@ -533,18 +533,17 @@ public class IndexManager {
 		} catch (Exception e) {
         	Solrj.getInstance(passwordFilePath).clearDocs();
         	successfulUpload = false;
-        	return;
 		}
 	}
 	
 	/**
 	 * recursively get method declarations (for those method declarations inside of each other)
 	 * 
-	 * @param mdo
-	 * @param solrDoc
-	 * @param id
+	 * @param mdo x
+	 * @param solrDoc x
+	 * @param id x
 	 */
-	public static void findAllMethodDeclarations(MethodDeclarationObject mdo, SolrInputDocument solrDoc, String id) {
+	private static void findAllMethodDeclarations(MethodDeclarationObject mdo, SolrInputDocument solrDoc, String id) {
 		makeMethodDeclarationSolrDoc(mdo, solrDoc, id);
 		
 		for(SuperEntityClass mi : mdo.getMethodInvocationList() ) {
@@ -559,7 +558,7 @@ public class IndexManager {
 	}
 	
 	// TODO
-	public static void addVariableListToSolrDoc(List<SuperEntityClass> list, Set<String> variableTypes, Set<String> variableTypesShort, Set<String> variableNames, SolrInputDocument solrDoc) {
+	private static void addVariableListToSolrDoc(List<SuperEntityClass> list, Set<String> variableTypes, Set<String> variableTypesShort, Set<String> variableNames, SolrInputDocument solrDoc) {
 		for(SuperEntityClass entity : list) {
 			variableNames.add(entity.getName());
 			
@@ -578,7 +577,7 @@ public class IndexManager {
 		}
 	}
 	
-	public static void addVariablesFromMethodDeclaration(List<SuperEntityClass> methodDeclarationList, Set<String> variableTypes, Set<String> variableTypesShort, Set<String> variableNames, SolrInputDocument solrDoc) {
+	private static void addVariablesFromMethodDeclaration(List<SuperEntityClass> methodDeclarationList, Set<String> variableTypes, Set<String> variableTypesShort, Set<String> variableNames, SolrInputDocument solrDoc) {
 		for(SuperEntityClass methodDec : methodDeclarationList) {
 			MethodDeclarationObject mdo = (MethodDeclarationObject) methodDec;
 				addVariableListToSolrDoc(mdo.getArrayList(), variableTypes, variableTypesShort, variableNames, solrDoc);
@@ -592,7 +591,7 @@ public class IndexManager {
 		}
 	}
 	
-	public static void makeMethodDeclarationSolrDoc(SuperEntityClass entity, SolrInputDocument solrDoc, String id) {
+	private static void makeMethodDeclarationSolrDoc(SuperEntityClass entity, SolrInputDocument solrDoc, String id) {
 		SolrInputDocument methodDecSolrDoc = new SolrInputDocument();
 		MethodDeclarationObject mdo = (MethodDeclarationObject) entity;
 		
@@ -656,8 +655,8 @@ public class IndexManager {
 			methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_IS_WILDCARD_BOUNDS, wc.getBound());
 		}
 		
-		Map<String, Integer> paramCount = new HashMap<String, Integer>();
-		Map<String, Integer> paramCountShort = new HashMap<String, Integer>();
+		Map<String, Integer> paramCount = new HashMap<>();
+		Map<String, Integer> paramCountShort = new HashMap<>();
 		
 		int parameterTypesListSize = mdo.getParameterTypesList().size(); 
 		for(int i = 0; i < parameterTypesListSize; i++) {
@@ -666,7 +665,7 @@ public class IndexManager {
 			methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_PARAMETER_TYPES, argType);
 			methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_PARAMETER_TYPES_PLACE, argType+"_"+i);
 			
-			String shortName2 = "";
+			String shortName2;
 			
 			if(argType.indexOf('<') > -1) {
 				String[] split1 = argType.split("<", 2);
@@ -712,7 +711,7 @@ public class IndexManager {
 		solrDoc.addChildDocument(methodDecSolrDoc);
 	}
 	
-	public static void makeMethodInvocationSolrDoc(SuperEntityClass entity, SolrInputDocument solrDoc, String id) {
+	private static void makeMethodInvocationSolrDoc(SuperEntityClass entity, SolrInputDocument solrDoc, String id) {
 		SolrInputDocument methodInvSolrDoc = new SolrInputDocument();
 		MethodInvocationObject mio = (MethodInvocationObject) entity;
 		
@@ -819,7 +818,7 @@ public class IndexManager {
 		solrDoc.addChildDocument(methodInvSolrDoc);
 	}
 	
-	public static String makeGravaterURL(String authorEmail) {
+	private static String makeGravaterURL(String authorEmail) {
 		if(authorEmail == null)
 			return "";
 
@@ -827,7 +826,7 @@ public class IndexManager {
 		return "http://www.gravatar.com/avatar/"+md5;
 	}
 
-	public static String md5Java(String message){
+	private static String md5Java(String message){
 		String digest = null;
 		try {
 			MessageDigest md = MessageDigest.getInstance("MD5");
@@ -838,9 +837,7 @@ public class IndexManager {
 				sb.append(String.format("%02x", b&0xff));
 			}
 			digest = sb.toString();
-			} catch (UnsupportedEncodingException ex) {
-				ex.printStackTrace();
-			} catch (NoSuchAlgorithmException ex) {
+			} catch (UnsupportedEncodingException | NoSuchAlgorithmException ex) {
 				ex.printStackTrace();
 			}
 		return digest;
@@ -849,7 +846,7 @@ public class IndexManager {
 	/**
 	 * Gets all classes, method declarations, and method invocation from FileModel
 	 */
-	public static void createSolrDocs() {
+	private static void createSolrDocs() {
 		for(JavaClass jc : fileModel.getJavaClassList()) {
 			JavaFile jf = gitData.getJavaFile();
 			
@@ -866,10 +863,10 @@ public class IndexManager {
 	 * Creates AST and gathers Git data for each file
 	 * Runs createSolrDoc() method
 	 * 
-	 * @param parentNode
-	 * @param topDirectoryLocation
+	 * @param parentNode x
+	 * @param topDirectoryLocation x
 	 */
-	public static void runASTandGitData(File parentNode, String topDirectoryLocation) throws IOException, CoreException, ParseException {
+	private static void runASTandGitData(File parentNode, String topDirectoryLocation) throws IOException, CoreException, ParseException {
 		fileModel = new FileModel();
 		fileModel = fileModel.parseDeclarations(parentNode.getAbsolutePath());
 		
@@ -898,10 +895,10 @@ public class IndexManager {
 	 * Recursively travels down directories
 	 * Ignores invisible directories
 	 * 
-	 * @param parentNode
-	 * @param topDirectoryLocation
+	 * @param parentNode x
+	 * @param topDirectoryLocation x
 	 */
-	public static void traverseUntilJava(File parentNode, String topDirectoryLocation) throws IOException, CoreException, ParseException {
+	private static void traverseUntilJava(File parentNode, String topDirectoryLocation) throws IOException, CoreException, ParseException {
 		if(parentNode.isDirectory()) {
 			File childNodes[] = parentNode.listFiles();
 
@@ -925,10 +922,10 @@ public class IndexManager {
 	/**
 	 * Resets IndexManager, gathers information about the repo, and then traverses the repo to find Java files
 	 * 
-	 * @param topDirectoryLocation
-	 * @param URL
+	 * @param topDirectoryLocation x
+	 * @param URL x
 	 */
-	public static void processRepository(String topDirectoryLocation, String URL) throws IOException, CoreException, ParseException {
+	private static void processRepository(String topDirectoryLocation, String URL) throws IOException, CoreException, ParseException {
 		try {
 			IndexManager.getInstance().processRepo(topDirectoryLocation, URL);
 			
@@ -977,9 +974,9 @@ public class IndexManager {
 	/**
 	 * Takes in the path + URL map file and pairs the path with the URL
 	 * 
-	 * @param file
+	 * @param file x
 	 */
-	public static void readMapFile(File file, String pathToClonedRepos, int start, int end, boolean cloneRepo) throws CoreException, ParseException {
+	private static void readMapFile(File file, String pathToClonedRepos, int start, int end, boolean cloneRepo) throws CoreException, ParseException {
         boolean path = false;
         boolean url = false;
         String[] arr = {"", ""};
@@ -1027,9 +1024,11 @@ public class IndexManager {
                     
                     if(cloneRepo) {
          
-                        File dir = new File("./clones/");
-                        dir.mkdirs();
-                        String[] httpParts = arr[1].split("//", 2);
+	                    File dir = new File("./clones/");
+	                    if(!dir.mkdirs()) {
+	                    	throw new IllegalArgumentException("[ERROR]: failed to create directory");
+	                    }
+	                    String[] httpParts = arr[1].split("//", 2);
                     	String[] name = arr[0].split("/");     
                     	ProcessBuilder pb = new ProcessBuilder("git", "clone", httpParts[0] + "//test:test@" + httpParts[1] + ".git", "./" + name[name.length - 1].replace("/", "") );
                     	pb.directory(dir);
@@ -1162,7 +1161,7 @@ public class IndexManager {
 			
 			br.close();
 		} catch (IOException e) {
-			
+			e.printStackTrace();
 		}
 
 		// make sure all required fields are defined in config.txt
@@ -1247,7 +1246,9 @@ public class IndexManager {
 		// create crashList file
 		crashListFileName = crashListPath + "crashList_" + System.currentTimeMillis() / 1000L + ".txt";
 		File file = new File(crashListFileName);
-		file.createNewFile();
+		if(!file.createNewFile()) {
+			throw new IllegalArgumentException("[ERROR]: could not create file");
+		}
 		
 		// set path to URL map
 		File pathToURLMap = new File(pathToURLMapPath);

@@ -220,13 +220,13 @@ class ASTWalker {
 					if(inMethod) {
 						SuperEntityClass fso = new SuperEntityClass();
 						try {
-							fso.setName(node.getExpression().toString());						
+							fso.setName(node.getExpression().toString());
 						} catch (NullPointerException e) {
 							fso.setName("");
 						}
 						fso.setLineNumber(cu.getLineNumber(node.getStartPosition()));
 						fso.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
-						entityStack.peek().addEntity(fso, EntityType.FOR_STATEMENT);	
+						entityStack.peek().addEntity(fso, EntityType.FOR_STATEMENT);
 					}
 	
 					return true;
