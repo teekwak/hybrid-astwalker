@@ -1102,155 +1102,145 @@ public class IndexManager {
         }
 	}
 
-	public static void main(String[] args) throws IOException, CoreException, ParseException {		
-		File configFile = new File(args[0]);
-		
-		boolean cloneRepo = false;
-		String pathToURLMapPath = "";
-		String pathToClonedRepos = "";
-		String crashListPath = "";
-		passwordFilePath = "";
-		
-		int processNumber = -1;
-		int totalNumberOfProcesses = -1;
-		int alternateStartLine = -1;
-		int alternateEndLine = -1;
-		
-		try(BufferedReader br = new BufferedReader(new FileReader(configFile))) {
-			for(String line; (line = br.readLine()) != null;) {
-				if(line.startsWith("host_name")) {
-					hostName = line.split(": ")[1];
-				}
-				else if(line.startsWith("collection_name")) {
-					collectionName = line.split(": ")[1];
-				}
-				else if(line.startsWith("port_number")) {
-					portNumber = Integer.parseInt(line.split(": ")[1]);
-				}
-				else if(line.startsWith("pass_path")) {
-					passwordFilePath = line.split(": ")[1];
-				}
-				else if(line.startsWith("clone_flag")) {
-					cloneRepo = Boolean.parseBoolean(line.split(": ")[1]);
-				}
-				else if(line.startsWith("repo_path")) {
-					pathToClonedRepos = line.split(": ")[1];
-				}
-				else if(line.startsWith("pathToURLMap.txt_path")) {
-					pathToURLMapPath = line.split(": ")[1];
-				}
-				else if(line.startsWith("crashList.txt_path")) {
-					crashListPath = line.split(": ")[1];
-				}
-				else if(line.startsWith("process_number")) {
-					processNumber = Integer.parseInt(line.split(": ")[1]);
-				}
-				else if(line.startsWith("total_number_of_processes")) {
-					totalNumberOfProcesses = Integer.parseInt(line.split(": ")[1]);
-				}
-				else if(line.startsWith("alternate_start_line")) {
-					alternateStartLine = Integer.parseInt(line.split(": ")[1]);
-				}
-				else if(line.startsWith("alternate_end_line")) {
-					alternateEndLine = Integer.parseInt(line.split(": ")[1]);
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		// make sure all required fields are defined in config.txt
-		if(hostName.isEmpty()) {
-			throw new IllegalArgumentException("Host name is not defined!");
-		}
-
-		if(collectionName.isEmpty()) {
-			throw new IllegalArgumentException("Core name is not defined!");
-		}
-
-		if(portNumber == -1) {
-			throw new IllegalArgumentException("Port number is not defined!");
-		}
-
-		if(passwordFilePath.isEmpty()) {
-			throw new IllegalArgumentException("Password file path is not defined!");
-		}
-
-		if(pathToURLMapPath.isEmpty()) {
-			throw new IllegalArgumentException("PathToURLMap path is not defined!");
-		}
-
-		if(pathToClonedRepos.isEmpty()) {
-			throw new IllegalArgumentException("Cloned Repo path is not defined!");
-		}
-
-		if(crashListPath.isEmpty()) {
-			throw new IllegalArgumentException("Crash list path is not defined!");
-		}
-
-		if(processNumber == -1) {
-			throw new IllegalArgumentException("Process number is not defined!");
-		}
-
-		if(totalNumberOfProcesses == -1) {
-			throw new IllegalArgumentException("Total number of processes is not defined!");
-		}
-
-		// catch any negative numbers
-		if(processNumber < 0 || totalNumberOfProcesses < 0) {
-			throw new IllegalArgumentException("Negative arguments are not allowed!");
-		}
-
-		// catch if process number is greater than number of processes (depends on what number your processes start at)
-		if(processNumber > totalNumberOfProcesses) {
-			throw new IllegalArgumentException("Process number cannot exceed total number of processes!");
-		}
-		
-		// math to calculate start/end lines [must start on odd number and end on even number]
-		final int PATH_TO_URL_MAP_LINE_COUNT = 576474;
-		int linesPerProcess = Math.round(PATH_TO_URL_MAP_LINE_COUNT / totalNumberOfProcesses + 2) / 2 * 2;
+	private static int setStartLineNumber(int alternateStartLineNumber, int processNumber, int linesPerProcess) {
 		int startLineNumber = (linesPerProcess * processNumber) + 1;
 		int endLineNumber = linesPerProcess * (processNumber + 1);
-		
-		// set alternate starting line
-		if(alternateStartLine > 0) {
-			if(alternateStartLine % 2 == 1 && alternateStartLine < endLineNumber) {	
-				startLineNumber = alternateStartLine;
+
+		if(alternateStartLineNumber > 0) {
+			// alternate start line number should be odd
+			if(alternateStartLineNumber % 2 == 1 && alternateStartLineNumber < endLineNumber) {
+				startLineNumber = alternateStartLineNumber;
 			}
 			else {
 				throw new IllegalArgumentException("Something is wrong with the alternate starting line!");
 			}
 		}
-		
-		// set alternate ending line
-		if(alternateEndLine > 0) {
-			if(alternateEndLine % 2 == 0 && alternateEndLine > startLineNumber && alternateEndLine < PATH_TO_URL_MAP_LINE_COUNT) {
-				endLineNumber = alternateEndLine;
+
+		return startLineNumber;
+	}
+
+	private static int setEndLineNumber(int alternateEndLineNumber, int processNumber, int linesPerProcess, int maxLine) {
+		int startLineNumber = (linesPerProcess * processNumber) + 1;
+		int endLineNumber = linesPerProcess * (processNumber + 1);
+
+		if(alternateEndLineNumber > 0) {
+			if(alternateEndLineNumber % 2 == 0 && alternateEndLineNumber > startLineNumber && alternateEndLineNumber < maxLine) {
+				endLineNumber = alternateEndLineNumber;
 			}
 			else {
 				throw new IllegalArgumentException("Something is wrong with the alternate ending line!");
-			}				
+			}
 		}
-		
+
+		return endLineNumber;
+	}
+
+	private static void validateProperties(Properties prop) {
+		StringBuilder errors = new StringBuilder();
+
+		if(prop.getProperty("hostName").isEmpty()) {
+			errors.append("\nHost name is not defined!");
+		}
+
+		if(prop.getProperty("collectionName").isEmpty()) {
+			errors.append("\nCore name is not defined!");
+		}
+
+		if(prop.getProperty("portNumber").isEmpty()) {
+			errors.append("\nPort number is not defined!");
+		}
+
+		if(prop.getProperty("passPath").isEmpty()) {
+			errors.append("Password file path is not defined!");
+		}
+
+		if(prop.getProperty("cloneFlag").isEmpty()) {
+			errors.append("Clone flag is not defined!");
+		}
+
+		if(prop.getProperty("repoPath").isEmpty()) {
+			errors.append("Repo path is not defined!");
+		}
+
+		if(prop.getProperty("pathToURLMapPath").isEmpty()) {
+			errors.append("PathToURLMap file path is not defined!");
+		}
+
+		if(prop.getProperty("crashListPath").isEmpty()) {
+			errors.append("Crash list file path is not defined!");
+		}
+
+		if(prop.getProperty("processNumber").isEmpty()) {
+			errors.append("Process number is not defined!");
+		}
+
+		if(prop.getProperty("totalNumberOfProcesses").isEmpty()) {
+			errors.append("Total number of processes is not defined!");
+		}
+
+		if(Integer.parseInt(prop.getProperty("processNumber")) < 0 || Integer.parseInt(prop.getProperty("totalNumberOfProcesses")) < 0) {
+			errors.append("Negative arguments are not allowed!");
+		}
+
+		if(Integer.parseInt(prop.getProperty("processNumber")) > Integer.parseInt(prop.getProperty("totalNumberOfProcesses"))) {
+			errors.append("Process number cannot exceed total number of processes!");
+		}
+
+		if(errors.toString().length() > 0) {
+			throw new IllegalArgumentException(errors.toString());
+		}
+	}
+
+	public static void main(String[] args) throws IOException, CoreException, ParseException {		
+		// this is the actual
+		// File configFile = new File(args[0]);
+
+		// just for testing
+		String configPath = "resources/config.properties";
+
+		Properties prop = new Properties();
+		try(InputStream input = new FileInputStream(configPath)) {
+			prop.load(input);
+
+			if(prop.getProperty("alternateStartLine").isEmpty()) {
+				prop.setProperty("alternateStartLine", "-1");
+			}
+
+			if(prop.getProperty("alternateEndLine").isEmpty()) {
+				prop.setProperty("alternateEndLine", "-1");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		validateProperties(prop);
+
+		// math to calculate start/end lines [must start on odd number and end on even number]
+		final int PATH_TO_URL_MAP_LINE_COUNT = 576474;
+		int linesPerProcess = Math.round(PATH_TO_URL_MAP_LINE_COUNT / Integer.parseInt(prop.getProperty("totalNumberOfProcesses")) + 2) / 2 * 2;
+		int startLineNumber = setStartLineNumber(Integer.parseInt(prop.getProperty("alternateStartLine")), Integer.parseInt(prop.getProperty("processNumber")), linesPerProcess);
+		int endLineNumber = setEndLineNumber(Integer.parseInt(prop.getProperty("alternateEndLine")), Integer.parseInt(prop.getProperty("processNumber")), linesPerProcess, PATH_TO_URL_MAP_LINE_COUNT);
+
 		fileModel = null;
 		gitData = null;
 		crashListFileName = null;
-		
+
 		IndexManager.getInstance().currentProject = null;
-				
+
 		// create crashList file
-		crashListFileName = crashListPath + "crashList_" + System.currentTimeMillis() / 1000L + ".txt";
+		crashListFileName = prop.getProperty("crashListPath") + "crashList_" + System.currentTimeMillis() / 1000L + ".txt";
+
 		File file = new File(crashListFileName);
 		if(!file.createNewFile()) {
 			throw new IllegalArgumentException("[ERROR]: could not create file");
 		}
-		
+
 		// set path to URL map
-		File pathToURLMap = new File(pathToURLMapPath);
-				
+		File pathToURLMap = new File(prop.getProperty("pathToURLMapPath"));
+
 		// start everything
-		readMapFile(pathToURLMap, pathToClonedRepos, startLineNumber, endLineNumber, cloneRepo);
-			
+		readMapFile(pathToURLMap, prop.getProperty("repoPath"), startLineNumber, endLineNumber, Boolean.parseBoolean(prop.getProperty("cloneFlag")));
+
 		System.out.println("----------------------------------------------------------");
 		System.out.println("Finished " + repoCount + " repositories");
 		System.out.println("----------------------------------------------------------");
