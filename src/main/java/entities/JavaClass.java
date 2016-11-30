@@ -64,7 +64,7 @@ public class JavaClass extends SuperEntityClass {
 		return this.superClass;
 	}
 
-	public List<SuperEntityClass> getMethodInvocationList() {
+	private List<SuperEntityClass> getMethodInvocationList() {
 		return this.methodInvocationList;
 	}
 
@@ -112,9 +112,9 @@ public class JavaClass extends SuperEntityClass {
 		this.fileName = s;
 	}
 	
-	public String getFileName() {
-		return this.fileName;
-	}
+//	public String getFileName() {
+//		return this.fileName;
+//	}
 	
 	public void setIsInnerClass(boolean ic) {
 		this.isInnerClass = ic;
@@ -168,13 +168,13 @@ public class JavaClass extends SuperEntityClass {
 		return this.arrayList;
 	}
 	
-	public List<SuperEntityClass> getClassList() {
-		return this.classList;
-	}
+//	public List<SuperEntityClass> getClassList() {
+//		return this.classList;
+//	}
 	
-	public List<SuperEntityClass> getGenericsList() {
-		return this.genericsList;
-	}
+//	public List<SuperEntityClass> getGenericsList() {
+//		return this.genericsList;
+//	}
 	
 	public List<SuperEntityClass> getGlobalList() {
 		return this.globalList;
@@ -184,17 +184,17 @@ public class JavaClass extends SuperEntityClass {
 		return this.methodDeclarationList;
 	}
 	
-	public List<SuperEntityClass> getPrimitiveList() {
-		return this.primitiveList;
-	}
-	
-	public List<SuperEntityClass> getSimpleList() {
-		return this.simpleList;
-	}
-	
-	public List<SuperEntityClass> getWildcardList() {
-		return this.wildcardList;
-	}
+//	public List<SuperEntityClass> getPrimitiveList() {
+//		return this.primitiveList;
+//	}
+//
+//	public List<SuperEntityClass> getSimpleList() {
+//		return this.simpleList;
+//	}
+//
+//	public List<SuperEntityClass> getWildcardList() {
+//		return this.wildcardList;
+//	}
 	
 	public void addEntity(SuperEntityClass entity, EntityType ET) {
 		this.entityList.add(entity);
@@ -284,7 +284,7 @@ public class JavaClass extends SuperEntityClass {
 		return this.totalMethodInvocationCount;
 	}
 	
-	public double getClassComplexity() {
-		return (double)this.cyclomaticComplexity * (1 / ((double)this.totalMethodInvocationCount)) * (1 / (double)this.getSourceCode().length());
-	}
+//	public double getClassComplexity() {
+//		return (double)this.cyclomaticComplexity * (1 / ((double)this.totalMethodInvocationCount)) * (1 / (double)this.getSourceCode().length());
+//	}
 }

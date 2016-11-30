@@ -13,11 +13,10 @@ import org.eclipse.jdt.core.dom.*;
  * @author Thomas Kwak
  */
 public class ASTStandalone {
-
-	public void parseFile(final String fileLocation) throws IOException, CoreException {
+	private void parseFile(final String fileLocation) throws IOException, CoreException {
 			final File file = new File(fileLocation);
 			
-			String sourceCode = FileUtils.readFileToString(file);
+			String sourceCode = FileUtils.readFileToString(file, "ISO-8859-1");
 			
 			ASTParser parser = ASTParser.newParser(AST.JLS8);
 	
@@ -145,24 +144,33 @@ public class ASTStandalone {
 			public boolean visit(TypeDeclaration node) {
 				SimpleName name = node.getName();
 
-				StringBuffer s = new StringBuffer();
-				s.append("TypeDeclaration of '" + name + "' ");
+				StringBuilder s = new StringBuilder();
+				s.append("TypeDeclaration of '");
+				s.append(name);
+				s.append("' ");
 
 				if(!node.isInterface()) {
 					if(node.getSuperclassType() != null) {
-						s.append("extends '" + node.getSuperclassType() + "' ");
+						s.append("extends '");
+						s.append(node.getSuperclassType());
+						s.append("' ");
 					}
 
 					if(node.superInterfaceTypes().size() != 0) {
 						for(Object o : node.superInterfaceTypes()) {
-							s.append("implements '" + o.toString() + "' ");
+							s.append("implements '");
+							s.append(o.toString());
+							s.append("' ");
 						}
 					}
 				} else {
 					s.append(" is an Interface ");
 				}
 
-				s.append("at line " + cu.getLineNumber(name.getStartPosition()) + " " + cu.getColumnNumber(name.getStartPosition()));
+				s.append("at line ");
+				s.append(cu.getLineNumber(name.getStartPosition()));
+				s.append(" ");
+				s.append(cu.getColumnNumber(name.getStartPosition()));
 
 				System.out.println(s.toString());
 

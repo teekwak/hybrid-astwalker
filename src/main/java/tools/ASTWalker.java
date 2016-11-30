@@ -16,7 +16,6 @@ import entities.SuperEntityClass;
 import entities.Entity;
 import entities.Entity.EntityType;
 
-import entities.*;
 
 /**
  * Walks Java source code and parses constructs
@@ -70,7 +69,7 @@ class ASTWalker {
 					
 			final File file = new File(fileLocation);
 			
-			String sourceCode = FileUtils.readFileToString(file, "UTF-8");
+			String sourceCode = FileUtils.readFileToString(file, "ISO-8859-1");
 			
 			ASTParser parser = ASTParser.newParser(AST.JLS8);
 	
@@ -818,7 +817,7 @@ class ASTWalker {
 					
 					hasComments = false;
 				}
-				
+
 				public boolean visit(VariableDeclarationStatement node) {
 					Type nodeType = node.getType();
 						
@@ -834,7 +833,7 @@ class ASTWalker {
 						} catch (NullPointerException e) {
 							fullyQualifiedName = name.toString();
 						}
-							
+
 						if(nodeType.isArrayType()) {
 							SuperEntityClass ao = new SuperEntityClass();
 							ao.setName(name.toString());

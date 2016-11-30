@@ -70,9 +70,9 @@ public class SuperEntityClass implements Entity {
 		this.numberOfCharacters = n;
 	}
 	
-	public int getNumberOfCharacters() {
-		return this.numberOfCharacters;
-	}
+//	public int getNumberOfCharacters() {
+//		return this.numberOfCharacters;
+//	}
 	
 	public void setEndLine(int n) {
 		this.endLine = n;
@@ -89,9 +89,9 @@ public class SuperEntityClass implements Entity {
 		return this.type;
 	}
 	
-	public String getTypeName() {
-		return this.type.toString();
-	}
+//	public String getTypeName() {
+//		return this.type.toString();
+//	}
 	
 	public void setFullyQualifiedName(String fqn) {
 		this.fullyQualifiedName = fqn;
@@ -101,7 +101,7 @@ public class SuperEntityClass implements Entity {
 		return this.fullyQualifiedName;
 	}
 	
-	public List<Entity> getEntityList() {
+	List<Entity> getEntityList() {
 		return this.entityList;
 	}
 	

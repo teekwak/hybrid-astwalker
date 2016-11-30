@@ -115,9 +115,9 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		this.thrownExceptions.add(s);
 	}
 
-	public List<String> getThrowsException() {
-		return this.thrownExceptions;
-	}
+//	public List<String> getThrowsException() {
+//		return this.thrownExceptions;
+//	}
 	
 	public void setParametersList(List<?> pl) {
 		this.parametersList = pl;
@@ -175,9 +175,9 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		return this.returnType;
 	}
 	
-	public void setSwitchCaseList(List<SuperEntityClass> scl) {
-		this.switchCaseList = scl;
-	}
+//	public void setSwitchCaseList(List<SuperEntityClass> scl) {
+//		this.switchCaseList = scl;
+//	}
 	
 	public List<SuperEntityClass> getArrayList() {
 		return this.arrayList;
@@ -195,9 +195,9 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		return this.conditionalExpressionList;
 	}
 	
-	public List<SuperEntityClass> getDoStatementList() {
-		return this.doStatementList;
-	}
+//	public List<SuperEntityClass> getDoStatementList() {
+//		return this.doStatementList;
+//	}
 	
 	public List<SuperEntityClass> getForStatementList() {
 		return this.forStatementList;
@@ -235,21 +235,21 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		return this.switchCaseList;
 	}
 	
-	public List<SuperEntityClass> getSwitchStatementList() {
-		return this.switchStatementList;
-	}
-	
-	public List<SuperEntityClass> getThrowStatementList() {
-		return this.throwStatementList;
-	}
-	
-	public List<SuperEntityClass> getTryStatementList() {
-		return this.tryStatementList;
-	}
-	
-	public List<SuperEntityClass> getUnionList() {
-		return this.unionList;
-	}
+//	public List<SuperEntityClass> getSwitchStatementList() {
+//		return this.switchStatementList;
+//	}
+//
+//	public List<SuperEntityClass> getThrowStatementList() {
+//		return this.throwStatementList;
+//	}
+//
+//	public List<SuperEntityClass> getTryStatementList() {
+//		return this.tryStatementList;
+//	}
+//
+//	public List<SuperEntityClass> getUnionList() {
+//		return this.unionList;
+//	}
 	
 	public List<SuperEntityClass> getWhileStatementList() {
 		return this.whileStatementList;
@@ -339,7 +339,7 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		}
 	}
 	
-	public Set<String> getMethodDeclarationNames() {
+	Set<String> getMethodDeclarationNames() {
 		return this.methodDeclarationNames;
 	}
 	
@@ -357,7 +357,7 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		}
 	}
 	
-	public Set<String> getMethodInvocationNames() {
+	Set<String> getMethodInvocationNames() {
 		return this.methodInvocationNames;
 	}
 	
@@ -399,7 +399,7 @@ public class MethodDeclarationObject extends SuperEntityClass {
 		return this.cyclomaticComplexity;
 	}
 	
-	public int getTotalMethodInvocationCount() {
+	int getTotalMethodInvocationCount() {
 		return this.totalMethodInvocationCount;
 	}
 }

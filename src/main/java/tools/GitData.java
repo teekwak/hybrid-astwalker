@@ -23,83 +23,83 @@ class CommitData {
 		this.deletions = 0;
 	}
 
-	public void setSolrDate(String sd) {
+	void setSolrDate(String sd) {
 		this.solrDate = sd;
 	}
 
-	public String getSolrDate() {
+	String getSolrDate() {
 		return this.solrDate;
 	}
 
-	public void setDay(String d) {
+	void setDay(String d) {
 		this.day = d;
 	}
 
-	public String getDay() {
+	String getDay() {
 		return this.day;
 	}
 
-	public void setMonth(String m) {
+	void setMonth(String m) {
 		this.month = m;
 	}
 
-	public String getMonth() {
+	String getMonth() {
 		return this.month;
 	}
 
-	public void setYear(String y) {
+	void setYear(String y) {
 		this.year = y;
 	}
 
-	public String getYear() {
+	String getYear() {
 		return this.year;
 	}
 
-	public void setHashCode(String hc) {
+	void setHashCode(String hc) {
 		this.hashCode = hc;
 	}
 
-	public String getHashCode() {
+	String getHashCode() {
 		return this.hashCode;
 	}
 
-	public void setAuthor(String a) {
+	void setAuthor(String a) {
 		this.author = a;
 	}
 
-	public String getAuthor() {
+	String getAuthor() {
 		return this.author;
 	}
 
-	public void setEmail(String e) {
+	void setEmail(String e) {
 		this.email = e;
 	}
 
-	public String getEmail() {
+	String getEmail() {
 		return this.email;
 	}
 
-	public void setMessage(String m) {
+	void setMessage(String m) {
 		this.message = m;
 	}
 
-	public String getMessage() {
+	String getMessage() {
 		return this.message;
 	}
 
-	public void setInsertions(int i) {
+	void setInsertions(int i) {
 		this.insertions = i;
 	}
 
-	public int getInsertions() {
+	int getInsertions() {
 		return this.insertions;
 	}
 
-	public void setDeletions(int d) {
+	void setDeletions(int d) {
 		this.deletions = d;
 	}
 
-	public int getDeletions() {
+	int getDeletions() {
 		return this.deletions;
 	}
 
@@ -121,61 +121,61 @@ class JavaFile {
 		fileLocation = n;
 	}
 
-	public String getFileLocation() {
+	String getFileLocation() {
 		return this.fileLocation;
 	}
 	
-	public void setUniqueAuthors(List<String> set) {
+	void setUniqueAuthors(List<String> set) {
 		uniqueAuthors = new HashSet<>(set);
 	}
 	
-	public Set<String> getUniqueAuthors() {
+	Set<String> getUniqueAuthors() {
 		return this.uniqueAuthors;
 	}
 	
-	public void setUniqueEmails(List<String> set) {
+	void setUniqueEmails(List<String> set) {
 		uniqueEmails = new HashSet<>(set);
 	}
 	
-	public Set<String> getUniqueEmails() {
+	Set<String> getUniqueEmails() {
 		return this.uniqueEmails;
 	}
 	
-	public List<CommitData> getCommitDataList() {
+	List<CommitData> getCommitDataList() {
 		return this.commitDataList;
 	}
 	
-	public void setNumberOfLines(int n) {
+	void setNumberOfLines(int n) {
 		this.numberOfLines = n;
 	}
 	
-	public int getNumberOfLines() {
+	int getNumberOfLines() {
 		return this.numberOfLines;
 	}
 	
-	public void setNumberOfCharacters(int n) {
+	void setNumberOfCharacters(int n) {
 		this.numberOfCharacters = n;
 	}
 	
-	public int getNumberOfCharacters() {
-		return this.numberOfCharacters;
-	}
+//	public int getNumberOfCharacters() {
+//		return this.numberOfCharacters;
+//	}
 }
 
 // data for all files in a repo
-public class GitData {
+class GitData {
 
-	JavaFile javaFile;
+	private JavaFile javaFile;
 	
-	public GitData() {
+	GitData() {
 		javaFile = null;
 	}
 	
-	public JavaFile getJavaFile() {
+	JavaFile getJavaFile() {
 		return this.javaFile;
 	}
 
-	public static int getLineCountOfFile(String javaFileName) {
+	private static int getLineCountOfFile(String javaFileName) {
 		File file = new File(javaFileName);
 		
 		int count = 0;
@@ -191,7 +191,7 @@ public class GitData {
 		return count;	
 	}
 	
-	public static int getCharacterCountOfFile(String javaFileName) {
+	private static int getCharacterCountOfFile(String javaFileName) {
 		File file = new File(javaFileName);
 		
 		int count = 0;
@@ -206,7 +206,7 @@ public class GitData {
 		return count;
 	}
 	
-	public void getCommitDataPerFile(String directoryLocation, String javaFileName) throws IOException, ParseException {				
+	void getCommitDataPerFile(String directoryLocation, String javaFileName) throws IOException, ParseException {
 		JavaFile javaFileObject = new JavaFile(javaFileName);
 				
 		File dir = new File(directoryLocation);
@@ -308,12 +308,6 @@ public class GitData {
 				cd.setMessage(messageList.get(i));				
 			} catch (IndexOutOfBoundsException e) {
 				cd.setMessage("");
-			}
-			
-			try {
-				cd.setInsertions(insertionList.get(i));
-			} catch (IndexOutOfBoundsException e) {
-
 			}
 
 			try {

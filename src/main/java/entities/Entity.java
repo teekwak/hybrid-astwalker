@@ -8,7 +8,7 @@ public interface Entity {
 	String SolrKey = null;
 	Object SolrValue = null;
 	
-	public enum EntityType {
+	enum EntityType {
 		ARRAY, CATCH_CLAUSE, CLASS, CONDITIONAL_EXPRESSION, DO_STATEMENT, 
 		FOR_STATEMENT, GENERICS, GLOBAL, IF_STATEMENT, INFIX_EXPRESSION, 
 		METHOD_DECLARATION, METHOD_INVOCATION, PRIMITIVE, SIMPLE, SWITCH_CASE,
@@ -16,22 +16,22 @@ public interface Entity {
 		WILDCARD
 	}
 	
-	public void printInfo();
+	void printInfo();
 	
-	public void setName(String n);
-	public String getName();
+	void setName(String n);
+	String getName();
 	
-	public void setFullyQualifiedName(String fullyQualifiedName);
-	public String getFullyQualifiedName();
+	void setFullyQualifiedName(String fullyQualifiedName);
+	String getFullyQualifiedName();
 	
-	public void setLineNumber(int n);
-	public int getLineNumber();
+	void setLineNumber(int n);
+	int getLineNumber();
 	
-	public void setColumnNumber(int n);
-	public int getColumnNumber();
-	
-	public void setType(Type t);
-	public Type getType();
+	void setColumnNumber(int n);
+	int getColumnNumber();
 
-	public void addEntity(SuperEntityClass entity, EntityType ET);
+	void setType(Type t);
+	Type getType();
+
+	void addEntity(SuperEntityClass entity, EntityType ET);
 }
