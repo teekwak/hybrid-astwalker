@@ -16,9 +16,9 @@
  * alternate_end_line (optional): change where the program starts in pathToURLMap.txt
  */
 
-host_name: grok.ics.uci.edu
+host_name: codeexchange.ics.uci.edu
 collection_name: MoreLikeThisIndex
-port_number: 9551
+port_number: 9452
 pass_path: /home/kwak/Desktop/Pass
 clone_flag: true
 repo_path: /home/kwak/Desktop/clones/

@@ -74,7 +74,7 @@ public class Solrj {
 
 	@SuppressWarnings("deprecation")
 	public void process(HttpRequest request, HttpContext context)
-            throws HttpException, IOException {
+            throws IOException {
           request.addHeader(BasicScheme.authenticate(credentials,"US-ASCII",false));
         }
       }
@@ -178,7 +178,9 @@ public class Solrj {
 	 * using a filtered query (fq) on the solr is supposed
 	 * to improve performance and cache results
 	 * @param query
-	 * @param fq
+	 * @param hostName
+	 * @param portNumber
+	 * @param collectionName
 	 * @param rows is max results
 	 * @return
 	 */
@@ -217,8 +219,11 @@ public class Solrj {
 	 * using a filtered query (fq) on the solr is supposed
 	 * to improve performance and cache results
 	 * @param query
-	 * @param fq
+	 * @param hostName
+	 * @param portNumber
+	 * @param collectionName
 	 * @param rows is max results
+	 * @param start
 	 * @return
 	 */
 	@SuppressWarnings("deprecation")
