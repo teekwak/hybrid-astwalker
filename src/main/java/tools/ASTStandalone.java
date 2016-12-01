@@ -202,14 +202,38 @@ public class ASTStandalone {
 		});
 	}
 
-	public static void main(String[] args) throws IOException {
-		String fileLocation = "/home/kwak/Desktop/HelloWorldAnonymousClasses.java";
+	private static void test1() {
+		Runtime runtime = Runtime.getRuntime();
+		long start = System.currentTimeMillis();
+
+		// ******************************************
+
+		String fileLocation = "resources/test.java";
 		ASTStandalone astWalkerStandalone = new ASTStandalone();
 
 		try {
 			astWalkerStandalone.parseFile(fileLocation);
-		} catch (CoreException e) {
+		} catch (IOException|CoreException e) {
 			e.printStackTrace();
 		}
+
+		// print results?
+
+		// ******************************************
+
+		long end = System.currentTimeMillis();
+
+		int mb = 1024 * 1024;
+		System.out.println("----------------------------------");
+		System.out.println("*** System statistic estimates ***");
+		System.out.println("\tRuntime: \t\t" + (end - start) + " ms");
+		System.out.println("\tTotal Memory: \t" + runtime.totalMemory() / mb  + " MB"); // available memory
+		System.out.println("\tFree Memory: \t" + runtime.freeMemory() / mb + " MB"); // free memory
+		System.out.println("\tUsed Memory: \t" + (runtime.totalMemory() - runtime.freeMemory()) / mb + " MB"); // used memory
+		System.out.println("----------------------------------");
+	}
+
+	public static void main(String[] args) throws IOException {
+		test1();
 	}
 }
