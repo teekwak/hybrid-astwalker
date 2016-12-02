@@ -26,12 +26,22 @@ public class SuperEntityClass implements Entity {
 		entityList = new ArrayList<>();
 	}
 
-	// DELETE ME IF NECESSARY
-	public SuperEntityClass(String n, String fqn, int sl, int el) {
+
+	// three properties
+	public SuperEntityClass(String n, int sl, int cl) {
+		entityList = new ArrayList<>();
+		name = n;
+		lineNumber = sl;
+		columnNumber = cl;
+	}
+
+	// four properties
+	public SuperEntityClass(String n, String fqn, int sl, int cl) {
+		entityList = new ArrayList<>();
 		name = n;
 		fullyQualifiedName = fqn;
 		lineNumber = sl;
-		endLine = el;
+		columnNumber = cl;
 	}
 
 	public String getName() {

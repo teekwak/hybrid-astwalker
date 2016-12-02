@@ -1016,6 +1016,13 @@ class OldASTWalker {
 	}
 
 	public static void main(String[] args) {
-		test1();
+		for(int i = 0; i < 100; i++) {
+			try {
+				Thread.sleep(1000);
+				test1();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }
