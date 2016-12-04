@@ -38,7 +38,7 @@ public class ASTRefactor {
 	 *
 	 * @param configFilePath path to config file
 	 */
-	private ASTRefactor(String configFilePath) {
+	public ASTRefactor(String configFilePath) {
 		containingClass = "";
 		entityStack = new Stack<>();
 		fileModel = new FileModel();
@@ -67,6 +67,9 @@ public class ASTRefactor {
 		}
 	}
 
+	public FileModel getFileModel() {
+		return this.fileModel;
+	}
 
 	/**
 	 * Validates the properties from the config file

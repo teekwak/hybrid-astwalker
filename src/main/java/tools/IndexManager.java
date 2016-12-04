@@ -218,7 +218,7 @@ public class IndexManager {
 		if(doc.getFieldValue("languageCount") != null){
 			ArrayList<Long> countArray = (ArrayList<Long>)doc.getFieldValue("languageCount");
 
-			ArrayList<String> languageCount = new ArrayList<String>();
+			ArrayList<String> languageCount = new ArrayList<>();
 			for(Long count: countArray){
 				languageCount.add(count.toString());
 			}
@@ -486,7 +486,7 @@ public class IndexManager {
 					solrDoc.addField(SNIPPET_CONTAINING_CLASS_ID, containingID);
 					solrDoc.addField(IndexManager.SNIPPET_CONTAINING_CLASS_COMPLEXITY_SUM, ((Number)cl.getCyclomaticComplexity()).longValue());
 					break;
-				}				
+				}
 			} catch (NullPointerException e) {				
 				String containingID = githubAddress + "?start=" + jc.getLineNumber() + "&end=" + jc.getEndLine();
 				solrDoc.addField(SNIPPET_CONTAINING_CLASS_ID, containingID);
@@ -499,14 +499,12 @@ public class IndexManager {
 		Set<String> variableTypes = new HashSet<>();
 		Set<String> variableTypesShort = new HashSet<>();
 		Set<String> variableNames = new HashSet<>();
-		
-		addVariableListToSolrDoc(jc.getArrayList(), variableTypes, variableTypesShort, variableNames, solrDoc);
-		addVariableListToSolrDoc(jc.getArrayList(), variableTypes, variableTypesShort, variableNames, solrDoc);
-		addVariableListToSolrDoc(jc.getArrayList(), variableTypes, variableTypesShort, variableNames, solrDoc);
-		addVariableListToSolrDoc(jc.getArrayList(), variableTypes, variableTypesShort, variableNames, solrDoc);
+
+		// TODO
+		addVariableListToSolrDoc(jc.getArrayList(), variableTypes, variableTypesShort, variableNames);
 		
 		// method declaration is right below this current method
-		addVariablesFromMethodDeclaration(jc.getMethodDeclarationList(), variableTypes, variableTypesShort, variableNames, solrDoc);		
+		addVariablesFromMethodDeclaration(jc.getMethodDeclarationList(), variableTypes, variableTypesShort, variableNames);
 		
 		for(String t : variableTypes) {
 			solrDoc.addField(IndexManager.SNIPPET_VARIABLE_TYPES, t);
@@ -530,8 +528,8 @@ public class IndexManager {
 				Solrj.getInstance(passwordFilePath).commitDocs(hostName, portNumber, collectionName);	
 			}			
 		} catch (Exception e) {
-        	Solrj.getInstance(passwordFilePath).clearDocs();
-        	successfulUpload = false;
+      Solrj.getInstance(passwordFilePath).clearDocs();
+      successfulUpload = false;
 		}
 	}
 	
@@ -557,7 +555,9 @@ public class IndexManager {
 	}
 	
 	// TODO
-	private static void addVariableListToSolrDoc(List<SuperEntityClass> list, Set<String> variableTypes, Set<String> variableTypesShort, Set<String> variableNames, SolrInputDocument solrDoc) {
+	// this function is named improperly
+	// the variables are added to the list, which are then returned
+	private static void addVariableListToSolrDoc(List<SuperEntityClass> list, Set<String> variableTypes, Set<String> variableTypesShort, Set<String> variableNames) {
 		for(SuperEntityClass entity : list) {
 			variableNames.add(entity.getName());
 			
@@ -575,17 +575,20 @@ public class IndexManager {
 			}
 		}
 	}
-	
-	private static void addVariablesFromMethodDeclaration(List<SuperEntityClass> methodDeclarationList, Set<String> variableTypes, Set<String> variableTypesShort, Set<String> variableNames, SolrInputDocument solrDoc) {
+
+	// TODO
+	// same with this function
+	// the method decs are not necessarily added to the solr doc, but rather just to lists
+	private static void addVariablesFromMethodDeclaration(List<SuperEntityClass> methodDeclarationList, Set<String> variableTypes, Set<String> variableTypesShort, Set<String> variableNames) {
 		for(SuperEntityClass methodDec : methodDeclarationList) {
 			MethodDeclarationObject mdo = (MethodDeclarationObject) methodDec;
-				addVariableListToSolrDoc(mdo.getArrayList(), variableTypes, variableTypesShort, variableNames, solrDoc);
-				addVariableListToSolrDoc(mdo.getGenericsList(), variableTypes, variableTypesShort, variableNames, solrDoc);
-				addVariableListToSolrDoc(mdo.getPrimitiveList(), variableTypes, variableTypesShort, variableNames, solrDoc);
-				addVariableListToSolrDoc(mdo.getSimpleList(), variableTypes, variableTypesShort, variableNames, solrDoc);
+			addVariableListToSolrDoc(mdo.getArrayList(), variableTypes, variableTypesShort, variableNames);
+			addVariableListToSolrDoc(mdo.getGenericsList(), variableTypes, variableTypesShort, variableNames);
+			addVariableListToSolrDoc(mdo.getPrimitiveList(), variableTypes, variableTypesShort, variableNames);
+			addVariableListToSolrDoc(mdo.getSimpleList(), variableTypes, variableTypesShort, variableNames);
 				
 			if(mdo.getMethodDeclarationList().size() > 0) {
-				addVariablesFromMethodDeclaration(mdo.getMethodDeclarationList(), variableTypes, variableTypesShort, variableNames, solrDoc);
+				addVariablesFromMethodDeclaration(mdo.getMethodDeclarationList(), variableTypes, variableTypesShort, variableNames);
 			}
 		}
 	}
@@ -763,7 +766,6 @@ public class IndexManager {
 
 		int place = 0;
 		for(String argType: mio.getArgumentTypes()){
-			
 			methodInvSolrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_ARG_TYPES, argType);
 			methodInvSolrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_ARG_TYPES_PLACE, argType + "_" + place);
 
@@ -836,9 +838,9 @@ public class IndexManager {
 				sb.append(String.format("%02x", b&0xff));
 			}
 			digest = sb.toString();
-			} catch (UnsupportedEncodingException | NoSuchAlgorithmException ex) {
-				ex.printStackTrace();
-			}
+		} catch (UnsupportedEncodingException | NoSuchAlgorithmException ex) {
+			ex.printStackTrace();
+		}
 		return digest;
 	}
 	
@@ -866,9 +868,13 @@ public class IndexManager {
 	 * @param topDirectoryLocation x
 	 */
 	private static void runASTandGitData(File parentNode, String topDirectoryLocation) throws IOException, CoreException, ParseException {
-		fileModel = new FileModel();
-		fileModel = fileModel.parseDeclarations(parentNode.getAbsolutePath());
-		
+//		fileModel = new FileModel();
+//		fileModel = fileModel.parseDeclarations(parentNode.getAbsolutePath());
+
+		// TODO
+		ASTRefactor astObject = new ASTRefactor("path to config");
+		fileModel = astObject.getFileModel();
+
 		if(fileModel == null) {
 			successfulUpload = false;
 			return;
@@ -878,7 +884,7 @@ public class IndexManager {
 			gitData = new GitData();
 			gitData.getCommitDataPerFile(topDirectoryLocation, parentNode.getAbsolutePath());
 			if(successfulUpload) {
-				createSolrDocs();					
+				createSolrDocs();
 			}
 			else {
 				return;
@@ -932,13 +938,17 @@ public class IndexManager {
 			
 			if(successfulUpload) {
 				// delete repo URL line number from file if successful
-				try {
+				try(
+					LineNumberReader lnr = new LineNumberReader(new FileReader(new File(crashListFileName)));
+					BufferedReader br = new BufferedReader(new FileReader(new File(crashListFileName)));
+					FileWriter fw = new FileWriter(new File(crashListFileName));
+					BufferedWriter bw = new BufferedWriter(fw)
+				) {
 					// get number of lines in a file
 					// actual number = lnr.getLineNumber() + 1
-					LineNumberReader lnr = new LineNumberReader(new FileReader(new File(crashListFileName)));
+
 					lnr.skip(Long.MAX_VALUE);
-					
-					BufferedReader br = new BufferedReader(new FileReader(new File(crashListFileName)));
+
 					StringBuilder sb = new StringBuilder();
 					
 					String line;
@@ -949,16 +959,8 @@ public class IndexManager {
 						sb.append(System.getProperty("line.separator"));
 						count++;
 					}
-			
-					lnr.close();
-					br.close();
-					
-					FileWriter fw = new FileWriter(new File(crashListFileName));
-					BufferedWriter bw = new BufferedWriter(fw);
-	
-					bw.write(sb.toString());					
-					bw.close();
-					fw.close();
+
+					bw.write(sb.toString());
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -976,130 +978,125 @@ public class IndexManager {
 	 * @param file x
 	 */
 	private static void readMapFile(File file, String pathToClonedRepos, int start, int end, boolean cloneRepo) throws CoreException, ParseException {
-        boolean path = false;
-        boolean url = false;
-        String[] arr = {"", ""};
+    boolean path = false;
+    boolean url = false;
+    String[] arr = {"", ""};
 
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(file));
-            
-            int count = start;
-            
-            for(int i = 0; i < start - 1; i++) {
-            	br.readLine();
-            }
-            
-            for(String line; (line = br.readLine()) != null && count <= end;) {
-            	if (line.startsWith("'")) {
-                    arr[0] = line.replace("'", "") + "/";
-                    
-                    if(!cloneRepo) {
-                        arr[0] = arr[0].replaceFirst("./", pathToClonedRepos);                    	
-                    }
+    try(BufferedReader br = new BufferedReader(new FileReader(file))) {
+      int count = start;
 
-                    path = true;
-                    count++;
-                } else if (line.startsWith("http")) {
-                    arr[1] = line;
-                    url = true;
-                    
-        			// write repo URL line number to file
-        			try {
-        				FileWriter fw = new FileWriter(new File(crashListFileName), true);
-        				BufferedWriter bw = new BufferedWriter(fw);
-        				bw.write(count + "\n");
-        				bw.close();
-        				fw.close();
-        			} catch (IOException e) {
-        				e.printStackTrace();
-        			}
-        			
-                    count++;
-                }
-                
-                if(path && url) {
-                    path = false;
-                    url = false;
-                    
-                    if(cloneRepo) {
-         
-	                    File dir = new File("./clones/");
-	                    if(!dir.mkdirs()) {
-	                    	throw new IllegalArgumentException("[ERROR]: failed to create directory");
-	                    }
-	                    String[] httpParts = arr[1].split("//", 2);
-                    	String[] name = arr[0].split("/");     
-                    	ProcessBuilder pb = new ProcessBuilder("git", "clone", httpParts[0] + "//test:test@" + httpParts[1] + ".git", "./" + name[name.length - 1].replace("/", "") );
-                    	pb.directory(dir);
-                    	
-                    	try {
-                        	Process proc = pb.start();
-                        	System.out.println("Downloading " + name[name.length - 1].replace("/", ""));
-                        	proc.waitFor();
-                        	proc.destroy();                    		
-                    	} catch (InterruptedException e) {
-							e.printStackTrace();
-						}         
-                    	
-                    	arr[0] = arr[0].replaceFirst("./", "./clones/");
-                    	
-                    	successfulUpload = true;
-                        processRepository(arr[0], arr[1]);
-                        
-                        ProcessBuilder pb2 = new ProcessBuilder("rm", "-rf", dir.getAbsolutePath());
-                        try {
-                            Process proc2 = pb2.start();
-                            proc2.waitFor();
-                            proc2.destroy();                        	
-                        } catch (InterruptedException e) {
-                        	e.printStackTrace();
-                        }  
-                        
-                        // TODO
-                        if(successfulUpload) {
-	                        // run bash script to increment online counter
-	                        ProcessBuilder onlinepb = new ProcessBuilder("./incrementCounter.sh");
-	                        try {
-	                        	Process proc = onlinepb.start();
-	                        	proc.waitFor();
-	                        	proc.destroy();
-	                        } catch (InterruptedException e) {
-	                        	e.printStackTrace();
-	                        }
-                        }
-                    }
-                    else {
-                    	successfulUpload = true;
-                        processRepository(arr[0], arr[1]);                    	
-                    }
-                                        
-            		// add remaining Solr documents
-                    try {
-                		Solrj.getInstance(passwordFilePath).commitDocs(hostName, portNumber, collectionName);   
-                    } catch (Exception e) {
-                    	e.printStackTrace();
-                    	Solrj.getInstance(passwordFilePath).clearDocs();
-                    	successfulUpload = false;
-                    }
-                    
-                    if(successfulUpload) {
-                        repoCount++;             
-                        //System.out.println(arr[0] + " | [" + repoCount + "]");
-                    }
-                    else {
-                    	System.out.println(arr[0] + " failed to process");
-                    }
-                }
-            }
+      for(int i = 0; i < start - 1; i++) {
+        br.readLine();
+      }
 
-            br.close();
+      for(String line; (line = br.readLine()) != null && count <= end;) {
+        if (line.startsWith("'")) {
+          arr[0] = line.replace("'", "") + "/";
 
-        } catch (FileNotFoundException e) {
-            System.err.println("File not found!");
+          if(!cloneRepo) {
+              arr[0] = arr[0].replaceFirst("./", pathToClonedRepos);
+          }
+
+          path = true;
+          count++;
+        } else if (line.startsWith("http")) {
+          arr[1] = line;
+          url = true;
+
+          // write repo URL line number to file
+          try(
+		        FileWriter fw = new FileWriter(new File(crashListFileName), true);
+		        BufferedWriter bw = new BufferedWriter(fw)
+	        ) {
+            bw.write(count + "\n");
+          } catch (IOException e) {
             e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+          }
+
+          count++;
         }
+
+        if(path && url) {
+          path = false;
+          url = false;
+
+          if(cloneRepo) {
+            File dir = new File("./clones/");
+            if(!dir.mkdirs()) {
+              throw new IllegalArgumentException("[ERROR]: failed to create directory");
+            }
+            String[] httpParts = arr[1].split("//", 2);
+            String[] name = arr[0].split("/");
+            ProcessBuilder pb = new ProcessBuilder("git", "clone", httpParts[0] + "//test:test@" + httpParts[1] + ".git", "./" + name[name.length - 1].replace("/", "") );
+            pb.directory(dir);
+
+            try {
+              Process proc = pb.start();
+              // TODO
+              // change to \r
+              System.out.println("Downloading " + name[name.length - 1].replace("/", ""));
+              proc.waitFor();
+              proc.destroy();
+            } catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+
+            arr[0] = arr[0].replaceFirst("./", "./clones/");
+
+            successfulUpload = true;
+            processRepository(arr[0], arr[1]);
+
+            ProcessBuilder pb2 = new ProcessBuilder("rm", "-rf", dir.getAbsolutePath());
+            try {
+              Process proc2 = pb2.start();
+              proc2.waitFor();
+              proc2.destroy();
+            } catch (InterruptedException e) {
+              e.printStackTrace();
+            }
+
+            // TODO
+            if(successfulUpload) {
+              // run bash script to increment online counter
+              ProcessBuilder onlinepb = new ProcessBuilder("./incrementCounter.sh");
+              try {
+                Process proc = onlinepb.start();
+                proc.waitFor();
+                proc.destroy();
+              } catch (InterruptedException e) {
+                e.printStackTrace();
+              }
+            }
+          }
+          else {
+            successfulUpload = true;
+            processRepository(arr[0], arr[1]);
+          }
+
+          // add remaining Solr documents
+          try {
+            Solrj.getInstance(passwordFilePath).commitDocs(hostName, portNumber, collectionName);
+          } catch (Exception e) {
+            e.printStackTrace();
+            Solrj.getInstance(passwordFilePath).clearDocs();
+            successfulUpload = false;
+          }
+
+          if(successfulUpload) {
+            repoCount++;
+            //System.out.println(arr[0] + " | [" + repoCount + "]");
+          }
+          else {
+            System.out.println(arr[0] + " failed to process");
+          }
+        }
+      }
+    } catch (FileNotFoundException e) {
+      System.err.println("File not found!");
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
 	}
 
 	private static int setStartLineNumber(int alternateStartLineNumber, int processNumber, int linesPerProcess) {
