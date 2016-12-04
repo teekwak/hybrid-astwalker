@@ -48,7 +48,7 @@ public class ASTRefactor {
 		packageObject = new SuperEntityClass();
 
 		if(!configFilePath.endsWith(".properties")) {
-			throw new IllegalArgumentException("[ERROR]: config file has the wrong file type!");
+			throw new IllegalArgumentException("[ERROR]: config file is not a .properties file!");
 		}
 
 		Properties properties = new Properties();
@@ -318,45 +318,29 @@ public class ASTRefactor {
 							fullyQualifiedName = name.toString();
 						}
 
+						SuperEntityClass fdEntity = new SuperEntityClass(
+							name.toString(),
+							fullyQualifiedName,
+							nodeType,
+							cu.getLineNumber(name.getStartPosition()),
+							cu.getColumnNumber(name.getStartPosition())
+						);
+
 						if(nodeType.isArrayType()) {
-							SuperEntityClass ao = new SuperEntityClass();
-							ao.setName(name.toString());
-							ao.setFullyQualifiedName(fullyQualifiedName);
-							ao.setType(nodeType);
-							ao.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-							ao.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-							entityStack.peek().addEntity(ao, Entity.EntityType.ARRAY);
-							entityStack.peek().addEntity(ao, Entity.EntityType.GLOBAL);
+							entityStack.peek().addEntity(fdEntity, Entity.EntityType.ARRAY);
+							entityStack.peek().addEntity(fdEntity, Entity.EntityType.GLOBAL);
 						}
 						else if(nodeType.isParameterizedType()) {
-							SuperEntityClass go = new SuperEntityClass();
-							go.setName(name.toString());
-							go.setFullyQualifiedName(fullyQualifiedName);
-							go.setType(nodeType);
-							go.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-							go.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-							entityStack.peek().addEntity(go, Entity.EntityType.GENERICS);
-							entityStack.peek().addEntity(go, Entity.EntityType.GLOBAL);
+							entityStack.peek().addEntity(fdEntity, Entity.EntityType.GENERICS);
+							entityStack.peek().addEntity(fdEntity, Entity.EntityType.GLOBAL);
 						}
 						else if(nodeType.isPrimitiveType()) {
-							SuperEntityClass po = new SuperEntityClass();
-							po.setName(name.toString());
-							po.setFullyQualifiedName(fullyQualifiedName);
-							po.setType(nodeType);
-							po.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-							po.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-							entityStack.peek().addEntity(po, Entity.EntityType.PRIMITIVE);
-							entityStack.peek().addEntity(po, Entity.EntityType.GLOBAL);
+							entityStack.peek().addEntity(fdEntity, Entity.EntityType.PRIMITIVE);
+							entityStack.peek().addEntity(fdEntity, Entity.EntityType.GLOBAL);
 						}
 						else if(nodeType.isSimpleType()) {
-							SuperEntityClass so = new SuperEntityClass();
-							so.setName(name.toString());
-							so.setFullyQualifiedName(fullyQualifiedName);
-							so.setType(nodeType);
-							so.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-							so.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-							entityStack.peek().addEntity(so, Entity.EntityType.SIMPLE);
-							entityStack.peek().addEntity(so, Entity.EntityType.GLOBAL);
+							entityStack.peek().addEntity(fdEntity, Entity.EntityType.SIMPLE);
+							entityStack.peek().addEntity(fdEntity, Entity.EntityType.GLOBAL);
 						}
 						else {
 							System.out.println("Something is missing " + nodeType);
@@ -674,51 +658,28 @@ public class ASTRefactor {
 						fullyQualifiedName = name.toString();
 					}
 
-					if(node.getType().isArrayType()) {
-						SuperEntityClass ao = new SuperEntityClass();
-						ao.setName(name.toString());
-						ao.setFullyQualifiedName(fullyQualifiedName);
-						ao.setType(node.getType());
-						ao.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-						ao.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-						entityStack.peek().addEntity(ao, Entity.EntityType.ARRAY);
-					}
+					SuperEntityClass svdEntity = new SuperEntityClass(
+						name.toString(),
+						fullyQualifiedName,
+						node.getType(),
+						cu.getLineNumber(name.getStartPosition()),
+						cu.getColumnNumber(name.getStartPosition())
+					);
 
+					if(node.getType().isArrayType()) {
+						entityStack.peek().addEntity(svdEntity, Entity.EntityType.ARRAY);
+					}
 					else if(node.getType().isParameterizedType()) {
-						SuperEntityClass go = new SuperEntityClass();
-						go.setName(name.toString());
-						go.setFullyQualifiedName(fullyQualifiedName);
-						go.setType(node.getType());
-						go.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-						go.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-						entityStack.peek().addEntity(go, Entity.EntityType.GENERICS);
+						entityStack.peek().addEntity(svdEntity, Entity.EntityType.GENERICS);
 					}
 					else if(node.getType().isPrimitiveType()) {
-						SuperEntityClass po = new SuperEntityClass();
-						po.setName(name.toString());
-						po.setFullyQualifiedName(fullyQualifiedName);
-						po.setType(node.getType());
-						po.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-						po.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-						entityStack.peek().addEntity(po, Entity.EntityType.PRIMITIVE);
+						entityStack.peek().addEntity(svdEntity, Entity.EntityType.PRIMITIVE);
 					}
 					else if(node.getType().isSimpleType()) {
-						SuperEntityClass so = new SuperEntityClass();
-						so.setName(name.toString());
-						so.setFullyQualifiedName(fullyQualifiedName);
-						so.setType(node.getType());
-						so.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-						so.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-						entityStack.peek().addEntity(so, Entity.EntityType.SIMPLE);
+						entityStack.peek().addEntity(svdEntity, Entity.EntityType.SIMPLE);
 					}
 					else if(node.getType().isUnionType()) {
-						SuperEntityClass uo = new SuperEntityClass();
-						uo.setName(name.toString());
-						uo.setFullyQualifiedName(fullyQualifiedName);
-						uo.setType(node.getType());
-						uo.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-						uo.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-						entityStack.peek().addEntity(uo, Entity.EntityType.UNION);
+						entityStack.peek().addEntity(svdEntity, Entity.EntityType.UNION);
 					}
 					else {
 						System.out.println("Something is missing " + node.getType());
@@ -728,24 +689,25 @@ public class ASTRefactor {
 				return true;
 			}
 
-			// TODO
 			public boolean visit(SwitchStatement node) {
 				if(inMethod && configProperties.get("SwitchStatement")) {
-					SuperEntityClass sso = new SuperEntityClass();
+					String name;
 					try {
-						sso.setName(node.getExpression().toString());
+						name = node.getExpression().toString();
 					} catch (NullPointerException e) {
-						sso.setName("");
+						name = "";
 					}
-					sso.setLineNumber(cu.getLineNumber(node.getStartPosition()));
-					sso.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
+
+					SuperEntityClass sso = new SuperEntityClass(
+						name,
+						cu.getLineNumber(node.getStartPosition()),
+						cu.getColumnNumber(node.getStartPosition())
+					);
 
 					List<SuperEntityClass> switchCaseList = new ArrayList<>();
 
 					for(Object s : node.statements()) {
 						if(s instanceof SwitchCase) {
-							SuperEntityClass switchCase = new SuperEntityClass();
-
 							String expression;
 							try {
 								expression = ((SwitchCase) s).getExpression().toString();
@@ -753,10 +715,13 @@ public class ASTRefactor {
 								expression = "Default";
 							}
 
-							switchCase.setName(expression);
-							switchCase.setLineNumber(cu.getLineNumber(((SwitchCase) s).getStartPosition()));
-							switchCase.setColumnNumber(cu.getColumnNumber(((SwitchCase)s).getStartPosition()));
-							switchCaseList.add(switchCase);
+							switchCaseList.add(
+								new SuperEntityClass(
+									expression,
+									cu.getLineNumber(((SwitchCase) s).getStartPosition()),
+									cu.getColumnNumber(((SwitchCase)s).getStartPosition())
+								)
+							);
 						}
 					}
 
@@ -899,7 +864,6 @@ public class ASTRefactor {
 							co.setIsAbstract(false);
 						}
 
-
 					}
 				}
 
@@ -949,7 +913,6 @@ public class ASTRefactor {
 					Type nodeType = node.getType();
 
 					for(Object v : node.fragments()) {
-
 						SimpleName name = ((VariableDeclarationFragment) v).getName();
 
 						// get fully qualified name
@@ -961,41 +924,25 @@ public class ASTRefactor {
 							fullyQualifiedName = name.toString();
 						}
 
+						SuperEntityClass vdsEntity = new SuperEntityClass(
+							name.toString(),
+							fullyQualifiedName,
+							nodeType,
+							cu.getLineNumber(name.getStartPosition()),
+							cu.getColumnNumber(name.getStartPosition())
+						);
+
 						if(nodeType.isArrayType()) {
-							SuperEntityClass ao = new SuperEntityClass();
-							ao.setName(name.toString());
-							ao.setFullyQualifiedName(fullyQualifiedName);
-							ao.setType(nodeType);
-							ao.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-							ao.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-							entityStack.peek().addEntity(ao, Entity.EntityType.ARRAY);
+							entityStack.peek().addEntity(vdsEntity, Entity.EntityType.ARRAY);
 						}
 						else if(nodeType.isParameterizedType()) {
-							SuperEntityClass go = new SuperEntityClass();
-							go.setName(name.toString());
-							go.setFullyQualifiedName(fullyQualifiedName);
-							go.setType(nodeType);
-							go.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-							go.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-							entityStack.peek().addEntity(go, Entity.EntityType.GENERICS);
+							entityStack.peek().addEntity(vdsEntity, Entity.EntityType.GENERICS);
 						}
 						else if(nodeType.isPrimitiveType()) {
-							SuperEntityClass po = new SuperEntityClass();
-							po.setName(name.toString());
-							po.setFullyQualifiedName(fullyQualifiedName);
-							po.setType(nodeType);
-							po.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-							po.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-							entityStack.peek().addEntity(po, Entity.EntityType.PRIMITIVE);
+							entityStack.peek().addEntity(vdsEntity, Entity.EntityType.PRIMITIVE);
 						}
 						else if(nodeType.isSimpleType()) {
-							SuperEntityClass so = new SuperEntityClass();
-							so.setName(name.toString());
-							so.setFullyQualifiedName(fullyQualifiedName);
-							so.setType(nodeType);
-							so.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-							so.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-							entityStack.peek().addEntity(so, Entity.EntityType.SIMPLE);
+							entityStack.peek().addEntity(vdsEntity, Entity.EntityType.SIMPLE);
 						}
 						else {
 							System.out.println("Something is missing " + nodeType);
@@ -1023,41 +970,25 @@ public class ASTRefactor {
 							fullyQualifiedName = name.toString();
 						}
 
+						SuperEntityClass vdeEntity = new SuperEntityClass(
+							name.toString(),
+							fullyQualifiedName,
+							nodeType,
+							cu.getLineNumber(name.getStartPosition()),
+							cu.getColumnNumber(name.getStartPosition())
+						);
+
 						if(nodeType.isArrayType()) {
-							SuperEntityClass ao = new SuperEntityClass();
-							ao.setName(name.toString());
-							ao.setFullyQualifiedName(fullyQualifiedName);
-							ao.setType(nodeType);
-							ao.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-							ao.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-							entityStack.peek().addEntity(ao, Entity.EntityType.ARRAY);
+							entityStack.peek().addEntity(vdeEntity, Entity.EntityType.ARRAY);
 						}
 						else if(nodeType.isParameterizedType()) {
-							SuperEntityClass go = new SuperEntityClass();
-							go.setName(name.toString());
-							go.setFullyQualifiedName(fullyQualifiedName);
-							go.setType(nodeType);
-							go.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-							go.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-							entityStack.peek().addEntity(go, Entity.EntityType.GENERICS);
+							entityStack.peek().addEntity(vdeEntity, Entity.EntityType.GENERICS);
 						}
 						else if(nodeType.isPrimitiveType()) {
-							SuperEntityClass po = new SuperEntityClass();
-							po.setName(name.toString());
-							po.setFullyQualifiedName(fullyQualifiedName);
-							po.setType(nodeType);
-							po.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-							po.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-							entityStack.peek().addEntity(po, Entity.EntityType.PRIMITIVE);
+							entityStack.peek().addEntity(vdeEntity, Entity.EntityType.PRIMITIVE);
 						}
 						else if(nodeType.isSimpleType()) {
-							SuperEntityClass so = new SuperEntityClass();
-							so.setName(name.toString());
-							so.setFullyQualifiedName(fullyQualifiedName);
-							so.setType(nodeType);
-							so.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-							so.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-							entityStack.peek().addEntity(so, Entity.EntityType.SIMPLE);
+							entityStack.peek().addEntity(vdeEntity, Entity.EntityType.SIMPLE);
 						}
 						else {
 							System.out.println("Something is missing " + nodeType);
@@ -1155,22 +1086,6 @@ public class ASTRefactor {
 	 * Clearly a main function that does very little
 	 */
 	public static void main(String[] args) {
-//		// time to set up visualvm
-//		try {
-//			Thread.sleep(10000);
-//		} catch (InterruptedException e) {
-//			e.printStackTrace();
-//		}
-//
-//		for(int i = 0; i < 100; i++) {
-//			try {
-//				Thread.sleep(100);
-//				test1();
-//			} catch (InterruptedException e) {
-//				e.printStackTrace();
-//			}
-//		}
-
 		test1();
 	}
 }

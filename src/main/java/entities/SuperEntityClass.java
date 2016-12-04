@@ -44,6 +44,16 @@ public class SuperEntityClass implements Entity {
 		columnNumber = cl;
 	}
 
+	// five properties
+	public SuperEntityClass(String n, String fqn, Type t, int sl, int cl) {
+		entityList = new ArrayList<>();
+		name = n;
+		fullyQualifiedName = fqn;
+		type = t;
+		lineNumber = sl;
+		columnNumber = cl;
+	}
+
 	public String getName() {
 		return this.name;
 	}
