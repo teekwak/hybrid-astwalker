@@ -199,7 +199,7 @@ class GitData {
 			while (scanner.hasNextLine()) {
 				count += scanner.nextLine().length();
 			}
-		} catch (Exception e) {
+		} catch (IOException e) {
 			System.out.println("Data is null!");
 		}
 		
@@ -222,8 +222,6 @@ class GitData {
 		pb.directory(dir);
 			
 		Process proc = pb.start();
-		InputStreamReader isr = new InputStreamReader(proc.getInputStream());
-		BufferedReader br = new BufferedReader(isr);
 						
 		List<String> hashCodeList = new ArrayList<>();
 		List<String> authorList = new ArrayList<>();
@@ -234,58 +232,58 @@ class GitData {
 		List<Integer> deletionList = new ArrayList<>();
 								
 		String s;
-		while((s = br.readLine()) != null) {				
-      if(s.startsWith("Commit") && hashCodeList.size() == messageList.size() && hashCodeList.size() == insertionList.size()) {
-        hashCodeList.add(s.split(" ")[1]);
-      }
-      else if(s.startsWith("Commit") && hashCodeList.size() == messageList.size() && hashCodeList.size() != insertionList.size()) {
-        insertionList.add(0);
-        deletionList.add(0);
-        hashCodeList.add(s.split(" ")[1]);
-      }
-      else if(s.startsWith("Commit") && hashCodeList.size() != messageList.size() && hashCodeList.size() == insertionList.size()) {
-        messageList.add("");
-        hashCodeList.add(s.split(" ")[1]);
-      }
-      else if(s.startsWith("Commit") && hashCodeList.size() != messageList.size() && hashCodeList.size() != insertionList.size()) {
-	      messageList.add("");
-        insertionList.add(0);
-        deletionList.add(0);
-        hashCodeList.add(s.split(" ")[1]);
-      }
-      else if(s.startsWith("Author")) {
-        try {
-	        authorList.add(s.split(" ")[1]);
-        } catch (ArrayIndexOutOfBoundsException e) {
-          authorList.add("");
-        }
-      }
-      else if(s.startsWith("Email")) {
-        try {
-	        emailList.add(s.split(" ")[1]);
-        } catch (ArrayIndexOutOfBoundsException e) {
-          emailList.add("");
-        }
-      }
-      else if (s.startsWith("Date")) {
-	      dateList.add(s.split(" ", 2)[1]);
-      }
-      else if (s.startsWith("Message")){
-        try {
-	        messageList.add(s.split(" ", 2)[1]);
-        } catch (ArrayIndexOutOfBoundsException e) {
-          messageList.add("");
-        }
-      }
-      else if(s.length() > 0 && Character.isDigit(s.charAt(0))) {
-        String[] numParts = s.split("\t");
-        insertionList.add(Integer.valueOf(numParts[0]));
-        deletionList.add(Integer.valueOf(numParts[1]));
-      }
+		try(BufferedReader br = new BufferedReader(new InputStreamReader(proc.getInputStream(), "UTF-8"))) {
+			while((s = br.readLine()) != null) {
+				if(s.startsWith("Commit") && hashCodeList.size() == messageList.size() && hashCodeList.size() == insertionList.size()) {
+					hashCodeList.add(s.split(" ")[1]);
+				}
+				else if(s.startsWith("Commit") && hashCodeList.size() == messageList.size() && hashCodeList.size() != insertionList.size()) {
+					insertionList.add(0);
+					deletionList.add(0);
+					hashCodeList.add(s.split(" ")[1]);
+				}
+				else if(s.startsWith("Commit") && hashCodeList.size() != messageList.size() && hashCodeList.size() == insertionList.size()) {
+					messageList.add("");
+					hashCodeList.add(s.split(" ")[1]);
+				}
+				else if(s.startsWith("Commit") && hashCodeList.size() != messageList.size() && hashCodeList.size() != insertionList.size()) {
+					messageList.add("");
+					insertionList.add(0);
+					deletionList.add(0);
+					hashCodeList.add(s.split(" ")[1]);
+				}
+				else if(s.startsWith("Author")) {
+					try {
+						authorList.add(s.split(" ")[1]);
+					} catch (ArrayIndexOutOfBoundsException e) {
+						authorList.add("");
+					}
+				}
+				else if(s.startsWith("Email")) {
+					try {
+						emailList.add(s.split(" ")[1]);
+					} catch (ArrayIndexOutOfBoundsException e) {
+						emailList.add("");
+					}
+				}
+				else if (s.startsWith("Date")) {
+					dateList.add(s.split(" ", 2)[1]);
+				}
+				else if (s.startsWith("Message")){
+					try {
+						messageList.add(s.split(" ", 2)[1]);
+					} catch (ArrayIndexOutOfBoundsException e) {
+						messageList.add("");
+					}
+				}
+				else if(s.length() > 0 && Character.isDigit(s.charAt(0))) {
+					String[] numParts = s.split("\t");
+					insertionList.add(Integer.valueOf(numParts[0]));
+					deletionList.add(Integer.valueOf(numParts[1]));
+				}
+			}
 		}
-				
-		br.close();
-		isr.close();
+
 		proc.destroy();
 		
 		int hashCodeListSize = hashCodeList.size();

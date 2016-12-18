@@ -32,6 +32,28 @@ public class ASTRefactor {
 	private SuperEntityClass packageObject;
 
 
+	// find comments
+//	class CommentVisitor extends ASTVisitor {
+//		CompilationUnit cu;
+//		String source;
+//
+//		CommentVisitor(CompilationUnit cu, String source) {
+//			super();
+//			this.cu = cu;
+//			this.source = source;
+//		}
+//
+//		public boolean visit(LineComment node) {
+//			hasComments = true;
+//			return true;
+//		}
+//
+//		public boolean visit(BlockComment node) {
+//			hasComments = true;
+//			return true;
+//		}
+//	}
+
 	/**
 	 * Constructor for class. Creates a FileModel object and takes in a config file and adds into a HashMap
 	 * Properties class is used for easily reading a file and making sure the user uses a .properties file
@@ -123,7 +145,9 @@ public class ASTRefactor {
 
 		final CompilationUnit cu = (CompilationUnit) parser.createAST(null);
 
-		// some comment functionality here? i left it out on purpose
+//		for (Comment comment : (List<Comment>) cu.getCommentList()) {
+//			comment.accept(new ASTRefactor.CommentVisitor(cu, sourceCode));
+//		}
 
 		// continue code
 		// when we are writing visit and exit functions, make sure to use the properties!

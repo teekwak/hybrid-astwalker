@@ -114,10 +114,7 @@ public class Solrj {
 
 	@SuppressWarnings("deprecation")
 	public long queryCountDocs(String hostName, int portNumber) throws IOException{
-		HttpSolrServer server = null;
-		
-		try { 
-			server = new HttpSolrServer("http://"+hostName+":"+portNumber+"/solr");
+		try(HttpSolrServer server = new HttpSolrServer("http://"+hostName+":"+portNumber+"/solr")) {
 			ModifiableSolrParams params = new ModifiableSolrParams();
 			params.add("q", "contentID:*");
 			QueryResponse rq = server.query(params);
@@ -128,8 +125,6 @@ public class Solrj {
 		} 
 		catch (org.apache.solr.client.solrj.SolrServerException e) { 
 			System.err.println("Query problem"); 
-		} finally {
-			server.close();
 		}
 				
 		return -1; 
@@ -139,30 +134,29 @@ public class Solrj {
 		File file = new File("data/favorites");
 
 		ArrayList<String> IDs = new ArrayList<String>();
-		Scanner scan =  null;
-		try {
-			scan = new Scanner(file);
+		try(Scanner scan = new Scanner(file)) {
 			while(scan.hasNext()){
 				String id = scan.nextLine();
 				IDs.add(id);
 			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-		}finally{
-			scan.close();
 		}
 		
 		String query = "id:(";
-		String idLogic = "";
-		for(int i = 0; i<IDs.size();i++){
+		StringBuilder idLogic = new StringBuilder();
+		for(int i = 0; i < IDs.size(); i++){
 			String id = IDs.get(i);
-			if(i == 0)
-				idLogic = idLogic + id;
-			else
-				idLogic = idLogic +" OR "+id;
+			if(i == 0) {
+				idLogic.append(id);
+			}
+			else {
+				idLogic.append(" OR ");
+				idLogic.append(id);
+			}
 		}
-		idLogic = idLogic+")";
-		query = query+idLogic;
+		idLogic.append(")");
+		query = query + idLogic.toString();
 		
 		if(IDs.size() == 0)
 			return null;

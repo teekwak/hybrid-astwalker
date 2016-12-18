@@ -163,7 +163,7 @@ public class IndexManager {
 		return instance;
 	}
 	
-	class ProjectInfo {
+	static class ProjectInfo {
 		String project_owner;
 		String project_name;
 		String project_address;
@@ -175,10 +175,10 @@ public class IndexManager {
 
 		ArrayList<String> language_count = new ArrayList<>();
 		ArrayList<String> languages = new ArrayList<>();
-		ArrayList<String> versions = new ArrayList<>();
-		ArrayList<String> comments = new ArrayList<>();
-		ArrayList<String> authors = new ArrayList<>();
-		ArrayList<String> allAuthorIDs = new ArrayList<>();
+//		ArrayList<String> versions = new ArrayList<>();
+//		ArrayList<String> comments = new ArrayList<>();
+//		ArrayList<String> authors = new ArrayList<>();
+//		ArrayList<String> allAuthorIDs = new ArrayList<>();
 		
 		String project_description;
 	}
@@ -188,8 +188,11 @@ public class IndexManager {
 		String htmlURL = "\""+projectURL+"\"";
 		
 		currentProject = new ProjectInfo();
-		
-		SolrDocumentList list = Solrj.getInstance(passwordFilePath).query("id:"+htmlURL, "codeexchange.ics.uci.edu", 9001, "githubprojects", 1);
+		String hostName = "grok.ics.uci.edu";
+		int portNumber = 9551;
+		String collectionName = "MoreLikeThisIndex";
+
+		SolrDocumentList list = Solrj.getInstance(passwordFilePath).query("id:"+htmlURL, hostName, portNumber, collectionName, 1);
 		
 		if(list.isEmpty()) {
 			throw new Exception(); 
@@ -698,17 +701,15 @@ public class IndexManager {
 				paramCountShort.put(shortName2, count);
 			}  
 		}
-		
-		for(String type: paramCount.keySet()){
-			int count = paramCount.get(type);
-			methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_PARAMETER_TYPES_COUNT, type+"_"+count);
+
+		for (Map.Entry<String, Integer> entry : paramCount.entrySet()) {
+			methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_PARAMETER_TYPES_COUNT, entry.getKey() + "_" + entry.getValue());
 		}
-		
-		for(String type: paramCountShort.keySet()){
-			int count = paramCountShort.get(type);
-			methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_PARAMETER_TYPES_SHORT_COUNT, type+"_"+count);
+
+		for(Map.Entry<String, Integer> entry : paramCountShort.entrySet()) {
+			methodDecSolrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_PARAMETER_TYPES_SHORT_COUNT, entry.getKey() + "_"+ entry.getValue());
 		}
-		
+
 		CHILD_COUNT++;
 		solrDoc.addChildDocument(methodDecSolrDoc);
 	}
@@ -800,17 +801,15 @@ public class IndexManager {
 			}
 			place++;
 		}
-		
-		for(String type: paramCount.keySet()){
-			int count = paramCount.get(type);
-			methodInvSolrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_ARG_TYPES_COUNT, type + "_" + count);
+
+		for(Map.Entry<String, Integer> entry : paramCount.entrySet()) {
+			methodInvSolrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_ARG_TYPES_COUNT, entry.getKey() + "_" + entry.getValue());
 		}
-		
-		for(String type: paramCountShort.keySet()){
-			int count = paramCountShort.get(type);
-			methodInvSolrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_ARG_TYPES_SHORT_COUNT, type + "_" + count);
+
+		for(Map.Entry<String, Integer> entry : paramCountShort.entrySet()) {
+			methodInvSolrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_ARG_TYPES_SHORT_COUNT, entry.getKey() + "_" + entry.getValue());
 		}
-		
+
 		for(Object argValue: mio.getArguments()){
 			methodInvSolrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_ARG_VALUES, argValue.toString());
 		}
@@ -941,8 +940,7 @@ public class IndexManager {
 				try(
 					LineNumberReader lnr = new LineNumberReader(new FileReader(new File(crashListFileName)));
 					BufferedReader br = new BufferedReader(new FileReader(new File(crashListFileName)));
-					FileWriter fw = new FileWriter(new File(crashListFileName));
-					BufferedWriter bw = new BufferedWriter(fw)
+					BufferedWriter bw = new BufferedWriter(new FileWriter(new File(crashListFileName)))
 				) {
 					// get number of lines in a file
 					// actual number = lnr.getLineNumber() + 1
@@ -977,12 +975,22 @@ public class IndexManager {
 	 * 
 	 * @param file x
 	 */
+
+	// todo
+	// we need to create one large file that holds the times of how long things took to upload
+	// print time right before downloading
+	// print time when upload starts
+	// print time when upload finishes
+	// print a delimiter between batches
+
+	// also need to just read in a file from the web instead of cloning a repositry
+
 	private static void readMapFile(File file, String pathToClonedRepos, int start, int end, boolean cloneRepo) throws CoreException, ParseException {
     boolean path = false;
     boolean url = false;
     String[] arr = {"", ""};
 
-    try(BufferedReader br = new BufferedReader(new FileReader(file))) {
+    try(BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"))) {
       int count = start;
 
       for(int i = 0; i < start - 1; i++) {
@@ -1005,8 +1013,7 @@ public class IndexManager {
 
           // write repo URL line number to file
           try(
-		        FileWriter fw = new FileWriter(new File(crashListFileName), true);
-		        BufferedWriter bw = new BufferedWriter(fw)
+		        BufferedWriter bw = new BufferedWriter(new FileWriter(new File(crashListFileName), true))
 	        ) {
             bw.write(count + "\n");
           } catch (IOException e) {
