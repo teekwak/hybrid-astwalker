@@ -6,7 +6,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 // data for each commit
-class CommitData {
+class Commit {
 	private String hashCode;
 	private String author;
 	private String email;
@@ -18,7 +18,7 @@ class CommitData {
 	private int insertions;
 	private int deletions;
 
-	CommitData() {
+	Commit() {
 		this.insertions = 0;
 		this.deletions = 0;
 	}
@@ -106,16 +106,16 @@ class CommitData {
 }
 
 // data for each file
-class JavaFile {
+class JavaGitHubData {
 	private String fileLocation;
 	private int numberOfLines;
 	private int numberOfCharacters;
-	private List<CommitData> commitDataList;
+	private List<Commit> listOfCommits;
 	private Set<String> uniqueAuthors;
 	private Set<String> uniqueEmails;
-	
-	JavaFile(String n) {
-		commitDataList = new ArrayList<>();
+
+	JavaGitHubData(String n) {
+		listOfCommits = new ArrayList<>();
 		uniqueAuthors = new HashSet<>();
 		uniqueEmails = new HashSet<>();
 		fileLocation = n;
@@ -141,8 +141,8 @@ class JavaFile {
 		return this.uniqueEmails;
 	}
 	
-	List<CommitData> getCommitDataList() {
-		return this.commitDataList;
+	List<Commit> getListOfCommits() {
+		return this.listOfCommits;
 	}
 	
 	void setNumberOfLines(int n) {
@@ -160,24 +160,11 @@ class JavaFile {
 //	public int getNumberOfCharacters() {
 //		return this.numberOfCharacters;
 //	}
-}
 
-// data for all files in a repo
-class GitData {
+	// gets the number of lines in a file
+	private static int getLineCountOfFile(String fileName) {
+		File file = new File(fileName);
 
-	private JavaFile javaFile;
-	
-	GitData() {
-		javaFile = null;
-	}
-	
-	JavaFile getJavaFile() {
-		return this.javaFile;
-	}
-
-	private static int getLineCountOfFile(String javaFileName) {
-		File file = new File(javaFileName);
-		
 		int count = 0;
 		try(Scanner scanner = new Scanner(file, "ISO-8859-1")) {
 			while (scanner.hasNext()) {
@@ -187,13 +174,14 @@ class GitData {
 		} catch (IOException e) {
 			System.out.println("Data is null!");
 		}
-		
-		return count;	
+
+		return count;
 	}
-	
-	private static int getCharacterCountOfFile(String javaFileName) {
-		File file = new File(javaFileName);
-		
+
+	// gets number of characters in a file
+	private static int getCharacterCountOfFile(String fileName) {
+		File file = new File(fileName);
+
 		int count = 0;
 		try(Scanner scanner = new Scanner(file, "ISO-8859-1")) {
 			while (scanner.hasNextLine()) {
@@ -202,27 +190,25 @@ class GitData {
 		} catch (IOException e) {
 			System.out.println("Data is null!");
 		}
-		
+
 		return count;
 	}
-	
-	void getCommitDataPerFile(String directoryLocation, String javaFileName) throws IOException, ParseException {
-		JavaFile javaFileObject = new JavaFile(javaFileName);
-				
+
+	void getCommits(String directoryLocation, String javaFileName) throws IOException, ParseException {
 		File dir = new File(directoryLocation);
-		
+
 		// get number of lines in a file
-		javaFileObject.setNumberOfLines(getLineCountOfFile(javaFileName));
-		
+		this.numberOfLines = getLineCountOfFile(javaFileName);
+
 		// get number of characters in a file
-		javaFileObject.setNumberOfCharacters(getCharacterCountOfFile(javaFileName));
-		
+		this.numberOfCharacters = getCharacterCountOfFile(javaFileName);
+
 		// get all commits of a single file
 		ProcessBuilder pb = new ProcessBuilder("git", "log", "--reverse", "--numstat", "--format=format:Commit: %H%nAuthor: %an%nEmail: %ae%nDate: %ad%nMessage: %s", javaFileName);
 		pb.directory(dir);
-			
+
 		Process proc = pb.start();
-						
+
 		List<String> hashCodeList = new ArrayList<>();
 		List<String> authorList = new ArrayList<>();
 		List<String> emailList = new ArrayList<>();
@@ -230,7 +216,7 @@ class GitData {
 		List<String> messageList = new ArrayList<>();
 		List<Integer> insertionList = new ArrayList<>();
 		List<Integer> deletionList = new ArrayList<>();
-								
+
 		String s;
 		try(BufferedReader br = new BufferedReader(new InputStreamReader(proc.getInputStream(), "UTF-8"))) {
 			while((s = br.readLine()) != null) {
@@ -282,28 +268,34 @@ class GitData {
 					deletionList.add(Integer.valueOf(numParts[1]));
 				}
 			}
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 
 		proc.destroy();
-		
+
 		int hashCodeListSize = hashCodeList.size();
 		for(int i = 0; i < hashCodeListSize; i++) {
-			CommitData cd = new CommitData();
-			
+			Commit cd = new Commit();
+
 			// format date
-			Date javaDate = new SimpleDateFormat("EEE MMM d HH:mm:ss yyyy Z").parse(dateList.get(i));
-			cd.setSolrDate(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(javaDate));
-			cd.setDay(new SimpleDateFormat("dd").format(javaDate));
-			cd.setMonth(new SimpleDateFormat("MM").format(javaDate));
-			cd.setYear(new SimpleDateFormat("yyyy").format(javaDate));
-			
+			try {
+				Date javaDate = new SimpleDateFormat("EEE MMM d HH:mm:ss yyyy Z").parse(dateList.get(i));
+				cd.setSolrDate(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(javaDate));
+				cd.setDay(new SimpleDateFormat("dd").format(javaDate));
+				cd.setMonth(new SimpleDateFormat("MM").format(javaDate));
+				cd.setYear(new SimpleDateFormat("yyyy").format(javaDate));
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+
 			// add everything else
 			cd.setAuthor(authorList.get(i));
 			cd.setEmail(emailList.get(i));
 			cd.setHashCode(hashCodeList.get(i));
-			
+
 			try {
-				cd.setMessage(messageList.get(i));				
+				cd.setMessage(messageList.get(i));
 			} catch (IndexOutOfBoundsException e) {
 				cd.setMessage("");
 			}
@@ -311,24 +303,21 @@ class GitData {
 			try {
 				cd.setInsertions(insertionList.get(i));
 			} catch (IndexOutOfBoundsException e) {
-				cd.setInsertions(0);	
+				cd.setInsertions(0);
 			}
-			
+
 			try {
 				cd.setDeletions(deletionList.get(i));
 			} catch (IndexOutOfBoundsException e) {
 				cd.setDeletions(0);
-			}			
-						
+			}
+
 			// add object to list
-			javaFileObject.getCommitDataList().add(cd);
+
+			this.listOfCommits.add(cd);
 		}
-		
-		javaFileObject.setUniqueAuthors(authorList);
-		javaFileObject.setUniqueEmails(emailList);
-		
-		// set GitData javaFile
-		javaFile = javaFileObject;
-		
-	}	
+
+		this.uniqueAuthors = new HashSet<>(authorList);
+		this.uniqueEmails = new HashSet<>(emailList);
+	}
 }

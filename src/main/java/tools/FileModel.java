@@ -16,17 +16,17 @@ public class FileModel {
 		this.javaClassList = new ArrayList<>();
 	}
 
-	void addJavaClass(JavaClass co) {
+	public void addJavaClass(JavaClass co) {
 		javaClassList.add(co);
 	}
 
-	List<JavaClass> getJavaClassList() {
+	public List<JavaClass> getJavaClassList() {
 		return this.javaClassList;
 	}
 	
-	FileModel parseDeclarations(String fileLocation) throws IOException, CoreException {
-		ASTWalker astWalker = new ASTWalker();
-		return astWalker.parseFile(fileLocation);
-	}
+//	FileModel parseDeclarations(String fileLocation) throws IOException, CoreException {
+//		ASTWalker astWalker = new ASTWalker();
+//		return astWalker.parseFile(fileLocation);
+//	}
 
 }

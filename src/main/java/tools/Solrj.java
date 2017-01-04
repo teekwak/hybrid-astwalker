@@ -28,17 +28,17 @@ public class Solrj {
 	private SolrDocumentList recommendations = new SolrDocumentList();
 	private static String pass;
 	public UpdateRequest req = new UpdateRequest();
-	
+
 	private Solrj() {
 	}
-	
+
 	public static Solrj getInstance(String passwordFilePath){
 		if(instance == null){
 			instance = new Solrj();
 		}
-		
+
 		File file = new File(passwordFilePath);
-		
+
 		Scanner scan;
 		try {
 			scan = new Scanner(file);
@@ -46,11 +46,11 @@ public class Solrj {
 			while(scan.hasNextLine()){
 				pass = scan.nextLine();
 			}
-			
+
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		
+
 		return instance;
 	}
 
@@ -58,8 +58,8 @@ public class Solrj {
 		this.queryStr = queryStr;
 
 		System.out.println("okay");
-	} 
-	
+	}
+
 	public void clearDocs() {
 		req.clear();
 	}
@@ -79,12 +79,11 @@ public class Solrj {
       }
 
 	public void addDoc(SolrInputDocument doc) {
-		
 		if(doc == null)
 			return;
 
 			  req.setAction( UpdateRequest.ACTION.COMMIT, false, false );
-			  req.add( doc );	
+			  req.add( doc );
 			  req.getDocuments().size();
 
 	}
@@ -110,7 +109,7 @@ public class Solrj {
 			e.printStackTrace();
 		}
 	}
-	
+
 
 	@SuppressWarnings("deprecation")
 	public long queryCountDocs(String hostName, int portNumber) throws IOException{
@@ -118,18 +117,18 @@ public class Solrj {
 			ModifiableSolrParams params = new ModifiableSolrParams();
 			params.add("q", "contentID:*");
 			QueryResponse rq = server.query(params);
-			
+
 			server.close();
-			
-			return rq.getResults().getNumFound(); 
-		} 
-		catch (org.apache.solr.client.solrj.SolrServerException e) { 
-			System.err.println("Query problem"); 
+
+			return rq.getResults().getNumFound();
 		}
-				
-		return -1; 
+		catch (org.apache.solr.client.solrj.SolrServerException e) {
+			System.err.println("Query problem");
+		}
+
+		return -1;
 	}
-	
+
 	public SolrDocumentList queryFavorites(String hostName, int portNumber, String collectionName){
 		File file = new File("data/favorites");
 
@@ -142,7 +141,7 @@ public class Solrj {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		
+
 		String query = "id:(";
 		StringBuilder idLogic = new StringBuilder();
 		for(int i = 0; i < IDs.size(); i++){
@@ -157,15 +156,15 @@ public class Solrj {
 		}
 		idLogic.append(")");
 		query = query + idLogic.toString();
-		
+
 		if(IDs.size() == 0)
 			return null;
 		else
-		
+
 		return query(query,hostName, portNumber, collectionName,100);
-		
+
 	}
-	
+
 
 	/**
 	 * using a filtered query (fq) on the solr is supposed
@@ -184,18 +183,18 @@ public class Solrj {
 			server = new HttpSolrServer("http://"+hostName+":"+portNumber+"/solr/"+collectionName);
 
 		//	  System.out.println("QUERY: "+query);
-					
+
 			  SolrQuery solrQuery = new  SolrQuery();
 					  solrQuery.setQuery(query);
 					  solrQuery.setRows(rows);
 					  solrQuery.setIncludeScore(true);
-					  
+
 			  QueryResponse rsp = server.query(solrQuery);
-			 
+
 			SolrDocumentList results = rsp.getResults();
 
 			server.close();
-			
+
 			return results;
 
 		} catch (Exception e) {
@@ -224,9 +223,9 @@ public class Solrj {
 		HttpSolrServer server;
 		try {
 			server = new HttpSolrServer("http://"+hostName+":"+portNumber+"/solr/"+collectionName);
-			
+
 			//System.out.println("QUERY: "+query);
-		
+
 			SolrQuery solrQuery = new SolrQuery();
 					  solrQuery.setQuery(query);
 					  solrQuery.setRows(rows);
@@ -237,7 +236,7 @@ public class Solrj {
 			SolrDocumentList results = rsp.getResults();
 
 			server.close();
-			
+
 			return results;
 
 		} catch (Exception e) {

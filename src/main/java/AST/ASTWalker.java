@@ -1,8 +1,9 @@
-package tools;
+package AST;
 
 import entities.*;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jdt.core.dom.*;
+import tools.FileModel;
 
 import java.io.*;
 import java.util.*;
@@ -21,7 +22,7 @@ import java.util.*;
  * 6. main()....................121 x
  *
  */
-public class ASTRefactor {
+public class ASTWalker {
 	private Map<String, Boolean> configProperties;
 	private String containingClass;
 	private Stack<Entity> entityStack;
@@ -56,11 +57,10 @@ public class ASTRefactor {
 
 	/**
 	 * Constructor for class. Creates a FileModel object and takes in a config file and adds into a HashMap
-	 * Properties class is used for easily reading a file and making sure the user uses a .properties file
 	 *
-	 * @param configFilePath path to config file
+	 * @param config hash map passed in from IndexManager class
 	 */
-	public ASTRefactor(String configFilePath) {
+	public ASTWalker(Map<String, Boolean> config) {
 		containingClass = "";
 		entityStack = new Stack<>();
 		fileModel = new FileModel();
@@ -68,58 +68,38 @@ public class ASTRefactor {
 		importList = new ArrayList<>();
 		inMethod = false;
 		packageObject = new SuperEntityClass();
-
-		if(!configFilePath.endsWith(".properties")) {
-			throw new IllegalArgumentException("[ERROR]: config file is not a .properties file!");
-		}
-
-		Properties properties = new Properties();
-		try(InputStream input = new FileInputStream(configFilePath)) {
-			properties.load(input);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		validateProperties(properties);
-
-		// convert to hash map so that boolean parsing happens only once
-		configProperties = new HashMap<>();
-		for(Map.Entry<Object, Object> entry : properties.entrySet()) {
-			configProperties.put(entry.getKey().toString(), Boolean.parseBoolean(entry.getValue().toString()));
-		}
+		this.configProperties = config;
 	}
 
 	public FileModel getFileModel() {
 		return this.fileModel;
 	}
 
-	/**
-	 * Validates the properties from the config file
-	 */
-	private void validateProperties(Properties properties) {
-		StringBuilder errors = new StringBuilder();
-
-		for(Map.Entry entry : properties.entrySet()) {
-			if(entry.getValue() == null
-				|| entry.getValue().toString().isEmpty()
-				|| (!entry.getValue().toString().toLowerCase().equals("true") && !entry.getValue().toString().toLowerCase().equals("false"))
-			) {
-				errors.append("\n");
-				errors.append(entry.getKey());
-				errors.append(" is not properly defined!");
+	private String getClassSourceCode(String fileLocation, int startLine, int endLine) {
+		// get source code
+		StringBuilder classSourceCode = new StringBuilder();
+		try(BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(new File(fileLocation)), "ISO-8859-1"))) {
+			for(int i = 0; i < startLine - 1; i++) {
+				br.readLine();
 			}
+
+			for(int j = startLine - 1; j < endLine - 1; j++) {
+				classSourceCode.append(br.readLine());
+				classSourceCode.append(System.getProperty("line.separator"));
+			}
+
+			classSourceCode.append(br.readLine());
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 
-		if(errors.length() != 0) {
-			throw new IllegalArgumentException(errors.toString());
-		}
+		return classSourceCode.toString();
 	}
-
 
 	/**
 	 *
 	 */
-	private void parseFile(String fileLocation) {
+	public void parseFile(String fileLocation) {
 		// no way to avoid this. we need to read the entire file into memory
 		String sourceCode = null;
 		try {
@@ -167,22 +147,6 @@ public class ASTRefactor {
 
 					int startLine = cu.getLineNumber(node.getStartPosition());
 					int endLine = cu.getLineNumber(node.getStartPosition() + node.getLength() - 1);
-					// get source code
-					StringBuilder classSourceCode = new StringBuilder();
-					try(BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(new File(fileLocation)), "ISO-8859-1"))) {
-						for(int i = 0; i < startLine - 1; i++) {
-							br.readLine();
-						}
-
-						for(int j = startLine - 1; j < endLine - 1; j++) {
-							classSourceCode.append(br.readLine());
-							classSourceCode.append(System.getProperty("line.separator"));
-						}
-
-						classSourceCode.append(br.readLine());
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
 
 					co.setIsAnonymous(binding.isAnonymous());
 					co.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
@@ -205,7 +169,7 @@ public class ASTRefactor {
 					co.setGenericParametersList(genericParametersList);
 
 					co.setHasComments(hasComments);
-					co.setSourceCode(classSourceCode.toString());
+					co.setSourceCode(getClassSourceCode(fileLocation, startLine, endLine));
 					co.setStartCharacter(node.getStartPosition());
 					co.setEndCharacter(node.getStartPosition() + node.getLength() - 1);
 					co.setImportList(importList);
@@ -251,10 +215,10 @@ public class ASTRefactor {
 					SimpleName name = node.getException().getName();
 
 					SuperEntityClass cco =  new SuperEntityClass(
-																		name.toString(),
-																		cu.getLineNumber(name.getStartPosition()),
-																		cu.getColumnNumber(name.getStartPosition())
-																	);
+									name.toString(),
+									cu.getLineNumber(name.getStartPosition()),
+									cu.getColumnNumber(name.getStartPosition())
+					);
 					cco.setType(node.getException().getType());
 					entityStack.peek().addEntity(cco, Entity.EntityType.CATCH_CLAUSE);
 				}
@@ -272,12 +236,12 @@ public class ASTRefactor {
 					}
 
 					entityStack.peek().addEntity(
-						new SuperEntityClass(
-							name,
-							cu.getLineNumber(node.getStartPosition()),
-							cu.getColumnNumber(node.getStartPosition())
-						),
-						Entity.EntityType.CONDITIONAL_EXPRESSION
+									new SuperEntityClass(
+													name,
+													cu.getLineNumber(node.getStartPosition()),
+													cu.getColumnNumber(node.getStartPosition())
+									),
+									Entity.EntityType.CONDITIONAL_EXPRESSION
 					);
 				}
 
@@ -294,12 +258,12 @@ public class ASTRefactor {
 					}
 
 					entityStack.peek().addEntity(
-						new SuperEntityClass(
-							name,
-							cu.getLineNumber(node.getStartPosition()),
-							cu.getColumnNumber(node.getStartPosition())
-						),
-						Entity.EntityType.DO_STATEMENT
+									new SuperEntityClass(
+													name,
+													cu.getLineNumber(node.getStartPosition()),
+													cu.getColumnNumber(node.getStartPosition())
+									),
+									Entity.EntityType.DO_STATEMENT
 					);
 				}
 				return true;
@@ -315,12 +279,12 @@ public class ASTRefactor {
 					}
 
 					entityStack.peek().addEntity(
-						new SuperEntityClass(
-							name,
-							cu.getLineNumber(node.getStartPosition()),
-							cu.getColumnNumber(node.getStartPosition())
-						),
-						Entity.EntityType.FOR_STATEMENT
+									new SuperEntityClass(
+													name,
+													cu.getLineNumber(node.getStartPosition()),
+													cu.getColumnNumber(node.getStartPosition())
+									),
+									Entity.EntityType.FOR_STATEMENT
 					);
 				}
 
@@ -346,11 +310,11 @@ public class ASTRefactor {
 						}
 
 						SuperEntityClass fdEntity = new SuperEntityClass(
-							name.toString(),
-							fullyQualifiedName,
-							nodeType,
-							cu.getLineNumber(name.getStartPosition()),
-							cu.getColumnNumber(name.getStartPosition())
+										name.toString(),
+										fullyQualifiedName,
+										nodeType,
+										cu.getLineNumber(name.getStartPosition()),
+										cu.getColumnNumber(name.getStartPosition())
 						);
 
 						if(nodeType.isArrayType()) {
@@ -388,11 +352,11 @@ public class ASTRefactor {
 					}
 
 					entityStack.peek().addEntity(
-						new SuperEntityClass(
-							name,
-							cu.getLineNumber(node.getStartPosition()),
-							cu.getColumnNumber(node.getStartPosition())
-						), Entity.EntityType.FOR_STATEMENT
+									new SuperEntityClass(
+													name,
+													cu.getLineNumber(node.getStartPosition()),
+													cu.getColumnNumber(node.getStartPosition())
+									), Entity.EntityType.FOR_STATEMENT
 					);
 				}
 
@@ -409,11 +373,11 @@ public class ASTRefactor {
 					}
 
 					entityStack.peek().addEntity(
-						new SuperEntityClass(
-							name,
-							cu.getLineNumber(node.getStartPosition()),
-							cu.getColumnNumber(node.getStartPosition())
-						), Entity.EntityType.IF_STATEMENT
+									new SuperEntityClass(
+													name,
+													cu.getLineNumber(node.getStartPosition()),
+													cu.getColumnNumber(node.getStartPosition())
+									), Entity.EntityType.IF_STATEMENT
 					);
 				}
 
@@ -432,12 +396,12 @@ public class ASTRefactor {
 					}
 
 					importList.add(
-						new SuperEntityClass(
-							name.toString(),
-							fullyQualifiedName,
-							cu.getLineNumber(name.getStartPosition()),
-							cu.getColumnNumber(name.getStartPosition())
-						)
+									new SuperEntityClass(
+													name.toString(),
+													fullyQualifiedName,
+													cu.getLineNumber(name.getStartPosition()),
+													cu.getColumnNumber(name.getStartPosition())
+									)
 					);
 				}
 
@@ -447,12 +411,12 @@ public class ASTRefactor {
 			public boolean visit(InfixExpression node){
 				if(inMethod && configProperties.get("InfixExpression")) {
 					entityStack.peek().addEntity(
-						new SuperEntityClass(
-							node.getOperator().toString(),
-							cu.getLineNumber(node.getLeftOperand().getStartPosition()),
-							cu.getColumnNumber(node.getLeftOperand().getStartPosition())
-						),
-						Entity.EntityType.INFIX_EXPRESSION
+									new SuperEntityClass(
+													node.getOperator().toString(),
+													cu.getLineNumber(node.getLeftOperand().getStartPosition()),
+													cu.getColumnNumber(node.getLeftOperand().getStartPosition())
+									),
+									Entity.EntityType.INFIX_EXPRESSION
 					);
 				}
 
@@ -661,10 +625,10 @@ public class ASTRefactor {
 					}
 
 					packageObject = new SuperEntityClass(
-						node.getName().toString(),
-						fullyQualifiedName,
-						cu.getLineNumber(name.getStartPosition()),
-						cu.getColumnNumber(name.getStartPosition())
+									node.getName().toString(),
+									fullyQualifiedName,
+									cu.getLineNumber(name.getStartPosition()),
+									cu.getColumnNumber(name.getStartPosition())
 					);
 				}
 
@@ -686,11 +650,11 @@ public class ASTRefactor {
 					}
 
 					SuperEntityClass svdEntity = new SuperEntityClass(
-						name.toString(),
-						fullyQualifiedName,
-						node.getType(),
-						cu.getLineNumber(name.getStartPosition()),
-						cu.getColumnNumber(name.getStartPosition())
+									name.toString(),
+									fullyQualifiedName,
+									node.getType(),
+									cu.getLineNumber(name.getStartPosition()),
+									cu.getColumnNumber(name.getStartPosition())
 					);
 
 					if(node.getType().isArrayType()) {
@@ -726,9 +690,9 @@ public class ASTRefactor {
 					}
 
 					SuperEntityClass sso = new SuperEntityClass(
-						name,
-						cu.getLineNumber(node.getStartPosition()),
-						cu.getColumnNumber(node.getStartPosition())
+									name,
+									cu.getLineNumber(node.getStartPosition()),
+									cu.getColumnNumber(node.getStartPosition())
 					);
 
 					List<SuperEntityClass> switchCaseList = new ArrayList<>();
@@ -743,11 +707,11 @@ public class ASTRefactor {
 							}
 
 							switchCaseList.add(
-								new SuperEntityClass(
-									expression,
-									cu.getLineNumber(((SwitchCase) s).getStartPosition()),
-									cu.getColumnNumber(((SwitchCase)s).getStartPosition())
-								)
+											new SuperEntityClass(
+															expression,
+															cu.getLineNumber(((SwitchCase) s).getStartPosition()),
+															cu.getColumnNumber(((SwitchCase)s).getStartPosition())
+											)
 							);
 						}
 					}
@@ -769,12 +733,12 @@ public class ASTRefactor {
 					}
 
 					entityStack.peek().addEntity(
-						new SuperEntityClass(
-							name,
-							cu.getLineNumber(node.getStartPosition()),
-							cu.getColumnNumber(node.getStartPosition())
-						),
-						Entity.EntityType.THROW_STATEMENT
+									new SuperEntityClass(
+													name,
+													cu.getLineNumber(node.getStartPosition()),
+													cu.getColumnNumber(node.getStartPosition())
+									),
+									Entity.EntityType.THROW_STATEMENT
 					);
 				}
 				return true;
@@ -786,12 +750,12 @@ public class ASTRefactor {
 					// this seems like it does not even "try" to get the body of a try statement (hehe)
 
 					entityStack.peek().addEntity(
-						new SuperEntityClass(
-							"Try Statement",
-							cu.getLineNumber(node.getStartPosition()),
-							cu.getColumnNumber(node.getStartPosition())
-						),
-						Entity.EntityType.TRY_STATEMENT
+									new SuperEntityClass(
+													"Try Statement",
+													cu.getLineNumber(node.getStartPosition()),
+													cu.getColumnNumber(node.getStartPosition())
+									),
+									Entity.EntityType.TRY_STATEMENT
 					);
 				}
 
@@ -811,23 +775,6 @@ public class ASTRefactor {
 					else {
 						int startLine = cu.getLineNumber(node.getStartPosition());
 						int endLine = cu.getLineNumber(node.getStartPosition() + node.getLength() - 1);
-
-						// get source code
-						StringBuilder classSourceCode = new StringBuilder();
-						try(BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(new File(fileLocation)), "ISO-8859-1"))) {
-							for(int i = 0; i < startLine - 1; i++) {
-								br.readLine();
-							}
-
-							for(int j = startLine - 1; j < endLine - 1; j++) {
-								classSourceCode.append(br.readLine());
-								classSourceCode.append(System.getProperty("line.separator"));
-							}
-
-							classSourceCode.append(br.readLine());
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
 
 						ITypeBinding binding = node.resolveBinding();
 
@@ -869,7 +816,7 @@ public class ASTRefactor {
 						co.setHasComments(hasComments);
 						co.setImportList(importList);
 						co.setPackage(packageObject);
-						co.setSourceCode(classSourceCode.toString());
+						co.setSourceCode(getClassSourceCode(fileLocation, startLine, endLine));
 						co.setStartCharacter(node.getStartPosition());
 						co.setEndCharacter(node.getStartPosition() + node.getLength() - 1);
 
@@ -952,11 +899,11 @@ public class ASTRefactor {
 						}
 
 						SuperEntityClass vdsEntity = new SuperEntityClass(
-							name.toString(),
-							fullyQualifiedName,
-							nodeType,
-							cu.getLineNumber(name.getStartPosition()),
-							cu.getColumnNumber(name.getStartPosition())
+										name.toString(),
+										fullyQualifiedName,
+										nodeType,
+										cu.getLineNumber(name.getStartPosition()),
+										cu.getColumnNumber(name.getStartPosition())
 						);
 
 						if(nodeType.isArrayType()) {
@@ -998,11 +945,11 @@ public class ASTRefactor {
 						}
 
 						SuperEntityClass vdeEntity = new SuperEntityClass(
-							name.toString(),
-							fullyQualifiedName,
-							nodeType,
-							cu.getLineNumber(name.getStartPosition()),
-							cu.getColumnNumber(name.getStartPosition())
+										name.toString(),
+										fullyQualifiedName,
+										nodeType,
+										cu.getLineNumber(name.getStartPosition()),
+										cu.getColumnNumber(name.getStartPosition())
 						);
 
 						if(nodeType.isArrayType()) {
@@ -1036,12 +983,12 @@ public class ASTRefactor {
 					}
 
 					entityStack.peek().addEntity(
-						new SuperEntityClass(
-							name,
-							cu.getLineNumber(node.getStartPosition()),
-							cu.getColumnNumber(node.getStartPosition())
-						),
-						Entity.EntityType.WHILE_STATEMENT
+									new SuperEntityClass(
+													name,
+													cu.getLineNumber(node.getStartPosition()),
+													cu.getColumnNumber(node.getStartPosition())
+									),
+									Entity.EntityType.WHILE_STATEMENT
 					);
 				}
 
@@ -1073,46 +1020,5 @@ public class ASTRefactor {
 			}
 
 		});
-	}
-
-
-	/**
-	 * Test that times how long it takes and how much memory this class uses
-	 */
-	private static void test1() {
-		Runtime runtime = Runtime.getRuntime();
-		long start = System.currentTimeMillis();
-
-		// ******************************************
-
-		ASTRefactor a = new ASTRefactor("resources/astconfig.properties");
-		a.parseFile("resources/test.java");
-
-//		for(SuperEntityClass obj : a.importList) {
-//			System.out.println(obj.getName());
-//		}
-
-		// print results?
-
-		// ******************************************
-
-		long end = System.currentTimeMillis();
-
-		int mb = 1024 * 1024;
-		System.out.println("----------------------------------");
-		System.out.println("*** System statistic estimates ***");
-		System.out.println("\tRuntime: \t\t" + (end - start) + " ms");
-		System.out.println("\tTotal Memory: \t" + runtime.totalMemory() / mb  + " MB"); // available memory
-		System.out.println("\tFree Memory: \t" + runtime.freeMemory() / mb + " MB"); // free memory
-		System.out.println("\tUsed Memory: \t" + (runtime.totalMemory() - runtime.freeMemory()) / mb + " MB"); // used memory
-		System.out.println("----------------------------------");
-	}
-
-
-	/**
-	 * Clearly a main function that does very little
-	 */
-	public static void main(String[] args) {
-		test1();
 	}
 }
