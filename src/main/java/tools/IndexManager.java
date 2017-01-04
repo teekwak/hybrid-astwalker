@@ -160,21 +160,14 @@ public class IndexManager {
 		// todo: just need to find the file based on the file path given in the URL
 
 		String[] urlSplit = rawURL.split("/");
-		String outputFileLocation = "resources/" + urlSplit[urlSplit.length - 1].split("\\?start=")[0];
-		urlToFile(rawURL, outputFileLocation); // downloads file
 
 		// file is done being written to here with location outputFileLocation
 		// do ASTWalker and get the file model
-		ASTWalker ar = new ASTWalker(astProperties); // todo change input to map (leave string for standalone)
-		ar.parseFile(outputFileLocation);
-		if(ar.getFileModel() == null) {
+		ASTWalker aw = new ASTWalker(astProperties); // todo change input to map (leave string for standalone)
+		aw.parseFile(classFile.getAbsolutePath());
+		if(aw.getFileModel() == null) {
 			throw new IllegalArgumentException("[ERROR]: the file model is null!");
 		}
-
-		// todo maybe print time here to see how long repo took to download?
-		// todo do we always need to clone the repo? the answer is yes
-		// however, we need to clone this WAAAY before
-
 
 		// todo
 		// 1. function to create solr docs (empty)
@@ -183,13 +176,17 @@ public class IndexManager {
 		List<SolrInputDocument> classSolrDocList = new ArrayList<>();
 		List<SolrInputDocument> methodDecSolrDocList = new ArrayList<>();
 
-		for(JavaClass jc : ar.getFileModel().getJavaClassList()) {
+		for(JavaClass jc : aw.getFileModel().getJavaClassList()) {
 			SolrInputDocument classSolrDoc = createEmptyClassSolrDoc(jc, rawURL);
 
 			// we need to check the url
 			// need to hit the url on the grok server
 			// problem is that the grok server is not up
-			// addProjectData(classSolrDoc, clone.getLocalDirectory(), /* something */);
+			addProjectData(classSolrDoc, "https://github.com/" + urlSplit[3] + "/" + urlSplit[4]);
+
+			classSolrDoc.forEach((k, v) -> System.out.println(k + " -> " + v));
+
+			System.exit(0); // todo: current
 
 			// if add social data is true
 			// this comes from cloning
@@ -211,6 +208,23 @@ public class IndexManager {
 	}
 
 
+	/**
+	 * create clone folder on program start
+	 */
+	private static void setup() {
+		if(!(new File("clone").exists()) && !(new File("clone").mkdir())) {
+			throw new IllegalArgumentException("[ERROR]: could not make \"clone\" directory");
+		}
+	}
+
+	/**
+	 * delete clone folder on program end
+	 */
+	private static void teardown() {
+		if(!(new File("clone").delete())) {
+			throw new IllegalArgumentException("[ERROR]: could not delete \"clone\" directory");
+		}
+	}
 
 	/**
 	 * Just a normal main function
@@ -232,6 +246,8 @@ public class IndexManager {
 		configProperties = PropertyReader.createConfigPropertiesMap(args[0]);
 		astProperties = PropertyReader.createASTPropertiesMap(args[1]); // todo this is wrong. this needs to be a file with a LIST of files of ast properties. this is different from the original ast properties
 
+		setup();
+
 		try(BufferedReader urlBr = new BufferedReader(new InputStreamReader(new FileInputStream(configProperties.get("pathToURLMapPath")), "UTF-8"))) {
 			for(String url; (url = urlBr.readLine()) != null; ) {
 
@@ -239,14 +255,14 @@ public class IndexManager {
 
 				// clone repository
 				String[] urlSplit = url.split("/");
-				ClonedRepository clone = new ClonedRepository(url, "https://test:test@github.com/" + urlSplit[3] + "/" + urlSplit[4] + ".git", "resources/" + urlSplit[4]);
+				ClonedRepository clone = new ClonedRepository(url, "https://test:test@github.com/" + urlSplit[3] + "/" + urlSplit[4] + ".git", "clone/" + urlSplit[4]);
 				clone.cloneRepository();
 
 				// find file path and name
 				List<String> pathToFileInRepo = new ArrayList<>(Arrays.asList(Arrays.copyOfRange(urlSplit, 6, urlSplit.length - 1)));
 
 				// get class file from repo
-				File classFile = findFileInRepository("resources/" + urlSplit[4], urlSplit[urlSplit.length - 1].split("\\?")[0], pathToFileInRepo);
+				File classFile = findFileInRepository("clone/" + urlSplit[4], urlSplit[urlSplit.length - 1].split("\\?")[0], pathToFileInRepo);
 
 				// run each similarity function on the cloned repository
 				try(BufferedReader simBr = new BufferedReader(new InputStreamReader(new FileInputStream(configProperties.get("pathToSimFunctions")), "UTF-8"))) {
@@ -264,5 +280,7 @@ public class IndexManager {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
+		teardown();
 	}
 }
