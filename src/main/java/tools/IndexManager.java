@@ -90,15 +90,17 @@ public class IndexManager {
 		}
 	}
 
-	// todo this doesnt make sense. where is the project data supposed to draw from?
-	// todo i think this comes from codeexchange
-	// todo i was correct, this hits a codeexchange server
-	private static void addProjectData(SolrInputDocument solrDoc, String pathToDirectory, String projectURL) {
+	/**
+	 * Queries CodeExchange for project information
+	 * @param solrDoc
+	 * @param projectURL
+	 */
+	private static void addProjectData(SolrInputDocument solrDoc, String projectURL) {
 		// todo check the htmlURL object
 		String htmlURL = "\""+projectURL+"\"";
-		String hostName = "grok.ics.uci.edu"; // todo: WRONG
-		int portNumber = 9551; // todo: WRONG
-		String collectionName = "MoreLikeThisIndex"; // todo: WRONG
+		String hostName = "codeexchange.ics.uci.edu";
+		int portNumber = 9001;
+		String collectionName = "githubprojects";
 
 		// todo we need the solrj instance
 		SolrDocumentList list = Solrj.getInstance(configProperties.get("passPath")).query("id:" + htmlURL, hostName, portNumber, collectionName, 1);
