@@ -430,7 +430,7 @@ public class IndexManager {
 
 
 
-			addSocialData(classSolrDoc, "clones/" + urlSplit[4], getRelativeFileRepoPath(rawURL), classFile);
+			addSocialData(classSolrDoc, "clone/" + urlSplit[4], getRelativeFileRepoPath(rawURL), classFile);
 
 			classSolrDoc.forEach((k, v) -> System.out.println(k + " -> " + v.getValue()));
 
