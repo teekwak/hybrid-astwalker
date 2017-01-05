@@ -5,16 +5,14 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
-public class PropertyReader {
+class PropertyReader {
 
 	/**
 	 * Reads the config file for configuring the similarity function properties
-	 * @param bitVector
-	 * @return
+	 * @param bitVector x
+	 * @return x
 	 */
 	static Map<String, Boolean> createSimilarityFunctionPropertiesMap(String bitVector) {
 		Map<String, Boolean> map = new HashMap<>();
@@ -47,7 +45,7 @@ public class PropertyReader {
 	/**
 	 * Reads the config file for configuring the Index Manager
 	 * @param fileLocation location of file
-	 * @return
+	 * @return x
 	 */
 	static Map<String, String> createConfigPropertiesMap(String fileLocation) {
 		Map<String, String> map = new HashMap<>();
@@ -70,7 +68,7 @@ public class PropertyReader {
 	/**
 	 * Reads the config file for configuring the AST Walker
 	 * @param fileLocation location of file
-	 * @return
+	 * @return x
 	 */
 	static Map<String, Boolean> createASTPropertiesMap(String fileLocation) {
 		Map<String, Boolean> map = new HashMap<>();

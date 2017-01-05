@@ -5,27 +5,15 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
 
-public class ClonedRepository {
-	String rawGithubURL;
-	String githubCloneURL;
-	String localCloneDirectory;
+class ClonedRepository {
+	private String rawGithubURL;
+	private String githubCloneURL;
+	private String localCloneDirectory;
 
 	ClonedRepository(String r, String g, String l) {
 		this.rawGithubURL = r;
 		this.githubCloneURL = g;
 		this.localCloneDirectory = l;
-	}
-
-	String getRawGithubURL() {
-		return this.rawGithubURL;
-	}
-
-	String getGithubCloneURL() {
-		return this.githubCloneURL;
-	}
-
-	String getLocalDirectory() {
-		return this.localCloneDirectory;
 	}
 
 	void deleteRepository() {

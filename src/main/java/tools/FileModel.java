@@ -2,11 +2,8 @@ package tools;
 
 import entities.JavaClass;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.eclipse.core.runtime.CoreException;
 
 public class FileModel {
 
@@ -20,13 +17,8 @@ public class FileModel {
 		javaClassList.add(co);
 	}
 
-	public List<JavaClass> getJavaClassList() {
+	List<JavaClass> getJavaClassList() {
 		return this.javaClassList;
 	}
-	
-//	FileModel parseDeclarations(String fileLocation) throws IOException, CoreException {
-//		ASTWalker astWalker = new ASTWalker();
-//		return astWalker.parseFile(fileLocation);
-//	}
 
 }
