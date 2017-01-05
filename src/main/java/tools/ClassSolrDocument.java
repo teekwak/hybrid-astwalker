@@ -30,7 +30,7 @@ import java.util.*;
 
 class ClassSolrDocument {
 	private SolrInputDocument doc;
-	private Map<String, String> configProperties;
+	private Map<String, String> configProperties; // todo: i don't think this is string string. it should be string boolean
 
 
 	/**
