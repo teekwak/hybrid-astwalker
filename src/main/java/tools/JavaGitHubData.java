@@ -162,53 +162,35 @@ class JavaGitHubData {
 //	}
 
 	// gets the number of lines in a file
-	private static int getLineCountOfFile(String fileName) {
-		File file = new File(fileName);
-
+	private static int getLineCountOfFile(File file) {
 		int count = 0;
-		try(Scanner scanner = new Scanner(file, "ISO-8859-1")) {
+		try(Scanner scanner = new Scanner(file, "UTF-8")) {
 			while (scanner.hasNext()) {
 				count++;
 				scanner.nextLine();
 			}
 		} catch (IOException e) {
-			System.out.println("Data is null!");
+			System.out.println("[ERROR]: Number of lines in the file is null!");
 		}
 
 		return count;
 	}
 
 	// gets number of characters in a file
-	private static int getCharacterCountOfFile(String fileName) {
-		File file = new File(fileName);
-
+	private static int getCharacterCountOfFile(File file) {
 		int count = 0;
-		try(Scanner scanner = new Scanner(file, "ISO-8859-1")) {
+		try(Scanner scanner = new Scanner(file, "UTF-8")) {
 			while (scanner.hasNextLine()) {
 				count += scanner.nextLine().length();
 			}
 		} catch (IOException e) {
-			System.out.println("Data is null!");
+			System.out.println("[ERROR]: Character count in file is null!");
 		}
 
 		return count;
 	}
 
-	void getCommits(String directoryLocation, String javaFileName) throws IOException, ParseException {
-		File dir = new File(directoryLocation);
-
-		// get number of lines in a file
-		this.numberOfLines = getLineCountOfFile(javaFileName);
-
-		// get number of characters in a file
-		this.numberOfCharacters = getCharacterCountOfFile(javaFileName);
-
-		// get all commits of a single file
-		ProcessBuilder pb = new ProcessBuilder("git", "log", "--reverse", "--numstat", "--format=format:Commit: %H%nAuthor: %an%nEmail: %ae%nDate: %ad%nMessage: %s", javaFileName);
-		pb.directory(dir);
-
-		Process proc = pb.start();
-
+	void getCommits(String directoryLocation, String repoFileName, File classFile) {
 		List<String> hashCodeList = new ArrayList<>();
 		List<String> authorList = new ArrayList<>();
 		List<String> emailList = new ArrayList<>();
@@ -217,62 +199,80 @@ class JavaGitHubData {
 		List<Integer> insertionList = new ArrayList<>();
 		List<Integer> deletionList = new ArrayList<>();
 
-		String s;
-		try(BufferedReader br = new BufferedReader(new InputStreamReader(proc.getInputStream(), "UTF-8"))) {
-			while((s = br.readLine()) != null) {
-				if(s.startsWith("Commit") && hashCodeList.size() == messageList.size() && hashCodeList.size() == insertionList.size()) {
-					hashCodeList.add(s.split(" ")[1]);
-				}
-				else if(s.startsWith("Commit") && hashCodeList.size() == messageList.size() && hashCodeList.size() != insertionList.size()) {
-					insertionList.add(0);
-					deletionList.add(0);
-					hashCodeList.add(s.split(" ")[1]);
-				}
-				else if(s.startsWith("Commit") && hashCodeList.size() != messageList.size() && hashCodeList.size() == insertionList.size()) {
-					messageList.add("");
-					hashCodeList.add(s.split(" ")[1]);
-				}
-				else if(s.startsWith("Commit") && hashCodeList.size() != messageList.size() && hashCodeList.size() != insertionList.size()) {
-					messageList.add("");
-					insertionList.add(0);
-					deletionList.add(0);
-					hashCodeList.add(s.split(" ")[1]);
-				}
-				else if(s.startsWith("Author")) {
-					try {
-						authorList.add(s.split(" ")[1]);
-					} catch (ArrayIndexOutOfBoundsException e) {
-						authorList.add("");
+		try {
+			// get number of lines in a file
+			this.numberOfLines = getLineCountOfFile(classFile);
+
+			// get number of characters in a file
+			this.numberOfCharacters = getCharacterCountOfFile(classFile);
+
+			// get all commits of a single file
+			String[] command = new String[]{"git", "log", "--reverse", "--numstat", "--format=format:Commit: %H%nAuthor: %an%nEmail: %ae%nDate: %ad%nMessage: %s", repoFileName};
+			ProcessBuilder pb = new ProcessBuilder(command);
+
+			pb.directory(new File(directoryLocation));
+
+			Process proc = pb.start();
+
+			String s;
+			try(BufferedReader br = new BufferedReader(new InputStreamReader(proc.getInputStream(), "UTF-8"))) {
+				while((s = br.readLine()) != null) {
+					if(s.startsWith("Commit") && hashCodeList.size() == messageList.size() && hashCodeList.size() == insertionList.size()) {
+						hashCodeList.add(s.split(" ")[1]);
 					}
-				}
-				else if(s.startsWith("Email")) {
-					try {
-						emailList.add(s.split(" ")[1]);
-					} catch (ArrayIndexOutOfBoundsException e) {
-						emailList.add("");
+					else if(s.startsWith("Commit") && hashCodeList.size() == messageList.size() && hashCodeList.size() != insertionList.size()) {
+						insertionList.add(0);
+						deletionList.add(0);
+						hashCodeList.add(s.split(" ")[1]);
 					}
-				}
-				else if (s.startsWith("Date")) {
-					dateList.add(s.split(" ", 2)[1]);
-				}
-				else if (s.startsWith("Message")){
-					try {
-						messageList.add(s.split(" ", 2)[1]);
-					} catch (ArrayIndexOutOfBoundsException e) {
+					else if(s.startsWith("Commit") && hashCodeList.size() != messageList.size() && hashCodeList.size() == insertionList.size()) {
 						messageList.add("");
+						hashCodeList.add(s.split(" ")[1]);
+					}
+					else if(s.startsWith("Commit") && hashCodeList.size() != messageList.size() && hashCodeList.size() != insertionList.size()) {
+						messageList.add("");
+						insertionList.add(0);
+						deletionList.add(0);
+						hashCodeList.add(s.split(" ")[1]);
+					}
+					else if(s.startsWith("Author")) {
+						try {
+							authorList.add(s.split(" ")[1]);
+						} catch (ArrayIndexOutOfBoundsException e) {
+							authorList.add("");
+						}
+					}
+					else if(s.startsWith("Email")) {
+						try {
+							emailList.add(s.split(" ")[1]);
+						} catch (ArrayIndexOutOfBoundsException e) {
+							emailList.add("");
+						}
+					}
+					else if (s.startsWith("Date")) {
+						dateList.add(s.split(" ", 2)[1]);
+					}
+					else if (s.startsWith("Message")){
+						try {
+							messageList.add(s.split(" ", 2)[1]);
+						} catch (ArrayIndexOutOfBoundsException e) {
+							messageList.add("");
+						}
+					}
+					else if(s.length() > 0 && Character.isDigit(s.charAt(0))) {
+						String[] numParts = s.split("\t");
+						insertionList.add(Integer.valueOf(numParts[0]));
+						deletionList.add(Integer.valueOf(numParts[1]));
 					}
 				}
-				else if(s.length() > 0 && Character.isDigit(s.charAt(0))) {
-					String[] numParts = s.split("\t");
-					insertionList.add(Integer.valueOf(numParts[0]));
-					deletionList.add(Integer.valueOf(numParts[1]));
-				}
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
+
+			proc.destroy();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-		proc.destroy();
 
 		int hashCodeListSize = hashCodeList.size();
 		for(int i = 0; i < hashCodeListSize; i++) {

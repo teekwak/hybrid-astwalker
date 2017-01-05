@@ -7,7 +7,8 @@ import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 
 import java.io.*;
-import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -35,12 +36,14 @@ public class IndexManager {
 		return instance;
 	}
 
+
+
 	/**
 	 * Quickly traverse repository to find a file based on a list of directories
-	 * @param parentDirectory
-	 * @param fileName
-	 * @param pathToFileInRepo
-	 * @return
+	 * @param parentDirectory x
+	 * @param fileName x
+	 * @param pathToFileInRepo x
+	 * @return x
 	 */
 	private static File findFileInRepository(String parentDirectory, String fileName, List<String> pathToFileInRepo) {
 		File[] filesInDirectory = new File(parentDirectory).listFiles();
@@ -67,33 +70,253 @@ public class IndexManager {
 		throw new IllegalArgumentException("[ERROR]: file does not exist in repository!");
 	}
 
-	/**
-	 *
-	 * @param urlAsString
-	 * @param outputFileLocation
-	 */
-	private static void urlToFile(String urlAsString, String outputFileLocation) {
+
+
+//	private static void addTechnicalData(SolrInputDocument solrDoc, JavaClass jc) {
+//		// we need jc, or a place where
+//		// todo: how do we incorporate the properties here?
+//		// todo: are the properties only used in mining?
+//
+//		solrDoc.addField(IndexManager.SNIPPET_ADDRESS_LOWER_BOUND, ((Number)jc.getEndLine()).longValue());
+//		solrDoc.addField(IndexManager.SNIPPET_ADDRESS_UPPER_BOUND, ((Number)jc.getLineNumber()).longValue());
+//		solrDoc.addField(IndexManager.SNIPPET_CODE, jc.getSourceCode());
+//		solrDoc.addField(IndexManager.SNIPPET_HAS_JAVA_COMMENTS, jc.getHasComments());
+//		solrDoc.addField(IndexManager.SNIPPET_IS_ABSTRACT, jc.getIsAbstract());
+//		solrDoc.addField(IndexManager.SNIPPET_IS_ANONYMOUS, jc.getIsAnonymous());
+//		solrDoc.addField(IndexManager.SNIPPET_IS_GENERIC, jc.getIsGenericType());
+//		solrDoc.addField(IndexManager.SNIPPET_IS_INNERCLASS, jc.getIsInnerClass());
+//		boolean has_wildcard_method = false;
+//		for(SuperEntityClass md : jc.getMethodDeclarationList()) {
+//			if(((MethodDeclarationObject) md).getWildcardList().size() > 0) {
+//				has_wildcard_method =  true;
+//				break;
+//			}
+//		}
+//		solrDoc.addField(IndexManager.SNIPPET_IS_WILDCARD, has_wildcard_method);
+//		if(has_wildcard_method) {
+//			for(SuperEntityClass md : jc.getMethodDeclarationList()) {
+//				for(SuperEntityClass wild : ((MethodDeclarationObject)md).getWildcardList()) {
+//					solrDoc.addField(IndexManager.SNIPPET_IS_WILDCARD_BOUNDS, wild.getBound());
+//				}
+//			}
+//		}
+//		for(SuperEntityClass importStr : jc.getImportList()) {
+//			solrDoc.addField(IndexManager.SNIPPET_IMPORTS, importStr.getFullyQualifiedName());
+//			String[] split = importStr.getFullyQualifiedName().split("[.]");
+//			solrDoc.addField(IndexManager.SNIPPET_IMPORTS_SHORT, split[split.length - 1]);
+//		}
+//		solrDoc.addField(IndexManager.SNIPPET_IMPORTS_COUNT, ((Number)jc.getImportList().size()).longValue());
+//		for(String interfaceStr : jc.getImplements()) {
+//			solrDoc.addField(IndexManager.SNIPPET_IMPLEMENTS, interfaceStr);
+//			if(interfaceStr.indexOf('<') > -1) {
+//				String[] split1 = interfaceStr.split("<", 2);
+//				String[] split2 = split1[0].split("[.]");
+//				solrDoc.addField(IndexManager.SNIPPET_IMPLEMENTS_SHORT, split2[split2.length - 1] + "<" + split1[split1.length - 1]);
+//			}
+//			else {
+//				String[] split = interfaceStr.split("[.]");
+//				solrDoc.addField(IndexManager.SNIPPET_IMPLEMENTS_SHORT, split[split.length - 1]);
+//			}
+//		}
+//		solrDoc.addField(IndexManager.SNIPPET_EXTENDS, jc.getSuperClass());
+//		if(jc.getSuperClass() != null){
+//			String superClass = jc.getSuperClass();
+//			if(superClass.indexOf('<') > -1) {
+//				String[] split1 = superClass.split("<", 2);
+//				String[] split2 = split1[0].split("[.]");
+//				solrDoc.addField(IndexManager.SNIPPET_EXTENDS_SHORT, split2[split2.length - 1] + "<" + split1[split1.length - 1]);
+//			}
+//			else {
+//				String[] split = superClass.split("[.]");
+//				solrDoc.addField(IndexManager.SNIPPET_EXTENDS_SHORT, split[split.length - 1]);
+//			}
+//		}
+//		solrDoc.addField(IndexManager.SNIPPET_PACKAGE, jc.getPackage().getFullyQualifiedName());
+//		if(jc.getPackage().getFullyQualifiedName() != null){
+//			String packageName = jc.getPackage().getFullyQualifiedName();
+//			if(packageName.indexOf('<') > -1) {
+//				String[] split1 = packageName.split("<", 2);
+//				String[] split2 = split1[0].split("[.]");
+//				solrDoc.addField(IndexManager.SNIPPET_PACKAGE_SHORT, split2[split2.length - 1] + "<" + split1[split1.length - 1]);
+//			}
+//			else {
+//				String[] split = packageName.split("[.]");
+//				solrDoc.addField(IndexManager.SNIPPET_PACKAGE_SHORT, split[split.length - 1]);
+//			}
+//		}
+//
+//		// todo not sure what this is for
+//		int complexity = jc.getCyclomaticComplexity();
+//
+//		solrDoc.addField(IndexManager.SNIPPET_PATH_COMPLEXITY_SUM, ((Number)complexity).longValue());
+//		int methodInvCount = jc.getTotalMethodInvocationCount();
+//		int codeSize = jc.getSourceCode().length();
+//		if(methodInvCount == 0) methodInvCount = 1;
+//		if(codeSize == 0) codeSize = 1;
+//		solrDoc.addField(IndexManager.SNIPPET_COMPLEXITY_DENSITY, (double)jc.getCyclomaticComplexity() * (1 / (double)methodInvCount) * (1 / (double)codeSize));
+//		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_FIELDS, ((Number)jc.getGlobalList().size()).longValue());
+//		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_FUNCTIONS, ((Number)jc.getMethodDeclarationList().size()).longValue());
+//		Set<String> methodDecNames = new HashSet<>(jc.getMethodDeclarationNames());
+//		for(String name : methodDecNames) {
+//			solrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_NAMES, name);
+//		}
+//		Set<String> methodInvNames = new HashSet<>(jc.getMethodInvocationNames());
+//		for(String name : methodInvNames) {
+//			solrDoc.addField(IndexManager.SNIPPET_METHOD_INVOCATION_NAMES, name);
+//		}
+//		for(String typeParameter: jc.getGenericParametersList()){
+//			solrDoc.addField(IndexManager.SNIPPET_METHOD_DEC_IS_GENERIC_TYPE_PARAMS, typeParameter);
+//		}
+//		solrDoc.addField(IndexManager.SNIPPET_SIZE, jc.getSourceCode().length());
+//		solrDoc.addField(IndexManager.SNIPPET_NUMBER_OF_LINES, ((Number)(jc.getEndLine() - jc.getLineNumber() + 1)).longValue());
+//
+//		// this could be social data instead?
+//		for(JavaClass cl : fileModel.getJavaClassList()) {
+//			try {
+//				if(cl.getName() != null && cl.getName().equals(jc.getContainingClass())) {
+//					// todo seems like the containingID is just the line that was originally passed in
+//					String containingID = githubAddress + "?start=" + cl.getLineNumber() + "&end=" + cl.getEndLine();
+//					solrDoc.addField(SNIPPET_CONTAINING_CLASS_ID, containingID);
+//					solrDoc.addField(IndexManager.SNIPPET_CONTAINING_CLASS_COMPLEXITY_SUM, ((Number)cl.getCyclomaticComplexity()).longValue());
+//					break;
+//				}
+//			} catch (NullPointerException e) {
+//				String containingID = githubAddress + "?start=" + jc.getLineNumber() + "&end=" + jc.getEndLine();
+//				solrDoc.addField(SNIPPET_CONTAINING_CLASS_ID, containingID);
+//				solrDoc.addField(IndexManager.SNIPPET_CONTAINING_CLASS_COMPLEXITY_SUM, ((Number)jc.getCyclomaticComplexity()).longValue());
+//				break;
+//			}
+//		}
+//
+//		// method declaration is right below this current method
+//		Map<String, Set<String>> variables = new HashMap<>();
+//		{
+//			variables.put("variableTypes", new HashSet<>());
+//			variables.put("variableTypesShort", new HashSet<>());
+//			variables.put("variableNames", new HashSet<>());
+//		}
+//
+//		// TODO
+//		getVariablesFromSuperEntityList(jc.getArrayList(), variables);
+//
+//		// method declaration is right below this current method
+//		getVariablesFromMethodDeclaration(jc.getMethodDeclarationList(), variables);
+//
+//		for(String variableTypes : variables.get("variableTypes")) {
+//			solrDoc.addField(IndexManager.SNIPPET_VARIABLE_TYPES, variableTypes);
+//		}
+//		for(String variableTypesShort : variables.get("variableTypesShort")) {
+//			solrDoc.addField(IndexManager.SNIPPET_VARIABLE_TYPES_SHORT, variableTypesShort);
+//		}
+//		for(String variableNames : variables.get("variableNames")) {
+//			solrDoc.addField(IndexManager.SNIPPET_VARIABLE_NAMES, variableNames);
+//			solrDoc.addField(IndexManager.SNIPPET_VARIABLE_NAMES_DELIMITED, variableNames);
+//		}
+//	}
+
+
+
+	private static String makeGravaterURL(String authorEmail) {
+		if(authorEmail == null)
+			return "";
+
+		String md5 = md5Java(authorEmail);
+		return "http://www.gravatar.com/avatar/"+md5;
+	}
+
+	private static String md5Java(String message){
+		String digest = null;
 		try {
-			URL url = new URL(urlAsString);
-			BufferedReader githubBr = new BufferedReader(new InputStreamReader(url.openStream(), "UTF-8"));
-			for (String javaLine; (javaLine = githubBr.readLine()) != null; ) {
-				try(OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(outputFileLocation, true), "UTF-8")) {
-					osw.write(javaLine);
-					osw.write(System.lineSeparator());
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+			MessageDigest md = MessageDigest.getInstance("MD5");
+
+			byte[] hash = md.digest(message.getBytes("UTF-8")); //converting byte array to Hexadecimal
+			StringBuilder sb = new StringBuilder(2*hash.length);
+			for(byte b : hash){
+				sb.append(String.format("%02x", b&0xff));
 			}
-			githubBr.close();
-		} catch (IOException e) {
-			e.printStackTrace();
+			digest = sb.toString();
+		} catch (UnsupportedEncodingException | NoSuchAlgorithmException ex) {
+			ex.printStackTrace();
+		}
+		return digest;
+	}
+
+
+
+	/**
+	 * Adds social data
+	 * @param solrDoc x
+	 * @param cloneDirectory x
+	 * @param fileRepoPath x
+	 */
+	private static void addSocialData(SolrInputDocument solrDoc, String cloneDirectory, String fileRepoPath, File classFile) {
+		// todo check to make sure that the traverseRepos produces the correct string
+		JavaGitHubData jghd = new JavaGitHubData(fileRepoPath);
+		jghd.getCommits(cloneDirectory, fileRepoPath, classFile);
+
+		Commit headCommit = jghd.getListOfCommits().get(jghd.getListOfCommits().size() - 1);
+		System.out.println(headCommit.getAuthor());
+
+
+
+
+		System.exit(0);
+
+
+
+
+
+
+		solrDoc.addField(SolrKey.AUTHOR_NAME, headCommit.getAuthor());
+		solrDoc.addField(SolrKey.AUTHOR_EMAIL, headCommit.getEmail());
+		solrDoc.addField(SolrKey.AUTHOR_AVATAR, makeGravaterURL(headCommit.getEmail()));
+		for(Commit cd : jghd.getListOfCommits()) {
+			solrDoc.addField(SolrKey.SNIPPET_ALL_COMMENTS, cd.getMessage());
+			solrDoc.addField(SolrKey.SNIPPET_ALL_DATES, cd.getSolrDate());
+			solrDoc.addField(SolrKey.SNIPPET_ALL_VERSIONS, cd.getHashCode());
+		}
+		solrDoc.addField("month", headCommit.getMonth());
+		solrDoc.addField("day", headCommit.getDay());
+		solrDoc.addField("year", headCommit.getYear());
+		solrDoc.addField(SolrKey.SNIPPET_NUMBER_OF_INSERTIONS, ((Number)headCommit.getInsertions()).longValue());
+		solrDoc.addField(SolrKey.SNIPPET_NUMBER_OF_DELETIONS, ((Number)headCommit.getDeletions()).longValue());
+		solrDoc.addField(SolrKey.SNIPPET_INSERTION_CODE_CHURN, (double)headCommit.getInsertions() / jghd.getNumberOfLines());
+		solrDoc.addField(SolrKey.SNIPPET_DELETED_CODE_CHURN, (double)headCommit.getDeletions() / jghd.getNumberOfLines());
+		solrDoc.addField(SolrKey.SNIPPET_INSERTION_DELETION_CODE_CHURN, (double)(headCommit.getInsertions() + headCommit.getDeletions()) / jghd.getNumberOfLines());
+		solrDoc.addField(SolrKey.SNIPPET_THIS_VERSION, headCommit.getHashCode());
+		solrDoc.addField(SolrKey.SNIPPET_VERSION_COMMENT, headCommit.getMessage());
+		solrDoc.addField(SolrKey.SNIPPET_LAST_UPDATED, headCommit.getSolrDate());
+		int totalInsertions = 0;
+		int totalDeletions = 0;
+		for(Commit cd : jghd.getListOfCommits()) {
+			totalInsertions += cd.getInsertions();
+			totalDeletions += cd.getDeletions();
+		}
+		solrDoc.addField(SolrKey.SNIPPET_TOTAL_INSERTIONS, totalInsertions);
+		solrDoc.addField(SolrKey.SNIPPET_TOTAL_DELETIONS, totalDeletions);
+
+
+		// need commit data for this
+		for(String author : jghd.getUniqueAuthors()) {
+			solrDoc.addField(SolrKey.SNIPPET_ALL_AUTHORS, author);
+			System.out.println(author);
+		}
+
+
+		// definitely need commit data for this
+		solrDoc.addField(SolrKey.SNIPPET_AUTHOR_COUNT, ((Number)jghd.getUniqueAuthors().size()).intValue());
+		for(String email : jghd.getUniqueEmails()) {
+			solrDoc.addField(SolrKey.SNIPPET_ALL_AUTHOR_AVATARS, makeGravaterURL(email));
+			solrDoc.addField(SolrKey.SNIPPET_ALL_AUTHOR_EMAILS, email);
 		}
 	}
 
+
+
 	/**
 	 * Queries CodeExchange for project information
-	 * @param solrDoc
-	 * @param projectURL
+	 * @param solrDoc x
+	 * @param projectURL x
 	 */
 	private static void addProjectData(SolrInputDocument solrDoc, String projectURL) {
 		// todo check the htmlURL object
@@ -119,11 +342,29 @@ public class IndexManager {
 		if(doc.getFieldValue("userType") != null) { solrDoc.addField(SolrKey.AUTHOR_TYPE, doc.getFieldValue("userType").toString()); }
 	}
 
+
+	/**
+	 * Get the relative path to the file in the repository
+	 * @param url x
+	 * @return x
+	 */
+	private static String getRelativeFileRepoPath(String url) {
+		String[] urlSplit = url.split("/");
+		StringBuilder repoPath = new StringBuilder();
+		for(int i = 6; i < urlSplit.length - 1; i++) {
+			repoPath.append(urlSplit[i]);
+			repoPath.append("/");
+		}
+		repoPath.append(urlSplit[urlSplit.length - 1].split("\\?")[0]);
+		return repoPath.toString();
+	}
+
+
 	/**
 	 *
-	 * @param jc
-	 * @param fullURL
-	 * @return
+	 * @param jc x
+	 * @param fullURL x
+	 * @return x
 	 */
 	private static SolrInputDocument createEmptyClassSolrDoc(JavaClass jc, String fullURL) {
 		SolrInputDocument classDoc = new SolrInputDocument();
@@ -141,7 +382,7 @@ public class IndexManager {
 
 	/**
 	 *
-	 * @param rawURL
+	 * @param rawURL x
 	 */
 	private static void createSolrDocsForURL(String rawURL, File classFile) {
 		// todo for each class file
@@ -153,11 +394,10 @@ public class IndexManager {
 		// todo upload them to the server
 
 
+		System.out.println("Started creating solr doc for " + classFile.getName());
+
 
 		// print time before download
-		// convert url to .java file
-		// todo: no longer need to download the file because the repo is cloned already
-		// todo: just need to find the file based on the file path given in the URL
 
 		String[] urlSplit = rawURL.split("/");
 
@@ -184,13 +424,17 @@ public class IndexManager {
 			// problem is that the grok server is not up
 			addProjectData(classSolrDoc, "https://github.com/" + urlSplit[3] + "/" + urlSplit[4]);
 
-			classSolrDoc.forEach((k, v) -> System.out.println(k + " -> " + v));
-
-			System.exit(0); // todo: current
-
 			// if add social data is true
 			// this comes from cloning
-			// addSocialData(classSolrDoc, clone);
+
+
+
+
+			addSocialData(classSolrDoc, "clones/" + urlSplit[4], getRelativeFileRepoPath(rawURL), classFile);
+
+			classSolrDoc.forEach((k, v) -> System.out.println(k + " -> " + v.getValue()));
+
+			System.exit(0); // todo: current
 
 			// if add technical data is true
 			// addTechnicalData(classSolrDoc, jc);
@@ -205,6 +449,8 @@ public class IndexManager {
 
 
 		// todo still more to do!
+		// todo: specifically, need to create method dec and method inv solr doc
+		// todo: then we can upload them all
 	}
 
 

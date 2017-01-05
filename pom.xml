@@ -83,7 +83,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>Initializer</mainClass>
+                            <mainClass>tools.IndexManager</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
