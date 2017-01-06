@@ -130,11 +130,12 @@ public class IndexManager {
 			|| simProperties.get("isWildCardScore")
 		) {
 			ASTWalker aw = new ASTWalker(astProperties); // todo change input to map (leave string for standalone)
-			solrDoc = aw.parseFileIntoSolrDoc(classFile.getAbsolutePath());
+			solrDoc = aw.parseFileIntoSolrDoc(rawURL, classFile.getAbsolutePath());
 		}
 
 		if(solrDoc == null) {
 			solrDoc = new SolrInputDocument();
+			solrDoc.addField("id", rawURL);
 		}
 
 		if(simProperties.get("authorScore")) {
