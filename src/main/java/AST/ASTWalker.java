@@ -346,7 +346,7 @@ public class ASTWalker {
 						fullyQualifiedName = "";
 					}
 
-					solrDoc.addField("packageScore", fullyQualifiedName);
+					solrDoc.addField("snippet_package", fullyQualifiedName);
 				}
 
 				return true;
@@ -412,19 +412,19 @@ public class ASTWalker {
 							fullyQualifiedName = node.getName().toString();
 						}
 
-						solrDoc.addField("classNameScore", fullyQualifiedName);
-						solrDoc.addField("isGenericScore", binding.isGenericType());
-						solrDoc.addField("sizeScore", node.getLength());
+						solrDoc.addField("snippet_class_name", fullyQualifiedName);
+						solrDoc.addField("snippet_is_generic", binding.isGenericType());
+						solrDoc.addField("snippet_size", node.getLength());
 
 						if(node.getSuperclassType() != null) {
-							solrDoc.addField("extendsScore", node.getSuperclassType().toString());
+							solrDoc.addField("snippet_extends", node.getSuperclassType().toString());
 						}
 
 						if(Modifier.isAbstract(node.getModifiers())) {
-							solrDoc.addField("isAbstractScore", true);
+							solrDoc.addField("snippet_is_abstract", true);
 						}
 						else {
-							solrDoc.addField("isAbstractScore", false);
+							solrDoc.addField("snippet_is_abstract", false);
 						}
 					}
 				}
@@ -532,24 +532,25 @@ public class ASTWalker {
 		// todo: pass in id from index manager
 		// todo: complexityScore, upload source code
 		//
-		solrDoc.addField("importNumScore", importNames.size());
-		solrDoc.addField("fieldsScore", fieldNames.size());
-		solrDoc.addField("wildcardScore", isWildCard);
+		solrDoc.addField("snippet_imports_count", importNames.size());
+		solrDoc.addField("snippet_number_of_fields", fieldNames.size());
+		solrDoc.addField("snippet_is_wildcard", isWildCard);
+		solrDoc.addField("snippet_path_complexity_class_sum", cyclomaticComplexity);
 
 		for(String name : importNames) {
-			solrDoc.addField("importsScore", name);
+			solrDoc.addField("snippet_imports", name);
 		}
 
 		for(String name : methodInvocationNames) {
-			solrDoc.addField("methodCallScore", name);
+			solrDoc.addField("snippet_method_invocation_names", name);
 		}
 
 		for(String name : methodDeclarationNames) {
-			solrDoc.addField("methodDecScore", name);
+			solrDoc.addField("snippet_method_dec_names", name);
 		}
 
 		for(String name : variableNames) {
-			solrDoc.addField("variableNameScore", name);
+			solrDoc.addField("snippet_variable_names", name);
 		}
 
 		return solrDoc;
