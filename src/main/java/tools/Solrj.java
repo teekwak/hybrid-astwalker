@@ -82,9 +82,9 @@ public class Solrj {
 		if(doc == null)
 			return;
 
-			  req.setAction( UpdateRequest.ACTION.COMMIT, false, false );
-			  req.add( doc );
-			  req.getDocuments().size();
+		req.setAction( UpdateRequest.ACTION.COMMIT, false, false );
+		req.add( doc );
+		req.getDocuments().size();
 
 	}
 

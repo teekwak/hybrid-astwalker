@@ -47,23 +47,23 @@ class MethodDeclarationSolrDocument {
 		this.doc.addField(SolrKey.SNIPPET_METHOD_DEC_END, ((Number)mdo.getEndLine()).longValue());
 
 		this.doc.addField(SolrKey.SNIPPET_METHOD_DEC_IS_ABSTRACT, mdo.getIsAbstract());
-		this.doc.addField(SolrKey.SNIPPET_METHOD_DEC_IS_CONSTRUCTOR, mdo.getIsConstructor());
+//		this.doc.addField(SolrKey.SNIPPET_METHOD_DEC_IS_CONSTRUCTOR, mdo.getIsConstructor());
 		this.doc.addField(SolrKey.SNIPPET_METHOD_DEC_IS_GENERIC, mdo.getIsGenericType());
-		this.doc.addField(SolrKey.SNIPPET_METHOD_DEC_IS_STATIC, mdo.getIsStatic());
-		this.doc.addField(SolrKey.SNIPPET_METHOD_DEC_IS_VAR_ARGS, mdo.getIsVarargs());
+//		this.doc.addField(SolrKey.SNIPPET_METHOD_DEC_IS_STATIC, mdo.getIsStatic());
+//		this.doc.addField(SolrKey.SNIPPET_METHOD_DEC_IS_VAR_ARGS, mdo.getIsVarargs());
 
 		this.doc.addField("parent",false);
 		this.doc.addField("is_method_dec_child",true);
 
 		this.doc.addField(SolrKey.SNIPPET_METHOD_DEC_PATH_COMPLEXITY, ((Number)mdo.getCyclomaticComplexity()).longValue());
 
-		this.doc.addField(SolrKey.SNIPPET_METHOD_DEC_WHILE_COUNT, ((Number)mdo.getWhileStatementList().size()).longValue());
-		this.doc.addField(SolrKey.SNIPPET_METHOD_DEC_FOR_COUNT, ((Number)mdo.getForStatementList().size()).longValue());
-		this.doc.addField(SolrKey.SNIPPET_METHOD_DEC_IF_COUNT, ((Number)mdo.getIfStatementList().size()).longValue());
-		this.doc.addField(SolrKey.SNIPPET_METHOD_DEC_CASE_COUNT, ((Number)mdo.getSwitchCaseList().size()).longValue());
-		this.doc.addField(SolrKey.SNIPPET_METHOD_DEC_TERNARY_COUNT, ((Number)mdo.getConditionalExpressionList().size()).longValue());
-		this.doc.addField(SolrKey.SNIPPET_METHOD_DEC_CATCH_COUNT, ((Number)mdo.getCatchClauseList().size()).longValue());
-		this.doc.addField(SolrKey.SNIPPET_METHOD_DEC_LOGICAL_COUNT, ((Number)mdo.getInfixExpressionList().size()).longValue());
+//		this.doc.addField(SolrKey.SNIPPET_METHOD_DEC_WHILE_COUNT, ((Number)mdo.getWhileStatementList().size()).longValue());
+//		this.doc.addField(SolrKey.SNIPPET_METHOD_DEC_FOR_COUNT, ((Number)mdo.getForStatementList().size()).longValue());
+//		this.doc.addField(SolrKey.SNIPPET_METHOD_DEC_IF_COUNT, ((Number)mdo.getIfStatementList().size()).longValue());
+//		this.doc.addField(SolrKey.SNIPPET_METHOD_DEC_CASE_COUNT, ((Number)mdo.getSwitchCaseList().size()).longValue());
+//		this.doc.addField(SolrKey.SNIPPET_METHOD_DEC_TERNARY_COUNT, ((Number)mdo.getConditionalExpressionList().size()).longValue());
+//		this.doc.addField(SolrKey.SNIPPET_METHOD_DEC_CATCH_COUNT, ((Number)mdo.getCatchClauseList().size()).longValue());
+//		this.doc.addField(SolrKey.SNIPPET_METHOD_DEC_LOGICAL_COUNT, ((Number)mdo.getInfixExpressionList().size()).longValue());
 
 		// this.doc.addField(SolrKey.SNIPPET_METHOD_DEC_IS_RECURSIVE, dec.isRecurisive);
 
@@ -84,10 +84,10 @@ class MethodDeclarationSolrDocument {
 			}
 		}
 
-		this.doc.addField(SolrKey.SNIPPET_METHOD_DEC_RETURN_TYPE, mdo.getReturnType());
+//		this.doc.addField(SolrKey.SNIPPET_METHOD_DEC_RETURN_TYPE, mdo.getReturnType());
 
-		int localVariableCount = mdo.getArrayList().size() + mdo.getGenericsList().size() + mdo.getPrimitiveList().size() + mdo.getSimpleList().size() - mdo.getParametersList().size();
-		this.doc.addField(SolrKey.SNIPPET_METHOD_DEC_NUMBER_OF_LOCAL_VARIABLES, ((Number)localVariableCount).longValue());
+//		int localVariableCount = mdo.getArrayList().size() + mdo.getGenericsList().size() + mdo.getPrimitiveList().size() + mdo.getSimpleList().size() - mdo.getParametersList().size();
+//		this.doc.addField(SolrKey.SNIPPET_METHOD_DEC_NUMBER_OF_LOCAL_VARIABLES, ((Number)localVariableCount).longValue());
 
 		for(String typeParam : mdo.getGenericParametersList()) {
 			this.doc.addField(SolrKey.SNIPPET_METHOD_DEC_IS_GENERIC_TYPE_PARAMS, typeParam);

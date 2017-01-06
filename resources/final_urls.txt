@@ -1,4 +1,1 @@
 https://raw.github.com/imr/Electric8/05615f25ae3c7a4efae2abee11d0c68b2b28f423/com/sun/electric/tool/user/CompileVHDL.java?start=17722&end=17875
-https://raw.github.com/kamir/NGA/14b4e7220d7419a959090247563ed1b65bf0aeac/doc/jung-algorithms-2.0.1-sources/edu/uci/ics/jung/algorithms/generators/random/BarabasiAlbertGenerator.java?start=819&end=8938
-https://raw.github.com/ppitonak/richfaces-qa/d31478012fb60828ea6fe1a696e9e41828c71b41/metamer/ftest/src/test/java/org/richfaces/tests/metamer/ftest/richCollapsibleSubTable/TestCollapsibleSubTableKeepSaved.java?start=1346&end=1764
-https://raw.github.com/welterde/reddwarf-server/d204e4dbc6438537a63754f92219b378430a4284/sgs-server/src/test/java/com/sun/sgs/test/impl/service/data/TestDataServiceImpl.java?start=85078&end=85174

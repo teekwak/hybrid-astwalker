@@ -153,8 +153,6 @@ public class IndexManager {
 			throw new IllegalArgumentException("[ERROR]: the file model is null!");
 		}
 
-		List<ClassSolrDocument> classSolrDocList = new ArrayList<>();
-
 		for(JavaClass jClass : aw.getFileModel().getJavaClassList()) {
 			ClassSolrDocument classSolrDoc = new ClassSolrDocument(jClass, rawURL, configProperties, simProperties);
 			classSolrDoc.addProjectData("https://github.com/" + urlSplit[3] + "/" + urlSplit[4]);
@@ -165,21 +163,15 @@ public class IndexManager {
 				findAllMethodDeclarations((MethodDeclarationObject)md, classSolrDoc.getSolrDocument(), rawURL);
 			}
 
-
-
-
-			classSolrDocList.add(classSolrDoc);
-
-
-
+			Solrj.getInstance(configProperties.get("passPath")).addDoc(classSolrDoc.getSolrDocument());
 		}
 
-		classSolrDocList.forEach(classSolrDoc -> classSolrDoc.getSolrDocument().forEach((k, v) -> System.out.println(k + " -> " + v.getValue())));
-		System.out.println("checkpoint reached");
-		System.exit(0);
+		Solrj.getInstance(configProperties.get("passPath")).commitDocs("grok.ics.uci.edu", 9551, "MoreLikeThisIndex");
 
+//		classSolrDocList.forEach(classSolrDoc -> classSolrDoc.getSolrDocument().forEach((k, v) -> System.out.println(k + " -> " + v.getValue())));
+//		System.out.println("checkpoint reached");
+//		System.exit(0);
 
-		// todo: then we can upload them all
 	}
 
 
