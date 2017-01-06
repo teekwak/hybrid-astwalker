@@ -19,8 +19,8 @@
 package tools;
 
 import AST.ASTWalker;
-import entities.MethodDeclarationObject;
-import entities.SuperEntityClass;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 
 import java.io.*;
@@ -99,79 +99,19 @@ public class IndexManager {
 	}
 
 
-//	/**
-//	 * recursively get method declarations (for those method declarations inside of each other)
-//	 *
-//	 * @param mdo x
-//	 * @param solrDoc x
-//	 * @param id x
-//	 */
-//	private static void findAllMethodDeclarations(MethodDeclarationObject mdo, SolrInputDocument solrDoc, String id) {
-//		MethodDeclarationSolrDocument mdSolrDoc = new MethodDeclarationSolrDocument(simProperties); // todo: i dont think configProperties belongs here
-//		mdSolrDoc.addTechnicalData(mdo, solrDoc, id);
-//
-//		for(SuperEntityClass mi : mdo.getMethodInvocationList() ) {
-//			MethodInvocationSolrDocument miSolrDoc = new MethodInvocationSolrDocument(simProperties); // todo: i dont think configProperties belongs here
-//			miSolrDoc.addTechnicalData(mi, solrDoc, id);
-//		}
-//
-//		if(mdo.getMethodDeclarationList().size() > 0) {
-//			for(SuperEntityClass mdChild : mdo.getMethodDeclarationList()) {
-//				findAllMethodDeclarations((MethodDeclarationObject)mdChild, solrDoc, id);
-//			}
-//		}
-//	}
-
-
 	/**
 	 *
 	 * @param rawURL x
 	 */
 	private static void createSolrDocsForURL(String rawURL, File classFile) {
-
-
-
 		System.out.println("Started creating solr doc for " + classFile.getName());
-
-// prev
-//		// todo: print time before download
-//
-//		String[] urlSplit = rawURL.split("/");
-//
-//		// file is done being written to here with location outputFileLocation
-//		// do ASTWalker and get the file model
-//		ASTWalker aw = new ASTWalker(astProperties); // todo change input to map (leave string for standalone)
-//		aw.parseFile(classFile.getAbsolutePath());
-//		if(aw.getFileModel() == null) {
-//			throw new IllegalArgumentException("[ERROR]: the file model is null!");
-//		}
-//
-//		for(JavaClass jClass : aw.getFileModel().getJavaClassList()) {
-//			ClassSolrDocument classSolrDoc = new ClassSolrDocument(jClass, rawURL, configProperties, simProperties);
-//			classSolrDoc.addProjectData("https://github.com/" + urlSplit[3] + "/" + urlSplit[4]);
-//			classSolrDoc.addSocialData("clone/" + urlSplit[4], getRelativeFileRepoPath(rawURL), classFile);
-//			classSolrDoc.addTechnicalData(jClass, aw.getFileModel(), "https://github.com/" + urlSplit[3] + "/" + urlSplit[4] + "/blob/master/" + getRelativeFileRepoPath(rawURL));
-//
-//			for(SuperEntityClass md : jClass.getMethodDeclarationList()) {
-//				findAllMethodDeclarations((MethodDeclarationObject)md, classSolrDoc.getSolrDocument(), rawURL);
-//			}
-//
-//			Solrj.getInstance(configProperties.get("passPath")).addDoc(classSolrDoc.getSolrDocument());
-//		}
-//
-//		Solrj.getInstance(configProperties.get("passPath")).commitDocs("grok.ics.uci.edu", 9551, "MoreLikeThisIndex");
-//
-////		classSolrDocList.forEach(classSolrDoc -> classSolrDoc.getSolrDocument().forEach((k, v) -> System.out.println(k + " -> " + v.getValue())));
-////		System.out.println("checkpoint reached");
-////		System.exit(0);
-
-
 
 		// todo: no longer create method dec and method inv classes
 
 		// run for loop to create class solr doc over the keys (see the class file for the method dec)
 		String[] urlSplit = rawURL.split("/");
-		SimilarityData similarityData = new SimilarityData(simProperties);
+
+		SolrInputDocument solrDoc = null;
 
 		// extract technical data
 		if(simProperties.get("importsScore")
@@ -190,46 +130,36 @@ public class IndexManager {
 			|| simProperties.get("isWildCardScore")
 		) {
 			ASTWalker aw = new ASTWalker(astProperties); // todo change input to map (leave string for standalone)
-			aw.parseFile(classFile.getAbsolutePath());
-			if(aw.getFileModel() == null) {
-				throw new IllegalArgumentException("[ERROR]: the file model is null!");
-			}
-
-			String className = urlSplit[urlSplit.length - 1].split("\\.java")[0];
-
-			similarityData.extractData(aw.getFileModel(), className);
+			solrDoc = aw.parseFileIntoSolrDoc(classFile.getAbsolutePath());
 		}
 
-		// extract social data
+		if(solrDoc == null) {
+			solrDoc = new SolrInputDocument();
+		}
+
 		if(simProperties.get("authorScore")) {
 			JavaGitHubData jghd = new JavaGitHubData(getRelativeFileRepoPath(rawURL));
-			similarityData.extractData(jghd, "clone/" + urlSplit[4], getRelativeFileRepoPath(rawURL), classFile);
+			jghd.getCommits("clone/" + urlSplit[4], getRelativeFileRepoPath(rawURL), classFile);
+			Commit headCommit = jghd.getListOfCommits().get(jghd.getListOfCommits().size() - 1);
+			solrDoc.addField("authorScore", headCommit.getAuthor());
 		}
 
-		if(simProperties.get("projectScore") || simProperties.get("ownerScore")) {
-			similarityData.extractProjectData("https://github.com/" + urlSplit[3] + "/" + urlSplit[4], configProperties.get("passPath"));
-		}
+		if(simProperties.get("ownerScore") || simProperties.get("projectScore")) {
+			SolrDocumentList list = Solrj.getInstance(configProperties.get("passPath")).query("id:\"https://github.com/" + urlSplit[3] + "/" + urlSplit[4]+"\"", "codeexchange.ics.uci.edu", 9001, "githubprojects", 1);
+			if(list.isEmpty()) throw new IllegalArgumentException("[ERROR]: project data is null!");
 
-		// todo: do not care about inner classes!
-		// todo: delete methodDecSolrDocClass
-		// todo: delete methodInvSolrDocClass
-		// todo: delete classSolrDocClass
+			SolrDocument doc = list.get(0);
 
-		SolrInputDocument classSolrDoc = new SolrInputDocument();
-		classSolrDoc.addField("id", rawURL);
-		classSolrDoc.addField("snippet_code", similarityData.getSourceCode());
-		classSolrDoc.addField("parent", true);
+			if(simProperties.get("ownerScore")) {
+				solrDoc.addField("ownerScore", Collections.singletonList(doc.getFieldValue("userName").toString()));
+			}
 
-		for(Map.Entry<String, Boolean> property : simProperties.entrySet()) {
-			if(property.getValue()) {
-				for(Object o : similarityData.getValue(property.getKey())) {
-					classSolrDoc.addField(SolrKey.mapping.get(property.getKey()), o);
-				}
+			if(simProperties.get("projectScore")) {
+				solrDoc.addField("projectScore", Collections.singletonList(doc.getFieldValue("projectName").toString()));
 			}
 		}
 
-		Solrj.getInstance(configProperties.get("passPath")).addDoc(classSolrDoc);
-		System.out.println("Uploading...");
+		Solrj.getInstance(configProperties.get("passPath")).addDoc(solrDoc);
 		Solrj.getInstance(configProperties.get("passPath")).commitDocs("grok.ics.uci.edu", 9551, "MoreLikeThisIndex");
 		System.exit(0);
 	}

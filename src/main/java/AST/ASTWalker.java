@@ -2,6 +2,7 @@ package AST;
 
 import entities.*;
 import org.apache.commons.io.FileUtils;
+import org.apache.solr.common.SolrInputDocument;
 import org.eclipse.jdt.core.dom.*;
 import tools.FileModel;
 
@@ -22,38 +23,22 @@ import java.util.*;
  * 6. main()....................121 x
  *
  */
+
+@SuppressWarnings("Duplicates") // todo remove later
 public class ASTWalker {
 	private Map<String, Boolean> configProperties;
 	private String containingClass;
 	private Stack<Entity> entityStack;
-	private FileModel fileModel;
-	private boolean hasComments;
 	private List<SuperEntityClass> importList;
 	private boolean inMethod;
 	private SuperEntityClass packageObject;
 
 
-	// find comments
-//	class CommentVisitor extends ASTVisitor {
-//		CompilationUnit cu;
-//		String source;
-//
-//		CommentVisitor(CompilationUnit cu, String source) {
-//			super();
-//			this.cu = cu;
-//			this.source = source;
-//		}
-//
-//		public boolean visit(LineComment node) {
-//			hasComments = true;
-//			return true;
-//		}
-//
-//		public boolean visit(BlockComment node) {
-//			hasComments = true;
-//			return true;
-//		}
-//	}
+	private Set<String> methodInvocationNames;
+	private Set<String> methodDeclarationNames;
+	private Set<String> variableNames;
+	private Set<String> importNames;
+	private Set<String> fieldNames;
 
 	/**
 	 * Constructor for class. Creates a FileModel object and takes in a config file and adds into a HashMap
@@ -63,16 +48,16 @@ public class ASTWalker {
 	public ASTWalker(Map<String, Boolean> config) {
 		containingClass = "";
 		entityStack = new Stack<>();
-		fileModel = new FileModel();
-		hasComments = false; // TODO
 		importList = new ArrayList<>();
 		inMethod = false;
 		packageObject = new SuperEntityClass();
 		this.configProperties = config;
-	}
 
-	public FileModel getFileModel() {
-		return this.fileModel;
+		methodInvocationNames = new HashSet<>();
+		methodDeclarationNames = new HashSet<>();
+		variableNames = new HashSet<>();
+		importNames = new HashSet<>();
+		fieldNames = new HashSet<>();
 	}
 
 	private String getClassSourceCode(String fileLocation, int startLine, int endLine) {
@@ -99,7 +84,9 @@ public class ASTWalker {
 	/**
 	 *
 	 */
-	public void parseFile(String fileLocation) {
+	public SolrInputDocument parseFileIntoSolrDoc(String fileLocation) {
+		SolrInputDocument solrDoc = new SolrInputDocument();
+
 		// no way to avoid this. we need to read the entire file into memory
 		String sourceCode = null;
 		try {
@@ -113,6 +100,8 @@ public class ASTWalker {
 			throw new IllegalStateException("[ERROR]: source code is null!");
 		}
 
+		solrDoc.addField("snippet_code", sourceCode); // todo this is wrong
+
 		// create parser and set properties
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
 		parser.setUnitName(fileLocation);
@@ -125,10 +114,6 @@ public class ASTWalker {
 
 		final CompilationUnit cu = (CompilationUnit) parser.createAST(null);
 
-//		for (Comment comment : (List<Comment>) cu.getCommentList()) {
-//			comment.accept(new ASTRefactor.CommentVisitor(cu, sourceCode));
-//		}
-
 		// continue code
 		// when we are writing visit and exit functions, make sure to use the properties!
 		// we want to visit the node (because there will be children inside!) so always return true
@@ -139,88 +124,83 @@ public class ASTWalker {
 
 			// TODO
 			// nothing changed
-			public boolean visit(AnonymousClassDeclaration node) {
-				JavaClass co = new JavaClass();
-
-				if(configProperties.get("AnonymousClassDeclaration")) {
-					ITypeBinding binding = node.resolveBinding();
-
-					int startLine = cu.getLineNumber(node.getStartPosition());
-					int endLine = cu.getLineNumber(node.getStartPosition() + node.getLength() - 1);
-
-					co.setIsAnonymous(binding.isAnonymous());
-					co.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
-					co.setEndLine(endLine);
-					co.setLineNumber(startLine);
-					co.setNumberOfCharacters(node.getLength());
-					co.setFileName(fileLocation);
-					// get generic parameters
-					List<String> genericParametersList = new ArrayList<>();
-					try {
-						if(binding.isGenericType()) {
-							co.setIsGenericType(binding.isGenericType());
-							for(Object o : binding.getTypeParameters()) {
-								genericParametersList.add(o.toString());
-							}
-						}
-					} catch (NullPointerException e) {
-						co.setIsGenericType(false);
-					}
-					co.setGenericParametersList(genericParametersList);
-
-					co.setHasComments(hasComments);
-					co.setSourceCode(getClassSourceCode(fileLocation, startLine, endLine));
-					co.setStartCharacter(node.getStartPosition());
-					co.setEndCharacter(node.getStartPosition() + node.getLength() - 1);
-					co.setImportList(importList);
-					co.setPackage(packageObject);
-					co.setIsAnonymous(true);
-				}
-
-				entityStack.push(co);
-
-				return true;
-			}
+//			public boolean visit(AnonymousClassDeclaration node) {
+//				JavaClass co = new JavaClass();
+//
+//				if(configProperties.get("AnonymousClassDeclaration")) {
+//					ITypeBinding binding = node.resolveBinding();
+//
+//					int startLine = cu.getLineNumber(node.getStartPosition());
+//					int endLine = cu.getLineNumber(node.getStartPosition() + node.getLength() - 1);
+//
+//					co.setIsAnonymous(binding.isAnonymous());
+//					co.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
+//					co.setEndLine(endLine);
+//					co.setLineNumber(startLine);
+//					co.setNumberOfCharacters(node.getLength());
+//					co.setFileName(fileLocation);
+//					// get generic parameters
+//					List<String> genericParametersList = new ArrayList<>();
+//					try {
+//						if(binding.isGenericType()) {
+//							co.setIsGenericType(binding.isGenericType());
+//							for(Object o : binding.getTypeParameters()) {
+//								genericParametersList.add(o.toString());
+//							}
+//						}
+//					} catch (NullPointerException e) {
+//						co.setIsGenericType(false);
+//					}
+//					co.setGenericParametersList(genericParametersList);
+//
+//					co.setSourceCode(getClassSourceCode(fileLocation, startLine, endLine));
+//					co.setStartCharacter(node.getStartPosition());
+//					co.setEndCharacter(node.getStartPosition() + node.getLength() - 1);
+//					co.setImportList(importList);
+//					co.setPackage(packageObject);
+//					co.setIsAnonymous(true);
+//				}
+//
+//				entityStack.push(co);
+//
+//				return true;
+//			}
 
 			// TODO
 			// nothing changed
-			public void endVisit(AnonymousClassDeclaration node) {
-				if(configProperties.get("AnonymousClassDeclaration")) {
-					JavaClass temp = (JavaClass) entityStack.pop();
-
-					temp.setIsInnerClass(true);
-
-					temp.setComplexities();
-					temp.setMethodDeclarationNames();
-					temp.setMethodInvocationNames();
-
-					if(!containingClass.isEmpty()) {
-						temp.setContainingClass(containingClass);
-					}
-
-					try {
-						entityStack.peek().addEntity(temp, Entity.EntityType.CLASS);
-					} catch (EmptyStackException e) {
-						// should not be possible
-					}
-
-					fileModel.addJavaClass(temp);
-
-					hasComments = false;
-				}
-			}
+//			public void endVisit(AnonymousClassDeclaration node) {
+//				if(configProperties.get("AnonymousClassDeclaration")) {
+//					JavaClass temp = (JavaClass) entityStack.pop();
+//
+//					temp.setIsInnerClass(true);
+//
+//					temp.setComplexities();
+//					temp.setMethodDeclarationNames();
+//					temp.setMethodInvocationNames();
+//
+//					if(!containingClass.isEmpty()) {
+//						temp.setContainingClass(containingClass);
+//					}
+//
+//					try {
+//						entityStack.peek().addEntity(temp, Entity.EntityType.CLASS);
+//					} catch (EmptyStackException e) {
+//						// should not be possible
+//					}
+//				}
+//			}
 
 			public boolean visit(CatchClause node) {
 				if(inMethod && configProperties.get("CatchClause")) {
 					SimpleName name = node.getException().getName();
 
-					SuperEntityClass cco =  new SuperEntityClass(
-									name.toString(),
-									cu.getLineNumber(name.getStartPosition()),
-									cu.getColumnNumber(name.getStartPosition())
-					);
-					cco.setType(node.getException().getType());
-					entityStack.peek().addEntity(cco, Entity.EntityType.CATCH_CLAUSE);
+//					SuperEntityClass cco =  new SuperEntityClass(
+//									name.toString(),
+//									cu.getLineNumber(name.getStartPosition()),
+//									cu.getColumnNumber(name.getStartPosition())
+//					);
+//					cco.setType(node.getException().getType());
+//					entityStack.peek().addEntity(cco, Entity.EntityType.CATCH_CLAUSE);
 				}
 
 				return true;
@@ -235,14 +215,14 @@ public class ASTWalker {
 						name = "";
 					}
 
-					entityStack.peek().addEntity(
-									new SuperEntityClass(
-													name,
-													cu.getLineNumber(node.getStartPosition()),
-													cu.getColumnNumber(node.getStartPosition())
-									),
-									Entity.EntityType.CONDITIONAL_EXPRESSION
-					);
+//					entityStack.peek().addEntity(
+//						new SuperEntityClass(
+//							name,
+//							cu.getLineNumber(node.getStartPosition()),
+//							cu.getColumnNumber(node.getStartPosition())
+//						),
+//						Entity.EntityType.CONDITIONAL_EXPRESSION
+//					);
 				}
 
 				return true;
@@ -257,14 +237,14 @@ public class ASTWalker {
 						name = "";
 					}
 
-					entityStack.peek().addEntity(
-									new SuperEntityClass(
-													name,
-													cu.getLineNumber(node.getStartPosition()),
-													cu.getColumnNumber(node.getStartPosition())
-									),
-									Entity.EntityType.DO_STATEMENT
-					);
+//					entityStack.peek().addEntity(
+//									new SuperEntityClass(
+//													name,
+//													cu.getLineNumber(node.getStartPosition()),
+//													cu.getColumnNumber(node.getStartPosition())
+//									),
+//									Entity.EntityType.DO_STATEMENT
+//					);
 				}
 				return true;
 			}
@@ -278,14 +258,14 @@ public class ASTWalker {
 						name = "";
 					}
 
-					entityStack.peek().addEntity(
-									new SuperEntityClass(
-													name,
-													cu.getLineNumber(node.getStartPosition()),
-													cu.getColumnNumber(node.getStartPosition())
-									),
-									Entity.EntityType.FOR_STATEMENT
-					);
+//					entityStack.peek().addEntity(
+//									new SuperEntityClass(
+//													name,
+//													cu.getLineNumber(node.getStartPosition()),
+//													cu.getColumnNumber(node.getStartPosition())
+//									),
+//									Entity.EntityType.FOR_STATEMENT
+//					);
 				}
 
 				return true;
@@ -309,33 +289,35 @@ public class ASTWalker {
 							fullyQualifiedName = name.toString();
 						}
 
-						SuperEntityClass fdEntity = new SuperEntityClass(
-										name.toString(),
-										fullyQualifiedName,
-										nodeType,
-										cu.getLineNumber(name.getStartPosition()),
-										cu.getColumnNumber(name.getStartPosition())
-						);
+						fieldNames.add(fullyQualifiedName);
 
-						if(nodeType.isArrayType()) {
-							entityStack.peek().addEntity(fdEntity, Entity.EntityType.ARRAY);
-							entityStack.peek().addEntity(fdEntity, Entity.EntityType.GLOBAL);
-						}
-						else if(nodeType.isParameterizedType()) {
-							entityStack.peek().addEntity(fdEntity, Entity.EntityType.GENERICS);
-							entityStack.peek().addEntity(fdEntity, Entity.EntityType.GLOBAL);
-						}
-						else if(nodeType.isPrimitiveType()) {
-							entityStack.peek().addEntity(fdEntity, Entity.EntityType.PRIMITIVE);
-							entityStack.peek().addEntity(fdEntity, Entity.EntityType.GLOBAL);
-						}
-						else if(nodeType.isSimpleType()) {
-							entityStack.peek().addEntity(fdEntity, Entity.EntityType.SIMPLE);
-							entityStack.peek().addEntity(fdEntity, Entity.EntityType.GLOBAL);
-						}
-						else {
-							System.out.println("Something is missing " + nodeType);
-						}
+//						SuperEntityClass fdEntity = new SuperEntityClass(
+//										name.toString(),
+//										fullyQualifiedName,
+//										nodeType,
+//										cu.getLineNumber(name.getStartPosition()),
+//										cu.getColumnNumber(name.getStartPosition())
+//						);
+
+//						if(nodeType.isArrayType()) {
+//							entityStack.peek().addEntity(fdEntity, Entity.EntityType.ARRAY);
+//							entityStack.peek().addEntity(fdEntity, Entity.EntityType.GLOBAL);
+//						}
+//						else if(nodeType.isParameterizedType()) {
+//							entityStack.peek().addEntity(fdEntity, Entity.EntityType.GENERICS);
+//							entityStack.peek().addEntity(fdEntity, Entity.EntityType.GLOBAL);
+//						}
+//						else if(nodeType.isPrimitiveType()) {
+//							entityStack.peek().addEntity(fdEntity, Entity.EntityType.PRIMITIVE);
+//							entityStack.peek().addEntity(fdEntity, Entity.EntityType.GLOBAL);
+//						}
+//						else if(nodeType.isSimpleType()) {
+//							entityStack.peek().addEntity(fdEntity, Entity.EntityType.SIMPLE);
+//							entityStack.peek().addEntity(fdEntity, Entity.EntityType.GLOBAL);
+//						}
+//						else {
+//							System.out.println("Something is missing " + nodeType);
+//						}
 					}
 				}
 
@@ -351,13 +333,13 @@ public class ASTWalker {
 						name = "";
 					}
 
-					entityStack.peek().addEntity(
-									new SuperEntityClass(
-													name,
-													cu.getLineNumber(node.getStartPosition()),
-													cu.getColumnNumber(node.getStartPosition())
-									), Entity.EntityType.FOR_STATEMENT
-					);
+//					entityStack.peek().addEntity(
+//									new SuperEntityClass(
+//													name,
+//													cu.getLineNumber(node.getStartPosition()),
+//													cu.getColumnNumber(node.getStartPosition())
+//									), Entity.EntityType.FOR_STATEMENT
+//					);
 				}
 
 				return true;
@@ -372,13 +354,13 @@ public class ASTWalker {
 						name = "";
 					}
 
-					entityStack.peek().addEntity(
-									new SuperEntityClass(
-													name,
-													cu.getLineNumber(node.getStartPosition()),
-													cu.getColumnNumber(node.getStartPosition())
-									), Entity.EntityType.IF_STATEMENT
-					);
+//					entityStack.peek().addEntity(
+//						new SuperEntityClass(
+//							name,
+//							cu.getLineNumber(node.getStartPosition()),
+//							cu.getColumnNumber(node.getStartPosition())
+//						), Entity.EntityType.IF_STATEMENT
+//					);
 				}
 
 				return true;
@@ -395,14 +377,16 @@ public class ASTWalker {
 						fullyQualifiedName = "";
 					}
 
-					importList.add(
-									new SuperEntityClass(
-													name.toString(),
-													fullyQualifiedName,
-													cu.getLineNumber(name.getStartPosition()),
-													cu.getColumnNumber(name.getStartPosition())
-									)
-					);
+					importNames.add(fullyQualifiedName);
+
+//					importList.add(
+//						new SuperEntityClass(
+//							name.toString(),
+//							fullyQualifiedName,
+//							cu.getLineNumber(name.getStartPosition()),
+//							cu.getColumnNumber(name.getStartPosition())
+//						)
+//					);
 				}
 
 				return true;
@@ -410,14 +394,14 @@ public class ASTWalker {
 
 			public boolean visit(InfixExpression node){
 				if(inMethod && configProperties.get("InfixExpression")) {
-					entityStack.peek().addEntity(
-									new SuperEntityClass(
-													node.getOperator().toString(),
-													cu.getLineNumber(node.getLeftOperand().getStartPosition()),
-													cu.getColumnNumber(node.getLeftOperand().getStartPosition())
-									),
-									Entity.EntityType.INFIX_EXPRESSION
-					);
+//					entityStack.peek().addEntity(
+//						new SuperEntityClass(
+//							node.getOperator().toString(),
+//							cu.getLineNumber(node.getLeftOperand().getStartPosition()),
+//							cu.getColumnNumber(node.getLeftOperand().getStartPosition())
+//						),
+//						Entity.EntityType.INFIX_EXPRESSION
+//					);
 				}
 
 				return true;
@@ -433,8 +417,8 @@ public class ASTWalker {
 
 				if(configProperties.get("MethodDeclaration")) {
 					SimpleName name = node.getName();
-					boolean isStatic = false;
-					boolean isAbstract = false;
+//					boolean isStatic = false;
+//					boolean isAbstract = false;
 
 					// get fully qualified name
 					String fullyQualifiedName;
@@ -444,85 +428,87 @@ public class ASTWalker {
 						fullyQualifiedName = name.toString();
 					}
 
-					// is method declaration abstract?
-					int mod = node.getModifiers();
-					if(Modifier.isAbstract(mod)) {
-						isAbstract = true;
-					}
+					methodDeclarationNames.add(fullyQualifiedName);
 
-					// is method declaration static?
-					if(Modifier.isStatic(mod)) {
-						isStatic = true;
-					}
-
-					IMethodBinding binding = node.resolveBinding();
-
-					// get type of each parameter
-					List<String> parameterTypes = new ArrayList<>();
-					for(Object obj : node.parameters()) {
-						ITypeBinding tb = ((SingleVariableDeclaration) obj).getType().resolveBinding();
-						String fqn;
-						try {
-							fqn = tb.getQualifiedName();
-						} catch (NullPointerException e) {
-							fqn = name.toString();
-						}
-						parameterTypes.add(fqn);
-					}
-
-					md.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-					try {
-						md.setDeclaringClass(binding.getDeclaringClass().getQualifiedName());
-					} catch (NullPointerException e) {
-						md.setDeclaringClass(null);
-					}
-					md.setEndCharacter(node.getStartPosition() + node.getLength() - 1);
-					md.setEndLine(cu.getLineNumber(node.getStartPosition() + node.getLength() - 1));
-					md.setFullyQualifiedName(fullyQualifiedName);
-
-					md.setIsAbstract(isAbstract);
-					md.setIsConstructor(node.isConstructor());
-
-					// to avoid API from setting constructor return type to void
-					if(node.isConstructor()) {
-						md.setReturnType(null);
-					}
-					else {
-						try {
-							md.setReturnType(binding.getReturnType().getQualifiedName());
-						} catch (NullPointerException e) {
-							md.setReturnType(null);
-						}
-					}
-
-					// get generic parameters
-					List<String> genericParametersList = new ArrayList<>();
-					try {
-						if(binding.isGenericMethod()) {
-							md.setIsGenericType(binding.isGenericMethod());
-							for(Object o : binding.getTypeParameters()) {
-								genericParametersList.add(o.toString());
-							}
-						}
-					} catch (NullPointerException e) {
-						md.setIsGenericType(false);
-					}
-
-					md.setGenericParametersList(genericParametersList);
-					md.setIsStatic(isStatic);
-					md.setIsVarargs(node.isVarargs());
-					md.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-					md.setName(name.toString());
-					md.setNumberOfCharacters(node.getLength());
-					md.setParametersList(node.parameters());
-					md.setParameterTypesList(parameterTypes);
-					md.setStartCharacter(name.getStartPosition());
-
-					if(node.thrownExceptionTypes().size() > 0) {
-						for(Object o : node.thrownExceptionTypes()) {
-							md.addThrowsException(o.toString());
-						}
-					}
+//					// is method declaration abstract?
+//					int mod = node.getModifiers();
+//					if(Modifier.isAbstract(mod)) {
+//						isAbstract = true;
+//					}
+//
+//					// is method declaration static?
+//					if(Modifier.isStatic(mod)) {
+//						isStatic = true;
+//					}
+//
+//					IMethodBinding binding = node.resolveBinding();
+//
+//					// get type of each parameter
+//					List<String> parameterTypes = new ArrayList<>();
+//					for(Object obj : node.parameters()) {
+//						ITypeBinding tb = ((SingleVariableDeclaration) obj).getType().resolveBinding();
+//						String fqn;
+//						try {
+//							fqn = tb.getQualifiedName();
+//						} catch (NullPointerException e) {
+//							fqn = name.toString();
+//						}
+//						parameterTypes.add(fqn);
+//					}
+//
+//					md.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
+//					try {
+//						md.setDeclaringClass(binding.getDeclaringClass().getQualifiedName());
+//					} catch (NullPointerException e) {
+//						md.setDeclaringClass(null);
+//					}
+//					md.setEndCharacter(node.getStartPosition() + node.getLength() - 1);
+//					md.setEndLine(cu.getLineNumber(node.getStartPosition() + node.getLength() - 1));
+//					md.setFullyQualifiedName(fullyQualifiedName);
+//
+//					md.setIsAbstract(isAbstract);
+//					md.setIsConstructor(node.isConstructor());
+//
+//					// to avoid API from setting constructor return type to void
+//					if(node.isConstructor()) {
+//						md.setReturnType(null);
+//					}
+//					else {
+//						try {
+//							md.setReturnType(binding.getReturnType().getQualifiedName());
+//						} catch (NullPointerException e) {
+//							md.setReturnType(null);
+//						}
+//					}
+//
+//					// get generic parameters
+//					List<String> genericParametersList = new ArrayList<>();
+//					try {
+//						if(binding.isGenericMethod()) {
+//							md.setIsGenericType(binding.isGenericMethod());
+//							for(Object o : binding.getTypeParameters()) {
+//								genericParametersList.add(o.toString());
+//							}
+//						}
+//					} catch (NullPointerException e) {
+//						md.setIsGenericType(false);
+//					}
+//
+//					md.setGenericParametersList(genericParametersList);
+//					md.setIsStatic(isStatic);
+//					md.setIsVarargs(node.isVarargs());
+//					md.setLineNumber(cu.getLineNumber(name.getStartPosition()));
+//					md.setName(name.toString());
+//					md.setNumberOfCharacters(node.getLength());
+//					md.setParametersList(node.parameters());
+//					md.setParameterTypesList(parameterTypes);
+//					md.setStartCharacter(name.getStartPosition());
+//
+//					if(node.thrownExceptionTypes().size() > 0) {
+//						for(Object o : node.thrownExceptionTypes()) {
+//							md.addThrowsException(o.toString());
+//						}
+//					}
 				}
 
 				entityStack.push(md);
@@ -545,7 +531,7 @@ public class ASTWalker {
 					temp.setComplexities();
 					temp.setMethodDeclarationNames();
 					temp.setMethodInvocationNames();
-					entityStack.peek().addEntity(temp, Entity.EntityType.METHOD_DECLARATION);
+//					entityStack.peek().addEntity(temp, Entity.EntityType.METHOD_DECLARATION);
 				}
 
 				inMethod = false;
@@ -565,48 +551,50 @@ public class ASTWalker {
 						fullyQualifiedName = name.toString();
 					}
 
-					// get declaring class
-					IMethodBinding binding = node.resolveMethodBinding();
-					String declaringClass;
-					try {
-						declaringClass = binding.getDeclaringClass().getQualifiedName();
-					} catch (NullPointerException e) {
-						declaringClass = "";
-					}
+					methodInvocationNames.add(fullyQualifiedName);
 
-					// get calling class
-					String callingClass;
-					try {
-						callingClass = node.getExpression().resolveTypeBinding().getQualifiedName();
-					} catch (NullPointerException e) {
-						callingClass = "";
-					}
-
-					// get argument types
-					List<String> argumentTypes = new ArrayList<>();
-					for(Object t : node.arguments()) {
-						ITypeBinding tb = ((Expression)t).resolveTypeBinding();
-
-						try {
-							argumentTypes.add(tb.getQualifiedName());
-						} catch (NullPointerException e) {
-							argumentTypes.add("");
-						}
-					}
-
-					MethodInvocationObject mio = new MethodInvocationObject();
-					mio.setName(name.toString());
-					mio.setFullyQualifiedName(fullyQualifiedName);
-					mio.setDeclaringClass(declaringClass);
-					mio.setCallingClass(callingClass);
-					mio.setArguments(node.arguments());
-					mio.setArgumentTypes(argumentTypes);
-					mio.setLineNumber(cu.getLineNumber(name.getStartPosition()));
-					mio.setEndLine(cu.getLineNumber(node.getStartPosition() + node.getLength() - 1));
-					mio.setStartCharacter(name.getStartPosition());
-					mio.setEndCharacter(node.getStartPosition() + node.getLength() - 1);
-					mio.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
-					entityStack.peek().addEntity(mio, Entity.EntityType.METHOD_INVOCATION);
+//					// get declaring class
+//					IMethodBinding binding = node.resolveMethodBinding();
+//					String declaringClass;
+//					try {
+//						declaringClass = binding.getDeclaringClass().getQualifiedName();
+//					} catch (NullPointerException e) {
+//						declaringClass = "";
+//					}
+//
+//					// get calling class
+//					String callingClass;
+//					try {
+//						callingClass = node.getExpression().resolveTypeBinding().getQualifiedName();
+//					} catch (NullPointerException e) {
+//						callingClass = "";
+//					}
+//
+//					// get argument types
+//					List<String> argumentTypes = new ArrayList<>();
+//					for(Object t : node.arguments()) {
+//						ITypeBinding tb = ((Expression)t).resolveTypeBinding();
+//
+//						try {
+//							argumentTypes.add(tb.getQualifiedName());
+//						} catch (NullPointerException e) {
+//							argumentTypes.add("");
+//						}
+//					}
+//
+//					MethodInvocationObject mio = new MethodInvocationObject();
+//					mio.setName(name.toString());
+//					mio.setFullyQualifiedName(fullyQualifiedName);
+//					mio.setDeclaringClass(declaringClass);
+//					mio.setCallingClass(callingClass);
+//					mio.setArguments(node.arguments());
+//					mio.setArgumentTypes(argumentTypes);
+//					mio.setLineNumber(cu.getLineNumber(name.getStartPosition()));
+//					mio.setEndLine(cu.getLineNumber(node.getStartPosition() + node.getLength() - 1));
+//					mio.setStartCharacter(name.getStartPosition());
+//					mio.setEndCharacter(node.getStartPosition() + node.getLength() - 1);
+//					mio.setColumnNumber(cu.getColumnNumber(name.getStartPosition()));
+//					entityStack.peek().addEntity(mio, Entity.EntityType.METHOD_INVOCATION);
 				}
 
 				return true;
@@ -624,12 +612,14 @@ public class ASTWalker {
 						fullyQualifiedName = "";
 					}
 
-					packageObject = new SuperEntityClass(
-									node.getName().toString(),
-									fullyQualifiedName,
-									cu.getLineNumber(name.getStartPosition()),
-									cu.getColumnNumber(name.getStartPosition())
-					);
+					solrDoc.addField("packageScore", fullyQualifiedName);
+
+//					packageObject = new SuperEntityClass(
+//						node.getName().toString(),
+//						fullyQualifiedName,
+//						cu.getLineNumber(name.getStartPosition()),
+//						cu.getColumnNumber(name.getStartPosition())
+//					);
 				}
 
 				return true;
@@ -649,32 +639,34 @@ public class ASTWalker {
 						fullyQualifiedName = name.toString();
 					}
 
-					SuperEntityClass svdEntity = new SuperEntityClass(
-									name.toString(),
-									fullyQualifiedName,
-									node.getType(),
-									cu.getLineNumber(name.getStartPosition()),
-									cu.getColumnNumber(name.getStartPosition())
-					);
+					variableNames.add(fullyQualifiedName);
 
-					if(node.getType().isArrayType()) {
-						entityStack.peek().addEntity(svdEntity, Entity.EntityType.ARRAY);
-					}
-					else if(node.getType().isParameterizedType()) {
-						entityStack.peek().addEntity(svdEntity, Entity.EntityType.GENERICS);
-					}
-					else if(node.getType().isPrimitiveType()) {
-						entityStack.peek().addEntity(svdEntity, Entity.EntityType.PRIMITIVE);
-					}
-					else if(node.getType().isSimpleType()) {
-						entityStack.peek().addEntity(svdEntity, Entity.EntityType.SIMPLE);
-					}
-					else if(node.getType().isUnionType()) {
-						entityStack.peek().addEntity(svdEntity, Entity.EntityType.UNION);
-					}
-					else {
-						System.out.println("Something is missing " + node.getType());
-					}
+//					SuperEntityClass svdEntity = new SuperEntityClass(
+//									name.toString(),
+//									fullyQualifiedName,
+//									node.getType(),
+//									cu.getLineNumber(name.getStartPosition()),
+//									cu.getColumnNumber(name.getStartPosition())
+//					);
+//
+//					if(node.getType().isArrayType()) {
+//						entityStack.peek().addEntity(svdEntity, Entity.EntityType.ARRAY);
+//					}
+//					else if(node.getType().isParameterizedType()) {
+//						entityStack.peek().addEntity(svdEntity, Entity.EntityType.GENERICS);
+//					}
+//					else if(node.getType().isPrimitiveType()) {
+//						entityStack.peek().addEntity(svdEntity, Entity.EntityType.PRIMITIVE);
+//					}
+//					else if(node.getType().isSimpleType()) {
+//						entityStack.peek().addEntity(svdEntity, Entity.EntityType.SIMPLE);
+//					}
+//					else if(node.getType().isUnionType()) {
+//						entityStack.peek().addEntity(svdEntity, Entity.EntityType.UNION);
+//					}
+//					else {
+//						System.out.println("Something is missing " + node.getType());
+//					}
 				}
 
 				return true;
@@ -690,9 +682,9 @@ public class ASTWalker {
 					}
 
 					SuperEntityClass sso = new SuperEntityClass(
-									name,
-									cu.getLineNumber(node.getStartPosition()),
-									cu.getColumnNumber(node.getStartPosition())
+						name,
+						cu.getLineNumber(node.getStartPosition()),
+						cu.getColumnNumber(node.getStartPosition())
 					);
 
 					List<SuperEntityClass> switchCaseList = new ArrayList<>();
@@ -707,17 +699,17 @@ public class ASTWalker {
 							}
 
 							switchCaseList.add(
-											new SuperEntityClass(
-															expression,
-															cu.getLineNumber(((SwitchCase) s).getStartPosition()),
-															cu.getColumnNumber(((SwitchCase)s).getStartPosition())
-											)
+								new SuperEntityClass(
+									expression,
+									cu.getLineNumber(((SwitchCase) s).getStartPosition()),
+									cu.getColumnNumber(((SwitchCase)s).getStartPosition())
+								)
 							);
 						}
 					}
 
 					sso.addEntities(switchCaseList, Entity.EntityType.SWITCH_CASE);
-					entityStack.peek().addEntity(sso, Entity.EntityType.SWITCH_STATEMENT);
+//					entityStack.peek().addEntity(sso, Entity.EntityType.SWITCH_STATEMENT);
 				}
 
 				return true;
@@ -732,14 +724,14 @@ public class ASTWalker {
 						name = "";
 					}
 
-					entityStack.peek().addEntity(
-									new SuperEntityClass(
-													name,
-													cu.getLineNumber(node.getStartPosition()),
-													cu.getColumnNumber(node.getStartPosition())
-									),
-									Entity.EntityType.THROW_STATEMENT
-					);
+//					entityStack.peek().addEntity(
+//						new SuperEntityClass(
+//							name,
+//							cu.getLineNumber(node.getStartPosition()),
+//							cu.getColumnNumber(node.getStartPosition())
+//						),
+//						Entity.EntityType.THROW_STATEMENT
+//					);
 				}
 				return true;
 			}
@@ -749,14 +741,14 @@ public class ASTWalker {
 					// TODO
 					// this seems like it does not even "try" to get the body of a try statement (hehe)
 
-					entityStack.peek().addEntity(
-									new SuperEntityClass(
-													"Try Statement",
-													cu.getLineNumber(node.getStartPosition()),
-													cu.getColumnNumber(node.getStartPosition())
-									),
-									Entity.EntityType.TRY_STATEMENT
-					);
+//					entityStack.peek().addEntity(
+//						new SuperEntityClass(
+//							"Try Statement",
+//							cu.getLineNumber(node.getStartPosition()),
+//							cu.getColumnNumber(node.getStartPosition())
+//						),
+//						Entity.EntityType.TRY_STATEMENT
+//					);
 				}
 
 				return true;
@@ -790,54 +782,55 @@ public class ASTWalker {
 							containingClass = node.getName().toString();
 						}
 
-						co.setIsAnonymous(binding.isAnonymous());
-						co.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
-						co.setEndLine(endLine);
-						co.setLineNumber(startLine);
-						co.setName(node.getName().toString());
-						co.setNumberOfCharacters(node.getLength());
-						co.setFileName(fileLocation);
-						co.setFullyQualifiedName(fullyQualifiedName);
+						solrDoc.addField("classNameScore", fullyQualifiedName);
+						solrDoc.addField("isGenericScore", binding.isGenericType());
+						solrDoc.addField("sizeScore", node.getLength());
 
-						// get generic parameters
-						List<String> genericParametersList = new ArrayList<>();
-						try {
-							if(binding.isGenericType()) {
-								co.setIsGenericType(binding.isGenericType());
-								for(Object o : binding.getTypeParameters()) {
-									genericParametersList.add(o.toString());
-								}
-							}
-						} catch (NullPointerException e) {
-							co.setIsGenericType(false);
+						if(node.getSuperclassType() != null) {
+							solrDoc.addField("extendsScore", node.getSuperclassType().toString());
 						}
-						co.setGenericParametersList(genericParametersList);
 
-						co.setHasComments(hasComments);
+//						co.setIsAnonymous(binding.isAnonymous());
+//						co.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
+//						co.setEndLine(endLine);
+//						co.setLineNumber(startLine);
+//						co.setName(node.getName().toString());
+//						co.setNumberOfCharacters(node.getLength());
+//						co.setFileName(fileLocation);
+//						co.setFullyQualifiedName(fullyQualifiedName);
+//
+//						// get generic parameters
+//						List<String> genericParametersList = new ArrayList<>();
+//						try {
+//							if(binding.isGenericType()) {
+//								co.setIsGenericType(binding.isGenericType());
+//								for(Object o : binding.getTypeParameters()) {
+//									genericParametersList.add(o.toString());
+//								}
+//							}
+//						} catch (NullPointerException e) {
+//							co.setIsGenericType(false);
+//						}
+//						co.setGenericParametersList(genericParametersList);
+
 						co.setImportList(importList);
 						co.setPackage(packageObject);
 						co.setSourceCode(getClassSourceCode(fileLocation, startLine, endLine));
 						co.setStartCharacter(node.getStartPosition());
 						co.setEndCharacter(node.getStartPosition() + node.getLength() - 1);
 
-						if(node.getSuperclassType() != null) {
-							co.setSuperClass(node.getSuperclassType().toString());
-						}
+//						if(node.superInterfaceTypes().size() > 0) {
+//							for(Object o : node.superInterfaceTypes()) {
+//								co.addImplementsInterface(o.toString());
+//							}
+//						}
 
-						if(node.superInterfaceTypes().size() > 0) {
-							for(Object o : node.superInterfaceTypes()) {
-								co.addImplementsInterface(o.toString());
-							}
-						}
-
-						int mod = node.getModifiers();
-						if(Modifier.isAbstract(mod)) {
-							co.setIsAbstract(true);
+						if(Modifier.isAbstract(node.getModifiers())) {
+							solrDoc.addField("isAbstractScore", true);
 						}
 						else {
-							co.setIsAbstract(false);
+							solrDoc.addField("isAbstractScore", false);
 						}
-
 					}
 				}
 
@@ -869,22 +862,18 @@ public class ASTWalker {
 						if(!containingClass.isEmpty()) {
 							temp.setContainingClass(containingClass);
 						}
-						entityStack.peek().addEntity(temp, Entity.EntityType.CLASS);
+//						entityStack.peek().addEntity(temp, Entity.EntityType.CLASS);
 
 					} catch (EmptyStackException e) {
 						containingClass = "";
 					}
-
-					fileModel.addJavaClass(temp);
 				}
-
-				hasComments = false;
 			}
 
 			// TODO
 			public boolean visit(VariableDeclarationStatement node) {
 				if(configProperties.get("VariableDeclarationStatement")) {
-					Type nodeType = node.getType();
+//					Type nodeType = node.getType();
 
 					for(Object v : node.fragments()) {
 						SimpleName name = ((VariableDeclarationFragment) v).getName();
@@ -898,29 +887,32 @@ public class ASTWalker {
 							fullyQualifiedName = name.toString();
 						}
 
-						SuperEntityClass vdsEntity = new SuperEntityClass(
-										name.toString(),
-										fullyQualifiedName,
-										nodeType,
-										cu.getLineNumber(name.getStartPosition()),
-										cu.getColumnNumber(name.getStartPosition())
-						);
+						// todo
+						variableNames.add(fullyQualifiedName);
 
-						if(nodeType.isArrayType()) {
-							entityStack.peek().addEntity(vdsEntity, Entity.EntityType.ARRAY);
-						}
-						else if(nodeType.isParameterizedType()) {
-							entityStack.peek().addEntity(vdsEntity, Entity.EntityType.GENERICS);
-						}
-						else if(nodeType.isPrimitiveType()) {
-							entityStack.peek().addEntity(vdsEntity, Entity.EntityType.PRIMITIVE);
-						}
-						else if(nodeType.isSimpleType()) {
-							entityStack.peek().addEntity(vdsEntity, Entity.EntityType.SIMPLE);
-						}
-						else {
-							System.out.println("Something is missing " + nodeType);
-						}
+//						SuperEntityClass vdsEntity = new SuperEntityClass(
+//							name.toString(),
+//							fullyQualifiedName,
+//							nodeType,
+//							cu.getLineNumber(name.getStartPosition()),
+//							cu.getColumnNumber(name.getStartPosition())
+//						);
+//
+//						if(nodeType.isArrayType()) {
+//							entityStack.peek().addEntity(vdsEntity, Entity.EntityType.ARRAY);
+//						}
+//						else if(nodeType.isParameterizedType()) {
+//							entityStack.peek().addEntity(vdsEntity, Entity.EntityType.GENERICS);
+//						}
+//						else if(nodeType.isPrimitiveType()) {
+//							entityStack.peek().addEntity(vdsEntity, Entity.EntityType.PRIMITIVE);
+//						}
+//						else if(nodeType.isSimpleType()) {
+//							entityStack.peek().addEntity(vdsEntity, Entity.EntityType.SIMPLE);
+//						}
+//						else {
+//							System.out.println("Something is missing " + nodeType);
+//						}
 					}
 				}
 
@@ -930,7 +922,7 @@ public class ASTWalker {
 			// TODO
 			public boolean visit(VariableDeclarationExpression node) {
 				if(configProperties.get("VariableDeclarationExpression")) {
-					Type nodeType = node.getType();
+//					Type nodeType = node.getType();
 
 					for(Object v : node.fragments()) {
 						SimpleName name = ((VariableDeclarationFragment) v).getName();
@@ -944,29 +936,31 @@ public class ASTWalker {
 							fullyQualifiedName = name.toString();
 						}
 
-						SuperEntityClass vdeEntity = new SuperEntityClass(
-										name.toString(),
-										fullyQualifiedName,
-										nodeType,
-										cu.getLineNumber(name.getStartPosition()),
-										cu.getColumnNumber(name.getStartPosition())
-						);
+						variableNames.add(fullyQualifiedName);
 
-						if(nodeType.isArrayType()) {
-							entityStack.peek().addEntity(vdeEntity, Entity.EntityType.ARRAY);
-						}
-						else if(nodeType.isParameterizedType()) {
-							entityStack.peek().addEntity(vdeEntity, Entity.EntityType.GENERICS);
-						}
-						else if(nodeType.isPrimitiveType()) {
-							entityStack.peek().addEntity(vdeEntity, Entity.EntityType.PRIMITIVE);
-						}
-						else if(nodeType.isSimpleType()) {
-							entityStack.peek().addEntity(vdeEntity, Entity.EntityType.SIMPLE);
-						}
-						else {
-							System.out.println("Something is missing " + nodeType);
-						}
+//						SuperEntityClass vdeEntity = new SuperEntityClass(
+//										name.toString(),
+//										fullyQualifiedName,
+//										nodeType,
+//										cu.getLineNumber(name.getStartPosition()),
+//										cu.getColumnNumber(name.getStartPosition())
+//						);
+
+//						if(nodeType.isArrayType()) {
+//							entityStack.peek().addEntity(vdeEntity, Entity.EntityType.ARRAY);
+//						}
+//						else if(nodeType.isParameterizedType()) {
+//							entityStack.peek().addEntity(vdeEntity, Entity.EntityType.GENERICS);
+//						}
+//						else if(nodeType.isPrimitiveType()) {
+//							entityStack.peek().addEntity(vdeEntity, Entity.EntityType.PRIMITIVE);
+//						}
+//						else if(nodeType.isSimpleType()) {
+//							entityStack.peek().addEntity(vdeEntity, Entity.EntityType.SIMPLE);
+//						}
+//						else {
+//							System.out.println("Something is missing " + nodeType);
+//						}
 					}
 				}
 
@@ -982,14 +976,14 @@ public class ASTWalker {
 						name = "";
 					}
 
-					entityStack.peek().addEntity(
-									new SuperEntityClass(
-													name,
-													cu.getLineNumber(node.getStartPosition()),
-													cu.getColumnNumber(node.getStartPosition())
-									),
-									Entity.EntityType.WHILE_STATEMENT
-					);
+//					entityStack.peek().addEntity(
+//						new SuperEntityClass(
+//							name,
+//							cu.getLineNumber(node.getStartPosition()),
+//							cu.getColumnNumber(node.getStartPosition())
+//						),
+//						Entity.EntityType.WHILE_STATEMENT
+//					);
 				}
 
 				return true;
@@ -997,28 +991,52 @@ public class ASTWalker {
 
 			// TODO
 			// unchanged
-			public boolean visit(WildcardType node) {
-				if(inMethod && configProperties.get("WildcardType")) {
-					SuperEntityClass wo = new SuperEntityClass();
-					wo.setName("Wildcard");
-
-					String bound;
-					try {
-						bound = node.getBound().toString();
-					} catch (NullPointerException e) {
-						bound = "none";
-					}
-
-					wo.setBound(bound);
-					wo.setType(((ParameterizedType) node.getParent()).getType());
-					wo.setLineNumber(cu.getLineNumber(node.getStartPosition()));
-					wo.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
-					entityStack.peek().addEntity(wo, Entity.EntityType.WILDCARD);
-				}
-
-				return false;
-			}
+//			public boolean visit(WildcardType node) {
+//				if(inMethod && configProperties.get("WildcardType")) {
+//					SuperEntityClass wo = new SuperEntityClass();
+//					wo.setName("Wildcard");
+//
+//					String bound;
+//					try {
+//						bound = node.getBound().toString();
+//					} catch (NullPointerException e) {
+//						bound = "none";
+//					}
+//
+//					wo.setBound(bound);
+//					wo.setType(((ParameterizedType) node.getParent()).getType());
+//					wo.setLineNumber(cu.getLineNumber(node.getStartPosition()));
+//					wo.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
+//					entityStack.peek().addEntity(wo, Entity.EntityType.WILDCARD);
+//				}
+//
+//				return false;
+//			}
 
 		});
+
+		// we should be adding names at the end because we want to keep a SET
+		// todo: need if statements everywhere, or is iterating over an empty set okay?
+		// todo: wildcardScore, complexityScore
+		solrDoc.addField("importNumScore", importNames.size());
+		solrDoc.addField("fieldsScore", fieldNames.size());
+
+		for(String name : importNames) {
+			solrDoc.addField("importsScore", name);
+		}
+
+		for(String name : methodInvocationNames) {
+			solrDoc.addField("methodCallScore", name);
+		}
+
+		for(String name : methodDeclarationNames) {
+			solrDoc.addField("methodDecScore", name);
+		}
+
+		for(String name : variableNames) {
+			solrDoc.addField("variableNameScore", name);
+		}
+
+		return solrDoc;
 	}
 }

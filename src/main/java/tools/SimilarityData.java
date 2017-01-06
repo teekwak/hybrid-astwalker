@@ -46,9 +46,6 @@ class SimilarityData {
 			}
 		}
 
-		System.out.println(jc.getName());
-		System.exit(0);
-
 		if(jc == null) throw new IllegalArgumentException("[ERROR]: current java class is null");
 
 		this.sourceCode = jc.getSourceCode();
@@ -119,7 +116,7 @@ class SimilarityData {
 				}
 			}
 
-			dataMap.get("isWildCardSCore").add(has_wildcard_method);
+			dataMap.get("isWildCardScore").add(has_wildcard_method);
 		}
 	}
 
