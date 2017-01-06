@@ -19,7 +19,6 @@
 package tools;
 
 import AST.ASTWalker;
-import entities.JavaClass;
 import entities.MethodDeclarationObject;
 import entities.SuperEntityClass;
 import org.apache.solr.common.SolrInputDocument;
@@ -37,7 +36,7 @@ public class IndexManager {
 //	private static int MAX_CHILD_DOC = 4000;
 //	static int CHILD_COUNT = 0;
 
-	private static int MAXDOC = 1; // todo: we want to upload after each class doc (this is definitely going to be more than 1 document)
+	private static int MAXDOC = 300; // todo: we want to upload after each class doc (this is definitely going to be more than 1 document)
 	private static int MAX_CHILD_DOC = 4000;
 	static int CHILD_COUNT = 0;
 
@@ -100,28 +99,28 @@ public class IndexManager {
 	}
 
 
-	/**
-	 * recursively get method declarations (for those method declarations inside of each other)
-	 *
-	 * @param mdo x
-	 * @param solrDoc x
-	 * @param id x
-	 */
-	private static void findAllMethodDeclarations(MethodDeclarationObject mdo, SolrInputDocument solrDoc, String id) {
-		MethodDeclarationSolrDocument mdSolrDoc = new MethodDeclarationSolrDocument(simProperties); // todo: i dont think configProperties belongs here
-		mdSolrDoc.addTechnicalData(mdo, solrDoc, id);
-
-		for(SuperEntityClass mi : mdo.getMethodInvocationList() ) {
-			MethodInvocationSolrDocument miSolrDoc = new MethodInvocationSolrDocument(simProperties); // todo: i dont think configProperties belongs here
-			miSolrDoc.addTechnicalData(mi, solrDoc, id);
-		}
-
-		if(mdo.getMethodDeclarationList().size() > 0) {
-			for(SuperEntityClass mdChild : mdo.getMethodDeclarationList()) {
-				findAllMethodDeclarations((MethodDeclarationObject)mdChild, solrDoc, id);
-			}
-		}
-	}
+//	/**
+//	 * recursively get method declarations (for those method declarations inside of each other)
+//	 *
+//	 * @param mdo x
+//	 * @param solrDoc x
+//	 * @param id x
+//	 */
+//	private static void findAllMethodDeclarations(MethodDeclarationObject mdo, SolrInputDocument solrDoc, String id) {
+//		MethodDeclarationSolrDocument mdSolrDoc = new MethodDeclarationSolrDocument(simProperties); // todo: i dont think configProperties belongs here
+//		mdSolrDoc.addTechnicalData(mdo, solrDoc, id);
+//
+//		for(SuperEntityClass mi : mdo.getMethodInvocationList() ) {
+//			MethodInvocationSolrDocument miSolrDoc = new MethodInvocationSolrDocument(simProperties); // todo: i dont think configProperties belongs here
+//			miSolrDoc.addTechnicalData(mi, solrDoc, id);
+//		}
+//
+//		if(mdo.getMethodDeclarationList().size() > 0) {
+//			for(SuperEntityClass mdChild : mdo.getMethodDeclarationList()) {
+//				findAllMethodDeclarations((MethodDeclarationObject)mdChild, solrDoc, id);
+//			}
+//		}
+//	}
 
 
 	/**
@@ -129,49 +128,110 @@ public class IndexManager {
 	 * @param rawURL x
 	 */
 	private static void createSolrDocsForURL(String rawURL, File classFile) {
-		// todo for each class file
-		// todo create a solr doc
-		// todo for each other class in a class
-		// todo create a solr doc
-		// todo for each method dec
-		// todo create a solr doc
-		// todo upload them to the server
+
 
 
 		System.out.println("Started creating solr doc for " + classFile.getName());
 
+// prev
+//		// todo: print time before download
+//
+//		String[] urlSplit = rawURL.split("/");
+//
+//		// file is done being written to here with location outputFileLocation
+//		// do ASTWalker and get the file model
+//		ASTWalker aw = new ASTWalker(astProperties); // todo change input to map (leave string for standalone)
+//		aw.parseFile(classFile.getAbsolutePath());
+//		if(aw.getFileModel() == null) {
+//			throw new IllegalArgumentException("[ERROR]: the file model is null!");
+//		}
+//
+//		for(JavaClass jClass : aw.getFileModel().getJavaClassList()) {
+//			ClassSolrDocument classSolrDoc = new ClassSolrDocument(jClass, rawURL, configProperties, simProperties);
+//			classSolrDoc.addProjectData("https://github.com/" + urlSplit[3] + "/" + urlSplit[4]);
+//			classSolrDoc.addSocialData("clone/" + urlSplit[4], getRelativeFileRepoPath(rawURL), classFile);
+//			classSolrDoc.addTechnicalData(jClass, aw.getFileModel(), "https://github.com/" + urlSplit[3] + "/" + urlSplit[4] + "/blob/master/" + getRelativeFileRepoPath(rawURL));
+//
+//			for(SuperEntityClass md : jClass.getMethodDeclarationList()) {
+//				findAllMethodDeclarations((MethodDeclarationObject)md, classSolrDoc.getSolrDocument(), rawURL);
+//			}
+//
+//			Solrj.getInstance(configProperties.get("passPath")).addDoc(classSolrDoc.getSolrDocument());
+//		}
+//
+//		Solrj.getInstance(configProperties.get("passPath")).commitDocs("grok.ics.uci.edu", 9551, "MoreLikeThisIndex");
+//
+////		classSolrDocList.forEach(classSolrDoc -> classSolrDoc.getSolrDocument().forEach((k, v) -> System.out.println(k + " -> " + v.getValue())));
+////		System.out.println("checkpoint reached");
+////		System.exit(0);
 
-		// todo: print time before download
 
+
+		// todo: no longer create method dec and method inv classes
+
+		// run for loop to create class solr doc over the keys (see the class file for the method dec)
 		String[] urlSplit = rawURL.split("/");
+		SimilarityData similarityData = new SimilarityData(simProperties);
 
-		// file is done being written to here with location outputFileLocation
-		// do ASTWalker and get the file model
-		ASTWalker aw = new ASTWalker(astProperties); // todo change input to map (leave string for standalone)
-		aw.parseFile(classFile.getAbsolutePath());
-		if(aw.getFileModel() == null) {
-			throw new IllegalArgumentException("[ERROR]: the file model is null!");
-		}
-
-		for(JavaClass jClass : aw.getFileModel().getJavaClassList()) {
-			ClassSolrDocument classSolrDoc = new ClassSolrDocument(jClass, rawURL, configProperties, simProperties);
-			classSolrDoc.addProjectData("https://github.com/" + urlSplit[3] + "/" + urlSplit[4]);
-			classSolrDoc.addSocialData("clone/" + urlSplit[4], getRelativeFileRepoPath(rawURL), classFile);
-			classSolrDoc.addTechnicalData(jClass, aw.getFileModel(), "https://github.com/" + urlSplit[3] + "/" + urlSplit[4] + "/blob/master/" + getRelativeFileRepoPath(rawURL));
-
-			for(SuperEntityClass md : jClass.getMethodDeclarationList()) {
-				findAllMethodDeclarations((MethodDeclarationObject)md, classSolrDoc.getSolrDocument(), rawURL);
+		// extract technical data
+		if(simProperties.get("importsScore")
+			|| simProperties.get("variableNameScore")
+			|| simProperties.get("classNameScore")
+			|| simProperties.get("methodCallScore")
+			|| simProperties.get("methodDecScore")
+			|| simProperties.get("sizeScore")
+			|| simProperties.get("importNumScore")
+			|| simProperties.get("complexityScore")
+			|| simProperties.get("extendsScore")
+			|| simProperties.get("packageScore")
+			|| simProperties.get("fieldsScore")
+			|| simProperties.get("isGenericScore")
+			|| simProperties.get("isAbstractScore")
+			|| simProperties.get("isWildCardScore")
+		) {
+			ASTWalker aw = new ASTWalker(astProperties); // todo change input to map (leave string for standalone)
+			aw.parseFile(classFile.getAbsolutePath());
+			if(aw.getFileModel() == null) {
+				throw new IllegalArgumentException("[ERROR]: the file model is null!");
 			}
 
-			Solrj.getInstance(configProperties.get("passPath")).addDoc(classSolrDoc.getSolrDocument());
+			String className = urlSplit[urlSplit.length - 1].split("\\.java")[0];
+
+			similarityData.extractData(aw.getFileModel(), className);
 		}
 
+		// extract social data
+		if(simProperties.get("authorScore")) {
+			JavaGitHubData jghd = new JavaGitHubData(getRelativeFileRepoPath(rawURL));
+			similarityData.extractData(jghd, "clone/" + urlSplit[4], getRelativeFileRepoPath(rawURL), classFile);
+		}
+
+		if(simProperties.get("projectScore") || simProperties.get("ownerScore")) {
+			similarityData.extractProjectData("https://github.com/" + urlSplit[3] + "/" + urlSplit[4], configProperties.get("passPath"));
+		}
+
+		// todo: do not care about inner classes!
+		// todo: delete methodDecSolrDocClass
+		// todo: delete methodInvSolrDocClass
+		// todo: delete classSolrDocClass
+
+		SolrInputDocument classSolrDoc = new SolrInputDocument();
+		classSolrDoc.addField("id", rawURL);
+		classSolrDoc.addField("snippet_code", similarityData.getSourceCode());
+		classSolrDoc.addField("parent", true);
+
+		for(Map.Entry<String, Boolean> property : simProperties.entrySet()) {
+			if(property.getValue()) {
+				for(Object o : similarityData.getValue(property.getKey())) {
+					classSolrDoc.addField(SolrKey.mapping.get(property.getKey()), o);
+				}
+			}
+		}
+
+		Solrj.getInstance(configProperties.get("passPath")).addDoc(classSolrDoc);
+		System.out.println("Uploading...");
 		Solrj.getInstance(configProperties.get("passPath")).commitDocs("grok.ics.uci.edu", 9551, "MoreLikeThisIndex");
-
-//		classSolrDocList.forEach(classSolrDoc -> classSolrDoc.getSolrDocument().forEach((k, v) -> System.out.println(k + " -> " + v.getValue())));
-//		System.out.println("checkpoint reached");
-//		System.exit(0);
-
+		System.exit(0);
 	}
 
 
@@ -201,14 +261,6 @@ public class IndexManager {
 	 * todo: Press Ctrl-Alt-r to change the command line arguments
 	 * todo: Currently set to "resources/config.properties" and "resources/astconfig.properties
 	 *
-	 * todo: the order of things
-	 * todo: clone the repo
-	 * todo: load the astconfig file
-	 * todo: for each similarity function
-	 * todo: create and upload the solr doc
-	 * todo: delete the repository
-	 * todo: move onto the next repository
-	 *
 	 * @param args arguments from the command line
 	 */
 	public static void main(String[] args) {
@@ -220,7 +272,7 @@ public class IndexManager {
 		try(BufferedReader urlBr = new BufferedReader(new InputStreamReader(new FileInputStream(configProperties.get("pathToURLMapPath")), "UTF-8"))) {
 			for(String url; (url = urlBr.readLine()) != null; ) {
 
-				// todo: add timestmap to see how long it takes to download the repo
+				// todo: add timestamp to see how long it takes to download the repo
 
 				// clone repository
 				String[] urlSplit = url.split("/");
