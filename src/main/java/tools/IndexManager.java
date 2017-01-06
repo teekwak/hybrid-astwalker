@@ -1,4 +1,4 @@
-/*******************************************************************************
+/* *****************************************************************************
  * Copyright (c) {2017} {Software Design and Collaboration Laboratory (SDCL)
  *				, University of California, Irvine}.
  * All rights reserved. This program and the accompanying materials
@@ -12,7 +12,7 @@
  *			- initial API and implementation and/or initial documentation
  *******************************************************************************/
 
-/**
+/*
  * Created by Thomas Kwak
  */
 
@@ -37,7 +37,7 @@ public class IndexManager {
 //	private static int MAX_CHILD_DOC = 4000;
 //	static int CHILD_COUNT = 0;
 
-	private static int MAXDOC = 1; // todo: we want to upload after each class doc
+	private static int MAXDOC = 1; // todo: we want to upload after each class doc (this is definitely going to be more than 1 document)
 	private static int MAX_CHILD_DOC = 4000;
 	static int CHILD_COUNT = 0;
 
@@ -48,7 +48,6 @@ public class IndexManager {
 
 		return instance;
 	}
-
 
 
 	/**
@@ -84,56 +83,6 @@ public class IndexManager {
 	}
 
 
-
-
-
-
-
-
-
-	/**
-	 * Utility function
-	 * @param authorEmail x
-	 * @return x
-	 */
-//	private static String makeGravaterURL(String authorEmail) {
-//		if(authorEmail == null)
-//			return "";
-//
-//		String md5 = md5Java(authorEmail);
-//		return "http://www.gravatar.com/avatar/"+md5;
-//	}
-
-
-
-	/**
-	 * Utility function
-	 * @param message x
-	 * @return x
-	 */
-//	private static String md5Java(String message){
-//		String digest = null;
-//		try {
-//			MessageDigest md = MessageDigest.getInstance("MD5");
-//
-//			byte[] hash = md.digest(message.getBytes("UTF-8")); //converting byte array to Hexadecimal
-//			StringBuilder sb = new StringBuilder(2*hash.length);
-//			for(byte b : hash){
-//				sb.append(String.format("%02x", b&0xff));
-//			}
-//			digest = sb.toString();
-//		} catch (UnsupportedEncodingException | NoSuchAlgorithmException ex) {
-//			ex.printStackTrace();
-//		}
-//		return digest;
-//	}
-
-
-
-
-
-
-
 	/**
 	 * Get the relative path to the file in the repository
 	 * @param url x
@@ -151,21 +100,6 @@ public class IndexManager {
 	}
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	/**
 	 * recursively get method declarations (for those method declarations inside of each other)
 	 *
@@ -174,11 +108,11 @@ public class IndexManager {
 	 * @param id x
 	 */
 	private static void findAllMethodDeclarations(MethodDeclarationObject mdo, SolrInputDocument solrDoc, String id) {
-		MethodDeclarationSolrDocument mdSolrDoc = new MethodDeclarationSolrDocument(configProperties); // todo: i dont think configProperties belongs here
+		MethodDeclarationSolrDocument mdSolrDoc = new MethodDeclarationSolrDocument(simProperties); // todo: i dont think configProperties belongs here
 		mdSolrDoc.addTechnicalData(mdo, solrDoc, id);
 
 		for(SuperEntityClass mi : mdo.getMethodInvocationList() ) {
-			MethodInvocationSolrDocument miSolrDoc = new MethodInvocationSolrDocument(configProperties); // todo: i dont think configProperties belongs here
+			MethodInvocationSolrDocument miSolrDoc = new MethodInvocationSolrDocument(simProperties); // todo: i dont think configProperties belongs here
 			miSolrDoc.addTechnicalData(mi, solrDoc, id);
 		}
 
@@ -188,7 +122,6 @@ public class IndexManager {
 			}
 		}
 	}
-
 
 
 	/**
@@ -223,7 +156,7 @@ public class IndexManager {
 		List<ClassSolrDocument> classSolrDocList = new ArrayList<>();
 
 		for(JavaClass jClass : aw.getFileModel().getJavaClassList()) {
-			ClassSolrDocument classSolrDoc = new ClassSolrDocument(jClass, rawURL, configProperties);
+			ClassSolrDocument classSolrDoc = new ClassSolrDocument(jClass, rawURL, configProperties, simProperties);
 			classSolrDoc.addProjectData("https://github.com/" + urlSplit[3] + "/" + urlSplit[4]);
 			classSolrDoc.addSocialData("clone/" + urlSplit[4], getRelativeFileRepoPath(rawURL), classFile);
 			classSolrDoc.addTechnicalData(jClass, aw.getFileModel(), "https://github.com/" + urlSplit[3] + "/" + urlSplit[4] + "/blob/master/" + getRelativeFileRepoPath(rawURL));
@@ -259,6 +192,7 @@ public class IndexManager {
 		}
 	}
 
+
 	/**
 	 * delete clone folder on program end
 	 */
@@ -267,6 +201,7 @@ public class IndexManager {
 			throw new IllegalArgumentException("[ERROR]: could not delete \"clone\" directory");
 		}
 	}
+
 
 	/**
 	 * Just a normal main function

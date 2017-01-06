@@ -26,20 +26,24 @@ import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 class ClassSolrDocument {
 	private SolrInputDocument doc;
-	private Map<String, String> configProperties; // todo: i don't think this is string string. it should be string boolean
+	private Map<String, String> configProperties;
+	private Map<String, Boolean> simProperties;
 
 
 	/**
 	 * Constructor
 	 * @param jc xxx
 	 * @param fullURL xxx
-	 * @param configProperties xxx
+	 * @param simProperties xxx
 	 */
-	ClassSolrDocument(JavaClass jc, String fullURL, Map<String, String> configProperties) {
+	ClassSolrDocument(JavaClass jc, String fullURL, Map<String, String> configProperties, Map<String, Boolean> simProperties) {
 		this.doc = new SolrInputDocument();
 		this.doc.addField(SolrKey.SNIPPET_NAME, jc.getFullyQualifiedName());
 		this.doc.addField(SolrKey.SNIPPET_NAME_DELIMITED, jc.getName());
@@ -50,6 +54,7 @@ class ClassSolrDocument {
 		this.doc.addField("parent", true);
 
 		this.configProperties = configProperties;
+		this.simProperties = simProperties;
 	}
 
 
@@ -248,7 +253,6 @@ class ClassSolrDocument {
 			}
 		}
 
-		// method declaration is right below this current method
 		Map<String, Set<String>> variables = new HashMap<>();
 		{
 			variables.put("variableTypes", new HashSet<>());
@@ -272,11 +276,6 @@ class ClassSolrDocument {
 	}
 
 
-
-
-
-
-
 	/**
 	 * xxx
 	 * @param methodDeclarationList xxx
@@ -295,6 +294,7 @@ class ClassSolrDocument {
 			}
 		}
 	}
+
 
 	/**
 	 * xxx
@@ -321,4 +321,39 @@ class ClassSolrDocument {
 	}
 
 
+	/**
+	 * Utility function
+	 * @param authorEmail x
+	 * @return x
+	 */
+	private static String makeGravaterURL(String authorEmail) {
+		if(authorEmail == null)
+			return "";
+
+		String md5 = md5Java(authorEmail);
+		return "http://www.gravatar.com/avatar/"+md5;
+	}
+
+
+	/**
+	 * Utility function
+	 * @param message x
+	 * @return x
+	 */
+	private static String md5Java(String message){
+		String digest = null;
+		try {
+			MessageDigest md = MessageDigest.getInstance("MD5");
+
+			byte[] hash = md.digest(message.getBytes("UTF-8")); //converting byte array to Hexadecimal
+			StringBuilder sb = new StringBuilder(2*hash.length);
+			for(byte b : hash){
+				sb.append(String.format("%02x", b&0xff));
+			}
+			digest = sb.toString();
+		} catch (UnsupportedEncodingException | NoSuchAlgorithmException ex) {
+			ex.printStackTrace();
+		}
+		return digest;
+	}
 }

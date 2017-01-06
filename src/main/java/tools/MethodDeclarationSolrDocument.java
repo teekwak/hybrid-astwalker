@@ -27,11 +27,11 @@ import java.util.Map;
 
 class MethodDeclarationSolrDocument {
 	private SolrInputDocument doc;
-	private Map<String, String> configProperties; // todo: i don't think this is string string. it should be string boolean
+	private Map<String, Boolean> simProperties;
 
-	MethodDeclarationSolrDocument(Map<String, String> configProperties) {
+	MethodDeclarationSolrDocument(Map<String, Boolean> simProperties) {
 		this.doc = new SolrInputDocument();
-		this.configProperties = configProperties;
+		this.simProperties = simProperties;
 	}
 
 	void addTechnicalData(SuperEntityClass entity, SolrInputDocument solrDoc, String id) {
