@@ -1,3 +1,21 @@
+/* *****************************************************************************
+ * Copyright (c) {2017} {Software Design and Collaboration Laboratory (SDCL)
+ *				, University of California, Irvine}.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    {Software Design and Collaboration Laboratory (SDCL)
+ *	, University of California, Irvine}
+ *			- initial API and implementation and/or initial documentation
+ *******************************************************************************/
+
+/*
+ * Created by Thomas Kwak
+ */
+
 package AST;
 
 import org.apache.commons.io.FileUtils;
@@ -6,21 +24,6 @@ import org.eclipse.jdt.core.dom.*;
 
 import java.io.*;
 import java.util.*;
-
-/**
- * @author Thomas Kwak
- *
- * Table of Contents (out of date)
- *
- * 1. Class variables...........25 x
- * 2. Constructor...............41 x
- *
- * 3. validateProperties()......45 x
- * 4. parseFile()...............63 x
- * 5. test1()...................96 x
- * 6. main()....................121 x
- *
- */
 
 @SuppressWarnings("Duplicates")
 public class SimilarityASTWalker {

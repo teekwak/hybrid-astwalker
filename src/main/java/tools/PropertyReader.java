@@ -1,3 +1,21 @@
+/* *****************************************************************************
+ * Copyright (c) {2017} {Software Design and Collaboration Laboratory (SDCL)
+ *				, University of California, Irvine}.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    {Software Design and Collaboration Laboratory (SDCL)
+ *	, University of California, Irvine}
+ *			- initial API and implementation and/or initial documentation
+ *******************************************************************************/
+
+/*
+ * Created by Thomas Kwak
+ */
+
 package tools;
 
 import java.io.BufferedReader;
@@ -61,29 +79,6 @@ class PropertyReader {
 		}
 
 		validateConfigProperties(map);
-
-		return map;
-	}
-
-	/**
-	 * Reads the config file for configuring the AST Walker
-	 * @param fileLocation location of file
-	 * @return x
-	 */
-	static Map<String, Boolean> createASTPropertiesMap(String fileLocation) {
-		Map<String, Boolean> map = new HashMap<>();
-
-		try(BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fileLocation), "UTF-8"))) {
-			for(String line; (line = br.readLine()) != null; ) {
-				if(!line.startsWith("#") && line.contains("=")) {
-					map.put(line.split("=")[0], Boolean.parseBoolean(line.split("=")[1]));
-				}
-			}
-		} catch (IOException e) {
-			throw new IllegalArgumentException("[ERROR]: config file not found!");
-		}
-
-		validateASTProperties(map);
 
 		return map;
 	}

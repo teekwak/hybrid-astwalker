@@ -29,7 +29,6 @@ import java.util.*;
 public class IndexManager {
 	private static IndexManager instance;
 	private static Map<String, String> configProperties;
-	private static Map<String, Boolean> astProperties;
 	private static Map<String, Boolean> simProperties;
 
 //	private static int MAXDOC = 300;
@@ -132,7 +131,6 @@ public class IndexManager {
 		) {
 			SimilarityASTWalker saw = new SimilarityASTWalker(className, simProperties); // todo change input to map (leave string for standalone)
 			solrDoc = saw.parseFileIntoSolrDoc(rawURL, classFile.getAbsolutePath());
-			System.exit(0); // todo
 		}
 
 		if(solrDoc == null) {
@@ -166,7 +164,6 @@ public class IndexManager {
 
 		Solrj.getInstance(configProperties.get("passPath")).addDoc(solrDoc);
 		Solrj.getInstance(configProperties.get("passPath")).commitDocs("grok.ics.uci.edu", 9551, "MoreLikeThisIndex");
-		System.exit(0);
 	}
 
 
@@ -210,7 +207,7 @@ public class IndexManager {
 
 				// clone repository
 				String[] urlSplit = url.split("/");
-				ClonedRepository clone = new ClonedRepository(url, "https://test:test@github.com/" + urlSplit[3] + "/" + urlSplit[4] + ".git", "clone/" + urlSplit[4]);
+				ClonedRepository clone = new ClonedRepository("https://test:test@github.com/" + urlSplit[3] + "/" + urlSplit[4] + ".git", "clone/" + urlSplit[4]);
 				clone.cloneRepository();
 
 				// find file path and name

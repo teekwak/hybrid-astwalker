@@ -6,12 +6,10 @@ import java.io.File;
 import java.io.IOException;
 
 class ClonedRepository {
-	private String rawGithubURL;
 	private String githubCloneURL;
 	private String localCloneDirectory;
 
-	ClonedRepository(String r, String g, String l) {
-		this.rawGithubURL = r;
+	ClonedRepository(String g, String l) {
 		this.githubCloneURL = g;
 		this.localCloneDirectory = l;
 	}
@@ -33,9 +31,5 @@ class ClonedRepository {
 		} catch (InterruptedException|IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	String getFileName() {
-		return this.rawGithubURL.split("/")[this.rawGithubURL.split("/").length - 1].split("\\?start=")[0];
 	}
 }
