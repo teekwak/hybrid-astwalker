@@ -139,24 +139,13 @@ public class IndexManager {
 			solrDoc.addField("id", rawURL);
 		}
 
-
-
-		// todo
-		solrDoc.forEach((k, v) -> System.out.println(k + " -> " + v.getValue()));
-		System.exit(0);
-
-
-
-
-
-
-
+		solrDoc.addField("parent", true);
 
 		if(simProperties.get("authorScore")) {
 			JavaGitHubData jghd = new JavaGitHubData(getRelativeFileRepoPath(rawURL));
 			jghd.getCommits("clone/" + urlSplit[4], getRelativeFileRepoPath(rawURL), classFile);
 			Commit headCommit = jghd.getListOfCommits().get(jghd.getListOfCommits().size() - 1);
-			solrDoc.addField("authorScore", headCommit.getAuthor());
+			solrDoc.addField("snippet_author_name", headCommit.getAuthor());
 		}
 
 		if(simProperties.get("ownerScore") || simProperties.get("projectScore")) {
@@ -166,11 +155,11 @@ public class IndexManager {
 			SolrDocument doc = list.get(0);
 
 			if(simProperties.get("ownerScore")) {
-				solrDoc.addField("ownerScore", Collections.singletonList(doc.getFieldValue("userName").toString()));
+				solrDoc.addField("snippet_project_owner", doc.getFieldValue("userName").toString());
 			}
 
 			if(simProperties.get("projectScore")) {
-				solrDoc.addField("projectScore", Collections.singletonList(doc.getFieldValue("projectName").toString()));
+				solrDoc.addField("snippet_project_name", doc.getFieldValue("projectName").toString());
 			}
 		}
 
