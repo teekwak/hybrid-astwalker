@@ -1427,7 +1427,7 @@
 //	private static void init(String URLFilePath) {
 //		// for each line of URL file
 //		// read the URL to file
-//		// anyway, create the JavaClass object from the ASTWalker
+//		// anyway, create the JavaClass object from the SimilarityASTWalker
 //		// then print to file the current time in milliseconds
 //		// don't forget to catch things when uploading fails
 //
@@ -1442,7 +1442,7 @@
 //				urlToFile(line, outputFileLocation);
 //
 //				// file is done being written to here with location outputFileLocation
-//				// do ASTWalker and get the file model
+//				// do SimilarityASTWalker and get the file model
 //				ASTRefactor ar = new ASTRefactor("resources/astconfig.properties");
 //				ar.parseFile(outputFileLocation);
 //				if(ar.getFileModel() == null) {

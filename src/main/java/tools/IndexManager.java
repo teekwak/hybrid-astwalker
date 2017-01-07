@@ -18,7 +18,7 @@
 
 package tools;
 
-import AST.ASTWalker;
+import AST.SimilarityASTWalker;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
@@ -110,6 +110,7 @@ public class IndexManager {
 
 		// run for loop to create class solr doc over the keys (see the class file for the method dec)
 		String[] urlSplit = rawURL.split("/");
+		String className = urlSplit[urlSplit.length - 1].split("\\.java")[0];
 
 		SolrInputDocument solrDoc = null;
 
@@ -129,14 +130,27 @@ public class IndexManager {
 			|| simProperties.get("isAbstractScore")
 			|| simProperties.get("isWildCardScore")
 		) {
-			ASTWalker aw = new ASTWalker(astProperties); // todo change input to map (leave string for standalone)
-			solrDoc = aw.parseFileIntoSolrDoc(rawURL, classFile.getAbsolutePath());
+			SimilarityASTWalker saw = new SimilarityASTWalker(className, simProperties); // todo change input to map (leave string for standalone)
+			solrDoc = saw.parseFileIntoSolrDoc(rawURL, classFile.getAbsolutePath());
 		}
 
 		if(solrDoc == null) {
 			solrDoc = new SolrInputDocument();
 			solrDoc.addField("id", rawURL);
 		}
+
+
+
+		// todo
+		solrDoc.forEach((k, v) -> System.out.println(k + " -> " + v.getValue()));
+		System.exit(0);
+
+
+
+
+
+
+
 
 		if(simProperties.get("authorScore")) {
 			JavaGitHubData jghd = new JavaGitHubData(getRelativeFileRepoPath(rawURL));
@@ -196,7 +210,6 @@ public class IndexManager {
 	 */
 	public static void main(String[] args) {
 		configProperties = PropertyReader.createConfigPropertiesMap(args[0]);
-		astProperties = PropertyReader.createASTPropertiesMap(args[1]); // todo this is wrong. this needs to be a file with a LIST of files of ast properties. this is different from the original ast properties
 
 		setup();
 
