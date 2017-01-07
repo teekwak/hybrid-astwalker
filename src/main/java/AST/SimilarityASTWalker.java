@@ -129,17 +129,7 @@ public class SimilarityASTWalker {
 				if(simProperties.get("fieldsScore")) {
 					for(Object v : node.fragments()) {
 						SimpleName name = ((VariableDeclarationFragment) v).getName();
-
-						// get fully qualified name
-						ITypeBinding binding = node.getType().resolveBinding();
-						String fullyQualifiedName;
-						try {
-							fullyQualifiedName = binding.getQualifiedName();
-						} catch (NullPointerException e) {
-							fullyQualifiedName = name.toString();
-						}
-
-						fieldNames.add(fullyQualifiedName);
+						fieldNames.add(name.toString());
 					}
 				}
 
@@ -192,15 +182,7 @@ public class SimilarityASTWalker {
 			public boolean visit(MethodDeclaration node) {
 				if(simProperties.get("methodDecScore")) {
 					SimpleName name = node.getName();
-
-					String fullyQualifiedName;
-					try {
-						fullyQualifiedName = name.getFullyQualifiedName();
-					} catch (NullPointerException e) {
-						fullyQualifiedName = name.toString();
-					}
-
-					methodDeclarationNames.add(fullyQualifiedName);
+					methodDeclarationNames.add(name.toString());
 				}
 
 				return true;
@@ -209,15 +191,7 @@ public class SimilarityASTWalker {
 			public boolean visit(MethodInvocation node) {
 				if(simProperties.get("methodCallScore")) {
 					SimpleName name = node.getName();
-
-					String fullyQualifiedName;
-					try {
-						fullyQualifiedName = name.getFullyQualifiedName();
-					} catch (NullPointerException e) {
-						fullyQualifiedName = name.toString();
-					}
-
-					methodInvocationNames.add(fullyQualifiedName);
+					methodInvocationNames.add(name.toString());
 				}
 
 				return true;
@@ -243,16 +217,7 @@ public class SimilarityASTWalker {
 			public boolean visit(SingleVariableDeclaration node) {
 				if(simProperties.get("variableNameScore")) {
 					SimpleName name = node.getName();
-
-					ITypeBinding binding = node.getType().resolveBinding();
-					String fullyQualifiedName;
-					try {
-						fullyQualifiedName = binding.getQualifiedName();
-					} catch (NullPointerException e) {
-						fullyQualifiedName = name.toString();
-					}
-
-					variableNames.add(fullyQualifiedName);
+					variableNames.add(name.toString());
 				}
 
 				return true;
@@ -318,7 +283,6 @@ public class SimilarityASTWalker {
 					}
 				}
 
-
 				return true;
 			}
 
@@ -326,16 +290,7 @@ public class SimilarityASTWalker {
 				if(simProperties.get("variableNameScore")) {
 					for(Object v : node.fragments()) {
 						SimpleName name = ((VariableDeclarationFragment) v).getName();
-
-						ITypeBinding binding = node.getType().resolveBinding();
-						String fullyQualifiedName;
-						try {
-							fullyQualifiedName = binding.getQualifiedName();
-						} catch (NullPointerException e) {
-							fullyQualifiedName = name.toString();
-						}
-
-						variableNames.add(fullyQualifiedName);
+						variableNames.add(name.toString());
 					}
 				}
 
@@ -346,16 +301,7 @@ public class SimilarityASTWalker {
 				if(simProperties.get("variableNameScore")) {
 					for(Object v : node.fragments()) {
 						SimpleName name = ((VariableDeclarationFragment) v).getName();
-
-						ITypeBinding binding = node.getType().resolveBinding();
-						String fullyQualifiedName;
-						try {
-							fullyQualifiedName = binding.getQualifiedName();
-						} catch (NullPointerException e) {
-							fullyQualifiedName = name.toString();
-						}
-
-						variableNames.add(fullyQualifiedName);
+						variableNames.add(name.toString());
 					}
 				}
 
@@ -377,7 +323,6 @@ public class SimilarityASTWalker {
 
 				return false;
 			}
-
 		});
 
 

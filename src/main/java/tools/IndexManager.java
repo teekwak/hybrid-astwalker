@@ -132,6 +132,7 @@ public class IndexManager {
 		) {
 			SimilarityASTWalker saw = new SimilarityASTWalker(className, simProperties); // todo change input to map (leave string for standalone)
 			solrDoc = saw.parseFileIntoSolrDoc(rawURL, classFile.getAbsolutePath());
+			System.exit(0); // todo
 		}
 
 		if(solrDoc == null) {
