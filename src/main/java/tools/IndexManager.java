@@ -52,10 +52,10 @@ public class IndexManager {
 
 	/**
 	 * Quickly traverse repository to find a file based on a list of directories
-	 * @param parentDirectory x
-	 * @param fileName x
-	 * @param pathToFileInRepo x
-	 * @return x
+	 * @param parentDirectory xxx
+	 * @param fileName xxx
+	 * @param pathToFileInRepo xxx
+	 * @return xxx
 	 */
 	private static File findFileInRepository(String parentDirectory, String fileName, List<String> pathToFileInRepo) {
 		File[] filesInDirectory = new File(parentDirectory).listFiles();
@@ -85,8 +85,8 @@ public class IndexManager {
 
 	/**
 	 * Get the relative path to the file in the repository
-	 * @param url x
-	 * @return x
+	 * @param url xxx
+	 * @return xxx
 	 */
 	private static String getRelativeFileRepoPath(String url) {
 		String[] urlSplit = url.split("/");
@@ -101,8 +101,8 @@ public class IndexManager {
 
 
 	/**
-	 *
-	 * @param rawURL x
+	 * xxx
+	 * @param rawURL xxx
 	 */
 	private static void createSolrDocsForURL(String rawURL, File classFile) {
 		System.out.println("Started creating solr doc for " + classFile.getName());
@@ -169,6 +169,11 @@ public class IndexManager {
 		Solrj.getInstance(configProperties.get("passPath")).commitDocs("grok.ics.uci.edu", 9551, "MoreLikeThisIndex");
 	}
 
+
+	/**
+	 * xxx
+	 * @param urlAndErrorCode xxx
+	 */
 	private static void printErrorURL(String urlAndErrorCode) {
 		try(BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("resources/errorURLs.txt", true), "UTF-8"))) {
 			bw.write(urlAndErrorCode);
@@ -177,6 +182,11 @@ public class IndexManager {
 		}
 	}
 
+
+	/**
+	 * xxx
+	 * @param url xxx
+	 */
 	private static void workOnURL(String url) {
 		// todo: add timestamp to see how long it takes to download the repo
 
