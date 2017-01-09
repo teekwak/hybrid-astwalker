@@ -65,7 +65,7 @@ class PropertyReader {
 	 * @param fileLocation location of file
 	 * @return x
 	 */
-	static Map<String, String> createConfigPropertiesMap(String fileLocation) {
+	static Map<String, String> fileToStringStringMap(String fileLocation) {
 		Map<String, String> map = new HashMap<>();
 
 		try(BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fileLocation), "UTF-8"))) {
@@ -78,24 +78,6 @@ class PropertyReader {
 			throw new IllegalArgumentException("[ERROR]: config file not found!");
 		}
 
-		validateConfigProperties(map);
-
 		return map;
-	}
-
-	/**
-	 * Validates the configProperties map
-	 */
-	private static void validateConfigProperties(Map<String, String> configProperties) {
-		// check if map is null
-		if(configProperties == null) {
-			throw new IllegalArgumentException("[ERROR]: configProperties map is null!");
-		}
-
-		// check map size
-		int correctSizeOfMap = 13;
-		if(configProperties.size() != correctSizeOfMap) {
-			throw new IllegalArgumentException("[ERROR]: configProperties map size is incorrect!");
-		}
 	}
 }
