@@ -98,27 +98,4 @@ class PropertyReader {
 			throw new IllegalArgumentException("[ERROR]: configProperties map size is incorrect!");
 		}
 	}
-
-	/**
-	 * Validates the astProperties map
-	 */
-	private static void validateASTProperties(Map<String, Boolean> astProperties) {
-		// check if map is null
-		if(astProperties == null) {
-			throw new IllegalArgumentException("[ERROR]: astProperties map is null!");
-		}
-
-		// check map size
-		int correctSizeOfMap = 22;
-		if(astProperties.size() != correctSizeOfMap) {
-			throw new IllegalArgumentException("[ERROR]: astProperties map size is incorrect!");
-		}
-
-		// check values of map are set
-		for(Map.Entry<String, Boolean> entry : astProperties.entrySet()) {
-			if(entry.getValue() == null) {
-				throw new IllegalArgumentException("[ERROR]: " + entry.getKey() + " in astProperties map is null!");
-			}
-		}
-	}
 }

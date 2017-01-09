@@ -89,10 +89,10 @@ public class Solrj {
 	}
 
 	@SuppressWarnings("deprecation")
-	public void commitDocs(String hostName, int portNumber, String collectionName){
+	public void commitDocs(String hostNameAndPortNumber, String collectionName){
 		//System.out.println("===uploading ["+req.getDocuments().size()+"] docs to codeexchange===");
 		HttpSolrServer server;
-		  server = new HttpSolrServer("http://"+hostName+":"+portNumber+"/solr/"+collectionName);
+		  server = new HttpSolrServer("http://"+hostNameAndPortNumber+"/solr/"+collectionName);
 
 		  AbstractHttpClient httpClient = (AbstractHttpClient) server.getHttpClient();
 	      httpClient.addRequestInterceptor(new PreEmptiveBasicAuthenticator("admin",pass));

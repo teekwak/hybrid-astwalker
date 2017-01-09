@@ -16,6 +16,8 @@
  * Created by Thomas Kwak
  */
 
+// todo: create mapping of sim function to server and port number
+
 package tools;
 
 import AST.SimilarityASTWalker;
@@ -31,7 +33,10 @@ import java.util.*;
 public class IndexManager {
 	private static IndexManager instance;
 	private static Map<String, String> configProperties;
+	private static Map<String, String> serverProperties;
 	private static Map<String, Boolean> simProperties;
+	private static String currentBitVector;
+	private static final String COLLECTION_NAME = "MoreLikeThisIndex";
 
 //	private static int MAXDOC = 300;
 //	private static int MAX_CHILD_DOC = 4000;
@@ -166,7 +171,7 @@ public class IndexManager {
 
 		System.exit(0); // DO NOT RUN!!!
 		Solrj.getInstance(configProperties.get("passPath")).addDoc(solrDoc);
-		Solrj.getInstance(configProperties.get("passPath")).commitDocs("grok.ics.uci.edu", 9551, "MoreLikeThisIndex");
+		Solrj.getInstance(configProperties.get("passPath")).commitDocs(serverProperties.get(currentBitVector), COLLECTION_NAME);
 	}
 
 
@@ -205,6 +210,7 @@ public class IndexManager {
 		try(BufferedReader simBr = new BufferedReader(new InputStreamReader(new FileInputStream(configProperties.get("pathToSimFunctions")), "UTF-8"))) {
 			for(String bitVector; (bitVector = simBr.readLine()) != null; ) {
 				simProperties = PropertyReader.createSimilarityFunctionPropertiesMap(bitVector);
+				currentBitVector = bitVector;
 				createSolrDocsForURL(url, classFile);
 			}
 		} catch(IOException e) {
@@ -240,12 +246,13 @@ public class IndexManager {
 	 * Just a normal main function
 	 *
 	 * todo: Press Ctrl-Alt-r to change the command line arguments
-	 * todo: Currently set to "resources/config.properties" and "resources/astconfig.properties
+	 * todo: Currently set to "resources/config.properties" and "resources/serverConfig.properties
 	 *
 	 * @param args arguments from the command line
 	 */
 	public static void main(String[] args) {
 		configProperties = PropertyReader.createConfigPropertiesMap(args[0]);
+		serverProperties = PropertyReader.createConfigPropertiesMap(args[1]);
 
 		setup();
 
