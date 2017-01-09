@@ -24,6 +24,8 @@ import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 
 import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.*;
 
 public class IndexManager {
@@ -162,8 +164,45 @@ public class IndexManager {
 			}
 		}
 
+		System.exit(0); // DO NOT RUN!!!
 		Solrj.getInstance(configProperties.get("passPath")).addDoc(solrDoc);
 		Solrj.getInstance(configProperties.get("passPath")).commitDocs("grok.ics.uci.edu", 9551, "MoreLikeThisIndex");
+	}
+
+	private static void printErrorURL(String urlAndErrorCode) {
+		try(BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("resources/errorURLs.txt", true), "UTF-8"))) {
+			bw.write(urlAndErrorCode);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private static void workOnURL(String url) {
+		// todo: add timestamp to see how long it takes to download the repo
+
+		// clone repository
+		String[] urlSplit = url.split("/");
+		ClonedRepository clone = new ClonedRepository("https://test:test@github.com/" + urlSplit[3] + "/" + urlSplit[4] + ".git", "clone/" + urlSplit[4]);
+		clone.cloneRepository();
+
+		// find file path and name
+		List<String> pathToFileInRepo = new ArrayList<>(Arrays.asList(Arrays.copyOfRange(urlSplit, 6, urlSplit.length - 1)));
+
+		// get class file from repo
+		File classFile = findFileInRepository("clone/" + urlSplit[4], urlSplit[urlSplit.length - 1].split("\\?")[0], pathToFileInRepo);
+
+		// run each similarity function on the cloned repository
+		try(BufferedReader simBr = new BufferedReader(new InputStreamReader(new FileInputStream(configProperties.get("pathToSimFunctions")), "UTF-8"))) {
+			for(String bitVector; (bitVector = simBr.readLine()) != null; ) {
+				simProperties = PropertyReader.createSimilarityFunctionPropertiesMap(bitVector);
+				createSolrDocsForURL(url, classFile);
+			}
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
+
+		// delete repository
+		clone.deleteRepository();
 	}
 
 
@@ -203,31 +242,27 @@ public class IndexManager {
 		try(BufferedReader urlBr = new BufferedReader(new InputStreamReader(new FileInputStream(configProperties.get("pathToURLMapPath")), "UTF-8"))) {
 			for(String url; (url = urlBr.readLine()) != null; ) {
 
-				// todo: add timestamp to see how long it takes to download the repo
+				// todo: do a 200 check to make sure the repo still exists
+				try {
+					URL urlObj = new URL(url);
+					HttpURLConnection con = (HttpURLConnection) urlObj.openConnection();
+					con.setRequestMethod("GET");
+					con.setConnectTimeout(500);
+					con.connect();
 
-				// clone repository
-				String[] urlSplit = url.split("/");
-				ClonedRepository clone = new ClonedRepository("https://test:test@github.com/" + urlSplit[3] + "/" + urlSplit[4] + ".git", "clone/" + urlSplit[4]);
-				clone.cloneRepository();
-
-				// find file path and name
-				List<String> pathToFileInRepo = new ArrayList<>(Arrays.asList(Arrays.copyOfRange(urlSplit, 6, urlSplit.length - 1)));
-
-				// get class file from repo
-				File classFile = findFileInRepository("clone/" + urlSplit[4], urlSplit[urlSplit.length - 1].split("\\?")[0], pathToFileInRepo);
-
-				// run each similarity function on the cloned repository
-				try(BufferedReader simBr = new BufferedReader(new InputStreamReader(new FileInputStream(configProperties.get("pathToSimFunctions")), "UTF-8"))) {
-					for(String bitVector; (bitVector = simBr.readLine()) != null; ) {
-						simProperties = PropertyReader.createSimilarityFunctionPropertiesMap(bitVector);
-						createSolrDocsForURL(url, classFile);
+					int code = con.getResponseCode();
+					if (code == 200) {
+						// url exists :D
+						workOnURL(url);
 					}
-				} catch(IOException e) {
+					else {
+						// print url to error file
+						printErrorURL(url + ":::" + code);
+					}
+				} catch (IOException e) {
 					e.printStackTrace();
 				}
 
-				// delete repository
-				clone.deleteRepository();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
