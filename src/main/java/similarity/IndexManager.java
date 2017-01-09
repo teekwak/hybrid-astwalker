@@ -138,8 +138,8 @@ public class IndexManager {
 		solrDoc.addField("parent", true);
 
 		if(simProperties.get("authorScore")) {
-			JavaGitHubData jghd = new JavaGitHubData(getRelativeFileRepoPath(rawURL));
-			jghd.getCommits("clone/" + urlSplit[4], getRelativeFileRepoPath(rawURL), classFile);
+			JavaGitHubData jghd = new JavaGitHubData();
+			jghd.getCommits("clone/" + urlSplit[4], getRelativeFileRepoPath(rawURL));
 			Commit headCommit = jghd.getListOfCommits().get(jghd.getListOfCommits().size() - 1);
 			solrDoc.addField("snippet_author_name", headCommit.getAuthor());
 		}

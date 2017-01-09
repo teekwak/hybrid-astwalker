@@ -25,7 +25,7 @@ import org.eclipse.jdt.core.dom.*;
 import java.io.*;
 import java.util.*;
 
-public class SimilarityASTWalker {
+class SimilarityASTWalker {
 	private String className;
 	private Map<String, Boolean> simProperties;
 	private Set<String> methodInvocationNames;
@@ -42,7 +42,7 @@ public class SimilarityASTWalker {
 	 * Constructor for class
 	 * @param simProperties xxx
 	 */
-	public SimilarityASTWalker(String className, Map<String, Boolean> simProperties) {
+	SimilarityASTWalker(String className, Map<String, Boolean> simProperties) {
 		this.className = className;
 		this.simProperties = simProperties;
 		this.methodInvocationNames = new HashSet<>();
@@ -60,7 +60,7 @@ public class SimilarityASTWalker {
 	 * @param fileLocation xxx
 	 * @return xxx
 	 */
-	public SolrInputDocument parseFileIntoSolrDoc(String url, String fileLocation) {
+	SolrInputDocument parseFileIntoSolrDoc(String url, String fileLocation) {
 		SolrInputDocument solrDoc = new SolrInputDocument();
 		solrDoc.addField("id", url);
 
