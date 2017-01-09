@@ -16,11 +16,8 @@
  * Created by Thomas Kwak
  */
 
-// todo: create mapping of sim function to server and port number
+package similarity;
 
-package tools;
-
-import AST.SimilarityASTWalker;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
@@ -38,12 +35,8 @@ public class IndexManager {
 	private static String currentBitVector;
 	private static final String COLLECTION_NAME = "MoreLikeThisIndex";
 
-//	private static int MAXDOC = 300;
-//	private static int MAX_CHILD_DOC = 4000;
-//	static int CHILD_COUNT = 0;
-
-	private static int MAXDOC = 300; // todo: we want to upload after each class doc (this is definitely going to be more than 1 document)
-	private static int MAX_CHILD_DOC = 4000;
+	private static int MAXDOC = 300; // todo: we want to upload after each class doc (this should be exactly 1 doc)
+	private static int MAX_CHILD_DOC = 4000; // todo: i don't think this is necessary
 	static int CHILD_COUNT = 0;
 
 	static IndexManager getInstance() {
@@ -112,9 +105,6 @@ public class IndexManager {
 	private static void createSolrDocsForURL(String rawURL, File classFile) {
 		System.out.println("Started creating solr doc for " + classFile.getName());
 
-		// todo: no longer create method dec and method inv classes
-
-		// run for loop to create class solr doc over the keys (see the class file for the method dec)
 		String[] urlSplit = rawURL.split("/");
 		String className = urlSplit[urlSplit.length - 1].split("\\.java")[0];
 
@@ -169,7 +159,7 @@ public class IndexManager {
 			}
 		}
 
-		System.exit(0); // DO NOT RUN!!!
+		System.exit(0); // todo: DO NOT RUN!!!
 		Solrj.getInstance(configProperties.get("passPath")).addDoc(solrDoc);
 		Solrj.getInstance(configProperties.get("passPath")).commitDocs(serverProperties.get(currentBitVector), COLLECTION_NAME);
 	}

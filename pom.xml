@@ -83,7 +83,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>tools.IndexManager</mainClass>
+                            <mainClass>similarity.IndexManager</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

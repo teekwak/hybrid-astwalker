@@ -16,9 +16,9 @@
  * Created by Thomas Kwak
  */
 
-package tools;
+package standalone.entities;
 
-import entities.JavaClass;
+import standalone.entities.JavaClass;
 
 import java.util.ArrayList;
 import java.util.List;

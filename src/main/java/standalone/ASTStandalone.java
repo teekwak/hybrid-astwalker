@@ -1,9 +1,9 @@
-package AST;
+package standalone;
 
-import entities.*;
+import standalone.entities.*;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jdt.core.dom.*;
-import tools.FileModel;
+import standalone.entities.FileModel;
 
 import java.io.*;
 import java.util.*;

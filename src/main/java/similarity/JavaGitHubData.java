@@ -16,7 +16,7 @@
  * Created by Thomas Kwak
  */
 
-package tools;
+package similarity;
 
 import java.util.*;
 import java.io.*;

@@ -16,7 +16,7 @@
  * Created by Thomas Kwak
  */
 
-package tools;
+package similarity;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;

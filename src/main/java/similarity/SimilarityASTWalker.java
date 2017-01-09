@@ -16,7 +16,7 @@
  * Created by Thomas Kwak
  */
 
-package AST;
+package similarity;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.solr.common.SolrInputDocument;
@@ -25,7 +25,6 @@ import org.eclipse.jdt.core.dom.*;
 import java.io.*;
 import java.util.*;
 
-@SuppressWarnings("Duplicates")
 public class SimilarityASTWalker {
 	private String className;
 	private Map<String, Boolean> simProperties;
@@ -226,7 +225,6 @@ public class SimilarityASTWalker {
 				return true;
 			}
 
-			@SuppressWarnings("unused, EmptyCatchBlock")
 			public boolean visit(SwitchStatement node) {
 				if(simProperties.get("complexityScore")) {
 					for(Object s : node.statements()) {
@@ -235,7 +233,7 @@ public class SimilarityASTWalker {
 								String expression = ((SwitchCase) s).getExpression().toString();
 								cyclomaticComplexity++;
 							} catch (NullPointerException e) {
-
+								// do nothing
 							}
 						}
 					}

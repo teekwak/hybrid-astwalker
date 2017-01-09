@@ -1,4 +1,4 @@
-package entities;
+package standalone.entities;
 
 import org.eclipse.jdt.core.dom.Type;
 

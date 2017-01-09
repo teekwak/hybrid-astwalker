@@ -1,4 +1,4 @@
-package tools;
+package similarity;
 
 import org.apache.commons.io.FileUtils;
 

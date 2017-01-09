@@ -9,8 +9,8 @@ This README would normally document whatever steps are necessary to get your app
 
 ### What does ASTWalker do? ###
 
-* Walks along Java source code and extracts different entities from it
-* Prints those entities to the screen depending on which entities are selected
+* Walks along Java source code and extracts different standalone.entities from it
+* Prints those standalone.entities to the screen depending on which standalone.entities are selected
 * Each entity extracted is also labeled by class and method (if applicable)
 * Classes and method declarations contain counters for each entity
 
