@@ -28,24 +28,11 @@ import java.net.URL;
 import java.util.*;
 
 public class IndexManager {
-	private static IndexManager instance;
 	private static Map<String, String> configProperties;
 	private static Map<String, String> serverProperties;
 	private static Map<String, Boolean> simProperties;
 	private static String currentBitVector;
 	private static final String COLLECTION_NAME = "MoreLikeThisIndex";
-
-	private static int MAXDOC = 300; // todo: we want to upload after each class doc (this should be exactly 1 doc)
-	private static int MAX_CHILD_DOC = 4000; // todo: i don't think this is necessary
-	static int CHILD_COUNT = 0;
-
-	static IndexManager getInstance() {
-		if(instance == null) {
-			instance = new IndexManager();
-		}
-
-		return instance;
-	}
 
 
 	/**
@@ -142,7 +129,7 @@ public class IndexManager {
 			SimilarityASTWalker saw = new SimilarityASTWalker(className, simProperties);
 			solrDoc = saw.parseFileIntoSolrDoc(rawURL, classFile.getAbsolutePath());
 		}
-		writeToTimesFile("Ended technical::" + System.currentTimeMillis());
+		writeToTimesFile("Finished technical::" + System.currentTimeMillis());
 
 		if(solrDoc == null) {
 			solrDoc = new SolrInputDocument();
@@ -173,7 +160,7 @@ public class IndexManager {
 				solrDoc.addField("snippet_project_name", doc.getFieldValue("projectName").toString());
 			}
 		}
-		writeToTimesFile("Ended social::" + System.currentTimeMillis());
+		writeToTimesFile("Finished social::" + System.currentTimeMillis());
 
 		Solrj.getInstance(configProperties.get("passPath")).addDoc(solrDoc);
 
@@ -232,7 +219,7 @@ public class IndexManager {
 		// delete repository
 		clone.deleteRepository();
 
-		writeToTimesFile("Ended process::" + System.currentTimeMillis());
+		writeToTimesFile("Finished process::" + System.currentTimeMillis());
 		writeToTimesFile("=====");
 	}
 
