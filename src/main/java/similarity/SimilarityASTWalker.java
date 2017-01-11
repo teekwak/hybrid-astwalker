@@ -276,10 +276,13 @@ class SimilarityASTWalker {
 							}
 						}
 
-						if(simProperties.get("isAbstractScore") && Modifier.isAbstract(node.getModifiers())) {
-							solrDoc.addField("snippet_is_abstract", true);
-						} else {
-							solrDoc.addField("snippet_is_abstract", false);
+						if(simProperties.get("isAbstractScore")) {
+							if(Modifier.isAbstract(node.getModifiers())) {
+								solrDoc.addField("snippet_is_abstract", true);
+							}
+							else {
+								solrDoc.addField("snippet_is_abstract", false);
+							}
 						}
 					}
 				}

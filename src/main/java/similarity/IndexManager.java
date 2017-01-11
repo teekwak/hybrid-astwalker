@@ -75,7 +75,7 @@ public class IndexManager {
 			}
 		}
 
-		throw new IllegalArgumentException("[ERROR]: file does not exist in repository!");
+		throw new IllegalArgumentException("[ERROR]: file \"" + fileName + "\" does not exist in repository \"" + pathToFileInRepo.toString() + "\" !");
 	}
 
 
@@ -192,6 +192,7 @@ public class IndexManager {
 
 		// clone repository
 		String[] urlSplit = url.split("/");
+
 		ClonedRepository clone = new ClonedRepository("https://test:test@github.com/" + urlSplit[3] + "/" + urlSplit[4] + ".git", "clone/" + urlSplit[4]);
 		writeToTimesFile("Started cloning::" + System.currentTimeMillis());
 		clone.cloneRepository();
@@ -205,6 +206,7 @@ public class IndexManager {
 
 		// run each similarity function on the cloned repository
 		for(String bitVector : serverProperties.keySet()) {
+			System.out.print("\rWorking on: " + urlSplit[3] + "/" + urlSplit[4] + " - " + bitVector);
 			simProperties = PropertyReader.createSimilarityFunctionPropertiesMap(bitVector);
 			createSolrDocsForURL(url, classFile, bitVector);
 		}
@@ -223,6 +225,10 @@ public class IndexManager {
 	private static void setup() {
 		if(!(new File("clone").exists()) && !(new File("clone").mkdir())) {
 			throw new IllegalArgumentException("[ERROR]: could not make \"clone\" directory");
+		}
+
+		if(!(new File("output").exists()) && !(new File("output").mkdir())) {
+			throw new IllegalArgumentException("[ERROR]: could not make \"output\" directory");
 		}
 	}
 
@@ -247,7 +253,7 @@ public class IndexManager {
 	 */
 	public static void main(String[] args) {
 		configProperties = PropertyReader.fileToStringStringMap(args[0]);
-		serverProperties = PropertyReader.fileToStringStringMap(args[1]);
+		serverProperties = PropertyReader.fileToStringStringMap(configProperties.get("serverConfigPath"));
 
 		setup();
 
@@ -281,6 +287,6 @@ public class IndexManager {
 		}
 
 		teardown();
-		System.out.println("Process finished gracefully");
+		System.out.println("\nProcess finished gracefully");
 	}
 }
