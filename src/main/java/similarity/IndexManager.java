@@ -107,7 +107,7 @@ public class IndexManager {
 
 		SolrInputDocument solrDoc = null;
 
-		writeToTimesFile("Started technical::" + System.currentTimeMillis());
+		writeToTimesFile("Started technical$$" + currentBitVector + "::" + System.currentTimeMillis());
 		// extract technical data
 		if(simProperties.get("importsScore")
 			|| simProperties.get("variableNameScore")
@@ -127,7 +127,7 @@ public class IndexManager {
 			SimilarityASTWalker saw = new SimilarityASTWalker(className, simProperties);
 			solrDoc = saw.parseFileIntoSolrDoc(rawURL, classFile.getAbsolutePath());
 		}
-		writeToTimesFile("Finished technical::" + System.currentTimeMillis());
+		writeToTimesFile("Finished technical$$" + currentBitVector + "::" + System.currentTimeMillis());
 
 		if(solrDoc == null) {
 			solrDoc = new SolrInputDocument();
@@ -136,7 +136,7 @@ public class IndexManager {
 
 		solrDoc.addField("parent", true);
 
-		writeToTimesFile("Started social::" + System.currentTimeMillis());
+		writeToTimesFile("Started social$$" + currentBitVector + "::" + System.currentTimeMillis());
 		if(simProperties.get("authorScore")) {
 			JavaGitHubData jghd = new JavaGitHubData();
 			jghd.getCommits("clone/" + urlSplit[4], getRelativeFileRepoPath(rawURL));
@@ -158,13 +158,13 @@ public class IndexManager {
 				solrDoc.addField("snippet_project_name", doc.getFieldValue("projectName").toString());
 			}
 		}
-		writeToTimesFile("Finished social::" + System.currentTimeMillis());
+		writeToTimesFile("Finished social$$" + currentBitVector + "::" + System.currentTimeMillis());
 
 		Solrj.getInstance(configProperties.get("passPath")).addDoc(solrDoc);
 
-		writeToTimesFile("Started uploading::" + System.currentTimeMillis());
+		writeToTimesFile("Started uploading$$" + currentBitVector + "::" + System.currentTimeMillis());
 		Solrj.getInstance(configProperties.get("passPath")).commitDocs(serverProperties.get(currentBitVector), configProperties.get("collectionName"));
-		writeToTimesFile("Finished uploading::" + System.currentTimeMillis());
+		writeToTimesFile("Finished uploading$$" + currentBitVector + "::" + System.currentTimeMillis());
 	}
 
 
