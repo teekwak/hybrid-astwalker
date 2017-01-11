@@ -31,7 +31,6 @@ public class IndexManager {
 	private static Map<String, String> configProperties;
 	private static Map<String, String> serverProperties;
 	private static Map<String, Boolean> simProperties;
-	private static final String COLLECTION_NAME = "MoreLikeThisIndex";
 
 
 	/**
@@ -39,7 +38,7 @@ public class IndexManager {
 	 * @param message xxx
 	 */
 	private static void writeToTimesFile(String message) {
-		try(BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("resources/times.txt", true), "UTF-8"))) {
+		try(BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(configProperties.get("pathToTimestampsFile"), true), "UTF-8"))) {
 			bw.write(message + "\n");
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -164,7 +163,7 @@ public class IndexManager {
 		Solrj.getInstance(configProperties.get("passPath")).addDoc(solrDoc);
 
 		writeToTimesFile("Started uploading::" + System.currentTimeMillis());
-		Solrj.getInstance(configProperties.get("passPath")).commitDocs(serverProperties.get(currentBitVector), COLLECTION_NAME);
+		Solrj.getInstance(configProperties.get("passPath")).commitDocs(serverProperties.get(currentBitVector), configProperties.get("collectionName"));
 		writeToTimesFile("Finished uploading::" + System.currentTimeMillis());
 	}
 
@@ -175,7 +174,7 @@ public class IndexManager {
 	 * @param errorCode the error code returned by the URL
 	 */
 	private static void printErrorURL(String url, int errorCode) {
-		try(BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("resources/errorURLs.txt", true), "UTF-8"))) {
+		try(BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(configProperties.get("pathToErrorFile"), true), "UTF-8"))) {
 			bw.write(url + "::" + errorCode);
 		} catch (IOException e) {
 			e.printStackTrace();
