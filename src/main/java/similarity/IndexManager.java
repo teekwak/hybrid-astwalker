@@ -31,7 +31,6 @@ public class IndexManager {
 	private static Map<String, String> configProperties;
 	private static Map<String, String> serverProperties;
 	private static Map<String, Boolean> simProperties;
-	private static String currentBitVector;
 	private static final String COLLECTION_NAME = "MoreLikeThisIndex";
 
 
@@ -103,7 +102,7 @@ public class IndexManager {
 	 * @param rawURL xxx
 	 * @param classFile xxx
 	 */
-	private static void createSolrDocsForURL(String rawURL, File classFile) {
+	private static void createSolrDocsForURL(String rawURL, File classFile, String currentBitVector) {
 		String[] urlSplit = rawURL.split("/");
 		String className = urlSplit[urlSplit.length - 1].split("\\.java")[0];
 
@@ -206,14 +205,9 @@ public class IndexManager {
 		File classFile = findFileInRepository("clone/" + urlSplit[4], urlSplit[urlSplit.length - 1].split("\\?")[0], pathToFileInRepo);
 
 		// run each similarity function on the cloned repository
-		try(BufferedReader simBr = new BufferedReader(new InputStreamReader(new FileInputStream(configProperties.get("pathToSimFunctions")), "UTF-8"))) {
-			for(String bitVector; (bitVector = simBr.readLine()) != null; ) {
-				simProperties = PropertyReader.createSimilarityFunctionPropertiesMap(bitVector);
-				currentBitVector = bitVector;
-				createSolrDocsForURL(url, classFile);
-			}
-		} catch(IOException e) {
-			e.printStackTrace();
+		for(String bitVector : serverProperties.keySet()) {
+			simProperties = PropertyReader.createSimilarityFunctionPropertiesMap(bitVector);
+			createSolrDocsForURL(url, classFile, bitVector);
 		}
 
 		// delete repository
@@ -288,5 +282,6 @@ public class IndexManager {
 		}
 
 		teardown();
+		System.out.println("Process finished gracefully");
 	}
 }

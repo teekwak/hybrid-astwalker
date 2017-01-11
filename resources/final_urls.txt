@@ -1,1 +1,3 @@
-https://raw.github.com/imr/Electric8/05615f25ae3c7a4efae2abee11d0c68b2b28f423/com/sun/electric/tool/user/CompileVHDL.java?start=17722&end=17875
+https://raw.github.com/menethil/Smali/175e9221c9b603566fbd0bc905431710a7cb085c/src/org/jf/dexlib/Util/Utf8Utils.java?start=916&end=9314
+https://raw.github.com/callison-burch/hitman/3979492524888dc5a7af3adc995db08a59f2764e/esl/src/maltparser-1.7.1/src/org/maltparser/parser/algorithm/planar/PlanarAddressFunction.java?start=320&end=3689
+https://raw.github.com/zzMOM/android-babydays/fc808df122402c4a032c13afe183dab8d6dac5a8/src/com/example/babydays/MilestoneDialogFragment.java?start=3770&end=4758
