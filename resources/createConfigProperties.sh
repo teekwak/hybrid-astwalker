@@ -16,6 +16,6 @@ echo "" >> config.properties
 echo "collectionName=MoreLikeThisIndex" >> config.properties
 echo "serverConfigPath=resources/serverConfig.properties" >> config.properties
 echo "passPath=resources/Pass" >> config.properties
-echo "pathToURLMapPath=resources/"$hostName"_urls.txt" >> config.properties
+echo "pathToURLMapPath=resources/"${hostName}"_urls.txt" >> config.properties
 echo "pathToTimestampsFile=output/times.txt" >> config.properties
 echo "pathToErrorFile=output/errorURLs.txt" >> config.properties

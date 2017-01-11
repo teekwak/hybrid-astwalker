@@ -52,7 +52,7 @@ class JavaGitHubData {
 
 		try {
 			// get all commits of a single file
-			String[] command = new String[]{"git", "log", "--reverse", "--format=format:Commit: %H%nAuthor: %an%n", "--", repoFileName};
+			String[] command = {"git", "log", "--reverse", "--format=format:Commit: %H%nAuthor: %an%n", "--", repoFileName};
 			ProcessBuilder pb = new ProcessBuilder(command);
 
 			pb.directory(new File(directoryLocation));

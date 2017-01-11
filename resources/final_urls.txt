@@ -1,3 +1,3 @@
-https://raw.github.com/menethil/Smali/175e9221c9b603566fbd0bc905431710a7cb085c/src/org/jf/dexlib/Util/Utf8Utils.java?start=916&end=9314
-https://raw.github.com/callison-burch/hitman/3979492524888dc5a7af3adc995db08a59f2764e/esl/src/maltparser-1.7.1/src/org/maltparser/parser/algorithm/planar/PlanarAddressFunction.java?start=320&end=3689
-https://raw.github.com/zzMOM/android-babydays/fc808df122402c4a032c13afe183dab8d6dac5a8/src/com/example/babydays/MilestoneDialogFragment.java?start=3770&end=4758
+https://raw.github.com/Morphan1/Depenizen/ab821082a0783ead78c2dbb5efb433f8cb131c27/src/main/java/net/gnomeffinway/depenizen/support/bungee/BungeeSupport.java?start=1029&end=4702t.java?start=3770&end=4758
+https://raw.github.com/FlowBo/teilchen/8fc09e7d5003d6ce179d84c1d88df72725c928a1/teilchen/src/teilchen/demo/Lesson06_Springs.java?start=975&end=3362
+https://raw.github.com/SumiTomohiko/SimpleMediaScanner/4ae19398301d435517b7b8b4be6f27d9d4324102/src/jp/gr/java_conf/neko_daisuki/simplemediascanner/EditActivity.java?start=1888&end=1975

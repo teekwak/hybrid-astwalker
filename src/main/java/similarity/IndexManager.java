@@ -183,6 +183,27 @@ public class IndexManager {
 
 
 	/**
+	 * Reset the repository to a certain version
+	 * @param repoName name of the repository (so that the ProcessBuilder can change directories)
+	 * @param version version hash
+	 */
+	private static void resetRepositoryToVersion(String repoName, String version) {
+		try {
+			String[] command = {"git", "reset", "--hard", version};
+
+			ProcessBuilder pb = new ProcessBuilder(command);
+			pb.directory(new File("clone/" + repoName));
+
+			Process proc = pb.start();
+			proc.waitFor();
+			proc.destroy();
+		} catch (IOException|InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
+
+	/**
 	 * xxx
 	 * @param url xxx
 	 */
@@ -197,6 +218,9 @@ public class IndexManager {
 		writeToTimesFile("Started cloning::" + System.currentTimeMillis());
 		clone.cloneRepository();
 		writeToTimesFile("Finished cloning::" + System.currentTimeMillis());
+
+		// reset to saved version
+		resetRepositoryToVersion(urlSplit[4], urlSplit[5]);
 
 		// find file path and name
 		List<String> pathToFileInRepo = new ArrayList<>(Arrays.asList(Arrays.copyOfRange(urlSplit, 6, urlSplit.length - 1)));
