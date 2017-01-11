@@ -2,7 +2,7 @@
 
 hostName=`echo $HOSTNAME`
 
-echo "# Configuration file for IndexManager.java" >> config.properties
+echo "# Configuration file for IndexManager.java" > config.properties
 echo "#" >> config.properties
 echo "# Please note the paths are relative to the .jar file" >> config.properties
 echo "#" >> config.properties
