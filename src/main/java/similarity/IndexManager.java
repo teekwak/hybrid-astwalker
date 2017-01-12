@@ -247,6 +247,10 @@ public class IndexManager {
 	 * create clone folder on program start
 	 */
 	private static void setup() {
+		if(new File("clone").exists()) {
+			teardown();
+		}
+
 		if(!(new File("clone").exists()) && !(new File("clone").mkdir())) {
 			throw new IllegalArgumentException("[ERROR]: could not make \"clone\" directory");
 		}
