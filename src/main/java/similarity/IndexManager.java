@@ -145,7 +145,7 @@ public class IndexManager {
 		}
 
 		if(simProperties.get("ownerScore") || simProperties.get("projectScore")) {
-			SolrDocumentList list = Solrj.getInstance(configProperties.get("passPath")).query("id:\"https://github.com/" + urlSplit[3] + "/" + urlSplit[4]+"\"", "codeexchange.ics.uci.edu", 9001, "githubprojects", 1);
+			SolrDocumentList list = Solrj.getInstance(configProperties.get("passPath")).query("id:\"https://github.com/" + urlSplit[3] + "/" + urlSplit[4]+"\"", "grok.ics.uci.edu", 9001, "githubprojects", 1);
 			if(list.isEmpty()) throw new IllegalArgumentException("[ERROR]: project data is null!");
 
 			SolrDocument doc = list.get(0);
@@ -175,7 +175,7 @@ public class IndexManager {
 	 */
 	private static void printErrorURL(String url, int errorCode) {
 		try(BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(configProperties.get("pathToErrorFile"), true), "UTF-8"))) {
-			bw.write(url + "::" + errorCode);
+			bw.write(url + "::" + errorCode + "\n");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -271,11 +271,31 @@ public class IndexManager {
 	}
 
 
+	private static void updateCounter() {
+		int currentValue = 1;
+
+		try(BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("resources/counter.txt"), "UTF-8"))) {
+			for(String line; (line = br.readLine()) != null; ) {
+				currentValue = Integer.parseInt(line) + 1;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		System.out.println(currentValue);
+
+		try(BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("resources/counter.txt"), "UTF-8"))) {
+			bw.write(currentValue + "\n");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	/**
 	 * Just a normal main function
 	 *
 	 * todo: Press Ctrl-Alt-r to change the command line arguments
-	 * todo: Currently set to "resources/config.properties" and "resources/serverConfig.properties
+	 * todo: Currently set to "resources/config.properties"
 	 *
 	 * @param args arguments from the command line
 	 */
@@ -299,7 +319,11 @@ public class IndexManager {
 					int code = con.getResponseCode();
 					if (code == 200) {
 						// url exists :D
-						init(url);
+
+						// update counter
+						updateCounter();
+
+						// init(url);
 					}
 					else {
 						// print url to error file
