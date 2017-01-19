@@ -50,4 +50,26 @@ class ClonedRepository {
 			e.printStackTrace();
 		}
 	}
+
+	/**
+	 * Reset the repository to a certain version
+	 * @param version version hash
+	 */
+	void resetRepositoryToVersion(String version) {
+		try {
+			String[] command = {"git", "reset", "--hard", version};
+
+			ProcessBuilder pb = new ProcessBuilder(command);
+			pb.directory(new File("clone"));
+
+			Process proc = pb.start();
+			proc.waitFor();
+			proc.destroy();
+		} catch (IOException|InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
 }
+
+// if folder does not exist
+// go look for the folder (it should honeslty be the only folder in there
