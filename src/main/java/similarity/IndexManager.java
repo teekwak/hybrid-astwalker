@@ -31,6 +31,7 @@ public class IndexManager {
 	private static Map<String, String> configProperties;
 	private static Map<String, String> serverProperties;
 	private static Map<String, Boolean> simProperties;
+	private static int counter;
 
 
 	/**
@@ -270,22 +271,20 @@ public class IndexManager {
 		}
 	}
 
-
-	private static void updateCounter() {
-		int currentValue = 1;
-
+	private static void readCounter() {
 		try(BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("resources/counter.txt"), "UTF-8"))) {
 			for(String line; (line = br.readLine()) != null; ) {
-				currentValue = Integer.parseInt(line) + 1;
+				counter = Integer.parseInt(line);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
 
-		System.out.println(currentValue);
-
+	private static void incrementCounter() {
+		counter += 1;
 		try(BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("resources/counter.txt"), "UTF-8"))) {
-			bw.write(currentValue + "\n");
+			bw.write(counter + "\n");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -302,10 +301,17 @@ public class IndexManager {
 	public static void main(String[] args) {
 		configProperties = PropertyReader.fileToStringStringMap(args[0]);
 		serverProperties = PropertyReader.fileToStringStringMap(configProperties.get("serverConfigPath"));
+		readCounter();
 
 		setup();
 
 		try(BufferedReader urlBr = new BufferedReader(new InputStreamReader(new FileInputStream(configProperties.get("pathToURLMapPath")), "UTF-8"))) {
+
+			// skip lines
+			for(int i = 1; i < counter; i++) {
+				urlBr.readLine();
+			}
+
 			for(String url; (url = urlBr.readLine()) != null; ) {
 
 				// todo: do a 200 check to make sure the repo still exists
@@ -321,7 +327,7 @@ public class IndexManager {
 						// url exists :D
 
 						// update counter
-						updateCounter();
+						incrementCounter();
 
 						// init(url);
 					}
