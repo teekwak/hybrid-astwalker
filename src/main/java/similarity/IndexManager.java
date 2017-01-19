@@ -18,6 +18,7 @@
 
 package similarity;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
@@ -32,7 +33,6 @@ public class IndexManager {
 	private static Map<String, String> serverProperties;
 	private static Map<String, Boolean> simProperties;
 	private static int counter;
-
 
 	/**
 	 * xxx
@@ -49,13 +49,12 @@ public class IndexManager {
 
 	/**
 	 * Quickly traverse repository to find a file based on a list of directories
-	 * @param parentDirectory xxx
 	 * @param fileName xxx
 	 * @param pathToFileInRepo xxx
 	 * @return xxx
 	 */
-	private static File findFileInRepository(String parentDirectory, String fileName, List<String> pathToFileInRepo) {
-		File[] filesInDirectory = new File(parentDirectory).listFiles();
+	private static File findFileInRepository(String fileName, List<String> pathToFileInRepo) {
+		File[] filesInDirectory = new File("clone").listFiles();
 
 		for(String directoryName : pathToFileInRepo) {
 			if(filesInDirectory != null) {
@@ -93,6 +92,7 @@ public class IndexManager {
 			repoPath.append("/");
 		}
 		repoPath.append(urlSplit[urlSplit.length - 1].split("\\?")[0]);
+		urlSplit = null;
 		return repoPath.toString();
 	}
 
@@ -104,7 +104,6 @@ public class IndexManager {
 	 */
 	private static void createSolrDocsForURL(String rawURL, File classFile, String currentBitVector) {
 		String[] urlSplit = rawURL.split("/");
-		String className = urlSplit[urlSplit.length - 1].split("\\.java")[0];
 
 		SolrInputDocument solrDoc = null;
 
@@ -125,8 +124,11 @@ public class IndexManager {
 			|| simProperties.get("isAbstractScore")
 			|| simProperties.get("isWildCardScore")
 		) {
+			String className = urlSplit[urlSplit.length - 1].split("\\.java")[0];
 			SimilarityASTWalker saw = new SimilarityASTWalker(className, simProperties);
+			className = null;
 			solrDoc = saw.parseFileIntoSolrDoc(rawURL, classFile.getAbsolutePath());
+			saw = null;
 		}
 		writeToTimesFile("Finished technical$$" + currentBitVector + "::" + System.currentTimeMillis());
 
@@ -140,13 +142,15 @@ public class IndexManager {
 		writeToTimesFile("Started social$$" + currentBitVector + "::" + System.currentTimeMillis());
 		if(simProperties.get("authorScore")) {
 			JavaGitHubData jghd = new JavaGitHubData();
-			jghd.getCommits("clone/" + urlSplit[4], getRelativeFileRepoPath(rawURL));
+			jghd.getCommits("clone", getRelativeFileRepoPath(rawURL));
 			Commit headCommit = jghd.getListOfCommits().get(jghd.getListOfCommits().size() - 1);
 			solrDoc.addField("snippet_author_name", headCommit.getAuthor());
+			jghd = null;
 		}
 
 		if(simProperties.get("ownerScore") || simProperties.get("projectScore")) {
 			SolrDocumentList list = Solrj.getInstance(configProperties.get("passPath")).query("id:\"https://github.com/" + urlSplit[3] + "/" + urlSplit[4]+"\"", "grok.ics.uci.edu", 9001, "githubprojects", 1);
+			urlSplit = null;
 			if(list.isEmpty()) throw new IllegalArgumentException("[ERROR]: project data is null!");
 
 			SolrDocument doc = list.get(0);
@@ -158,13 +162,17 @@ public class IndexManager {
 			if(simProperties.get("projectScore")) {
 				solrDoc.addField("snippet_project_name", doc.getFieldValue("projectName").toString());
 			}
+
+			list = null;
+			doc = null;
 		}
 		writeToTimesFile("Finished social$$" + currentBitVector + "::" + System.currentTimeMillis());
 
 		Solrj.getInstance(configProperties.get("passPath")).addDoc(solrDoc);
+		solrDoc = null;
 
 		writeToTimesFile("Started uploading$$" + currentBitVector + "::" + System.currentTimeMillis());
-		Solrj.getInstance(configProperties.get("passPath")).commitDocs(serverProperties.get(currentBitVector), configProperties.get("collectionName"));
+		// Solrj.getInstance(configProperties.get("passPath")).commitDocs(serverProperties.get(currentBitVector), configProperties.get("collectionName"));
 		writeToTimesFile("Finished uploading$$" + currentBitVector + "::" + System.currentTimeMillis());
 	}
 
@@ -184,27 +192,6 @@ public class IndexManager {
 
 
 	/**
-	 * Reset the repository to a certain version
-	 * @param repoName name of the repository (so that the ProcessBuilder can change directories)
-	 * @param version version hash
-	 */
-	private static void resetRepositoryToVersion(String repoName, String version) {
-		try {
-			String[] command = {"git", "reset", "--hard", version};
-
-			ProcessBuilder pb = new ProcessBuilder(command);
-			pb.directory(new File("clone/" + repoName));
-
-			Process proc = pb.start();
-			proc.waitFor();
-			proc.destroy();
-		} catch (IOException|InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
-
-
-	/**
 	 * xxx
 	 * @param url xxx
 	 */
@@ -215,19 +202,21 @@ public class IndexManager {
 		// clone repository
 		String[] urlSplit = url.split("/");
 
-		ClonedRepository clone = new ClonedRepository("https://test:test@github.com/" + urlSplit[3] + "/" + urlSplit[4] + ".git", "clone/" + urlSplit[4]);
+		// need to clone into special place!
+		ClonedRepository clone = new ClonedRepository("https://test:test@github.com/" + urlSplit[3] + "/" + urlSplit[4] + ".git", "clone");
 		writeToTimesFile("Started cloning::" + System.currentTimeMillis());
 		clone.cloneRepository();
 		writeToTimesFile("Finished cloning::" + System.currentTimeMillis());
 
 		// reset to saved version
-		resetRepositoryToVersion(urlSplit[4], urlSplit[5]);
+		clone.resetRepositoryToVersion(urlSplit[5]);
 
 		// find file path and name
 		List<String> pathToFileInRepo = new ArrayList<>(Arrays.asList(Arrays.copyOfRange(urlSplit, 6, urlSplit.length - 1)));
 
 		// get class file from repo
-		File classFile = findFileInRepository("clone/" + urlSplit[4], urlSplit[urlSplit.length - 1].split("\\?")[0], pathToFileInRepo);
+		File classFile = findFileInRepository(urlSplit[urlSplit.length - 1].split("\\?")[0], pathToFileInRepo);
+		pathToFileInRepo = null;
 
 		// run each similarity function on the cloned repository
 		for(String bitVector : serverProperties.keySet()) {
@@ -235,9 +224,12 @@ public class IndexManager {
 			simProperties = PropertyReader.createSimilarityFunctionPropertiesMap(bitVector);
 			createSolrDocsForURL(url, classFile, bitVector);
 		}
+		classFile = null;
+		urlSplit = null;
 
 		// delete repository
 		clone.deleteRepository();
+		clone = null;
 
 		writeToTimesFile("Finished process::" + System.currentTimeMillis());
 		writeToTimesFile("=====");
@@ -252,10 +244,6 @@ public class IndexManager {
 			teardown();
 		}
 
-		if(!(new File("clone").exists()) && !(new File("clone").mkdir())) {
-			throw new IllegalArgumentException("[ERROR]: could not make \"clone\" directory");
-		}
-
 		if(!(new File("output").exists()) && !(new File("output").mkdir())) {
 			throw new IllegalArgumentException("[ERROR]: could not make \"output\" directory");
 		}
@@ -266,10 +254,13 @@ public class IndexManager {
 	 * delete clone folder on program end
 	 */
 	private static void teardown() {
-		if(!(new File("clone").delete())) {
-			throw new IllegalArgumentException("[ERROR]: could not delete \"clone\" directory");
+		try {
+			FileUtils.deleteDirectory(new File("clone"));
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
+
 
 	private static void readCounter() {
 		try(BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("resources/counter.txt"), "UTF-8"))) {
@@ -281,6 +272,7 @@ public class IndexManager {
 		}
 	}
 
+
 	private static void incrementCounter() {
 		counter += 1;
 		try(BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("resources/counter.txt"), "UTF-8"))) {
@@ -289,6 +281,13 @@ public class IndexManager {
 			e.printStackTrace();
 		}
 	}
+
+
+	private static String addTimestampToFileName(String path) {
+		String[] split = path.split("_");
+		return split[0] + "_" + System.currentTimeMillis() + "_" + split[1];
+	}
+
 
 	/**
 	 * Just a normal main function
@@ -301,6 +300,7 @@ public class IndexManager {
 	public static void main(String[] args) {
 		configProperties = PropertyReader.fileToStringStringMap(args[0]);
 		serverProperties = PropertyReader.fileToStringStringMap(configProperties.get("serverConfigPath"));
+		configProperties.put("pathToTimestampsFile", addTimestampToFileName(configProperties.get("pathToTimestampsFile")));
 		readCounter();
 
 		setup();
@@ -329,7 +329,7 @@ public class IndexManager {
 						// update counter
 						incrementCounter();
 
-						// init(url);
+						init(url);
 					}
 					else {
 						// print url to error file

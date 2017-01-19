@@ -89,6 +89,8 @@ class SimilarityASTWalker {
 		parser.setBindingsRecovery(true);
 		parser.setStatementsRecovery(true);
 
+		sourceCode = null;
+
 		final CompilationUnit cu = (CompilationUnit) parser.createAST(null);
 
 		cu.accept(new ASTVisitor() {
@@ -329,21 +331,8 @@ class SimilarityASTWalker {
 			}
 		});
 
-
 		if(simProperties.get("importNumScore")) {
 			solrDoc.addField("snippet_imports_count", importNames.size());
-		}
-
-		if(simProperties.get("fieldsScore")) {
-			solrDoc.addField("snippet_number_of_fields", fieldNames.size());
-		}
-
-		if(simProperties.get("isWildCardScore")) {
-			solrDoc.addField("snippet_is_wildcard", isWildCard);
-		}
-
-		if(simProperties.get("complexityScore")) {
-			solrDoc.addField("snippet_path_complexity_class_sum", cyclomaticComplexity);
 		}
 
 		if(simProperties.get("importsScore")) {
@@ -351,23 +340,40 @@ class SimilarityASTWalker {
 				solrDoc.addField("snippet_imports", name);
 			}
 		}
+		importNames = null;
+
+		if(simProperties.get("fieldsScore")) {
+			solrDoc.addField("snippet_number_of_fields", fieldNames.size());
+		}
+		fieldNames = null;
 
 		if(simProperties.get("methodCallScore")) {
 			for(String name : methodInvocationNames) {
 				solrDoc.addField("snippet_method_invocation_names", name);
 			}
 		}
+		methodInvocationNames = null;
 
 		if(simProperties.get("methodDecScore")) {
 			for(String name : methodDeclarationNames) {
 				solrDoc.addField("snippet_method_dec_names", name);
 			}
 		}
+		methodDeclarationNames = null;
 
 		if(simProperties.get("variableNameScore")) {
 			for(String name : variableNames) {
 				solrDoc.addField("snippet_variable_names", name);
 			}
+		}
+		variableNames = null;
+
+		if(simProperties.get("isWildCardScore")) {
+			solrDoc.addField("snippet_is_wildcard", isWildCard);
+		}
+
+		if(simProperties.get("complexityScore")) {
+			solrDoc.addField("snippet_path_complexity_class_sum", cyclomaticComplexity);
 		}
 
 		return solrDoc;
