@@ -14,6 +14,9 @@
 
 /*
  * Created by Thomas Kwak
+ *
+ * Error codes: 404 - not found
+ *              502 - commit no longer exists
  */
 
 package similarity;
@@ -33,6 +36,7 @@ public class IndexManager {
 	private static Map<String, String> serverProperties;
 	private static Map<String, Boolean> simProperties;
 	private static int counter;
+
 
 	/**
 	 * xxx
@@ -69,13 +73,15 @@ public class IndexManager {
 
 		if(filesInDirectory != null) {
 			for(File f : filesInDirectory) {
+				System.out.println(f.getName());
 				if(f.getName().equals(fileName)) {
 					return f;
 				}
 			}
 		}
 
-		throw new IllegalArgumentException("[ERROR]: file \"" + fileName + "\" does not exist in repository \"" + pathToFileInRepo.toString() + "\" !");
+		printErrorURL(fileName, 502);
+		return null;
 	}
 
 
@@ -172,6 +178,7 @@ public class IndexManager {
 		solrDoc = null;
 
 		writeToTimesFile("Started uploading$$" + currentBitVector + "::" + System.currentTimeMillis());
+		System.out.println("fake upload!");
 		// Solrj.getInstance(configProperties.get("passPath")).commitDocs(serverProperties.get(currentBitVector), configProperties.get("collectionName"));
 		writeToTimesFile("Finished uploading$$" + currentBitVector + "::" + System.currentTimeMillis());
 	}
@@ -207,7 +214,7 @@ public class IndexManager {
 		writeToTimesFile("Started cloning::" + System.currentTimeMillis());
 		clone.cloneRepository();
 		writeToTimesFile("Finished cloning::" + System.currentTimeMillis());
-
+		writeToTimesFile("Started setup after cloning::" + System.currentTimeMillis());
 		// reset to saved version
 		clone.resetRepositoryToVersion(urlSplit[5]);
 
@@ -217,13 +224,17 @@ public class IndexManager {
 		// get class file from repo
 		File classFile = findFileInRepository(urlSplit[urlSplit.length - 1].split("\\?")[0], pathToFileInRepo);
 		pathToFileInRepo = null;
+		writeToTimesFile("Finished setup after cloning::" + System.currentTimeMillis());
 
-		// run each similarity function on the cloned repository
-		for(String bitVector : serverProperties.keySet()) {
-			System.out.print("\rWorking on: " + urlSplit[3] + "/" + urlSplit[4] + " - " + bitVector);
-			simProperties = PropertyReader.createSimilarityFunctionPropertiesMap(bitVector);
-			createSolrDocsForURL(url, classFile, bitVector);
+		if(classFile != null) {
+			// run each similarity function on the cloned repository
+			for(String bitVector : serverProperties.keySet()) {
+				System.out.print("\rWorking on: " + urlSplit[3] + "/" + urlSplit[4] + " - " + bitVector);
+				simProperties = PropertyReader.createSimilarityFunctionPropertiesMap(bitVector);
+				createSolrDocsForURL(url, classFile, bitVector);
+			}
 		}
+
 		classFile = null;
 		urlSplit = null;
 
@@ -301,6 +312,7 @@ public class IndexManager {
 		configProperties = PropertyReader.fileToStringStringMap(args[0]);
 		serverProperties = PropertyReader.fileToStringStringMap(configProperties.get("serverConfigPath"));
 		configProperties.put("pathToTimestampsFile", addTimestampToFileName(configProperties.get("pathToTimestampsFile")));
+		configProperties.put("pathToErrorFile", addTimestampToFileName(configProperties.get("pathToErrorFile")));
 		readCounter();
 
 		setup();
@@ -325,6 +337,9 @@ public class IndexManager {
 					int code = con.getResponseCode();
 					if (code == 200) {
 						// url exists :D
+						urlObj = null;
+						con = null;
+
 
 						// update counter
 						incrementCounter();
@@ -332,6 +347,8 @@ public class IndexManager {
 						init(url);
 					}
 					else {
+						urlObj = null;
+						con = null;
 						// print url to error file
 						printErrorURL(url, code);
 					}
