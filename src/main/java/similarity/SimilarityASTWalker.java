@@ -56,29 +56,11 @@ class SimilarityASTWalker {
 
 	/**
 	 *
-	 * @param url xxx
+	 * @param solrDoc xxx
+	 * @param sourceCode xxx
 	 * @param fileLocation xxx
-	 * @return xxx
 	 */
-	SolrInputDocument parseFileIntoSolrDoc(String url, String fileLocation) {
-		SolrInputDocument solrDoc = new SolrInputDocument();
-		solrDoc.addField("id", url);
-
-		// no way to avoid this. we need to read the entire file into memory
-		String sourceCode = null;
-		try {
-			sourceCode = FileUtils.readFileToString(new File(fileLocation), "ISO-8859-1");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		// just in case somehow things escape the try-catch statement
-		if(sourceCode == null) {
-			throw new IllegalStateException("[ERROR]: source code is null!");
-		}
-
-		solrDoc.addField("snippet_code", sourceCode);
-
+	void parseFileIntoSolrDoc(SolrInputDocument solrDoc, String sourceCode, String fileLocation) {
 		// create parser and set properties
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
 		parser.setUnitName(fileLocation);
@@ -375,7 +357,5 @@ class SimilarityASTWalker {
 		if(simProperties.get("complexityScore")) {
 			solrDoc.addField("snippet_path_complexity_class_sum", cyclomaticComplexity);
 		}
-
-		return solrDoc;
 	}
 }

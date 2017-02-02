@@ -1,3 +1,1 @@
-https://raw.github.com/Morphan1/Depenizen/ab821082a0783ead78c2dbb5efb433f8cb131c27/src/main/java/net/gnomeffinway/depenizen/support/bungee/BungeeSupport.java?start=1029&end=4702t.java?start=3770&end=4758
-https://raw.github.com/FlowBo/teilchen/8fc09e7d5003d6ce179d84c1d88df72725c928a1/teilchen/src/teilchen/demo/Lesson06_Springs.java?start=975&end=3362
-https://raw.github.com/SumiTomohiko/SimpleMediaScanner/4ae19398301d435517b7b8b4be6f27d9d4324102/src/jp/gr/java_conf/neko_daisuki/simplemediascanner/EditActivity.java?start=1888&end=1975
+https://raw.github.com/opensourceBIM/BIMserver/72653329ab2b9d05861ddf76dbf2a10575e03962/Shared/generated/org/bimserver/interfaces/SServiceInterfaceService.java?start=18575&end=18696

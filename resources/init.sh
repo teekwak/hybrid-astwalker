@@ -9,6 +9,11 @@ echo
 
 cd /home/pi/astwalker/resources;
 bash createConfigProperties.sh;
+
+echo
+echo "===== Running jar ====="
+echo
+
 cd ..;
 java -jar astwalker-1.0-SNAPSHOT-jar-with-dependencies.jar resources/config.properties;
 

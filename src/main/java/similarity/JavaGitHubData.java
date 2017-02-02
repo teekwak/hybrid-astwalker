@@ -46,16 +46,13 @@ class JavaGitHubData {
 		return this.listOfCommits;
 	}
 
-	void getCommits(String directoryLocation, String repoFileName) {
+	void getCommits(String repoFileName) {
 		List<String> hashCodeList = new ArrayList<>();
 		List<String> authorList = new ArrayList<>();
 
 		try {
 			// get all commits of a single file
-			String[] command = {"git", "log", "--reverse", "--format=format:Commit: %H%nAuthor: %an%n", "--", repoFileName};
-			ProcessBuilder pb = new ProcessBuilder(command);
-
-			pb.directory(new File(directoryLocation));
+			ProcessBuilder pb = new ProcessBuilder("bash", "resources/getCommits.sh", repoFileName);
 
 			Process proc = pb.start();
 
