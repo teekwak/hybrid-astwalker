@@ -2,4 +2,5 @@
 
 # $1 = repoFileName
 
-git log --reverse --format="format:Commit: %H%nAuthor: %an%n" -- $1 >fail2.txt 2>&1
+cd "/home/pi/astwalker/clone"
+git log --reverse --format="format:Commit: %H%nAuthor: %an%n" -- $1
