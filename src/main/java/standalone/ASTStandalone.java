@@ -74,20 +74,42 @@ public class ASTStandalone {
 			throw new IllegalArgumentException("[ERROR]: config file is not a .properties file!");
 		}
 
-		Properties properties = new Properties();
-		try(InputStream input = new FileInputStream(configFilePath)) {
-			properties.load(input);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		validateProperties(properties);
+//		Properties properties = new Properties();
+//		try(InputStream input = new FileInputStream(configFilePath)) {
+//			properties.load(input);
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//
+//		validateProperties(properties);
 
 		// convert to hash map so that boolean parsing happens only once
 		configProperties = new HashMap<>();
-		for(Map.Entry<Object, Object> entry : properties.entrySet()) {
-			configProperties.put(entry.getKey().toString(), Boolean.parseBoolean(entry.getValue().toString()));
-		}
+//		for(Map.Entry<Object, Object> entry : properties.entrySet()) {
+//			configProperties.put(entry.getKey().toString(), Boolean.parseBoolean(entry.getValue().toString()));
+//		}
+		configProperties.put("AnonymousClassDeclaration", true);
+		configProperties.put("CatchClause", true);
+		configProperties.put("ConditionalExpression", true);
+		configProperties.put("DoStatement", true);
+		configProperties.put("EnhancedForStatement", true);
+		configProperties.put("FieldDeclaration", true);
+		configProperties.put("ForStatement", true);
+		configProperties.put("IfStatement", true);
+		configProperties.put("ImportDeclaration", true);
+		configProperties.put("InfixExpression", true);
+		configProperties.put("MethodDeclaration", true);
+		configProperties.put("MethodInvocation", true);
+		configProperties.put("PackageDeclaration", true);
+		configProperties.put("SingleVariableDeclaration", true);
+		configProperties.put("SwitchStatement", true);
+		configProperties.put("ThrowStatement", true);
+		configProperties.put("TryStatement", true);
+		configProperties.put("TypeDeclaration", true);
+		configProperties.put("VariableDeclarationStatement", true);
+		configProperties.put("VariableDeclarationExpression", true);
+		configProperties.put("WhileStatement", true);
+		configProperties.put("WildcardType", true);
 	}
 
 	public FileModel getFileModel() {
@@ -193,6 +215,9 @@ public class ASTStandalone {
 					co.setColumnNumber(cu.getColumnNumber(node.getStartPosition()));
 					co.setEndLine(endLine);
 					co.setLineNumber(startLine);
+
+					System.out.println(startLine);
+
 					co.setNumberOfCharacters(node.getLength());
 					co.setFileName(fileLocation);
 					// get generic parameters
@@ -1074,13 +1099,11 @@ public class ASTStandalone {
 		// ******************************************
 
 		ASTStandalone a = new ASTStandalone("resources/astconfig.properties");
-		a.parseFile("resources/test.java");
+		a.parseFile("resources/Test.java");
 
-//		for(SuperEntityClass obj : a.importList) {
-//			System.out.println(obj.getName());
-//		}
-
-		// print results?
+		for(SuperEntityClass obj : a.importList) {
+			System.out.println(obj.getName());
+		}
 
 		// ******************************************
 

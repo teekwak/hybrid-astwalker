@@ -31,25 +31,13 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
 
+
+// todo: MAKE THIS AS SIMPLE AS POSSIBLE!
 public class IndexManager {
 	private static Map<String, String> configProperties;
-	private static Map<String, String> serverProperties;
-	private static Map<String, Boolean> simProperties;
+	// todo: do need to define where to upload (at least in configProperties)
 	private static String currentURL;
 	private static int counter;
-
-
-	/**
-	 * xxx
-	 * @param message xxx
-	 */
-	private static void writeToTimesFile(String message) {
-		try(BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(configProperties.get("pathToTimestampsFile"), true), "UTF-8"))) {
-			bw.write(message + "\n");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
 
 
 	/**
@@ -57,6 +45,8 @@ public class IndexManager {
 	 * @param fileName xxx
 	 * @param pathToFileInRepo xxx
 	 * @return xxx
+	 *
+	 * todo: you can probably turn this into streams
 	 */
 	private static File findFileInRepository(String fileName, List<String> pathToFileInRepo) {
 		File[] filesInDirectory = new File("clone").listFiles();
@@ -80,7 +70,6 @@ public class IndexManager {
 			}
 		}
 
-		printErrorURL(currentURL, 100);
 		return null;
 	}
 
@@ -106,19 +95,17 @@ public class IndexManager {
 	/**
 	 * xxx
 	 * @param classFile xxx
+	 * todo: Lets be real. this is too much logic going on.
 	 */
-	private static void createSolrDocsForURL(File classFile, String currentBitVector) {
+	private static void createSolrDocsForURL(File classFile) {
 		String[] urlSplit = currentURL.split("/");
 
-		// create solr doc
-		writeToTimesFile("Started creating empty solr doc$$" + currentBitVector + "::" + System.currentTimeMillis());
+		// create empty solr doc
 		SolrInputDocument solrDoc = new SolrInputDocument();
 		solrDoc.addField("id", currentURL);
 		solrDoc.addField("parent", true);
-		writeToTimesFile("Finished creating empty solr doc$$" + currentBitVector + "::" + System.currentTimeMillis());
 
-		// extract source code
-		writeToTimesFile("Started source code$$" + currentBitVector + "::" + System.currentTimeMillis());
+		// read source code from file
 		String sourceCode = null;
 		try {
 			sourceCode = FileUtils.readFileToString(new File(classFile.getAbsolutePath()), "UTF-8");
@@ -126,70 +113,38 @@ public class IndexManager {
 			e.printStackTrace();
 		}
 		solrDoc.addField("snippet_code", sourceCode);
-		writeToTimesFile("Finished source code$$" + currentBitVector + "::" + System.currentTimeMillis());
 
-		// extract technical data
-		writeToTimesFile("Started technical$$" + currentBitVector + "::" + System.currentTimeMillis());
-		if(!simProperties.get("authorScore") && !simProperties.get("ownerScore") && !simProperties.get("projectScore")) {
-			String className = urlSplit[urlSplit.length - 1].split("\\.java")[0];
-			SimilarityASTWalker saw = new SimilarityASTWalker(className, simProperties);
-			className = null;
-			saw.parseFileIntoSolrDoc(solrDoc, sourceCode, classFile.getAbsolutePath());
-			saw = null;
-		}
-		writeToTimesFile("Finished technical$$" + currentBitVector + "::" + System.currentTimeMillis());
+		// getting all technical properties from AST walker
+		String className = urlSplit[urlSplit.length - 1].split("\\.java")[0];
+		SimilarityASTWalker saw = new SimilarityASTWalker(className);
+		className = null;
+		saw.parseFileIntoSolrDoc(solrDoc, sourceCode, classFile.getAbsolutePath());
+		saw = null;
 		sourceCode = null;
 
-		// extract social data
-		writeToTimesFile("Started social$$" + currentBitVector + "::" + System.currentTimeMillis());
-		if(simProperties.get("authorScore")) {
-			JavaGitHubData jghd = new JavaGitHubData();
-			jghd.getCommits(getRelativeFileRepoPath(currentURL));
-			Commit headCommit = jghd.getListOfCommits().get(jghd.getListOfCommits().size() - 1);
-			solrDoc.addField("snippet_author_name", headCommit.getAuthor());
-			jghd = null;
-			headCommit = null;
-		}
+		// getting the author name
+		JavaGitHubData jghd = new JavaGitHubData();
+		jghd.getCommits(getRelativeFileRepoPath(currentURL));
+		Commit headCommit = jghd.getListOfCommits().get(jghd.getListOfCommits().size() - 1);
+		solrDoc.addField("snippet_author_name", headCommit.getAuthor());
+		jghd = null;
+		headCommit = null;
 
-		if(simProperties.get("ownerScore") || simProperties.get("projectScore")) {
-			SolrDocumentList list = Solrj.getInstance(configProperties.get("passPath")).query("id:\"https://github.com/" + urlSplit[3] + "/" + urlSplit[4]+"\"", "grok.ics.uci.edu", 9001, "githubprojects", 1);
-			if(list.isEmpty()) throw new IllegalArgumentException("[ERROR]: project data is null!");
+		// getting the project name and project owner
+		SolrDocumentList list = Solrj.getInstance(configProperties.get("passPath")).query("id:\"https://github.com/" + urlSplit[3] + "/" + urlSplit[4]+"\"", "grok.ics.uci.edu", 9001, "githubprojects", 1);
+		if(list.isEmpty()) throw new IllegalArgumentException("[ERROR]: project data is null!");
+		SolrDocument doc = list.get(0);
+		solrDoc.addField("snippet_project_owner", doc.getFieldValue("userName").toString());
+		solrDoc.addField("snippet_project_name", doc.getFieldValue("projectName").toString());
 
-			SolrDocument doc = list.get(0);
-
-			if(simProperties.get("ownerScore")) {
-				solrDoc.addField("snippet_project_owner", doc.getFieldValue("userName").toString());
-			}
-
-			if(simProperties.get("projectScore")) {
-				solrDoc.addField("snippet_project_name", doc.getFieldValue("projectName").toString());
-			}
-
-			list = null;
-			doc = null;
-		}
-		writeToTimesFile("Finished social$$" + currentBitVector + "::" + System.currentTimeMillis());
+		list = null;
+		doc = null;
 		urlSplit = null;
 
+		// actually uploading the document
 		Solrj.getInstance(configProperties.get("passPath")).addDoc(solrDoc);
-		writeToTimesFile("Started uploading$$" + currentBitVector + "::" + System.currentTimeMillis());
 		Solrj.getInstance(configProperties.get("passPath")).commitDocs(serverProperties.get(currentBitVector), configProperties.get("collectionName"));
-		writeToTimesFile("Finished uploading$$" + currentBitVector + "::" + System.currentTimeMillis());
 		solrDoc = null;
-	}
-
-
-	/**
-	 * Prints URL and error code to file
-	 * @param url the URL
-	 * @param errorCode the error code returned by the URL
-	 */
-	private static void printErrorURL(String url, int errorCode) {
-		try(BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(configProperties.get("pathToErrorFile"), true), "UTF-8"))) {
-			bw.write(url + "::" + errorCode + "\n");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 
@@ -197,20 +152,14 @@ public class IndexManager {
 	 * xxx
 	 */
 	private static void init() {
-		writeToTimesFile("URL::" + currentURL);
-		writeToTimesFile("Started process::" + System.currentTimeMillis());
-
 		// clone repository
 		String[] urlSplit = currentURL.split("/");
 
 		// need to clone into special place!
 		ClonedRepository clone = new ClonedRepository("https://test:test@github.com/" + urlSplit[3] + "/" + urlSplit[4] + ".git");
-		writeToTimesFile("Started cloning::" + System.currentTimeMillis());
 
 		clone.cloneRepository();
-		writeToTimesFile("Finished cloning::" + System.currentTimeMillis());
 
-		writeToTimesFile("Started setup after cloning::" + System.currentTimeMillis());
 		// reset to saved version
 		clone.resetRepositoryToVersion(urlSplit[5]);
 		clone = null;
@@ -221,7 +170,6 @@ public class IndexManager {
 		// get class file from repo
 		File classFile = findFileInRepository(urlSplit[urlSplit.length - 1].split("\\?")[0], pathToFileInRepo);
 		pathToFileInRepo = null;
-		writeToTimesFile("Finished setup after cloning::" + System.currentTimeMillis());
 
 		if(classFile != null) {
 			// run each similarity function on the cloned repository
@@ -231,15 +179,10 @@ public class IndexManager {
 				createSolrDocsForURL(classFile, bitVector);
 			}
 		}
-		else {
-			writeToTimesFile("Error - class file is null::" + System.currentTimeMillis());
-		}
 
 		classFile = null;
 		urlSplit = null;
 
-		writeToTimesFile("Finished process::" + System.currentTimeMillis());
-		writeToTimesFile("=====");
 	}
 
 
@@ -280,9 +223,6 @@ public class IndexManager {
 	 */
 	public static void main(String[] args) {
 		configProperties = PropertyReader.fileToStringStringMap(args[0]);
-		serverProperties = PropertyReader.fileToStringStringMap(configProperties.get("serverConfigPath"));
-		configProperties.put("pathToTimestampsFile", addTimestampToFileName(configProperties.get("pathToTimestampsFile")));
-		configProperties.put("pathToErrorFile", addTimestampToFileName(configProperties.get("pathToErrorFile")));
 		readCounter();
 
 		try(BufferedReader urlBr = new BufferedReader(new InputStreamReader(new FileInputStream(configProperties.get("pathToURLMapPath")), "UTF-8"))) {
@@ -292,8 +232,7 @@ public class IndexManager {
 			}
 
 			for(String url; (url = urlBr.readLine()) != null; ) {
-
-				// todo: do a 200 check to make sure the repo still exists
+				// todo: this should be a new function, maybe even a new class
 				try {
 					URL urlObj = new URL(url);
 					HttpURLConnection con = (HttpURLConnection) urlObj.openConnection();
@@ -316,8 +255,6 @@ public class IndexManager {
 					else {
 						urlObj = null;
 						con = null;
-						// print url to error file
-						printErrorURL(url, code);
 					}
 				} catch (IOException e) {
 					e.printStackTrace();

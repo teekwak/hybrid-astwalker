@@ -18,16 +18,13 @@
 
 package similarity;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.solr.common.SolrInputDocument;
 import org.eclipse.jdt.core.dom.*;
 
-import java.io.*;
 import java.util.*;
 
 class SimilarityASTWalker {
 	private String className;
-	private Map<String, Boolean> simProperties;
 	private Set<String> methodInvocationNames;
 	private Set<String> methodDeclarationNames;
 	private Set<String> variableNames;
@@ -40,11 +37,9 @@ class SimilarityASTWalker {
 
 	/**
 	 * Constructor for class
-	 * @param simProperties xxx
 	 */
-	SimilarityASTWalker(String className, Map<String, Boolean> simProperties) {
+	SimilarityASTWalker(String className) {
 		this.className = className;
-		this.simProperties = simProperties;
 		this.methodInvocationNames = new HashSet<>();
 		this.methodDeclarationNames = new HashSet<>();
 		this.variableNames = new HashSet<>();
@@ -71,6 +66,7 @@ class SimilarityASTWalker {
 		parser.setBindingsRecovery(true);
 		parser.setStatementsRecovery(true);
 
+		// null out source code for possible garbage collection
 		sourceCode = null;
 
 		final CompilationUnit cu = (CompilationUnit) parser.createAST(null);
@@ -81,144 +77,112 @@ class SimilarityASTWalker {
 			}
 
 			public boolean visit(CatchClause node) {
-				if(simProperties.get("complexityScore")) {
-					cyclomaticComplexity++;
-				}
-
+				cyclomaticComplexity++;
 				return true;
 			}
 
 			public boolean visit(ConditionalExpression node){
-				if(simProperties.get("complexityScore")) {
-					cyclomaticComplexity++;
-				}
-
+				cyclomaticComplexity++;
 				return true;
 			}
 
 			public boolean visit(DoStatement node) {
-				if(simProperties.get("complexityScore")) {
-					cyclomaticComplexity++;
-				}
+				cyclomaticComplexity++;
 				return true;
 			}
 
 			public boolean visit(EnhancedForStatement node) {
-				if(simProperties.get("complexityScore")) {
-					cyclomaticComplexity++;
-				}
-
+				cyclomaticComplexity++;
 				return true;
 			}
 
 			public boolean visit(FieldDeclaration node) {
-				if(simProperties.get("fieldsScore")) {
-					for(Object v : node.fragments()) {
-						SimpleName name = ((VariableDeclarationFragment) v).getName();
-						fieldNames.add(name.toString());
-					}
+				for(Object v : node.fragments()) {
+					SimpleName name = ((VariableDeclarationFragment) v).getName();
+					fieldNames.add(name.toString());
 				}
 
 				return true;
 			}
 
 			public boolean visit(ForStatement node) {
-				if(simProperties.get("complexityScore")) {
-					cyclomaticComplexity++;
-				}
-
+				cyclomaticComplexity++;
 				return true;
 			}
 
 			public boolean visit(IfStatement node) {
-				if(simProperties.get("complexityScore")) {
-					cyclomaticComplexity++;
-				}
-
+				cyclomaticComplexity++;
 				return true;
 			}
 
 			public boolean visit(ImportDeclaration node) {
-				if(simProperties.get("importsScore") || simProperties.get("importNumScore")) {
-					Name name = node.getName();
+				Name name = node.getName();
 
-					String fullyQualifiedName;
-					try {
-						fullyQualifiedName = name.getFullyQualifiedName();
-					} catch (NullPointerException e) {
-						fullyQualifiedName = "";
-					}
-
-					importNames.add(fullyQualifiedName);
+				String fullyQualifiedName;
+				try {
+					fullyQualifiedName = name.getFullyQualifiedName();
+				} catch (NullPointerException e) {
+					fullyQualifiedName = "";
 				}
+
+				importNames.add(fullyQualifiedName);
 
 				return true;
 			}
 
 			public boolean visit(InfixExpression node){
-				if(simProperties.get("complexityScore")) {
-					if(node.getOperator().toString().equals("&&") || node.getOperator().toString().equals("||")) {
-						cyclomaticComplexity++;
-					}
+				if(node.getOperator().toString().equals("&&") || node.getOperator().toString().equals("||")) {
+					cyclomaticComplexity++;
 				}
 
 				return true;
 			}
 
 			public boolean visit(MethodDeclaration node) {
-				if(simProperties.get("methodDecScore")) {
-					SimpleName name = node.getName();
-					methodDeclarationNames.add(name.toString());
-				}
+				SimpleName name = node.getName();
+				methodDeclarationNames.add(name.toString());
 
 				return true;
 			}
 
 			public boolean visit(MethodInvocation node) {
-				if(simProperties.get("methodCallScore")) {
-					SimpleName name = node.getName();
-					methodInvocationNames.add(name.toString());
-				}
+				SimpleName name = node.getName();
+				methodInvocationNames.add(name.toString());
 
 				return true;
 			}
 
 			public boolean visit(PackageDeclaration node){
-				if(simProperties.get("packageScore")) {
-					Name name = node.getName();
+				Name name = node.getName();
 
-					String fullyQualifiedName;
-					try {
-						fullyQualifiedName = name.getFullyQualifiedName();
-					} catch (NullPointerException e) {
-						fullyQualifiedName = "";
-					}
-
-					solrDoc.addField("snippet_package", fullyQualifiedName);
+				String fullyQualifiedName;
+				try {
+					fullyQualifiedName = name.getFullyQualifiedName();
+				} catch (NullPointerException e) {
+					fullyQualifiedName = "";
 				}
+
+				solrDoc.addField("snippet_package", fullyQualifiedName);
 
 				return true;
 			}
 
 			public boolean visit(SingleVariableDeclaration node) {
-				if(simProperties.get("variableNameScore")) {
-					SimpleName name = node.getName();
-					variableNames.add(name.toString());
-				}
+				SimpleName name = node.getName();
+				variableNames.add(name.toString());
 
 				return true;
 			}
 
 			public boolean visit(SwitchStatement node) {
-				if(simProperties.get("complexityScore")) {
-					for(Object s : node.statements()) {
-						if(s instanceof SwitchCase) {
-							try {
-								String expression = ((SwitchCase) s).getExpression().toString();
-								cyclomaticComplexity++;
-							} catch (NullPointerException e) {
-								// do nothing
-							}
+				for(Object s : node.statements()) {
+					if(s instanceof SwitchCase) {
+						try {
+							// if failure to get expression, then do not increase cyclomatic complexity
+							String expression = ((SwitchCase) s).getExpression().toString();
+							cyclomaticComplexity++;
+						} catch (NullPointerException e) {
+							// do nothing
 						}
 					}
 				}
@@ -240,34 +204,23 @@ class SimilarityASTWalker {
 							fullyQualifiedName = node.getName().toString();
 						}
 
-						if(simProperties.get("classNameScore")) {
-							solrDoc.addField("snippet_class_name", fullyQualifiedName);
+						solrDoc.addField("snippet_class_name", fullyQualifiedName);
+						solrDoc.addField("snippet_is_generic", binding.isGenericType());
+						solrDoc.addField("snippet_size", node.getLength());
+
+						if(node.getSuperclassType() != null) {
+							solrDoc.addField("snippet_extends", node.getSuperclassType().toString());
+						} else {
+							solrDoc.addField("snippet_extends", "");
 						}
 
-						if(simProperties.get("isGenericScore")) {
-							solrDoc.addField("snippet_is_generic", binding.isGenericType());
+						if(Modifier.isAbstract(node.getModifiers())) {
+							solrDoc.addField("snippet_is_abstract", true);
+						}
+						else {
+							solrDoc.addField("snippet_is_abstract", false);
 						}
 
-						if(simProperties.get("sizeScore")) {
-							solrDoc.addField("snippet_size", node.getLength());
-						}
-
-						if(simProperties.get("extendsScore")) {
-							if(node.getSuperclassType() != null) {
-								solrDoc.addField("snippet_extends", node.getSuperclassType().toString());
-							} else {
-								solrDoc.addField("snippet_extends", "");
-							}
-						}
-
-						if(simProperties.get("isAbstractScore")) {
-							if(Modifier.isAbstract(node.getModifiers())) {
-								solrDoc.addField("snippet_is_abstract", true);
-							}
-							else {
-								solrDoc.addField("snippet_is_abstract", false);
-							}
-						}
 					}
 				}
 
@@ -275,87 +228,59 @@ class SimilarityASTWalker {
 			}
 
 			public boolean visit(VariableDeclarationStatement node) {
-				if(simProperties.get("variableNameScore")) {
-					for(Object v : node.fragments()) {
-						SimpleName name = ((VariableDeclarationFragment) v).getName();
-						variableNames.add(name.toString());
-					}
+				for(Object v : node.fragments()) {
+					SimpleName name = ((VariableDeclarationFragment) v).getName();
+					variableNames.add(name.toString());
 				}
 
 				return true;
 			}
 
 			public boolean visit(VariableDeclarationExpression node) {
-				if(simProperties.get("variableNameScore")) {
-					for(Object v : node.fragments()) {
-						SimpleName name = ((VariableDeclarationFragment) v).getName();
-						variableNames.add(name.toString());
-					}
+				for(Object v : node.fragments()) {
+					SimpleName name = ((VariableDeclarationFragment) v).getName();
+					variableNames.add(name.toString());
 				}
 
 				return true;
 			}
 
 			public boolean visit(WhileStatement node){
-				if(simProperties.get("complexityScore")) {
-					cyclomaticComplexity++;
-				}
-
+				cyclomaticComplexity++;
 				return true;
 			}
 
 			public boolean visit(WildcardType node) {
-				if(simProperties.get("isWildCardScore")) {
-					isWildCard = true;
-				}
-
+				isWildCard = true;
 				return false;
 			}
 		});
 
-		if(simProperties.get("importNumScore")) {
-			solrDoc.addField("snippet_imports_count", importNames.size());
-		}
-
-		if(simProperties.get("importsScore")) {
-			for(String name : importNames) {
-				solrDoc.addField("snippet_imports", name);
-			}
+		solrDoc.addField("snippet_imports_count", importNames.size());
+		for(String name : importNames) {
+			solrDoc.addField("snippet_imports", name);
 		}
 		importNames = null;
 
-		if(simProperties.get("fieldsScore")) {
-			solrDoc.addField("snippet_number_of_fields", fieldNames.size());
-		}
+		solrDoc.addField("snippet_number_of_fields", fieldNames.size());
 		fieldNames = null;
 
-		if(simProperties.get("methodCallScore")) {
-			for(String name : methodInvocationNames) {
-				solrDoc.addField("snippet_method_invocation_names", name);
-			}
+		for(String name : methodInvocationNames) {
+			solrDoc.addField("snippet_method_invocation_names", name);
 		}
 		methodInvocationNames = null;
 
-		if(simProperties.get("methodDecScore")) {
-			for(String name : methodDeclarationNames) {
-				solrDoc.addField("snippet_method_dec_names", name);
-			}
+		for(String name : methodDeclarationNames) {
+			solrDoc.addField("snippet_method_dec_names", name);
 		}
 		methodDeclarationNames = null;
 
-		if(simProperties.get("variableNameScore")) {
-			for(String name : variableNames) {
-				solrDoc.addField("snippet_variable_names", name);
-			}
+		for(String name : variableNames) {
+			solrDoc.addField("snippet_variable_names", name);
 		}
 		variableNames = null;
 
-		if(simProperties.get("isWildCardScore")) {
-			solrDoc.addField("snippet_is_wildcard", isWildCard);
-		}
-
-		if(simProperties.get("complexityScore")) {
-			solrDoc.addField("snippet_path_complexity_class_sum", cyclomaticComplexity);
-		}
+		solrDoc.addField("snippet_is_wildcard", isWildCard);
+		solrDoc.addField("snippet_path_complexity_class_sum", cyclomaticComplexity);
 	}
 }
