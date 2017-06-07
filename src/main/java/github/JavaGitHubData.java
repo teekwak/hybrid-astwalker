@@ -16,37 +16,24 @@
  * Created by Thomas Kwak
  */
 
-package similarity;
+package github;
 
 import java.util.*;
 import java.io.*;
 
-// data for each commit
-class Commit {
-	private String author;
-
-	void setAuthor(String a) {
-		this.author = a;
-	}
-
-	String getAuthor() {
-		return this.author;
-	}
-}
-
 // data for each file
-class JavaGitHubData {
+public class JavaGitHubData {
 	private List<Commit> listOfCommits;
 
-	JavaGitHubData() {
+	public JavaGitHubData() {
 		listOfCommits = new ArrayList<>();
 	}
 	
-	List<Commit> getListOfCommits() {
+	public List<Commit> getListOfCommits() {
 		return this.listOfCommits;
 	}
 
-	void getCommits(String repoFileName) {
+	public void getCommits(String repoFileName) {
 		List<String> hashCodeList = new ArrayList<>();
 		List<String> authorList = new ArrayList<>();
 
