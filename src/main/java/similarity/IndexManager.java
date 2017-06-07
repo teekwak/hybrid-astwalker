@@ -30,7 +30,6 @@ import java.util.*;
 
 public class IndexManager {
 	private static Map<String, String> configProperties;
-	private static String currentURL;
 	private static int counter;
 
 
@@ -57,7 +56,10 @@ public class IndexManager {
 		}
 
 		if(filesInDirectory != null) {
-			return Arrays.stream(filesInDirectory).filter(f -> f.getName().equals(fileName)).findFirst().orElse(null);
+			return Arrays.stream(filesInDirectory)
+							.filter(f -> f.getName().equals(fileName))
+							.findFirst()
+							.orElse(null);
 		}
 
 		return null;
@@ -68,7 +70,7 @@ public class IndexManager {
 	 * xxx
 	 * @param classFile xxx
 	 */
-	private static void createSolrDocsForURL(File classFile) {
+	private static void createSolrDocsForURL(File classFile, String currentURL) {
 		String[] urlSplit = currentURL.split("/");
 
 		// create empty solr doc
@@ -94,15 +96,14 @@ public class IndexManager {
 
 
 	/**
-	 * todo: what does init even mean?
+	 * blah
 	 */
-	private static void init() {
+	private static void startMining(String currentURL) {
 		// clone repository
 		String[] urlSplit = currentURL.split("/");
 
 		// need to clone into special place!
 		ClonedRepository clone = new ClonedRepository("https://test:test@github.com/" + urlSplit[3] + "/" + urlSplit[4] + ".git");
-
 		clone.cloneRepository();
 
 		// reset to saved version
@@ -117,12 +118,11 @@ public class IndexManager {
 		pathToFileInRepo = null;
 
 		if(classFile != null) {
-			createSolrDocsForURL(classFile);
+			createSolrDocsForURL(classFile, currentURL);
 		}
 
 		classFile = null;
 		urlSplit = null;
-
 	}
 
 
@@ -133,7 +133,7 @@ public class IndexManager {
 				counter = Integer.parseInt(line);
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.err.println("Failed to read from counter file");
 		}
 	}
 
@@ -144,8 +144,31 @@ public class IndexManager {
 		try(BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("resources/counter.txt"), "UTF-8"))) {
 			bw.write(counter + "\n");
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.err.println("Failed to write to counter file");
 		}
+	}
+
+
+	/**
+	 * Checks if a GitHub URL is still active
+	 * @param url URL to the GitHub class file
+	 * @throws IOException thrown when url fails to be connected
+	 */
+	private static void verifyURL(String url) throws IOException {
+		URL urlObj = new URL(url);
+		HttpURLConnection con = (HttpURLConnection) urlObj.openConnection();
+		con.setRequestMethod("GET");
+		con.setConnectTimeout(3000);
+		con.connect();
+
+		int code = con.getResponseCode();
+		if (code == 200) {
+			incrementCounter();
+			startMining(url);
+		}
+
+		urlObj = null;
+		con = null;
 	}
 
 
@@ -161,44 +184,24 @@ public class IndexManager {
 		configProperties = PropertyReader.fileToStringStringMap(args[0]);
 		readCounter();
 
+		// read from file of URLs
 		try(BufferedReader urlBr = new BufferedReader(new InputStreamReader(new FileInputStream(configProperties.get("pathToURLMapPath")), "UTF-8"))) {
+
 			// skip lines
 			for(int i = 1; i < counter; i++) {
 				urlBr.readLine();
 			}
 
+			// for each line read, start mining process on that URL
 			for(String url; (url = urlBr.readLine()) != null; ) {
-				// todo: this should be a new function, maybe even a new class
 				try {
-					URL urlObj = new URL(url);
-					HttpURLConnection con = (HttpURLConnection) urlObj.openConnection();
-					con.setRequestMethod("GET");
-					con.setConnectTimeout(3000);
-					con.connect();
-
-					int code = con.getResponseCode();
-					if (code == 200) {
-						// url exists :D
-						urlObj = null;
-						con = null;
-
-						// update counter
-						incrementCounter();
-
-						currentURL = url;
-						init();
-					}
-					else {
-						urlObj = null;
-						con = null;
-					}
+					verifyURL(url);
 				} catch (IOException e) {
-					e.printStackTrace();
+					System.err.println("URL threw IOException");
 				}
-
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.err.println("Failed to read line from URL file");
 		}
 
 		System.out.println("\nProcess finished gracefully");
