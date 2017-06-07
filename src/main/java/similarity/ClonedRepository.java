@@ -41,7 +41,7 @@ class ClonedRepository {
 
 	/**
 	 * Reset the repository to a certain version
-	 * @param version version hash
+	 * @param version version hash of commit
 	 */
 	void resetRepositoryToVersion(String version) {
 		ProcessBuilder pb = new ProcessBuilder("bash", "resources/resetCommit.sh", version);

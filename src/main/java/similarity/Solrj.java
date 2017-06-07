@@ -38,14 +38,14 @@ import org.apache.solr.common.SolrInputDocument;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 
-class Solrj {
+public class Solrj {
 
 	private static Solrj instance = null;
 	private static String pass;
 	private UpdateRequest req = new UpdateRequest();
 
 
-	static Solrj getInstance(String passwordFilePath){
+	public static Solrj getInstance(String passwordFilePath){
 		if(instance == null){
 			instance = new Solrj();
 		}
@@ -124,7 +124,7 @@ class Solrj {
 	 * @return xxx
 	 */
 	@SuppressWarnings("deprecation")
-	SolrDocumentList query(String query, String hostName, int portNumber, String collectionName, int rows) {
+	public SolrDocumentList query(String query, String hostName, int portNumber, String collectionName, int rows) {
 		HttpSolrServer server;
 		try {
 			server = new HttpSolrServer("http://"+hostName+":"+portNumber+"/solr/"+collectionName);

@@ -23,7 +23,7 @@ import org.eclipse.jdt.core.dom.*;
 
 import java.util.*;
 
-class SimilarityASTWalker {
+public class SimilarityASTWalker {
 	private String className;
 	private Set<String> methodInvocationNames;
 	private Set<String> methodDeclarationNames;
@@ -38,7 +38,7 @@ class SimilarityASTWalker {
 	/**
 	 * Constructor for class
 	 */
-	SimilarityASTWalker(String className) {
+	public SimilarityASTWalker(String className) {
 		this.className = className;
 		this.methodInvocationNames = new HashSet<>();
 		this.methodDeclarationNames = new HashSet<>();
@@ -55,7 +55,7 @@ class SimilarityASTWalker {
 	 * @param sourceCode xxx
 	 * @param fileLocation xxx
 	 */
-	void parseFileIntoSolrDoc(SolrInputDocument solrDoc, String sourceCode, String fileLocation) {
+	public void parseFileIntoSolrDoc(SolrInputDocument solrDoc, String sourceCode, String fileLocation) {
 		// create parser and set properties
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
 		parser.setUnitName(fileLocation);
