@@ -29,12 +29,14 @@ public class SocialPropertyParser implements IPropertyParser {
 	private SolrInputDocument solrDoc;
 	private String currentURL;
 	private String passPath;
+	private String clonePath;
 	private String[] urlSplit;
 
-	public SocialPropertyParser(SolrInputDocument s, String c, String pp) {
+	public SocialPropertyParser(SolrInputDocument s, String c, String pp, String cp) {
 		this.solrDoc = s;
 		this.currentURL = c;
 		this.passPath = pp;
+		this.clonePath = cp;
 	}
 
 	/**
@@ -55,8 +57,9 @@ public class SocialPropertyParser implements IPropertyParser {
 
 	public SolrInputDocument getProperties() {
 		// getting the author name
-		JavaGitHubData jghd = new JavaGitHubData();
+		JavaGitHubData jghd = new JavaGitHubData(this.clonePath);
 		jghd.getCommits(this.getRelativeFileRepoPath(this.currentURL));
+
 		Commit headCommit = jghd.getListOfCommits().get(jghd.getListOfCommits().size() - 1);
 		this.solrDoc.addField("snippet_author_name", headCommit.getAuthor());
 		jghd = null;

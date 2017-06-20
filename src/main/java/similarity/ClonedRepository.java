@@ -22,13 +22,15 @@ import java.io.IOException;
 
 class ClonedRepository {
 	private String githubCloneURL;
+	private String cloneDirectory;
 
-	ClonedRepository(String g) {
+	ClonedRepository(String g, String p) {
 		this.githubCloneURL = g;
+		this.cloneDirectory = p;
 	}
 
 	void cloneRepository() {
-		ProcessBuilder pb = new ProcessBuilder("bash", "resources/cloneRepository.sh", this.githubCloneURL);
+		ProcessBuilder pb = new ProcessBuilder("bash", "resources/cloneRepository.sh", this.githubCloneURL, this.cloneDirectory);
 
 		try {
 			Process proc = pb.start();
@@ -44,7 +46,7 @@ class ClonedRepository {
 	 * @param version version hash of commit
 	 */
 	void resetRepositoryToVersion(String version) {
-		ProcessBuilder pb = new ProcessBuilder("bash", "resources/resetCommit.sh", version);
+		ProcessBuilder pb = new ProcessBuilder("bash", "resources/resetCommit.sh", version, this.cloneDirectory);
 
 		try {
 			Process proc = pb.start();

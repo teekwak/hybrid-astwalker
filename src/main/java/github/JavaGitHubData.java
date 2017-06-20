@@ -24,9 +24,11 @@ import java.io.*;
 // data for each file
 public class JavaGitHubData {
 	private List<Commit> listOfCommits;
+	private String pathToCloneDirectory;
 
-	public JavaGitHubData() {
-		listOfCommits = new ArrayList<>();
+	public JavaGitHubData(String p) {
+		this.listOfCommits = new ArrayList<>();
+		this.pathToCloneDirectory = p;
 	}
 	
 	public List<Commit> getListOfCommits() {
@@ -39,7 +41,7 @@ public class JavaGitHubData {
 
 		try {
 			// get all commits of a single file
-			ProcessBuilder pb = new ProcessBuilder("bash", "resources/getCommits.sh", repoFileName);
+			ProcessBuilder pb = new ProcessBuilder("bash", "resources/getCommits.sh", repoFileName, this.pathToCloneDirectory);
 
 			Process proc = pb.start();
 
