@@ -41,7 +41,7 @@ public class IndexManager {
 	 *
 	 */
 	private static File findFileInRepository(String fileName, List<String> pathToFileInRepo) {
-		File[] filesInDirectory = new File("folder1").listFiles();
+		File[] filesInDirectory = new File("clone").listFiles();
 
 		// todo: is there a way to write this using immutable variables
 		for(String directoryName : pathToFileInRepo) {
@@ -72,6 +72,7 @@ public class IndexManager {
 	 */
 	private static void createSolrDocsForURL(File classFile, String currentURL) {
 		String[] urlSplit = currentURL.split("/");
+		System.out.println("[Mining] " + urlSplit[3] + "/" + urlSplit[4]);
 
 		// create empty solr doc
 		SolrInputDocument solrDoc = new SolrInputDocument();
@@ -84,11 +85,12 @@ public class IndexManager {
 		tpp = null;
 
 		// add social properties to solrDoc
-		SocialPropertyParser spp = new SocialPropertyParser(solrDoc, currentURL, configProperties.get("passPath"));
+		SocialPropertyParser spp = new SocialPropertyParser(solrDoc, currentURL, configProperties.get("passPath"), configProperties.get("clonePath"));
 		solrDoc = spp.getProperties();
 		spp = null;
 
 		// upload the document to the server
+		System.out.println("[Uploading] " + urlSplit[3] + "/" + urlSplit[4]);
 		Solrj.getInstance(configProperties.get("passPath")).addDoc(solrDoc);
 		Solrj.getInstance(configProperties.get("passPath")).commitDocs(configProperties.get("hostNameAndPortNumber"), configProperties.get("collectionName"));
 		solrDoc = null;
@@ -101,9 +103,11 @@ public class IndexManager {
 	private static void startMining(String currentURL) {
 		// clone repository
 		String[] urlSplit = currentURL.split("/");
+		System.out.println("[Cloning] " + urlSplit[3] + "/" + urlSplit[4]);
 
 		// need to clone into special place!
-		ClonedRepository clone = new ClonedRepository("https://test:test@github.com/" + urlSplit[3] + "/" + urlSplit[4] + ".git");
+		ClonedRepository clone = new ClonedRepository("https://test:test@github.com/" + urlSplit[3] + "/" + urlSplit[4] + ".git", configProperties.get("clonePath"));
+		// TODO: change me to /home/pi/astwalker/clone
 		clone.cloneRepository();
 
 		// reset to saved version
@@ -126,9 +130,9 @@ public class IndexManager {
 	}
 
 
-	// todo: this does not belong in this file?
+	// get number from counter file (in case of crash)
 	private static void readCounter() {
-		try(BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("resources/counter.txt"), "UTF-8"))) {
+		try(BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(configProperties.get("counterPath")), "UTF-8"))) {
 			for(String line; (line = br.readLine()) != null; ) {
 				counter = Integer.parseInt(line);
 			}
@@ -138,10 +142,10 @@ public class IndexManager {
 	}
 
 
-	// todo: this does not belong in this file?
+	// increment counter and write to file (in case of crash)
 	private static void incrementCounter() {
 		counter += 1;
-		try(BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("resources/counter.txt"), "UTF-8"))) {
+		try(BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(configProperties.get("counterPath")), "UTF-8"))) {
 			bw.write(counter + "\n");
 		} catch (IOException e) {
 			System.err.println("Failed to write to counter file");
@@ -163,10 +167,10 @@ public class IndexManager {
 
 		int code = con.getResponseCode();
 		if (code == 200) {
-			incrementCounter();
 			startMining(url);
 		}
 
+		incrementCounter();
 		urlObj = null;
 		con = null;
 	}
