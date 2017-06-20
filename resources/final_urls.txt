@@ -1,1 +1,0 @@
-https://raw.github.com/opensourceBIM/BIMserver/72653329ab2b9d05861ddf76dbf2a10575e03962/Shared/generated/org/bimserver/interfaces/SServiceInterfaceService.java?start=18575&end=18696
