@@ -10,17 +10,6 @@ import java.util.*;
 
 /**
  * @author Thomas Kwak
- *
- * Table of Contents (out of date)
- *
- * 1. Class variables...........25 x
- * 2. Constructor...............41 x
- *
- * 3. validateProperties()......45 x
- * 4. parseFile()...............63 x
- * 5. test1()...................96 x
- * 6. main()....................121 x
- *
  */
 public class ASTStandalone {
 	private Map<String, Boolean> configProperties;
@@ -55,13 +44,7 @@ public class ASTStandalone {
 //		}
 //	}
 
-	/**
-	 * Constructor for class. Creates a FileModel object and takes in a config file and adds into a HashMap
-	 * Properties class is used for easily reading a file and making sure the user uses a .properties file
-	 *
-	 * @param configFilePath path to config file
-	 */
-	public ASTStandalone(String configFilePath) {
+	public ASTStandalone() {
 		containingClass = "";
 		entityStack = new Stack<>();
 		fileModel = new FileModel();
@@ -70,24 +53,8 @@ public class ASTStandalone {
 		inMethod = false;
 		packageObject = new SuperEntityClass();
 
-		if(!configFilePath.endsWith(".properties")) {
-			throw new IllegalArgumentException("[ERROR]: config file is not a .properties file!");
-		}
-
-//		Properties properties = new Properties();
-//		try(InputStream input = new FileInputStream(configFilePath)) {
-//			properties.load(input);
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//
-//		validateProperties(properties);
-
 		// convert to hash map so that boolean parsing happens only once
 		configProperties = new HashMap<>();
-//		for(Map.Entry<Object, Object> entry : properties.entrySet()) {
-//			configProperties.put(entry.getKey().toString(), Boolean.parseBoolean(entry.getValue().toString()));
-//		}
 		configProperties.put("AnonymousClassDeclaration", true);
 		configProperties.put("CatchClause", true);
 		configProperties.put("ConditionalExpression", true);
@@ -116,28 +83,6 @@ public class ASTStandalone {
 		return this.fileModel;
 	}
 
-	/**
-	 * Validates the properties from the config file
-	 */
-	private void validateProperties(Properties properties) {
-		StringBuilder errors = new StringBuilder();
-
-		for(Map.Entry entry : properties.entrySet()) {
-			if(entry.getValue() == null
-							|| entry.getValue().toString().isEmpty()
-							|| (!entry.getValue().toString().toLowerCase().equals("true") && !entry.getValue().toString().toLowerCase().equals("false"))
-							) {
-				errors.append("\n");
-				errors.append(entry.getKey());
-				errors.append(" is not properly defined!");
-			}
-		}
-
-		if(errors.length() != 0) {
-			throw new IllegalArgumentException(errors.toString());
-		}
-	}
-
 	private String getClassSourceCode(String fileLocation, int startLine, int endLine) {
 		// get source code
 		StringBuilder classSourceCode = new StringBuilder();
@@ -159,9 +104,6 @@ public class ASTStandalone {
 		return classSourceCode.toString();
 	}
 
-	/**
-	 *
-	 */
 	public void parseFile(String fileLocation) {
 		// no way to avoid this. we need to read the entire file into memory
 		String sourceCode = null;
@@ -192,16 +134,7 @@ public class ASTStandalone {
 //			comment.accept(new ASTRefactor.CommentVisitor(cu, sourceCode));
 //		}
 
-		// continue code
-		// when we are writing visit and exit functions, make sure to use the properties!
-		// we want to visit the node (because there will be children inside!) so always return true
-		// however, we do not want to record any information
-		// but make sure we do not skip over children!
-
 		cu.accept(new ASTVisitor() {
-
-			// TODO
-			// nothing changed
 			public boolean visit(AnonymousClassDeclaration node) {
 				JavaClass co = new JavaClass();
 
@@ -220,7 +153,7 @@ public class ASTStandalone {
 
 					co.setNumberOfCharacters(node.getLength());
 					co.setFileName(fileLocation);
-					// get generic parameters
+
 					List<String> genericParametersList = new ArrayList<>();
 					try {
 						if(binding.isGenericType()) {
@@ -248,8 +181,6 @@ public class ASTStandalone {
 				return true;
 			}
 
-			// TODO
-			// nothing changed
 			public void endVisit(AnonymousClassDeclaration node) {
 				if(configProperties.get("AnonymousClassDeclaration")) {
 					JavaClass temp = (JavaClass) entityStack.pop();
@@ -357,8 +288,6 @@ public class ASTStandalone {
 				return true;
 			}
 
-			// TODO
-			// nothing changed
 			public boolean visit(FieldDeclaration node) {
 				if(configProperties.get("FieldDeclaration")) {
 					Type nodeType = node.getType();
@@ -489,10 +418,6 @@ public class ASTStandalone {
 				return true;
 			}
 
-			// TODO
-			// nothing has changed
-			// actually, should we only be checking the parse boolean when we SAVE the method dec?
-			// this is because we always have to visit the method, but we dont necessarily have to save it
 			public boolean visit(MethodDeclaration node) {
 				inMethod = true;
 				MethodDeclarationObject md = new MethodDeclarationObject();
@@ -596,18 +521,10 @@ public class ASTStandalone {
 				return true;
 			}
 
-			// TODO
-			// same comment as above, should we just pop and forget about it?
-			// that means we should push it, but then just pop it when we leave
-			// just don't record anything???!?!?!?!
-			//
-			// i think i fixed it
 			public void endVisit(MethodDeclaration node) {
 				MethodDeclarationObject temp = (MethodDeclarationObject) entityStack.pop();
 
 				if(configProperties.get("MethodDeclaration")) {
-					// TODO
-					// merge these two methods together
 					temp.setComplexities();
 					temp.setMethodDeclarationNames();
 					temp.setMethodInvocationNames();
@@ -617,8 +534,6 @@ public class ASTStandalone {
 				inMethod = false;
 			}
 
-			// TODO
-			// nothing changed
 			public boolean visit(MethodInvocation node) {
 				if(configProperties.get("MethodInvocation")) {
 					SimpleName name = node.getName();
@@ -701,7 +616,6 @@ public class ASTStandalone {
 				return true;
 			}
 
-			// TODO
 			public boolean visit(SingleVariableDeclaration node) {
 				if(configProperties.get("SingleVariableDeclaration")) {
 					SimpleName name = node.getName();
@@ -812,9 +726,6 @@ public class ASTStandalone {
 
 			public boolean visit(TryStatement node) {
 				if(inMethod && configProperties.get("TryStatement")) {
-					// TODO
-					// this seems like it does not even "try" to get the body of a try statement (hehe)
-
 					entityStack.peek().addEntity(
 									new SuperEntityClass(
 													"Try Statement",
@@ -828,8 +739,6 @@ public class ASTStandalone {
 				return true;
 			}
 
-			// TODO
-			// unchanged
 			public boolean visit(TypeDeclaration node) {
 				JavaClass co = new JavaClass();
 
@@ -912,8 +821,6 @@ public class ASTStandalone {
 				return true;
 			}
 
-			// TODO
-			// unchanged
 			public void endVisit(TypeDeclaration node) {
 				JavaClass temp = (JavaClass) entityStack.pop();
 
@@ -947,7 +854,6 @@ public class ASTStandalone {
 				hasComments = false;
 			}
 
-			// TODO
 			public boolean visit(VariableDeclarationStatement node) {
 				if(configProperties.get("VariableDeclarationStatement")) {
 					Type nodeType = node.getType();
@@ -993,7 +899,6 @@ public class ASTStandalone {
 				return true;
 			}
 
-			// TODO
 			public boolean visit(VariableDeclarationExpression node) {
 				if(configProperties.get("VariableDeclarationExpression")) {
 					Type nodeType = node.getType();
@@ -1061,8 +966,6 @@ public class ASTStandalone {
 				return true;
 			}
 
-			// TODO
-			// unchanged
 			public boolean visit(WildcardType node) {
 				if(inMethod && configProperties.get("WildcardType")) {
 					SuperEntityClass wo = new SuperEntityClass();
@@ -1088,42 +991,12 @@ public class ASTStandalone {
 		});
 	}
 
-
-	/**
-	 * Test that times how long it takes and how much memory this class uses
-	 */
-	private static void test1() {
-		Runtime runtime = Runtime.getRuntime();
-		long start = System.currentTimeMillis();
-
-		// ******************************************
-
+	public static void main(String[] args) {
 		ASTStandalone a = new ASTStandalone("resources/astconfig.properties");
 		a.parseFile("resources/Test.java");
 
 		for(SuperEntityClass obj : a.importList) {
 			System.out.println(obj.getName());
 		}
-
-		// ******************************************
-
-		long end = System.currentTimeMillis();
-
-		int mb = 1024 * 1024;
-		System.out.println("----------------------------------");
-		System.out.println("*** System statistic estimates ***");
-		System.out.println("\tRuntime: \t\t" + (end - start) + " ms");
-		System.out.println("\tTotal Memory: \t" + runtime.totalMemory() / mb  + " MB"); // available memory
-		System.out.println("\tFree Memory: \t" + runtime.freeMemory() / mb + " MB"); // free memory
-		System.out.println("\tUsed Memory: \t" + (runtime.totalMemory() - runtime.freeMemory()) / mb + " MB"); // used memory
-		System.out.println("----------------------------------");
-	}
-
-
-	/**
-	 * Clearly a main function that does very little
-	 */
-	public static void main(String[] args) {
-		test1();
 	}
 }
