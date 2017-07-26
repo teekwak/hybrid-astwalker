@@ -1,39 +1,14 @@
 # Hybrid ASTWalker #
 
-This README would normally document whatever steps are necessary to get your application up and running.
-
-(THIS README IS OUTDATED)
-
 ### What is this repository for? ###
 
-* ASTWalker
-* GitHubData
+* Java program for downloading Java GitHub repositories and parsing social and technical properties from the source code and metadata
 
-### What does ASTWalker do? ###
+### ASTStandlaone ###
 
-* Walks along Java source code and extracts different standalone.entities from it
-* Prints those standalone.entities to the screen depending on which standalone.entities are selected
-* Each entity extracted is also labeled by class and method (if applicable)
-* Classes and method declarations contain counters for each entity
+* The project relies on the Eclipse JDT library for parsing tokens from the source code
+* The ASTStandalone class takes in an input file and prints technical properties to the screen
+* This class does not interact with any other class. It is purely for testing purposes
 
-### What does GitHubData do? ###
-
-* Takes a .git file from a cloned repository and extracts data about commits
-* Returns number of changes between commits, author name, email, time of commit, etc.
-
-### How do I get set up? ###
-
-* Clone the project
-
-##### ASTWalker #####
-
-* Open up FileModel.java
-* Change File inputFolder on line 222 to any directory
-* Change the else block of traverseUntilJava(File parentNode)
-* Safe to print after fileModel.parseDeclarations has been called
-* Run FileModel.java
-
-##### GitHubData #####
-
-* Point line 186 to the directory of the Git project (not the .git file exactly)
-* Run GitHubData.java
+### Entry Point ###
+* The entry point to the code is the IndexManager class
