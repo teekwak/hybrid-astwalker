@@ -35,15 +35,10 @@ public class IndexManager {
 
 	/**
 	 * Quickly traverse repository to find a file based on a list of directories
-	 * @param fileName xxx
-	 * @param pathToFileInRepo xxx
-	 * @return xxx
-	 *
 	 */
 	private static File findFileInRepository(String fileName, List<String> pathToFileInRepo) {
 		File[] filesInDirectory = new File("clone").listFiles();
 
-		// todo: is there a way to write this using immutable variables
 		for(String directoryName : pathToFileInRepo) {
 			if(filesInDirectory != null) {
 				for(File f : filesInDirectory) {
@@ -65,11 +60,6 @@ public class IndexManager {
 		return null;
 	}
 
-
-	/**
-	 * xxx
-	 * @param classFile xxx
-	 */
 	private static void createSolrDocsForURL(File classFile, String currentURL) {
 		String[] urlSplit = currentURL.split("/");
 		System.out.println("[Mining] " + urlSplit[3] + "/" + urlSplit[4]);
@@ -97,9 +87,6 @@ public class IndexManager {
 	}
 
 
-	/**
-	 * blah
-	 */
 	private static void startMining(String currentURL) {
 		// clone repository
 		String[] urlSplit = currentURL.split("/");
@@ -107,7 +94,6 @@ public class IndexManager {
 
 		// need to clone into special place!
 		ClonedRepository clone = new ClonedRepository("https://test:test@github.com/" + urlSplit[3] + "/" + urlSplit[4] + ".git", configProperties.get("clonePath"));
-		// TODO: change me to /home/pi/astwalker/clone
 		clone.cloneRepository();
 
 		// reset to saved version
